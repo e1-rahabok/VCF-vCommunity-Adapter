@@ -74,4 +74,6 @@ Once steps 1–6 are complete, proceed with [Adapter Instance configuration](con
 
 ---
 
+> Other options for sites where the container is a problem: [Running Without the Container](planning/runtime-without-container.md) (future work).
+
 **Next:** [Configuration](configuration.md) · [How It Works](how-it-works.md)

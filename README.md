@@ -104,6 +104,7 @@ Bad Network Packets has data from the next collection cycle.
 **Planned (future work, not built):**
 
 - [Distributed Switch Health Check](docs/planning/distributed-switch-health-check.md)
+- [Running Without the Container](docs/planning/runtime-without-container.md)
 
 ## Tools
 
