@@ -99,6 +99,7 @@ Bad Network Packets has data from the next collection cycle.
 - [Operational Availability](docs/operational-availability.md) (read its Known Limitations)
 - [Network Speed Degradation](docs/network-speed-degradation.md) (read its Known Limitations)
 - [VM Shares](docs/vm-shares.md) (read its Known Limitations)
+- [Daily Cluster Check](docs/daily-cluster-check.md) (read its Known Limitations)
 
 **Planned (future work, not built):**
 

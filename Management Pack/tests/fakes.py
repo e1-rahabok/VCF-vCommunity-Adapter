@@ -75,9 +75,13 @@ class FakeObject:
     def __init__(self, name):
         self.name = name
         self.metrics = {}
+        self.properties = {}
 
     def with_metric(self, key, value):
         self.metrics[key] = value
+
+    def with_property(self, key, value):
+        self.properties[key] = value
 
 
 class FakeMoRef:

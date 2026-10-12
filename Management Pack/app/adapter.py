@@ -34,7 +34,7 @@ from collectors.datastore.collectDatastoreData import collect_datastore_data
 from collectors.vcenter.collectvCenterData import collect_vcenter_data
 from collectors.world.collectWorldData import collect_world_data
 from collectors.datacenter.collectDatacenterData import collect_datacenter_data
-from metrics.cluster import cluster_performance_metrics, cluster_risk_metrics
+from metrics.cluster import cluster_performance_metrics, cluster_risk_metrics, daily_cluster_check
 from metrics.host import esxi_performance_metrics
 from metrics.vm import vm_performance_metrics, guest_os_performance_metrics, vm_guest_os_kpi, vm_shares
 from metrics.world import cluster_summary_metrics, availability_summary_metrics
@@ -126,6 +126,16 @@ def get_adapter_definition() -> AdapterDefinition:
         )
 
         definition.define_string_parameter(
+            daily_cluster_check.TIME_SETTING,
+            label="Daily Cluster Check Time (UTC)",
+            description="Time of day, as HH:MM in UTC, when the 24 hours of the Daily Cluster Check end. "
+                        "The clusters are calculated in the collection cycles after it.",
+            default=daily_cluster_check.DEFAULT_TIME,
+            required=False,
+            advanced=True,
+        )
+
+        definition.define_string_parameter(
             "win_service_config_file",
             label="Windows Service Configuration File",
             description="Enter the configuration file name that contains Windows Service Names.",
@@ -184,6 +194,13 @@ def get_adapter_definition() -> AdapterDefinition:
         define_kpi(vCommunity, cluster_performance_metrics)
         define_kpi(vCommunity, cluster_risk_metrics)
         define_availability(vCommunity, operational_availability.CLUSTER_METRIC)
+
+        # Daily Cluster Check: properties, set once a day. See metrics/cluster/daily_cluster_check.py.
+        dailyCheck = vCommunity.define_group(daily_cluster_check.GROUP, daily_cluster_check.GROUP)
+        for name in (daily_cluster_check.RISK, daily_cluster_check.PERFORMANCE, daily_cluster_check.UTILIZATION):
+            dailyCheck.define_numeric_property(name, name, unit=Units.RATIO.PERCENT)
+        dailyCheck.define_numeric_property(daily_cluster_check.RESULT, daily_cluster_check.RESULT)
+        dailyCheck.define_string_property(daily_cluster_check.WINDOW_END, daily_cluster_check.WINDOW_END)
 
         vSphereHA = clusterConfiguration.define_group("vSphere HA", "vSphere HA")
         vSphereHA.define_string_property("Host Monitoring", "Host Monitoring")
@@ -638,7 +655,8 @@ def collect(adapter_instance: AdapterInstance) -> CollectResult:
                     # 1. Cluster feature definition
                     start_times["collect_cluster_data"] = time.perf_counter()
                     future_cls = data_executor.submit(
-                        collect_cluster_data, client, adapter_instance_id, result, content, availability
+                        collect_cluster_data, client, adapter_instance_id, result, content, availability,
+                        adapter_instance.get_identifier_value(daily_cluster_check.TIME_SETTING),
                     )
 
                     # 2. Host feature definition

@@ -54,6 +54,7 @@ You can expand the adapter configuration by clicking **Advanced Settings**.
 | Advanced Setting | Default Value | Description |
 | :--- | :--- | :--- |
 | **Port** | `443` | The port used to connect to vCenter Server. |
+| **Daily Cluster Check Time (UTC)** | `00:00` | Time of day, as HH:MM in UTC, when the 24 hours of the [Daily Cluster Check](daily-cluster-check.md) end. An empty or invalid value uses `00:00`. |
 | **Windows Service Configuration File** | `windows_service_list.xml` | File used to define which Windows Services to monitor. (Location: System Defined configurations) |
 | **Guest OS Service Monitoring Status** | `Disabled` | Toggles Windows Service monitoring using the `windows_service_list.xml` file. Set to `Enabled` to activate. |
 | **Windows Event Log Configuration File** | `windows_event_list.xml` | File used to define which Windows Event Log IDs to monitor. (Location: System Defined configurations) |

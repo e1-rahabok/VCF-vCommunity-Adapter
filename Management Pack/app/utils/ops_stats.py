@@ -13,11 +13,15 @@ logger = logging.getLogger(__name__)
 # Suite API endpoints. Each takes many resources in one request.
 RESOURCES_QUERY_PATH = "/api/resources/query"
 LATEST_STATS_PATH = "api/resources/stats/latest/query"
+STATS_QUERY_PATH = "api/resources/stats/query"
 LATEST_PROPERTIES_PATH = "api/resources/properties/latest/query"
 
 # One request asks for at most this many resources. A VM KPI needs stats for every VM,
 # and a single request for thousands of VMs is slow and can time out.
 RESOURCES_PER_REQUEST = 1000
+
+# VCF Operations stores one sample per 5-minute collection cycle.
+COLLECTION_CYCLE_MINUTES = 5
 
 
 def read_latest_stats(
@@ -51,6 +55,29 @@ def read_latest_instance_stats(
     return values
 
 
+def read_stat_history(
+    suite_api_client: SuiteApiClient, resource_ids: List[str], stat_keys: List[str],
+    begin_ms: int, end_ms: int, resources_per_request: int, failed: List[str],
+) -> Dict[str, Dict[str, List[float]]]:
+    """Returns {resource id: {stat key: [5-minute samples between begin_ms and end_ms, oldest first]}}.
+
+    A day of history is 288 samples per stat, so a request holds fewer resources than the latest queries:
+    resources_per_request. The ids of the resources whose request failed are added to failed, so the caller
+    can tell "no data" from "not read".
+    """
+    query = {
+        "resourceId": resource_ids,
+        "statKey": stat_keys,
+        "begin": begin_ms,
+        "end": end_ms,
+        "rollUpType": "AVG",
+        "intervalType": "MINUTES",
+        "intervalQuantifier": COLLECTION_CYCLE_MINUTES,
+    }
+    return _query_stats(suite_api_client, STATS_QUERY_PATH, query,
+                        resources_per_request=resources_per_request, failed=failed)
+
+
 def split_instance(stat_key: str):
     """"net:vmnic0|speed" -> ("vmnic0", "net|speed"). A key without an instance -> (None, the key)."""
     group, separator, rest = stat_key.partition("|")
@@ -61,18 +88,23 @@ def split_instance(stat_key: str):
 
 
 def _query_stats(
-    suite_api_client: SuiteApiClient, path: str, query: dict, keep_instances: bool = False
+    suite_api_client: SuiteApiClient, path: str, query: dict, keep_instances: bool = False,
+    resources_per_request: Optional[int] = None, failed: Optional[List[str]] = None,
 ) -> Dict[str, Dict[str, List[float]]]:
-    """Returns {resource id: {stat key: [samples, oldest first]}}. Resources of a failed request are absent."""
+    """Returns {resource id: {stat key: [samples, oldest first]}}. Resources of a failed request are absent,
+    and added to failed when it is given. resources_per_request defaults to RESOURCES_PER_REQUEST."""
+    resources_per_request = resources_per_request or RESOURCES_PER_REQUEST
     resource_ids = query["resourceId"]
     requested_keys = set(query["statKey"])
     samples_by_resource = {}
 
-    for start in range(0, len(resource_ids), RESOURCES_PER_REQUEST):
-        request = {**query, "resourceId": resource_ids[start:start + RESOURCES_PER_REQUEST]}
-        response = suite_api_client.post(path, json=request)
+    for start in range(0, len(resource_ids), resources_per_request):
+        batch = resource_ids[start:start + resources_per_request]
+        response = suite_api_client.post(path, json={**query, "resourceId": batch})
         if response.status_code != 200:
             logger.warning(f"Stats query {path} failed with HTTP {response.status_code}")
+            if failed is not None:
+                failed.extend(batch)
             continue
 
         for resource in response.json().get("values", []):

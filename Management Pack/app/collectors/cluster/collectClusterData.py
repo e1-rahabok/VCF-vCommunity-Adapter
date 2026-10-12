@@ -4,6 +4,7 @@
 import logging
 from typing import Any
 from typing import List
+from typing import Optional
 from aria.ops.object import Object
 from aria.ops.result import CollectResult
 from aria.ops.suite_api_client import SuiteApiClient
@@ -19,6 +20,7 @@ from metrics.cluster.cluster_performance_metrics import collect_cluster_performa
 from metrics.cluster.cluster_risk_metrics import collect_cluster_risk_metrics, HostInventory
 from utils.ops_inventory import read_hosts, read_vms, powered_on_vms_by_host, hosts_by_cluster
 from metrics.availability.operational_availability import OperationalAvailability, NO_DATA, CLUSTER_METRIC, publish
+from metrics.cluster import daily_cluster_check
 from pyVmomi import vim
 
 logger = logging.getLogger(__name__)
@@ -29,6 +31,7 @@ def collect_cluster_data(
     result: CollectResult,
     content: Any,
     availability: OperationalAvailability = NO_DATA,
+    daily_check_time: Optional[str] = None,
 ) -> None:
     
     propertyPaths: List[str] = []
@@ -75,6 +78,14 @@ def collect_cluster_data(
     hosts_in_cluster = hosts_by_cluster(read_hosts(suite_api_client, adapter_instance_id))
     vms_on_host = powered_on_vms_by_host(read_vms(suite_api_client, adapter_instance_id))
 
+    # Daily Cluster Check: only the clusters due this cycle. See metrics/cluster/daily_cluster_check.py.
+    try:
+        daily = daily_cluster_check.read_daily_cluster_check(suite_api_client, adapter_instance_id, daily_check_time)
+    except Exception as e:
+        # A failure here must not stop the rest of the collection. The clusters stay due for the next cycle.
+        logger.warning(f"Failed to read the Daily Cluster Check - {repr(e)}")
+        daily = {}
+
     for cluster_data in cluster_props:
         try:
             cluster_ref = cluster_data.obj
@@ -112,6 +123,8 @@ def collect_cluster_data(
 
             # Operational Availability, read once per cycle for the whole vCenter by the adapter.
             publish(cluster_obj, CLUSTER_METRIC, availability.by_cluster.get(cluster_obj.get_key().name))
+
+            daily_cluster_check.publish(cluster_obj, daily.get(cluster_moid))
 
             result.add_object(cluster_obj)
 
