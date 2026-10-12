@@ -112,6 +112,22 @@ The same way as every KPI:
 
 The full explanation, with a worked example, is in [Cluster Performance KPI](cluster-performance-kpi.md#step-2-score-each-sub-metric). The code is [`kpi_score.py`](../Management%20Pack/app/metrics/kpi_score.py).
 
+### Bands: red is high
+
+Because Cluster Risk is published as `100 − health`, its bands are the mirror of the other KPIs:
+
+| Band | Other KPIs (Performance) | Cluster Risk |
+| :--- | :--- | :--- |
+| Green | 75 – 100 | 0 – 25 |
+| Yellow | 50 – 75 | 25 – 50 |
+| Orange | 25 – 50 | 50 – 75 |
+| Red | 0 – 25 | **75 – 100** |
+
+- **Only the published number is flipped.** The sub-metrics, their limits from the source table, the tier weights (1, 2, 4, 8), "Excluded" and missing data are calculated exactly as for every KPI, in the same shared code. The flip is the last step, in `publish_kpi(..., higher_is_worse=True)`.
+- **The order and the distances are kept.** A cluster 10 points healthier than another is 10 points less at risk.
+- **Set thresholds the other way round.** Any symptom, alert, or widget color range on `Cluster Risk Score` must treat high as bad: red from 75, not below 25. The pack's own dashboards and reports use only the Risk sub-metrics, not the score, so none needed changing.
+- **"Worst" means highest.** That is why vSphere World uses the 90th percentile and the highest Cluster Risk, and the Daily Cluster Check tests `Cluster Risk > 75`.
+
 ## Worked examples
 
 Two hosts, each with 32 cores (64 threads) and 512 GB of DRAM. Each runs four VMs of 4 vCPU and 16 GB. The monster size of these hosts is 16 vCPU (half of 32 cores) and 204.8 GB (40 % of 512 GB, less than 256 GB).
