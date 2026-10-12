@@ -54,7 +54,7 @@ Every property and metric the vCommunity Management Pack pushes to VCF Operation
 | 🟢 Metric | `vCommunity\|Cluster Performance\|90th Percentile VM Memory Latency` | 20-second peak memory contention (%) that 90 % of the powered-on VMs in the cluster are at or below. |
 | 🟢 Metric | `vCommunity\|Cluster Performance\|90th Percentile VM Disk Latency` | 20-second peak virtual disk latency (ms) that 90 % of the powered-on VMs in the cluster are at or below. |
 | 🟢 Metric | `vCommunity\|Cluster Performance\|Highest ESXi Bad Network Packets` | Errored and dropped packets as a share (%) of all packets in the last 5 minutes, on the worst host in the cluster. Needs Total Packets Received and Transmitted activated in the policy: see [Required Policy Settings](../README.md#required-policy-settings). |
-| 🟢 Metric | `vCommunity\|Cluster Risk\|Cluster Risk Score` | Key Performance Indicator (0-100 %) of the cluster's risk, combining the 12 sub-metrics below. 100 is no risk. See [Cluster Risk KPI](cluster-risk-kpi.md) for the formula. |
+| 🟢 Metric | `vCommunity\|Cluster Risk\|Cluster Risk Score` | Key Performance Indicator (0-100 %) of the cluster's risk, combining the 12 sub-metrics below. Higher is worse: 0 is no risk, 100 is maximum risk. Inverted in version 0.1.0. See [Cluster Risk KPI](cluster-risk-kpi.md) for the formula. |
 | 🟢 Metric | `vCommunity\|Cluster Risk\|Highest ESXi CPU Thread Utilization` | CPU thread utilization (%, `cpu.utilization`) of the busiest host in the cluster. |
 | 🟢 Metric | `vCommunity\|Cluster Risk\|Worst ESXi CPU Imbalance` | Running CPU threads divided by running CPU cores, on the worst host. 1 is one thread per busy core, 2 is both hyper-threads on every busy core. |
 | 🟢 Metric | `vCommunity\|Cluster Risk\|Highest ESXi Memory Consumed` | Consumed memory as a share (%) of host DRAM, on the fullest host. |
@@ -67,10 +67,10 @@ Every property and metric the vCommunity Management Pack pushes to VCF Operation
 | 🟢 Metric | `vCommunity\|Cluster Risk\|Highest ESXi Memory Overcommit Ratio` | Memory allocated to the powered-on VMs per unit of host DRAM, on the highest host. |
 | 🟢 Metric | `vCommunity\|Cluster Risk\|Highest CPU Monster VM to Host Ratio` | vCPUs of the largest powered-on VM against half the physical cores of its host. Above 1 the VM is a monster. |
 | 🟢 Metric | `vCommunity\|Cluster Risk\|Highest Memory Monster VM to Host Ratio` | Memory of the largest powered-on VM against 40 % of its host's DRAM (not DRAM + NVMe) or 256 GB, whichever is smaller. Above 1 the VM is a monster. |
-| ⚪ Property | `vCommunity\|Daily Cluster Check\|95th Percentile Cluster Risk` | 95th percentile (%) of Cluster Risk Score over the 24 hours to Window End. Set once a day. See [Daily Cluster Check](daily-cluster-check.md#known-limitations). |
+| ⚪ Property | `vCommunity\|Daily Cluster Check\|99th Percentile Capacity Utilization` | max(99th percentile of CPU utilization, of memory utilization) (%) over the 24 hours to Window End. Set once a day. Placeholder stat keys for now. See [Daily Cluster Check](daily-cluster-check.md#known-limitations). |
 | ⚪ Property | `vCommunity\|Daily Cluster Check\|95th Percentile Cluster Performance` | 95th percentile (%) of Cluster Performance Score over the same 24 hours. |
-| ⚪ Property | `vCommunity\|Daily Cluster Check\|95th Percentile Cluster Utilization` | max(95th percentile of CPU utilization, of memory utilization) (%) over the same 24 hours. Placeholder stat keys for now. |
-| ⚪ Property | `vCommunity\|Daily Cluster Check\|Result` | 0 or 1, from the three values above. Placeholder rule for now. |
+| ⚪ Property | `vCommunity\|Daily Cluster Check\|95th Percentile Cluster Risk` | 95th percentile (%) of Cluster Risk Score (higher is worse) over the same 24 hours. |
+| ⚪ Property | `vCommunity\|Daily Cluster Check\|Close for Business` | 1: the cluster is full, do not place new VMs. 0: open to new VMs. See [the rule](daily-cluster-check.md#the-rule). |
 | ⚪ Property | `vCommunity\|Daily Cluster Check\|Window End` | End of the 24 hours the values are for, such as `2026-10-12 00:00 UTC`. Set by the account's Daily Cluster Check Time (UTC). |
 
 [⬆ Back to top](#metrics--properties-reference)
@@ -255,11 +255,11 @@ Every property and metric the vCommunity Management Pack pushes to VCF Operation
 | :--- | :--- | :--- |
 | 🟢 Metric | `vCommunity\|10th Percentile Cluster Performance` | The Cluster Performance score that 90 % of all clusters, of all vCenters, are at or above. Can be up to one collection cycle old. See [vSphere World Cluster Metrics](vsphere-world-metrics.md#known-limitations). |
 | 🟢 Metric | `vCommunity\|Worst Cluster Performance` | The lowest Cluster Performance score of all clusters. Same limitation. |
-| 🟢 Metric | `vCommunity\|10th Percentile Cluster Risk` | The Cluster Risk score that 90 % of all clusters are at or above. Same limitation. |
+| 🟢 Metric | `vCommunity\|90th Percentile Cluster Risk` | The Cluster Risk that 90 % of all clusters are at or below (Cluster Risk is higher-is-worse). Same limitation. |
 | 🟢 Metric | `vCommunity\|Availability\|Worst Cluster Operational Availability` | The lowest Cluster Operational Availability of all clusters, of all vCenters. Can be up to one collection cycle old. See [Operational Availability](operational-availability.md#known-limitations). |
 | 🟢 Metric | `vCommunity\|Availability\|ESXi Hosts Operational Availability` | The average ESXi Host Operational Availability of all hosts, of all vCenters. Same limitation. |
 | 🟢 Metric | `vCommunity\|Network\|Total Network Speed Degradation` | The number of hosts below 100 % Network Speed Degradation, of all vCenters. Can be up to one collection cycle old. See [Network Speed Degradation](network-speed-degradation.md#known-limitations). |
-| 🟢 Metric | `vCommunity\|Worst Cluster Risk` | The lowest Cluster Risk score of all clusters. Same limitation. |
+| 🟢 Metric | `vCommunity\|Worst Cluster Risk` | The highest Cluster Risk of all clusters. Same limitation. |
 
 [⬆ Back to top](#metrics--properties-reference)
 

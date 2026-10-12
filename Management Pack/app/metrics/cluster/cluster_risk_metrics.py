@@ -3,7 +3,9 @@
 
 What it is
 ----------
-One 0-100 % score per vSphere cluster. 100 is no risk. It is a leading
+One 0-100 % score per vSphere cluster. 0 is no risk, 100 is maximum risk:
+higher is worse, as the name says. It is the one KPI where higher is worse;
+the other KPIs are scores where 100 is best. It is a leading
 indicator: it warns before the VMs feel contention. It covers both capacity
 and performance. It is built from the 12 sub-metrics in METRICS below.
 
@@ -13,7 +15,7 @@ ESXi host, because one full host can hurt its VMs while the cluster average
 still looks fine.
 
 Published on the cluster as:
-    vCommunity|Cluster Risk|Cluster Risk            the KPI
+    vCommunity|Cluster Risk|Cluster Risk Score      the KPI
     vCommunity|Cluster Risk|<sub-metric name>       each of the 12 sub-metrics
 
 How it is calculated
@@ -26,8 +28,9 @@ How it is calculated
      all objects (utils/ops_inventory.py).
 2. Calculate every sub-metric for each host (host_risk_values), then keep the
    highest host for each sub-metric (cluster_risk_values).
-3. Score each value and combine the scores into the KPI. This step is the same
-   for every KPI and is explained in metrics/kpi_score.py.
+3. Score each value and combine the scores, as for every KPI (explained in
+   metrics/kpi_score.py). That gives a health score where 100 is best. The
+   published Cluster Risk is 100 minus that score (HIGHER_IS_WORSE).
 
 Where the limits come from
 --------------------------
@@ -61,6 +64,8 @@ KPI_NAME = "Cluster Risk"
 # The key of the KPI metric. It must differ from GROUP: VCF Operations rejects a metric key that equals
 # the key of its group. The metric is still shown as KPI_NAME.
 KPI_KEY = "Cluster Risk Score"
+# Published as 100 minus the score: 100 = maximum risk. See publish_kpi() in metrics/kpi_score.py.
+HIGHER_IS_WORSE = True
 
 # One row per sub-metric. The five numbers are the values where its score is 100, 75, 50, 25 and 0.
 # Every sub-metric here is "lower is better".
@@ -309,7 +314,8 @@ def collect_cluster_risk_metrics(
         values = cluster_risk_values(hosts, stats_by_host)
 
         # Step 3: publish the sub-metrics, then score them and publish the KPI.
-        no_data = publish_kpi(cluster_obj, GROUP, KPI_KEY, METRICS, PUBLISHED_METRICS, values).no_data
+        no_data = publish_kpi(cluster_obj, GROUP, KPI_KEY, METRICS, PUBLISHED_METRICS, values,
+                              higher_is_worse=HIGHER_IS_WORSE).no_data
         if no_data:
             logger.info(f"Cluster Risk for {cluster_name}: no data, so left out: {', '.join(no_data)}")
 

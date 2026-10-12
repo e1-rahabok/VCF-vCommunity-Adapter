@@ -8,10 +8,12 @@ across all vCenters. They are published on the vSphere World object, under vComm
 
     10th Percentile Cluster Performance   90 % of the clusters score at or above it
     Worst Cluster Performance             the lowest Cluster Performance score
-    10th Percentile Cluster Risk          90 % of the clusters score at or above it
-    Worst Cluster Risk                    the lowest Cluster Risk score
+    90th Percentile Cluster Risk          90 % of the clusters are at or below it
+    Worst Cluster Risk                    the highest Cluster Risk
 
-A score is "higher is better", so the bad end is the low end: the 10th percentile, not the 90th.
+Each takes the bad end. Cluster Performance is "higher is better", so the bad end is the low end: the 10th
+percentile and the lowest. Cluster Risk is "higher is worse", so the bad end is the high end: the 90th
+percentile and the highest.
 
 Where the scores come from
 --------------------------
@@ -29,6 +31,7 @@ from aria.ops.object import Object
 from aria.ops.suite_api_client import SuiteApiClient
 from constants.main import VCENTER_ADAPTER_KIND
 from metrics.cluster import cluster_performance_metrics, cluster_risk_metrics
+from metrics.vm_contention import percentile_90
 from utils.ops_stats import query_resources, read_latest_stats
 
 logger = logging.getLogger(__name__)
@@ -41,8 +44,8 @@ CLUSTER_RISK_SCORE = f"vCommunity|{cluster_risk_metrics.GROUP}|{cluster_risk_met
 METRICS = {
     "10th Percentile Cluster Performance": (CLUSTER_PERFORMANCE_SCORE, "10th percentile"),
     "Worst Cluster Performance":           (CLUSTER_PERFORMANCE_SCORE, "lowest"),
-    "10th Percentile Cluster Risk":        (CLUSTER_RISK_SCORE, "10th percentile"),
-    "Worst Cluster Risk":                  (CLUSTER_RISK_SCORE, "lowest"),
+    "90th Percentile Cluster Risk":        (CLUSTER_RISK_SCORE, "90th percentile"),
+    "Worst Cluster Risk":                  (CLUSTER_RISK_SCORE, "highest"),
 }
 
 
@@ -64,10 +67,16 @@ def summary_values(scores_by_cluster: Dict[str, Dict[str, float]]) -> Dict[str, 
     values = {}
     for name, (score_key, how) in METRICS.items():
         scores = [stats[score_key] for stats in scores_by_cluster.values() if score_key in stats]
-        if how == "10th percentile":
+        if not scores:
+            values[name] = None
+        elif how == "10th percentile":
             values[name] = percentile_10(scores)
+        elif how == "90th percentile":
+            values[name] = percentile_90(scores)
+        elif how == "lowest":
+            values[name] = min(scores)
         else:
-            values[name] = min(scores) if scores else None
+            values[name] = max(scores)
     return values
 
 

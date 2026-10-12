@@ -1,6 +1,6 @@
 # Cluster Risk KPI
 
-**Cluster Risk** is a single 0-100 % score for a vSphere cluster. 100 means no risk. It is a leading indicator: it warns before the VMs feel contention. It covers both capacity and performance.
+**Cluster Risk** is a single 0-100 % value for a vSphere cluster. **Higher is worse: 0 means no risk, 100 means maximum risk.** It is the only KPI of this pack where higher is worse. It is a leading indicator: it warns before the VMs feel contention. It covers both capacity and performance.
 
 - [Cluster Performance](cluster-performance-kpi.md) shows contention that is happening now.
 - Cluster Risk shows how close the cluster is to it.
@@ -14,6 +14,15 @@ All 13 metrics are published on the cluster object under `vCommunity|Cluster Ris
 Code: [`Management Pack/app/metrics/cluster/cluster_risk_metrics.py`](../Management%20Pack/app/metrics/cluster/cluster_risk_metrics.py)
 
 Source of the limits: [`Complex Metrics/vSphere Cluster Risk metric.png`](Complex%20Metrics/vSphere%20Cluster%20Risk%20metric.png)
+
+## Change in version 0.1.0: higher is worse
+
+Before version 0.1.0 of VCF vCommunity Adapter, Cluster Risk was published as a health score: 100 meant no risk. That contradicted its name. It is now inverted: **new value = 100 − old value**.
+
+- **History before the upgrade reads the opposite way.** A chart that spans the upgrade jumps from, say, 98 to 2 for the same healthy cluster.
+- **Thresholds set on the old value must be inverted.** An alert or a color range "below 25" becomes "above 75".
+- The 12 sub-metrics did not change.
+- On vSphere World, "10th Percentile Cluster Risk" is replaced by "90th Percentile Cluster Risk", and "Worst Cluster Risk" is now the highest value. See [vSphere World Cluster Metrics](vsphere-world-metrics.md).
 
 ## The 12 sub-metrics and their limits
 
@@ -98,7 +107,8 @@ The Monster VM ratios compare the largest VM with the size at which a VM becomes
 The same way as every KPI:
 
 1. Each sub-metric value gets a score from 100 to 0, depending on the tier it is in.
-2. The KPI is the weighted average of the scores. A sub-metric in the red tier weighs 8×, orange 4×, yellow 2×, green 1×.
+2. The weighted average of the scores is a health score, where 100 is best. A sub-metric in the red tier weighs 8×, orange 4×, yellow 2×, green 1×.
+3. **Cluster Risk = 100 − that health score**, so that higher means more risk.
 
 The full explanation, with a worked example, is in [Cluster Performance KPI](cluster-performance-kpi.md#step-2-score-each-sub-metric). The code is [`kpi_score.py`](../Management%20Pack/app/metrics/kpi_score.py).
 
@@ -109,17 +119,17 @@ Two hosts, each with 32 cores (64 threads) and 512 GB of DRAM. Each runs four VM
 - **Healthy.** Both hosts at 40 % thread and 80 % core utilization (one running thread per running core), 50 % memory consumed, nothing ballooned, swapped or reserved.
   - Left out: the six rows in their excluded green, and Memory Tiering Latency (these hosts have no memory tiering).
   - Counted: CPU Imbalance 1 (100), Ballooned 0 (100), Zip Swap 0 (100), CPU Monster VM `4 / 16` = 0.25 (93.75), Memory Monster VM `16 / 204.8` = 0.08 (98).
-  - KPI = `(100 + 100 + 100 + 93.75 + 98) / 5` = **98.35**.
+  - Health = `(100 + 100 + 100 + 93.75 + 98) / 5` = 98.35. Cluster Risk = `100 − 98.35` = **1.65**.
 - **One busy host.** Host 1 at 90 % thread and 100 % core utilization. Host 2 at 30 % and 60 %.
   - CPU Thread Utilization 90 leaves its excluded green. It is at the start of red: 25 with weight 8.
   - CPU Imbalance of host 1 is `57.6 running threads / 32 running cores` = 1.8. Host 2 is 1.0. The worst, 1.8, is halfway through red: 12.5 with weight 8.
-  - KPI = `(25 × 8 + 12.5 × 8 + 100 + 100 + 93.75 + 98) / (8 + 8 + 4)` = **34.59**.
+  - Health = `(25 × 8 + 12.5 × 8 + 100 + 100 + 93.75 + 98) / (8 + 8 + 4)` = 34.59. Cluster Risk = `100 − 34.59` = **65.41**.
 
 The same examples are checked by the tests in [`Management Pack/tests/test_cluster_risk_metrics.py`](../Management%20Pack/tests/test_cluster_risk_metrics.py).
 
 ## Missing data
 
-A sub-metric with no data is not published for that cycle, and it is left out of the KPI. It is never counted as 0, because 0 means "no risk".
+A sub-metric with no data is not published for that cycle, and it is left out of the KPI. It is never counted as 0, because a sub-metric value of 0 means "no risk".
 
 - If the stats request to VCF Operations fails, only the property-based rows (the two Monster VM ratios) are scored.
 - A host that VCF Operations does not know is left out.

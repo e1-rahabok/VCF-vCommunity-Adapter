@@ -33,12 +33,14 @@ def test_window_ends_at_the_last_time_the_clock_passed_the_setting():
     assert dc.window_end_text(NOW) == "2026-10-12 09:30 UTC"
 
 
-def test_95th_percentile_ignores_the_highest_5_percent():
-    # 288 samples of a day: 1..288. Position ceil(0.95 x 288) = 274.
-    assert dc.percentile_95([float(n) for n in range(288, 0, -1)]) == 274.0
+def test_percentile_ignores_the_highest_samples():
+    day = [float(n) for n in range(288, 0, -1)]
+    # 95th: position ceil(0.95 x 288) = 274. 99th: position ceil(0.99 x 288) = 286.
+    assert dc.percentile(day, 95) == 274.0
+    assert dc.percentile(day, 99) == 286.0
     # One spike in a quiet day is ignored.
-    assert dc.percentile_95([1.0] * 287 + [50.0]) == 1.0
-    assert dc.percentile_95([]) is None
+    assert dc.percentile([1.0] * 287 + [50.0], 95) == 1.0
+    assert dc.percentile([], 95) is None
 
 
 def samples(risk, performance, cpu, memory):
@@ -47,22 +49,37 @@ def samples(risk, performance, cpu, memory):
 
 
 def test_utilization_is_the_higher_of_cpu_and_memory():
-    values = dc.daily_values(samples([90.0], [95.0], [40.0], [70.0]))
-    assert values == {dc.RISK: 90.0, dc.PERFORMANCE: 95.0, dc.UTILIZATION: 70.0, dc.RESULT: 0}
+    values = dc.daily_values(samples([10.0], [95.0], [40.0], [70.0]))
+    assert values == {dc.RISK: 10.0, dc.PERFORMANCE: 95.0, dc.UTILIZATION: 70.0, dc.CLOSE_FOR_BUSINESS: 0}
 
 
-def test_result_follows_the_placeholder_rule():
-    assert dc.daily_values(samples([30.0], [95.0], [40.0], [40.0]))[dc.RESULT] == 1   # risk too low
-    assert dc.daily_values(samples([90.0], [95.0], [85.0], [40.0]))[dc.RESULT] == 1   # utilization too high
+def test_close_for_business_rules():
+    # decide(risk, performance, utilization)
+    # Rule 1: utilization above 95, or performance below 25.
+    assert dc.decide(0.0, 99.0, 96.0) == 1
+    assert dc.decide(0.0, 24.0, 10.0) == 1
+    # Rule 2: utilization above 75 AND performance below 50 AND risk above 75.
+    assert dc.decide(80.0, 40.0, 80.0) == 1
+    assert dc.decide(70.0, 40.0, 80.0) == 0      # risk not above 75
+    assert dc.decide(80.0, 60.0, 80.0) == 0      # performance not below 50
+    assert dc.decide(80.0, 40.0, 70.0) == 0      # utilization not above 75
+    # Healthy.
+    assert dc.decide(10.0, 95.0, 50.0) == 0
 
 
-def test_no_result_when_an_input_has_no_data():
+def test_limits_are_strict():
+    assert dc.decide(0.0, 99.0, 95.0) == 0       # 95 is not above 95
+    assert dc.decide(0.0, 25.0, 10.0) == 0       # 25 is not below 25
+    assert dc.decide(75.0, 49.0, 80.0) == 0      # 75 is not above 75
+
+
+def test_no_close_for_business_when_an_input_has_no_data():
     values = dc.daily_values({dc.CLUSTER_RISK_SCORE: [90.0], dc.CLUSTER_PERFORMANCE_SCORE: [95.0]})
-    assert values == {dc.RISK: 90.0, dc.PERFORMANCE: 95.0, dc.UTILIZATION: None, dc.RESULT: None}
+    assert values == {dc.RISK: 90.0, dc.PERFORMANCE: 95.0, dc.UTILIZATION: None, dc.CLOSE_FOR_BUSINESS: None}
 
 
 CLUSTERS = {"ClusterComputeResource": [("cl-1", "cluster-a", "domain-c1"), ("cl-2", "cluster-b", "domain-c2")]}
-HISTORY = {"cl-1": samples([90.0, 80.0], [95.0], [40.0], [70.0]), "cl-2": samples([20.0], [95.0], [40.0], [70.0])}
+HISTORY = {"cl-1": samples([10.0, 20.0], [95.0], [40.0], [70.0]), "cl-2": samples([80.0], [20.0], [40.0], [70.0])}
 
 
 def test_only_clusters_without_the_latest_window_are_due():
@@ -109,10 +126,10 @@ def test_publish():
     dc.publish(cluster, results["domain-c2"])
     group = f"vCommunity|{dc.GROUP}"
     assert cluster.properties == {
-        f"{group}|95th Percentile Cluster Risk": 20.0,
-        f"{group}|95th Percentile Cluster Performance": 95.0,
-        f"{group}|95th Percentile Cluster Utilization": 70.0,
-        f"{group}|Result": 1,
+        f"{group}|95th Percentile Cluster Risk": 80.0,
+        f"{group}|95th Percentile Cluster Performance": 20.0,
+        f"{group}|99th Percentile Capacity Utilization": 70.0,
+        f"{group}|Close for Business": 1,
         f"{group}|Window End": "2026-10-12 00:00 UTC",
     }
 

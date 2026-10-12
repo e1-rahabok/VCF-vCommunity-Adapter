@@ -199,7 +199,7 @@ def get_adapter_definition() -> AdapterDefinition:
         dailyCheck = vCommunity.define_group(daily_cluster_check.GROUP, daily_cluster_check.GROUP)
         for name in (daily_cluster_check.RISK, daily_cluster_check.PERFORMANCE, daily_cluster_check.UTILIZATION):
             dailyCheck.define_numeric_property(name, name, unit=Units.RATIO.PERCENT)
-        dailyCheck.define_numeric_property(daily_cluster_check.RESULT, daily_cluster_check.RESULT)
+        dailyCheck.define_numeric_property(daily_cluster_check.CLOSE_FOR_BUSINESS, daily_cluster_check.CLOSE_FOR_BUSINESS)
         dailyCheck.define_string_property(daily_cluster_check.WINDOW_END, daily_cluster_check.WINDOW_END)
 
         vSphereHA = clusterConfiguration.define_group("vSphere HA", "vSphere HA")

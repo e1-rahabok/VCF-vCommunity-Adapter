@@ -1,16 +1,16 @@
 #  Copyright 2026 VCF Operations vCommunity Management Pack
-"""Daily Cluster Check: once a day, a 0 or 1 per cluster, from the 95th percentile of the last 24 hours.
+"""Daily Cluster Check: once a day, per cluster, whether it is closed for business (full for new VMs).
 
 What it is
 ----------
 Once a day, at the time set in the account's Advanced Settings ("Daily Cluster Check Time", UTC), every cluster
 gets these properties, under vCommunity|Daily Cluster Check:
 
-    95th Percentile Cluster Risk           of Cluster Risk Score, over the 24 hours
-    95th Percentile Cluster Performance    of Cluster Performance Score, over the 24 hours
-    95th Percentile Cluster Utilization    max(95th percentile of CPU utilization, of memory utilization)
-    Result                                 0 or 1, from the three values above. See decide().
-    Window End                             the end of the 24 hours, such as "2026-10-12 00:00 UTC"
+    95th Percentile Cluster Risk             of Cluster Risk Score (higher is worse), over the 24 hours
+    95th Percentile Cluster Performance      of Cluster Performance Score (higher is better), over the 24 hours
+    99th Percentile Capacity Utilization     max(99th percentile of CPU utilization, of memory utilization)
+    Close for Business                       1 = the cluster is full, do not place new VMs. 0 = open. See decide().
+    Window End                               the end of the 24 hours, such as "2026-10-12 00:00 UTC"
 
 The 24 hours end at the set time, not when the calculation runs. So every cluster has the same window, even
 when it is calculated a few cycles later.
@@ -49,7 +49,7 @@ DEFAULT_TIME = "00:00"
 CLUSTER_RISK_SCORE = f"vCommunity|{cluster_risk_metrics.GROUP}|{cluster_risk_metrics.KPI_KEY}"
 CLUSTER_PERFORMANCE_SCORE = f"vCommunity|{cluster_performance_metrics.GROUP}|{cluster_performance_metrics.KPI_KEY}"
 # PLACEHOLDER: the CPU and memory utilization (%) stat keys of a cluster are still to be supplied.
-# Until then they return no data, so Cluster Utilization and Result are not published.
+# Until then they return no data, so Capacity Utilization and Close for Business are not published.
 CPU_UTILIZATION = "PLACEHOLDER|CPU Utilization"
 MEMORY_UTILIZATION = "PLACEHOLDER|Memory Utilization"
 STAT_KEYS = [CLUSTER_RISK_SCORE, CLUSTER_PERFORMANCE_SCORE, CPU_UTILIZATION, MEMORY_UTILIZATION]
@@ -57,15 +57,17 @@ STAT_KEYS = [CLUSTER_RISK_SCORE, CLUSTER_PERFORMANCE_SCORE, CPU_UTILIZATION, MEM
 # The published properties.
 RISK = "95th Percentile Cluster Risk"
 PERFORMANCE = "95th Percentile Cluster Performance"
-UTILIZATION = "95th Percentile Cluster Utilization"
-RESULT = "Result"
+UTILIZATION = "99th Percentile Capacity Utilization"
+CLOSE_FOR_BUSINESS = "Close for Business"
 WINDOW_END = "Window End"
 WINDOW_END_KEY = f"vCommunity|{GROUP}|{WINDOW_END}"
 
-# PLACEHOLDER: the rule for Result is still to be supplied. Until then: 1 when any value crosses its limit.
-RISK_LIMIT = 50.0           # Result 1 below this
-PERFORMANCE_LIMIT = 50.0    # Result 1 below this
-UTILIZATION_LIMIT = 80.0    # Result 1 above this
+# The limits of decide(), in %. All comparisons are strict: a value equal to a limit does not cross it.
+FULL_UTILIZATION = 95.0          # rule 1: Capacity Utilization above this
+POOR_PERFORMANCE = 25.0          # rule 1: Cluster Performance below this
+HIGH_UTILIZATION = 75.0          # rule 2: Capacity Utilization above this, and
+LOW_PERFORMANCE = 50.0           #         Cluster Performance below this, and
+HIGH_RISK = 75.0                 #         Cluster Risk above this
 
 # Load on VCF Operations. A day of 5-minute samples is 288 per stat, 4 stats per cluster.
 MAX_CLUSTERS_PER_CYCLE = 500
@@ -76,7 +78,7 @@ WINDOW = timedelta(hours=24)
 
 class DailyResult(NamedTuple):
     """What is published on one cluster. A value of None is not published: it had no data."""
-    values: Dict[str, Optional[float]]     # RISK, PERFORMANCE, UTILIZATION, RESULT
+    values: Dict[str, Optional[float]]     # RISK, PERFORMANCE, UTILIZATION, CLOSE_FOR_BUSINESS
     window_end: str
 
 
@@ -111,37 +113,45 @@ def window_end_text(window_end: datetime) -> str:
 # Calculation. No API calls here either.
 # ---------------------------------------------------------------------------
 
-def percentile_95(samples: List[float]) -> Optional[float]:
-    """The value that 95 % of the samples are at or below. None when there are none.
+def percentile(samples: List[float], percent: float) -> Optional[float]:
+    """The value that percent % of the samples are at or below. None when there are none.
 
     Nearest-rank method, as percentile_90() in metrics/vm_contention.py: sort the samples and take the one at
-    position 95 % of the count, rounded up. With 288 samples that is the 274th lowest: the 14 highest are ignored.
+    position percent % of the count, rounded up. With 288 samples, the 95th percentile is the 274th lowest (the
+    14 highest are ignored), and the 99th is the 286th lowest (the 2 highest are ignored).
     """
     if not samples:
         return None
-    position = math.ceil(0.95 * len(samples))
+    position = math.ceil(percent / 100.0 * len(samples))
     return sorted(samples)[position - 1]
 
 
 def decide(risk: float, performance: float, utilization: float) -> int:
-    """Result. PLACEHOLDER rule, see RISK_LIMIT."""
-    if risk < RISK_LIMIT or performance < PERFORMANCE_LIMIT or utilization > UTILIZATION_LIMIT:
+    """Close for Business: 1 when the cluster is full for new VMs, else 0.
+
+    1. Full or slow: Capacity Utilization above 95, or Cluster Performance below 25.
+    2. Busy, slow and at risk, all three: Capacity Utilization above 75, Cluster Performance below 50,
+       and Cluster Risk above 75.
+    """
+    if utilization > FULL_UTILIZATION or performance < POOR_PERFORMANCE:
+        return 1
+    if utilization > HIGH_UTILIZATION and performance < LOW_PERFORMANCE and risk > HIGH_RISK:
         return 1
     return 0
 
 
 def daily_values(samples: Dict[str, List[float]]) -> Dict[str, Optional[float]]:
     """The published values of one cluster, from its 24 hours of samples. None means "no data"."""
-    risk = percentile_95(samples.get(CLUSTER_RISK_SCORE, []))
-    performance = percentile_95(samples.get(CLUSTER_PERFORMANCE_SCORE, []))
-    cpu = percentile_95(samples.get(CPU_UTILIZATION, []))
-    memory = percentile_95(samples.get(MEMORY_UTILIZATION, []))
+    risk = percentile(samples.get(CLUSTER_RISK_SCORE, []), 95)
+    performance = percentile(samples.get(CLUSTER_PERFORMANCE_SCORE, []), 95)
+    cpu = percentile(samples.get(CPU_UTILIZATION, []), 99)
+    memory = percentile(samples.get(MEMORY_UTILIZATION, []), 99)
     utilization = max(cpu, memory) if cpu is not None and memory is not None else None
 
-    # Result only when all three are there. A missing value is never taken as 0.
+    # Close for Business only when all three are there. A missing value is never taken as 0.
     inputs = [risk, performance, utilization]
-    result = decide(risk, performance, utilization) if None not in inputs else None
-    return {RISK: risk, PERFORMANCE: performance, UTILIZATION: utilization, RESULT: result}
+    close = decide(risk, performance, utilization) if None not in inputs else None
+    return {RISK: risk, PERFORMANCE: performance, UTILIZATION: utilization, CLOSE_FOR_BUSINESS: close}
 
 
 # ---------------------------------------------------------------------------

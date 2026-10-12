@@ -25,12 +25,15 @@ All are published on the vSphere World object under `vCommunity`, in %.
 | :--- | :--- |
 | `vCommunity\|10th Percentile Cluster Performance` | The Cluster Performance score that 90 % of the clusters are at or above. |
 | `vCommunity\|Worst Cluster Performance` | The lowest Cluster Performance score of any cluster. |
-| `vCommunity\|10th Percentile Cluster Risk` | The Cluster Risk score that 90 % of the clusters are at or above. |
-| `vCommunity\|Worst Cluster Risk` | The lowest Cluster Risk score of any cluster. |
+| `vCommunity\|90th Percentile Cluster Risk` | The Cluster Risk that 90 % of the clusters are at or below. |
+| `vCommunity\|Worst Cluster Risk` | The highest Cluster Risk of any cluster. |
 
-A score is "higher is better", so the bad end is the low end. That is why these use the 10th percentile, where the cluster KPIs use the 90th percentile of values such as latency.
+Each metric takes the bad end:
 
-**10th percentile.** The clusters are sorted, and the one at position 10 % of the count, rounded up, is taken (nearest rank, the same method as the 90th percentile of the cluster KPIs). With 20 clusters that is the 2nd lowest. With 10 clusters or fewer it is the lowest, the same as the worst cluster.
+- Cluster Performance is "higher is better", so the bad end is the low end: the 10th percentile and the lowest.
+- Cluster Risk is "higher is worse" (100 = maximum risk), so the bad end is the high end: the 90th percentile and the highest. "10th Percentile Cluster Risk" was replaced by "90th Percentile Cluster Risk" when Cluster Risk was inverted in version 0.1.0. See [Cluster Risk KPI](cluster-risk-kpi.md#change-in-version-010-higher-is-worse).
+
+**10th and 90th percentile.** The clusters are sorted, and the one at position 10 % (or 90 %) of the count, rounded up, is taken (nearest rank, the same method as the cluster KPIs). With 20 clusters that is the 2nd lowest (or the 18th lowest). With 10 clusters or fewer it is the lowest (or the highest), the same as the worst cluster.
 
 ## Example
 

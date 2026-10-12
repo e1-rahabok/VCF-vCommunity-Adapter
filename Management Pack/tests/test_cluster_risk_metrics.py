@@ -161,11 +161,11 @@ def test_healthy_cluster():
     # Counted: imbalance 1 (100), ballooned 0 (100), zip swap 0 (100),
     # CPU monster 4 vCPU / (half of 32 cores) = 0.25 (93.75),
     # memory monster 16 GB / (40 % of 512 GB) = 0.08 after rounding (98.0).
-    # KPI = (100 + 100 + 100 + 93.75 + 98) / 5 = 98.35
+    # Health = (100 + 100 + 100 + 93.75 + 98) / 5 = 98.35. Risk is published higher-is-worse: 100 - 98.35 = 1.65
     assert published["Worst ESXi CPU Imbalance"] == 1.0
     assert published["Highest CPU Monster VM to Host Ratio"] == 0.25
     assert "Worst ESXi Memory Tiering Latency" not in published
-    assert published[cr.KPI_KEY] == 98.35
+    assert published[cr.KPI_KEY] == 1.65
 
 
 def test_the_worst_host_is_taken():
@@ -180,8 +180,9 @@ def test_a_busy_host_leaves_its_excluded_green_and_counts():
     # host-1: 57.6 running threads on 32 running cores = 1.8. host-2: 19.2 on 19.2 = 1.0. The worst is kept.
     assert published["Worst ESXi CPU Imbalance"] == 1.8                  # halfway through red: 12.5 with weight 8
     # The other counted rows: ballooned and zip swap (100), CPU monster (93.75), memory monster (98.0).
-    # KPI = (25 x 8 + 12.5 x 8 + 100 + 100 + 93.75 + 98) / (8 + 8 + 4) = 691.75 / 20 = 34.59
-    assert published[cr.KPI_KEY] == 34.59
+    # Health = (25 x 8 + 12.5 x 8 + 100 + 100 + 93.75 + 98) / (8 + 8 + 4) = 691.75 / 20 = 34.59
+    # Risk = 100 - 34.59 = 65.41
+    assert published[cr.KPI_KEY] == 65.41
 
 
 def test_failed_stats_call_still_scores_what_the_properties_give():
@@ -204,3 +205,10 @@ def test_dram_capacity_falls_back_to_host_provisioned_memory():
     assert cr.dram_capacity_kb({}) is None
     # The memory shares use the fallback too: 5.12 GB ballooned of 512 GB is 1 %.
     assert cr.memory_ballooned_pct({cr.MEM_BALLOONED: 5.12 * GB_IN_KB, cr.MEM_DRAM_CAPACITY_FALLBACK: 512.0 * GB_IN_KB}) == 1.0
+
+
+def test_risk_is_higher_is_worse():
+    # No risk at all publishes 0, not 100.
+    published = collect(HEALTHY)
+    assert 0.0 <= published[cr.KPI_KEY] < 50.0
+    assert cr.HIGHER_IS_WORSE

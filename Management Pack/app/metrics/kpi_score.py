@@ -151,19 +151,22 @@ def has_all(stats: Dict[str, float], stat_keys: List[str]) -> bool:
 
 class PublishedKpi(NamedTuple):
     """What publish_kpi() published for one object."""
-    score: Optional[float]      # the KPI, or None when no sub-metric had data
+    score: Optional[float]      # the KPI as published, or None when no sub-metric had data
     no_data: List[str]          # names of the sub-metrics with no data, left out of the KPI
 
 
 def publish_kpi(
     obj, group: str, kpi_key: str, metrics: List[Metric], published_metrics: List[Metric],
-    values: Dict[str, Optional[float]],
+    values: Dict[str, Optional[float]], higher_is_worse: bool = False,
 ) -> PublishedKpi:
     """Publishes the sub-metrics and the KPI of one object. Returns the KPI and the sub-metrics with no data.
 
     obj is the VCF Operations object: a cluster, host or VM. group, kpi_key, metrics and published_metrics
     are the GROUP, KPI_KEY, METRICS and PUBLISHED_METRICS of the KPI module.
     values maps each sub-metric name to its value, None meaning "no data".
+
+    higher_is_worse: publish 100 - score, for a KPI whose name says "higher is worse", such as Cluster Risk
+    (100 = maximum risk). The scoring above is unchanged; only the published number is flipped.
     """
     # Drop the sub-metrics with no data, and round the others to two decimals.
     # Round first, so the KPI is computed from exactly the numbers that are published.
@@ -176,6 +179,8 @@ def publish_kpi(
 
     # Score them all and publish the KPI. No KPI when no sub-metric has data.
     score = kpi_score(metrics, values)
+    if score is not None and higher_is_worse:
+        score = round(100.0 - score, 2)
     if score is not None:
         obj.with_metric(f"vCommunity|{group}|{kpi_key}", score)
 

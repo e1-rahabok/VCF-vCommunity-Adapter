@@ -37,8 +37,8 @@ def test_summary_of_all_clusters():
     assert cs.summary_values(scores) == {
         "10th Percentile Cluster Performance": 50.0,
         "Worst Cluster Performance": 50.0,
-        "10th Percentile Cluster Risk": 19.16,
-        "Worst Cluster Risk": 19.16,
+        "90th Percentile Cluster Risk": 75.0,      # Risk is higher-is-worse: the high end
+        "Worst Cluster Risk": 75.0,
     }
 
 
@@ -58,8 +58,8 @@ def test_reads_the_clusters_of_all_vcenters_and_publishes_on_vsphere_world():
     assert world.metrics == {
         "vCommunity|10th Percentile Cluster Performance": 86.35,
         "vCommunity|Worst Cluster Performance": 86.35,
-        "vCommunity|10th Percentile Cluster Risk": 19.16,
-        "vCommunity|Worst Cluster Risk": 19.16,
+        "vCommunity|90th Percentile Cluster Risk": 75.0,
+        "vCommunity|Worst Cluster Risk": 75.0,
     }
 
 
