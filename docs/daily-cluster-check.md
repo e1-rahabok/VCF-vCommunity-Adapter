@@ -15,7 +15,8 @@ Code: [`Management Pack/app/metrics/cluster/daily_cluster_check.py`](../Manageme
 
 > **Read this before using the properties.**
 
-- **Not complete yet: the utilization stat keys are placeholders.** The CPU and memory utilization keys of a cluster are still to be supplied (`CPU_UTILIZATION`, `MEMORY_UTILIZATION`). Until then, Capacity Utilization and Close for Business are not published.
+- **Capacity Utilization has its own limitations**, among them: all hosts of a cluster are assumed to be the same size, and it can be above 100 %. See [Capacity Utilization](capacity-utilization.md#known-limitations).
+- **The first day after the upgrade has less history.** Capacity Utilization is a new metric, so the first check after the upgrade covers only the hours since then.
 - **The time is in UTC.** There is no time zone setting. For 02:00 in Singapore (UTC+8), enter `18:00`.
 - **The result can come up to a few cycles late.** The calculation runs in the first collection cycle (every 5 minutes) after the set time. With more than 500 due clusters in one vCenter, the rest follow in the next cycles: 2,000 clusters in one vCenter take 4 cycles, about 20 minutes. The 24-hour window is still the same for all.
 - **A value with no data keeps yesterday's value.** VCF Operations keeps a property until it is set again. When a stat has no data for the 24 hours, its value is not published, and the property still shows the previous day's. Check **Window End** to see which day the values are for: it is always set.
@@ -29,7 +30,7 @@ On every vSphere cluster, under `vCommunity|Daily Cluster Check`. Properties, no
 
 | Property | Calculation |
 | :--- | :--- |
-| `99th Percentile Capacity Utilization` (%) | max(99th percentile of CPU utilization, 99th percentile of memory utilization) over the 24 hours. |
+| `99th Percentile Capacity Utilization` (%) | max(99th percentile of `vCommunity\|Capacity\|CPU Utilization`, 99th percentile of `vCommunity\|Capacity\|Memory Utilization`) over the 24 hours. See [Capacity Utilization](capacity-utilization.md). Can be above 100 %. |
 | `95th Percentile Cluster Performance` (%) | 95th percentile of `vCommunity\|Cluster Performance\|Cluster Performance Score` over the 24 hours. Higher is better. |
 | `95th Percentile Cluster Risk` (%) | 95th percentile of `vCommunity\|Cluster Risk\|Cluster Risk Score` over the 24 hours. Higher is worse. |
 | `Close for Business` | 1: the cluster is full, do not place new VMs. 0: open. From the three values above, see [The rule](#the-rule). Not published when one of them has no data. |

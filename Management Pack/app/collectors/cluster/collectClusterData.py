@@ -18,9 +18,10 @@ from properties.cluster.dpm_properties import collect_dpm_properties
 from properties.cluster.cluster_configuration_properties import collect_cluster_configuration_properties
 from metrics.cluster.cluster_performance_metrics import collect_cluster_performance_metrics
 from metrics.cluster.cluster_risk_metrics import collect_cluster_risk_metrics, HostInventory
-from utils.ops_inventory import read_hosts, read_vms, powered_on_vms_by_host, hosts_by_cluster
+from utils.ops_inventory import read_hosts, read_vms, powered_on_vms_by_host, hosts_by_cluster, read_cluster_ha, ClusterHa
+from utils.ops_stats import query_resources
 from metrics.availability.operational_availability import OperationalAvailability, NO_DATA, CLUSTER_METRIC, publish
-from metrics.cluster import daily_cluster_check
+from metrics.cluster import daily_cluster_check, capacity_utilization
 from pyVmomi import vim
 
 logger = logging.getLogger(__name__)
@@ -77,6 +78,14 @@ def collect_cluster_data(
     # powered-on VMs run on each host, with their sizes. See utils/ops_inventory.py.
     hosts_in_cluster = hosts_by_cluster(read_hosts(suite_api_client, adapter_instance_id))
     vms_on_host = powered_on_vms_by_host(read_vms(suite_api_client, adapter_instance_id))
+    # Host count and HA failover level of every cluster, for Capacity Utilization.
+    try:
+        ha_by_cluster = read_cluster_ha(
+            suite_api_client,
+            query_resources(suite_api_client, VCENTER_ADAPTER_KIND, "ClusterComputeResource", adapter_instance_id))
+    except Exception as e:
+        logger.warning(f"Failed to read the cluster HA failover levels, so no Capacity Utilization - {repr(e)}")
+        ha_by_cluster = None
 
     # Daily Cluster Check: only the clusters due this cycle. See metrics/cluster/daily_cluster_check.py.
     try:
@@ -119,7 +128,13 @@ def collect_cluster_data(
                 HostInventory(host.id, host.cores, host.threads, vms_on_host.get(host.name, []))
                 for host in cluster_hosts
             ]
-            collect_cluster_risk_metrics(cluster_obj, cluster_name, hosts_inventory, suite_api_client)
+            stats_by_host = collect_cluster_risk_metrics(cluster_obj, cluster_name, hosts_inventory, suite_api_client)
+
+            # Capacity Utilization, from the same host stats. See metrics/cluster/capacity_utilization.py.
+            if ha_by_cluster is not None and stats_by_host:
+                ha = ha_by_cluster.get(cluster_obj.get_key().name, ClusterHa(None, None))
+                capacity_utilization.publish(cluster_obj, capacity_utilization.utilization_values(
+                    [host.id for host in cluster_hosts], stats_by_host, ha))
 
             # Operational Availability, read once per cycle for the whole vCenter by the adapter.
             publish(cluster_obj, CLUSTER_METRIC, availability.by_cluster.get(cluster_obj.get_key().name))

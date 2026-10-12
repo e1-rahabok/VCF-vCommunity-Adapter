@@ -301,11 +301,14 @@ def cluster_risk_values(
 
 def collect_cluster_risk_metrics(
     cluster_obj: Object, cluster_name: str, hosts: List[HostInventory], suite_api_client: SuiteApiClient
-) -> None:
+) -> Dict[str, Dict[str, float]]:
     """Publishes the sub-metrics in METRICS, then the Cluster Risk KPI computed from them.
 
     hosts holds one HostInventory per ESXi host of the cluster that VCF Operations knows about.
+    Returns the host stats it read, {host id: {stat key: value}}, so that Capacity Utilization uses the same
+    values without reading them again. Empty when the read failed.
     """
+    stats_by_host = {}
     try:
         # Step 1: read the stats of all hosts of the cluster, in one request.
         stats_by_host = read_latest_stats(suite_api_client, [host.host_id for host in hosts], HOST_STATS)
@@ -322,3 +325,4 @@ def collect_cluster_risk_metrics(
     except Exception as e:
         # A failure here must not stop the collection of the other cluster data.
         logger.warning(f"Failed to retrieve vSphere Cluster Risk metrics for : {cluster_name} - {repr(e)}")
+    return stats_by_host

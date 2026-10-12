@@ -8,7 +8,8 @@ gets these properties, under vCommunity|Daily Cluster Check:
 
     95th Percentile Cluster Risk             of Cluster Risk Score (higher is worse), over the 24 hours
     95th Percentile Cluster Performance      of Cluster Performance Score (higher is better), over the 24 hours
-    99th Percentile Capacity Utilization     max(99th percentile of CPU utilization, of memory utilization)
+    99th Percentile Capacity Utilization     max(99th percentile of vCommunity|Capacity|CPU Utilization,
+                                                 of vCommunity|Capacity|Memory Utilization). See capacity_utilization.py.
     Close for Business                       1 = the cluster is full, do not place new VMs. 0 = open. See decide().
     Window End                               the end of the 24 hours, such as "2026-10-12 00:00 UTC"
 
@@ -34,7 +35,7 @@ from datetime import datetime, timedelta, timezone
 from typing import Dict, List, NamedTuple, Optional, Tuple
 from aria.ops.suite_api_client import SuiteApiClient
 from constants.main import VCENTER_ADAPTER_KIND
-from metrics.cluster import cluster_performance_metrics, cluster_risk_metrics
+from metrics.cluster import cluster_performance_metrics, cluster_risk_metrics, capacity_utilization
 from utils.ops_stats import query_resources, read_latest_properties, read_stat_history
 
 logger = logging.getLogger(__name__)
@@ -48,10 +49,9 @@ DEFAULT_TIME = "00:00"
 # The inputs, as stored in VCF Operations.
 CLUSTER_RISK_SCORE = f"vCommunity|{cluster_risk_metrics.GROUP}|{cluster_risk_metrics.KPI_KEY}"
 CLUSTER_PERFORMANCE_SCORE = f"vCommunity|{cluster_performance_metrics.GROUP}|{cluster_performance_metrics.KPI_KEY}"
-# PLACEHOLDER: the CPU and memory utilization (%) stat keys of a cluster are still to be supplied.
-# Until then they return no data, so Capacity Utilization and Close for Business are not published.
-CPU_UTILIZATION = "PLACEHOLDER|CPU Utilization"
-MEMORY_UTILIZATION = "PLACEHOLDER|Memory Utilization"
+# Cluster CPU and memory utilization against N - k hosts, published by this pack every cycle.
+CPU_UTILIZATION = f"vCommunity|{capacity_utilization.GROUP}|{capacity_utilization.CPU}"
+MEMORY_UTILIZATION = f"vCommunity|{capacity_utilization.GROUP}|{capacity_utilization.MEMORY}"
 STAT_KEYS = [CLUSTER_RISK_SCORE, CLUSTER_PERFORMANCE_SCORE, CPU_UTILIZATION, MEMORY_UTILIZATION]
 
 # The published properties.

@@ -6,7 +6,7 @@ Every property and metric the vCommunity Management Pack pushes to VCF Operation
 
 **On this page:**
 
-- [Cluster](#cluster) (51 items)
+- [Cluster](#cluster) (53 items)
 - [Host](#host) (58 items)
 - [Datastore](#datastore) (9 items)
 - [Virtual Machine](#virtual-machine) (57 items)
@@ -67,7 +67,9 @@ Every property and metric the vCommunity Management Pack pushes to VCF Operation
 | 🟢 Metric | `vCommunity\|Cluster Risk\|Highest ESXi Memory Overcommit Ratio` | Memory allocated to the powered-on VMs per unit of host DRAM, on the highest host. |
 | 🟢 Metric | `vCommunity\|Cluster Risk\|Highest CPU Monster VM to Host Ratio` | vCPUs of the largest powered-on VM against half the physical cores of its host. Above 1 the VM is a monster. |
 | 🟢 Metric | `vCommunity\|Cluster Risk\|Highest Memory Monster VM to Host Ratio` | Memory of the largest powered-on VM against 40 % of its host's DRAM (not DRAM + NVMe) or 256 GB, whichever is smaller. Above 1 the VM is a monster. |
-| ⚪ Property | `vCommunity\|Daily Cluster Check\|99th Percentile Capacity Utilization` | max(99th percentile of CPU utilization, of memory utilization) (%) over the 24 hours to Window End. Set once a day. Placeholder stat keys for now. See [Daily Cluster Check](daily-cluster-check.md#known-limitations). |
+| 🟢 Metric | `vCommunity\|Capacity\|CPU Utilization` | Sum of the hosts' CPU Utilization (%) ÷ (N − k), k = HA host failures tolerated. Can be above 100 %. Assumes hosts of equal size. See [Capacity Utilization](capacity-utilization.md#known-limitations). |
+| 🟢 Metric | `vCommunity\|Capacity\|Memory Utilization` | Sum of the hosts' Memory Consumed (% of DRAM) ÷ (N − k). Same limitations. |
+| ⚪ Property | `vCommunity\|Daily Cluster Check\|99th Percentile Capacity Utilization` | max(99th percentile of Capacity CPU Utilization, of Capacity Memory Utilization) (%) over the 24 hours to Window End. Set once a day. See [Daily Cluster Check](daily-cluster-check.md#known-limitations). |
 | ⚪ Property | `vCommunity\|Daily Cluster Check\|95th Percentile Cluster Performance` | 95th percentile (%) of Cluster Performance Score over the same 24 hours. |
 | ⚪ Property | `vCommunity\|Daily Cluster Check\|95th Percentile Cluster Risk` | 95th percentile (%) of Cluster Risk Score (higher is worse) over the same 24 hours. |
 | ⚪ Property | `vCommunity\|Daily Cluster Check\|Close for Business` | 1: the cluster is full, do not place new VMs. 0: open to new VMs. See [the rule](daily-cluster-check.md#the-rule). |

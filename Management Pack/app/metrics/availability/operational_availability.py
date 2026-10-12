@@ -39,8 +39,9 @@ import logging
 from typing import Dict, List, NamedTuple, Optional
 from aria.ops.suite_api_client import SuiteApiClient
 from constants.main import VCENTER_ADAPTER_KIND
+from utils import ops_inventory
 from utils.ops_inventory import HostInfo, read_hosts
-from utils.ops_stats import as_number, query_resources, read_latest_properties, read_latest_stats
+from utils.ops_stats import query_resources, read_latest_properties, read_latest_stats
 
 logger = logging.getLogger(__name__)
 
@@ -59,9 +60,9 @@ HOST_CONDITIONS = {
 }
 POINTS_PER_CONDITION = 25.0
 
-# Cluster inputs.
-CLUSTER_HOST_COUNT = "summary|total_number_hosts"
-CLUSTER_FAILOVER_LEVEL = "configuration|dasConfig|hostFailoverLevel"
+# Cluster inputs, read by utils/ops_inventory.py.
+CLUSTER_HOST_COUNT = ops_inventory.CLUSTER_HOST_COUNT
+CLUSTER_FAILOVER_LEVEL = ops_inventory.CLUSTER_FAILOVER_LEVEL
 
 
 # ---------------------------------------------------------------------------
@@ -144,19 +145,13 @@ def read_host_availability(suite_api_client: SuiteApiClient, hosts: List[HostInf
 
 def read_cluster_availability(suite_api_client: SuiteApiClient, clusters, hosts: List[HostInfo],
                               by_host: Dict[str, float]) -> Dict[str, Optional[float]]:
-    """{cluster name: %}. The failover level is read as a stat, or as a property when it is stored as one."""
-    cluster_ids = [cluster.id for cluster in clusters]
-    stats = read_latest_stats(suite_api_client, cluster_ids, [CLUSTER_HOST_COUNT, CLUSTER_FAILOVER_LEVEL])
-    properties = read_latest_properties(suite_api_client, cluster_ids, [CLUSTER_FAILOVER_LEVEL])
-
+    """{cluster name: %}."""
+    ha_by_cluster = ops_inventory.read_cluster_ha(suite_api_client, clusters)
     by_cluster = {}
     for cluster in clusters:
-        cluster_stats = stats.get(cluster.id, {})
-        failover_level = cluster_stats.get(CLUSTER_FAILOVER_LEVEL)
-        if failover_level is None:
-            failover_level = as_number(properties.get(cluster.id, {}).get(CLUSTER_FAILOVER_LEVEL))
+        ha = ha_by_cluster[cluster.name]
         host_values = [by_host[host.id] for host in hosts if host.cluster_name == cluster.name]
-        by_cluster[cluster.name] = cluster_availability(host_values, cluster_stats.get(CLUSTER_HOST_COUNT), failover_level)
+        by_cluster[cluster.name] = cluster_availability(host_values, ha.host_count, ha.failover_level)
     return by_cluster
 
 

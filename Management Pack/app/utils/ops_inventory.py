@@ -12,7 +12,7 @@ vCenter, not an id. Names are unique inside one datacenter, so do not mix datace
 from typing import Dict, List, NamedTuple, Optional
 from aria.ops.suite_api_client import SuiteApiClient
 from constants.main import VCENTER_ADAPTER_KIND
-from utils.ops_stats import OpsResource, query_resources, read_latest_properties, as_number
+from utils.ops_stats import OpsResource, query_resources, read_latest_properties, read_latest_stats, as_number
 
 
 # --- VM properties ---
@@ -117,3 +117,37 @@ def hosts_by_cluster(hosts: List[HostInfo]) -> Dict[str, List[HostInfo]]:
         if host.cluster_name:
             by_cluster.setdefault(host.cluster_name, []).append(host)
     return by_cluster
+
+
+# ---------------------------------------------------------------------------
+# Cluster size and vSphere HA failover level.
+# ---------------------------------------------------------------------------
+
+CLUSTER_HOST_COUNT = "summary|total_number_hosts"
+# Host failures vSphere HA tolerates (N+k), as in the former "Clusters Availability" super metric.
+# No value when HA is off, or when admission control uses a percentage or dedicated failover hosts.
+CLUSTER_FAILOVER_LEVEL = "configuration|dasConfig|hostFailoverLevel"
+
+
+class ClusterHa(NamedTuple):
+    """Size and HA failover level of one cluster. None means "no data"."""
+    host_count: Optional[float]         # N
+    failover_level: Optional[float]     # k
+
+
+def read_cluster_ha(suite_api_client: SuiteApiClient, clusters: List[OpsResource]) -> Dict[str, ClusterHa]:
+    """{cluster name: ClusterHa}, in two requests for all clusters.
+
+    The failover level is read as a stat, or as a property when VCF Operations stores it as one.
+    """
+    cluster_ids = [cluster.id for cluster in clusters]
+    stats = read_latest_stats(suite_api_client, cluster_ids, [CLUSTER_HOST_COUNT, CLUSTER_FAILOVER_LEVEL])
+    properties = read_latest_properties(suite_api_client, cluster_ids, [CLUSTER_FAILOVER_LEVEL])
+    by_name = {}
+    for cluster in clusters:
+        cluster_stats = stats.get(cluster.id, {})
+        failover_level = cluster_stats.get(CLUSTER_FAILOVER_LEVEL)
+        if failover_level is None:
+            failover_level = as_number(properties.get(cluster.id, {}).get(CLUSTER_FAILOVER_LEVEL))
+        by_name[cluster.name] = ClusterHa(cluster_stats.get(CLUSTER_HOST_COUNT), failover_level)
+    return by_name

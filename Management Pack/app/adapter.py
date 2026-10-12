@@ -34,7 +34,7 @@ from collectors.datastore.collectDatastoreData import collect_datastore_data
 from collectors.vcenter.collectvCenterData import collect_vcenter_data
 from collectors.world.collectWorldData import collect_world_data
 from collectors.datacenter.collectDatacenterData import collect_datacenter_data
-from metrics.cluster import cluster_performance_metrics, cluster_risk_metrics, daily_cluster_check
+from metrics.cluster import cluster_performance_metrics, cluster_risk_metrics, daily_cluster_check, capacity_utilization
 from metrics.host import esxi_performance_metrics
 from metrics.vm import vm_performance_metrics, guest_os_performance_metrics, vm_guest_os_kpi, vm_shares
 from metrics.world import cluster_summary_metrics, availability_summary_metrics
@@ -194,6 +194,11 @@ def get_adapter_definition() -> AdapterDefinition:
         define_kpi(vCommunity, cluster_performance_metrics)
         define_kpi(vCommunity, cluster_risk_metrics)
         define_availability(vCommunity, operational_availability.CLUSTER_METRIC)
+
+        # Capacity Utilization: CPU and memory, against N - k hosts. See metrics/cluster/capacity_utilization.py.
+        capacity = vCommunity.define_group(capacity_utilization.GROUP, capacity_utilization.GROUP)
+        for name in capacity_utilization.METRICS:
+            capacity.define_metric(name, name, unit=Units.RATIO.PERCENT)
 
         # Daily Cluster Check: properties, set once a day. See metrics/cluster/daily_cluster_check.py.
         dailyCheck = vCommunity.define_group(daily_cluster_check.GROUP, daily_cluster_check.GROUP)
