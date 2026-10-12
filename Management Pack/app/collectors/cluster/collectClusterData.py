@@ -134,7 +134,7 @@ def collect_cluster_data(
             if ha_by_cluster is not None and stats_by_host:
                 ha = ha_by_cluster.get(cluster_obj.get_key().name, ClusterHa(None, None))
                 capacity_utilization.publish(cluster_obj, capacity_utilization.utilization_values(
-                    [host.id for host in cluster_hosts], stats_by_host, ha))
+                    cluster_hosts, stats_by_host, ha))
 
             # Operational Availability, read once per cycle for the whole vCenter by the adapter.
             publish(cluster_obj, CLUSTER_METRIC, availability.by_cluster.get(cluster_obj.get_key().name))

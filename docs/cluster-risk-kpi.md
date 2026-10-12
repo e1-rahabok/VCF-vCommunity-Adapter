@@ -147,6 +147,8 @@ The same examples are checked by the tests in [`Management Pack/tests/test_clust
 
 A sub-metric with no data is not published for that cycle, and it is left out of the KPI. It is never counted as 0, because a sub-metric value of 0 means "no risk".
 
+A stat whose latest value is more than 10 minutes old counts as no data. A last known value is never used. See [No stale values](how-it-works.md#no-stale-values).
+
 - If the stats request to VCF Operations fails, only the property-based rows (the two Monster VM ratios) are scored.
 - A host that VCF Operations does not know is left out.
 - Overcommit and Monster VM count powered-on VMs only.

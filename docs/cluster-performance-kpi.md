@@ -97,6 +97,8 @@ The same examples are checked by the tests in [`Management Pack/tests/test_clust
 
 A sub-metric with no data is not published for that collection cycle, and it is left out of the KPI. It is never counted as 0, because 0 means "perfect" and would make the cluster look healthier than it is.
 
+A stat whose latest value is more than 10 minutes old counts as no data. A last known value is never used. See [No stale values](how-it-works.md#no-stale-values).
+
 - The adapter log lists the sub-metrics that were left out, per cluster.
 - If no sub-metric has data, the KPI itself is not published.
 

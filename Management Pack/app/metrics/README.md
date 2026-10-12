@@ -6,6 +6,7 @@ There are two kinds of metric here:
 
 - **Plain metrics.** One value, read from vCenter and published. Example: DRS Score.
 - **KPIs.** One 0-100 % score per object, built from many sub-metrics. Most of this page is about KPIs. 100 is best, except Cluster Risk, which is published as 100 minus the score so that higher means more risk (`publish_kpi(..., higher_is_worse=True)`).
+- **No stale values.** `read_latest_stats()` drops any stat older than `STALE_AFTER_MINUTES` (10 minutes), so it counts as no data. Properties keep their last known value. See `docs/how-it-works.md`.
 
 ## The five KPIs
 
@@ -29,7 +30,7 @@ All five are called by a collector and declared in `adapter.py`. The VCF Operati
 | `cluster/cluster_performance_metrics.py` | Cluster Performance KPI. One score per cluster, from 9 sub-metrics. |
 | `cluster/cluster_risk_metrics.py` | Cluster Risk KPI. One score per cluster, from 12 sub-metrics. |
 | `cluster/drs_metrics.py` | DRS Score. A plain metric, not a KPI. |
-| `cluster/capacity_utilization.py` | Capacity CPU and Memory Utilization per cluster: sum of the host % ÷ (N − k HA hosts). Not a KPI. See `docs/capacity-utilization.md`, including its known limitations. |
+| `cluster/capacity_utilization.py` | Capacity CPU and Memory Utilization per cluster: sum of the running hosts' % ÷ (N − max(k, gone hosts)). Not a KPI. See `docs/capacity-utilization.md`, including its known limitations. |
 | `cluster/daily_cluster_check.py` | Daily Cluster Check: once a day, Close for Business per cluster from the 24-hour percentiles. See `docs/daily-cluster-check.md`. |
 | `vm/vm_performance_metrics.py` | VM Performance KPI. One score per powered-on VM, from 9 sub-metrics. Also reads the stats of Guest OS Performance. |
 | `vm/guest_os_performance_metrics.py` | Guest OS Performance KPI. One score per powered-on VM with VMware Tools, from 4 sub-metrics. |

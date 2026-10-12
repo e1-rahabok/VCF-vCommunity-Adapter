@@ -10,6 +10,7 @@ Code: [`Management Pack/app/metrics/network/network_speed_degradation.py`](../Ma
 
 > **Read this before using the metrics.**
 
+- **No stale values.** A stat whose latest value is more than 10 minutes old is treated as no data, so the metric is left blank rather than showing a value that no longer reflects reality. Properties keep their last known value. See [How It Works](how-it-works.md#no-stale-values).
 - **A NIC set to auto-negotiate may have no configured speed.** A NIC without a configured speed (none or 0) cannot be compared, so it is left out. A host whose NICs all auto-negotiate then has no value, and is not counted. *To verify on a live system:* the value of `net|configuredSpeed` for an auto-negotiating NIC.
 - **A NIC that is down is not counted as degraded.** A speed of 0 means the NIC is down or unused, which is a different problem from running slower. It is left out.
 - **A host without a value is not counted in Total Network Speed Degradation.** The count is a lower bound: there may be more degraded hosts among those that could not be checked.

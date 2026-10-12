@@ -28,7 +28,12 @@ HOST_PARENT_CLUSTER = "summary|parentCluster"   # name of the cluster the host i
 HOST_CORES = "hardware|cpuInfo|numCpuCores"     # physical cores, not threads
 HOST_HYPERTHREAD_ACTIVE = "config|hyperThread|active"
 HOST_HYPERTHREAD_AVAILABLE = "config|hyperThread|available"
-HOST_PROPERTY_KEYS = [HOST_PARENT_CLUSTER, HOST_CORES, HOST_HYPERTHREAD_ACTIVE, HOST_HYPERTHREAD_AVAILABLE]
+# Host state, for Capacity Utilization. Properties keep their last known value, which is what is wanted here.
+HOST_CONNECTION_STATE = "runtime|connectionState"      # "connected" when vCenter can reach the host
+HOST_MAINTENANCE_STATE = "runtime|maintenanceState"    # "inMaintenance" once fully in maintenance mode
+HOST_POWER_STATE = "runtime|powerState"
+HOST_PROPERTY_KEYS = [HOST_PARENT_CLUSTER, HOST_CORES, HOST_HYPERTHREAD_ACTIVE, HOST_HYPERTHREAD_AVAILABLE,
+                      HOST_CONNECTION_STATE, HOST_MAINTENANCE_STATE, HOST_POWER_STATE]
 
 
 class VmInfo(NamedTuple):
@@ -48,6 +53,9 @@ class HostInfo(NamedTuple):
     cluster_name: Optional[str]
     cores: Optional[float]      # physical cores
     threads: Optional[float]    # CPU threads: twice the cores with hyper-threading on, the cores without
+    connection_state: Optional[str] = None      # last known: properties keep their value
+    maintenance_state: Optional[str] = None
+    power_state: Optional[str] = None
 
 
 def read_vms(suite_api_client: SuiteApiClient, adapter_instance_id: str) -> List[VmInfo]:
@@ -86,6 +94,9 @@ def host_info(host: OpsResource, properties: Dict[str, str]) -> HostInfo:
         cluster_name=properties.get(HOST_PARENT_CLUSTER),
         cores=cores,
         threads=threads(cores, properties),
+        connection_state=properties.get(HOST_CONNECTION_STATE),
+        maintenance_state=properties.get(HOST_MAINTENANCE_STATE),
+        power_state=properties.get(HOST_POWER_STATE),
     )
 
 

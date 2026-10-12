@@ -12,6 +12,7 @@ Code: [`Management Pack/app/metrics/world/cluster_summary_metrics.py`](../Manage
 
 > **Read this before using the metrics.**
 
+- **No stale values.** A stat whose latest value is more than 10 minutes old is treated as no data, so the metric is left blank rather than showing a value that no longer reflects reality. Properties keep their last known value. See [How It Works](how-it-works.md#no-stale-values).
 - **A value can be up to one collection cycle old (5 minutes).** The metrics are built from the cluster scores already stored in VCF Operations. The score of a cluster is the one of its last collection. The clusters of the vCenter being collected get their new score in the same cycle, after the vSphere World metrics are read.
 - **Every account calculates the same values.** There is one vSphere World object, but one account of this pack per vCenter. So that the accounts do not overwrite each other with the clusters of their own vCenter only, every account reads the clusters of all vCenters and publishes the same values. With many vCenters, this is the same small calculation done once per account.
 - **The values can move slightly between two accounts' writes.** Two accounts that collect a few minutes apart can read different cluster scores, so the vSphere World values can change between their two writes.

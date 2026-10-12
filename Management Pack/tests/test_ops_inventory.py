@@ -146,10 +146,19 @@ class LiveStatsApi:
         }]})
 
 
-def test_a_live_latest_stats_response_keeps_only_the_requested_keys():
+def test_a_live_latest_stats_response_keeps_only_the_requested_keys(monkeypatch):
+    # The live response is from 1791707427853 (ms). Read it one minute later, so it is current.
+    monkeypatch.setattr(ops_stats.time, "time", lambda: 1791707427.853 + 60)
     stat_keys = ["cpu|utilization_average", "mem:DRAM|memory_tier_total_capacity"]
     stats = ops_stats.read_latest_stats(LiveStatsApi(), [LIVE_HOST_ID], stat_keys)
     assert stats == {LIVE_HOST_ID: {
         "cpu|utilization_average": 22.457332611083984,
         "mem:DRAM|memory_tier_total_capacity": 167416224.0,
     }}
+
+
+def test_a_stale_latest_stat_is_no_data(monkeypatch):
+    # The same live response read an hour later: every value is older than STALE_AFTER_MINUTES.
+    monkeypatch.setattr(ops_stats.time, "time", lambda: 1791707427.853 + 3600)
+    stats = ops_stats.read_latest_stats(LiveStatsApi(), [LIVE_HOST_ID], ["cpu|utilization_average"])
+    assert stats == {LIVE_HOST_ID: {}}

@@ -60,3 +60,5 @@ The same examples are checked by the tests in [`Management Pack/tests/test_esxi_
 ## Missing data
 
 A sub-metric with no data is not published for that cycle, and it is left out of the KPI. It is never counted as 0. A host that is not connected gets no KPI.
+
+A stat whose latest value is more than 10 minutes old counts as no data. A last known value is never used. See [No stale values](how-it-works.md#no-stale-values).

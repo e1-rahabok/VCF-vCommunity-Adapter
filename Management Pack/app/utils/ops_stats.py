@@ -5,6 +5,7 @@ The vCenter adapter of VCF Operations has already collected all of it. The KPIs 
 Suite API, so nothing is collected twice.
 """
 import logging
+import time
 from typing import Dict, List, NamedTuple, Optional
 from aria.ops.suite_api_client import SuiteApiClient
 
@@ -23,13 +24,21 @@ RESOURCES_PER_REQUEST = 1000
 # VCF Operations stores one sample per 5-minute collection cycle.
 COLLECTION_CYCLE_MINUTES = 5
 
+# A latest stat older than this is no data. The latest query returns the last stored value however old it
+# is: an object that stopped reporting (a host that is down or disconnected, a VM that is powered off) keeps
+# its last value as "latest". Using it would publish a value that no longer reflects reality, so the metric
+# is left blank instead. Two cycles, so that one late collection does not blank everything.
+# Properties are not filtered: they are stored only when they change, so their last known value is current.
+STALE_AFTER_MINUTES = 2 * COLLECTION_CYCLE_MINUTES
+
 
 def read_latest_stats(
     suite_api_client: SuiteApiClient, resource_ids: List[str], stat_keys: List[str]
 ) -> Dict[str, Dict[str, float]]:
-    """Returns {resource id: {stat key: latest value}}. Stats with no data are absent."""
+    """Returns {resource id: {stat key: latest value}}. Stats with no data, or older than STALE_AFTER_MINUTES,
+    are absent."""
     query = {"resourceId": resource_ids, "statKey": stat_keys}
-    samples_by_resource = _query_stats(suite_api_client, LATEST_STATS_PATH, query)
+    samples_by_resource = _query_stats(suite_api_client, LATEST_STATS_PATH, query, max_age_minutes=STALE_AFTER_MINUTES)
     return {
         resource_id: {stat_key: samples[-1] for stat_key, samples in samples_by_key.items()}
         for resource_id, samples_by_key in samples_by_resource.items()
@@ -43,9 +52,11 @@ def read_latest_instance_stats(
 
     Asked for "net|speed", VCF Operations also returns one stat per instance, such as "net:vmnic0|speed"
     for NIC vmnic0. Those are kept here, by instance name. The stat without an instance is left out.
+    Values older than STALE_AFTER_MINUTES are absent.
     """
     query = {"resourceId": resource_ids, "statKey": stat_keys}
-    samples_by_resource = _query_stats(suite_api_client, LATEST_STATS_PATH, query, keep_instances=True)
+    samples_by_resource = _query_stats(suite_api_client, LATEST_STATS_PATH, query, keep_instances=True,
+                                       max_age_minutes=STALE_AFTER_MINUTES)
     values = {}
     for resource_id, samples_by_key in samples_by_resource.items():
         for full_key, samples in samples_by_key.items():
@@ -90,10 +101,15 @@ def split_instance(stat_key: str):
 def _query_stats(
     suite_api_client: SuiteApiClient, path: str, query: dict, keep_instances: bool = False,
     resources_per_request: Optional[int] = None, failed: Optional[List[str]] = None,
+    max_age_minutes: Optional[float] = None,
 ) -> Dict[str, Dict[str, List[float]]]:
     """Returns {resource id: {stat key: [samples, oldest first]}}. Resources of a failed request are absent,
-    and added to failed when it is given. resources_per_request defaults to RESOURCES_PER_REQUEST."""
+    and added to failed when it is given. resources_per_request defaults to RESOURCES_PER_REQUEST.
+
+    max_age_minutes: samples older than this are dropped, and a stat left with none is absent.
+    """
     resources_per_request = resources_per_request or RESOURCES_PER_REQUEST
+    oldest_ms = None if max_age_minutes is None else (time.time() - max_age_minutes * 60) * 1000
     resource_ids = query["resourceId"]
     requested_keys = set(query["statKey"])
     samples_by_resource = {}
@@ -114,6 +130,9 @@ def _query_stats(
             for stat in stat_list.get("stat", []):
                 stat_key = stat.get("statKey", {}).get("key")
                 samples = stat.get("data") or []
+                timestamps = stat.get("timestamps") or []
+                if oldest_ms is not None and len(timestamps) == len(samples):
+                    samples = [sample for sample, ts in zip(samples, timestamps) if ts >= oldest_ms]
                 # VCF Operations also returns every instance of a requested stat, such as
                 # "cpu:26|utilization_average" for CPU thread 26. Only the requested keys are kept,
                 # and their instances when keep_instances is set.

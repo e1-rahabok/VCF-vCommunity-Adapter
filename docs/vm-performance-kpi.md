@@ -77,6 +77,8 @@ The same examples are checked by the tests in [`Management Pack/tests/test_vm_pe
 
 A sub-metric with no data is left out of the KPI. It is never counted as perfect.
 
+A stat whose latest value is more than 10 minutes old counts as no data. A last known value is never used. See [No stale values](how-it-works.md#no-stale-values).
+
 - A VM without VMware Tools has no Memory Zip Swap, because that needs `guest|used_memory`. The KPI of such a VM is built from the other sub-metrics.
 - If no sub-metric has data, the KPI is not published.
 - A powered-off VM gets no KPI, because its stats are old. The power state is the VCF Operations property `summary|runtime|powerState`; a VM counts when it is "Powered On".

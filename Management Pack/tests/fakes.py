@@ -1,5 +1,8 @@
 #  Copyright 2026 VCF Operations vCommunity Management Pack
 """A fake VCF Operations, shared by the KPI tests."""
+import time
+
+CYCLE_MS = 5 * 60 * 1000
 
 
 class FakeResponse:
@@ -17,9 +20,11 @@ class FakeSuiteApi:
     samples:    {resource id: {stat key: [samples]}}, for the stats queries.
     properties: {resource id: {property key: value}}, for the properties query.
     resources:  {resource kind: [(resource id, name, MoRef id)]}, for the resources query.
+    stale:      {resource id: [stat keys]} whose samples are an hour old. All other samples are current:
+                the last one now, the others one 5-minute cycle apart.
     """
 
-    def __init__(self, samples=None, status_code=200, properties=None, resources=None):
+    def __init__(self, samples=None, status_code=200, properties=None, resources=None, stale=None):
         self.samples = samples or {}
         self.properties = properties or {}
         self.resources = resources or {}
@@ -27,6 +32,7 @@ class FakeSuiteApi:
         self.requests = 0
         self.paths = []
         self.resource_queries = []
+        self.stale = stale or {}
 
     def paged_post(self, path, key, json):
         self.paths.append(path)
@@ -46,11 +52,15 @@ class FakeSuiteApi:
         values = []
         for resource_id in json["resourceId"]:
             stats = [
-                {"statKey": {"key": key}, "timestamps": list(range(len(data))), "data": data}
+                {"statKey": {"key": key}, "timestamps": self._timestamps(resource_id, key, len(data)), "data": data}
                 for key, data in self.samples.get(resource_id, {}).items() if self._requested(key, json["statKey"])
             ]
             values.append({"resourceId": resource_id, "stat-list": {"stat": stats}})
         return FakeResponse({"values": values}, self.status_code)
+
+    def _timestamps(self, resource_id, key, count):
+        end = time.time() * 1000 - (3600 * 1000 if key in self.stale.get(resource_id, []) else 0)
+        return [end - (count - 1 - i) * CYCLE_MS for i in range(count)]
 
     @staticmethod
     def _requested(key, stat_keys):

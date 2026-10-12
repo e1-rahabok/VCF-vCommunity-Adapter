@@ -41,3 +41,5 @@ The same examples are checked by the tests in [`Management Pack/tests/test_guest
 - A VM without VMware Tools has none of the 4 stats, so it gets no Guest OS Performance KPI.
 - A sub-metric with no data is left out of the KPI. It is never counted as perfect.
 - A powered-off VM gets no KPI.
+
+A stat whose latest value is more than 10 minutes old counts as no data. A last known value is never used. See [No stale values](how-it-works.md#no-stale-values).

@@ -10,6 +10,7 @@ Code: [`Management Pack/app/metrics/vm/vm_shares.py`](../Management%20Pack/app/m
 
 > **Read this before using the metrics.**
 
+- **No stale values.** A stat whose latest value is more than 10 minutes old is treated as no data, so the metric is left blank rather than showing a value that no longer reflects reality. Properties keep their last known value. See [How It Works](how-it-works.md#no-stale-values).
 - **"Share per GB of Memory" is now "Share per MB of Memory".** The super metric calculated shares ÷ memoryKB × 1024, which is per MB, not per GB. The values are the same as before; only the name is correct now. Normal is 10.
 - **No value when the VM has no vCPU count, no memory size or no shares in VCF Operations**, instead of a division by zero.
 - **Custom shares are compared as they are.** A VM with custom shares can be anywhere; the Normal, Low and High values below apply to the standard levels only.
