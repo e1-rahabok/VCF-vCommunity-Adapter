@@ -127,7 +127,7 @@ def get_adapter_definition() -> AdapterDefinition:
 
         definition.define_enum_parameter(
             daily_cluster_check.PERIOD_SETTING,
-            values=daily_cluster_check.PERIOD_HOURS,
+            values=daily_cluster_check.PERIOD_CHOICES,
             label="Cluster Check Period (hours)",
             description="Length of the Daily Cluster Check window, and how often it is calculated: "
                         "1, 2, 4, 6, 8, 12 or 24 hours.",

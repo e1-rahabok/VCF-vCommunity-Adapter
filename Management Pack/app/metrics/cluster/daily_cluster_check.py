@@ -55,6 +55,9 @@ DEFAULT_TIME = "00:00"
 # Account setting (Advanced Settings): the length of the window, which is also how often it is calculated.
 PERIOD_SETTING = "cluster_check_period_hours"
 PERIOD_HOURS = ["1", "2", "4", "6", "8", "12", "24"]     # each divides 24
+# Labels in the Advanced Settings drop-down. VCF Operations sorts the drop-down by label, as text, so the
+# hours are zero-padded: "01 hour" ... "24 hours" sort as 1 ... 24, not as "1", "12", "2", "24".
+PERIOD_CHOICES = [(hours, f"{int(hours):02d} hour{'s' if hours != '1' else ''}") for hours in PERIOD_HOURS]
 DEFAULT_PERIOD = "24"
 
 # The inputs, as stored in VCF Operations.

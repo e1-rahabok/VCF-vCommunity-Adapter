@@ -202,3 +202,13 @@ def test_a_window_without_its_length_is_due_again():
     api = FakeSuiteApi(resources=CLUSTERS, samples=HISTORY,
                        properties={"cl-1": {dc.WINDOW_END_KEY: "2026-10-12 00:00 UTC"}})
     assert "domain-c1" in dc.read_daily_cluster_check(api, "ai-1", "00:00", NOW)
+
+
+def test_period_labels_sort_like_numbers():
+    # VCF Operations sorts the drop-down by label, as text.
+    labels = [label for _, label in dc.PERIOD_CHOICES]
+    assert sorted(labels) == labels
+    assert labels[0] == "01 hour" and labels[-1] == "24 hours"
+    # The stored values do not change, so existing accounts keep their setting.
+    assert [value for value, _ in dc.PERIOD_CHOICES] == dc.PERIOD_HOURS
+
