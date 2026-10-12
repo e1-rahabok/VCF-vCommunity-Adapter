@@ -20,7 +20,7 @@ After enabling this, the **"Ignore the PAK file signature checking"** checkbox w
 ## Install the Management Pack
 
 1. Navigate to **Administration** → **Integrations** → **Repository** tab, and click **Add**.
-2. Browse to the `VCFOperationsvCommunity_x.x.x.pak` file. Select:
+2. Browse to the `vCommunity_x.x.x.pak` file. Select:
    - **"Install the PAK file even if it is already installed"** — to override an existing installation.
    - **"Ignore the PAK file signature checking"** — required, since this Management Pack is unsigned.
 

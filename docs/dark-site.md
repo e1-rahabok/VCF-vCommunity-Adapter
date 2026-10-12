@@ -48,10 +48,10 @@ docker push private-registry.local.network/ghcr.io/vmbro/vcf-operations-vcommuni
 
 ## Step 5: On Each VCF Operations Cluster Node (excluding Cloud Proxies)
 
-Edit the `REGISTRY` field in `VCFOperationsvCommunity.conf` on every node:
+Edit the `REGISTRY` field in `vCommunity.conf` on every node:
 
 ```
-$VCOPS_BASE/user/plugins/inbound/VCFOperationsvCommunity.conf
+$VCOPS_BASE/user/plugins/inbound/vCommunity.conf
 ```
 
 ```

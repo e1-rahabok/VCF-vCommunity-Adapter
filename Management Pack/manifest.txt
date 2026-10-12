@@ -1,8 +1,8 @@
 {
     "display_name": "DISPLAY_NAME",
-    "name": "iSDK_VCFOperationsvCommunity",
+    "name": "iSDK_vCommunity",
     "description": "DESCRIPTION",
-    "version": "0.3.0",
+    "version": "0.1.0",
     "vcops_minimum_version": "8.18.0",
     "disk_space_required": 500,
     "run_scripts_on_all_nodes": "true",
@@ -26,7 +26,7 @@
         "adapter.zip"
     ],
     "adapter_kinds": [
-        "VCFOperationsvCommunity"
+        "vCommunity"
     ],
     "license_type": ""
 }

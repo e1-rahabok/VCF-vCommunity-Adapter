@@ -1,8 +1,8 @@
 #  Copyright 2026 VCF Operations vCommunity Management Pack
 #  Author: Onur Yuzseven onur.yuzseven@broadcom.com
 
-ADAPTER_KIND = "VCFOperationsvCommunity"
-ADAPTER_NAME = "VCF Operations vCommunity"
+ADAPTER_KIND = "vCommunity"
+ADAPTER_NAME = "VCF vCommunity Adapter"
 HOST_IDENTIFIER = "host"
 PORT_IDENTIFIER = "port"
 USER_CREDENTIAL = "user"
