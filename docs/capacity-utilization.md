@@ -2,7 +2,7 @@
 
 **Capacity Utilization** shows how much of a vSphere cluster's usable capacity is in use, for CPU and for memory. Usable capacity leaves out the hosts that vSphere HA keeps free for a host failure.
 
-It feeds the [Daily Cluster Check](daily-cluster-check.md), which takes its 99th percentile over 24 hours.
+It feeds the [Daily Cluster Check](daily-cluster-check.md), which takes its 99th percentile over each window (24 hours by default).
 
 Code: [`Management Pack/app/metrics/cluster/capacity_utilization.py`](../Management%20Pack/app/metrics/cluster/capacity_utilization.py)
 

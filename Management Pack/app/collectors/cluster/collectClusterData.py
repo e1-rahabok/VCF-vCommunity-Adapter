@@ -33,6 +33,7 @@ def collect_cluster_data(
     content: Any,
     availability: OperationalAvailability = NO_DATA,
     daily_check_time: Optional[str] = None,
+    daily_check_period: Optional[str] = None,
 ) -> None:
     
     propertyPaths: List[str] = []
@@ -89,7 +90,8 @@ def collect_cluster_data(
 
     # Daily Cluster Check: only the clusters due this cycle. See metrics/cluster/daily_cluster_check.py.
     try:
-        daily = daily_cluster_check.read_daily_cluster_check(suite_api_client, adapter_instance_id, daily_check_time)
+        daily = daily_cluster_check.read_daily_cluster_check(
+            suite_api_client, adapter_instance_id, daily_check_time, period_setting=daily_check_period)
     except Exception as e:
         # A failure here must not stop the rest of the collection. The clusters stay due for the next cycle.
         logger.warning(f"Failed to read the Daily Cluster Check - {repr(e)}")

@@ -31,7 +31,7 @@ All five are called by a collector and declared in `adapter.py`. The VCF Operati
 | `cluster/cluster_risk_metrics.py` | Cluster Risk KPI. One score per cluster, from 12 sub-metrics. |
 | `cluster/drs_metrics.py` | DRS Score. A plain metric, not a KPI. |
 | `cluster/capacity_utilization.py` | Capacity CPU and Memory Utilization per cluster: sum of the running hosts' % ÷ (N − max(k, gone hosts)). Not a KPI. See `docs/capacity-utilization.md`, including its known limitations. |
-| `cluster/daily_cluster_check.py` | Daily Cluster Check: once a day, Close for Business per cluster from the 24-hour percentiles. See `docs/daily-cluster-check.md`. |
+| `cluster/daily_cluster_check.py` | Daily Cluster Check: once per period (1 to 24 hours, default 24), Close for Business per cluster from the window's percentiles. See `docs/daily-cluster-check.md`. |
 | `vm/vm_performance_metrics.py` | VM Performance KPI. One score per powered-on VM, from 9 sub-metrics. Also reads the stats of Guest OS Performance. |
 | `vm/guest_os_performance_metrics.py` | Guest OS Performance KPI. One score per powered-on VM with VMware Tools, from 4 sub-metrics. |
 | `host/esxi_performance_metrics.py` | ESXi Performance KPI. One score per connected ESXi host, from 9 sub-metrics. |

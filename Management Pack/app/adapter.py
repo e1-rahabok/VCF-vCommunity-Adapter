@@ -125,11 +125,23 @@ def get_adapter_definition() -> AdapterDefinition:
             constants.main.PORT_IDENTIFIER, "Port", default=443, advanced=True, description="Enter the port number for vCenter Server"
         )
 
+        definition.define_enum_parameter(
+            daily_cluster_check.PERIOD_SETTING,
+            values=daily_cluster_check.PERIOD_HOURS,
+            label="Cluster Check Period (hours)",
+            description="Length of the Daily Cluster Check window, and how often it is calculated: "
+                        "1, 2, 4, 6, 8, 12 or 24 hours.",
+            default=daily_cluster_check.DEFAULT_PERIOD,
+            required=False,
+            advanced=True,
+        )
+
         definition.define_string_parameter(
             daily_cluster_check.TIME_SETTING,
-            label="Daily Cluster Check Time (UTC)",
-            description="Time of day, as HH:MM in UTC, when the 24 hours of the Daily Cluster Check end. "
-                        "The clusters are calculated in the collection cycles after it.",
+            label="Cluster Check Time (UTC)",
+            description="Time of day, as HH:MM in UTC, when a Daily Cluster Check window ends. With a period "
+                        "shorter than 24 hours, the other windows end every period from it. The clusters are "
+                        "calculated in the collection cycles after each end.",
             default=daily_cluster_check.DEFAULT_TIME,
             required=False,
             advanced=True,
@@ -206,6 +218,7 @@ def get_adapter_definition() -> AdapterDefinition:
             dailyCheck.define_numeric_property(name, name, unit=Units.RATIO.PERCENT)
         dailyCheck.define_numeric_property(daily_cluster_check.CLOSE_FOR_BUSINESS, daily_cluster_check.CLOSE_FOR_BUSINESS)
         dailyCheck.define_string_property(daily_cluster_check.WINDOW_END, daily_cluster_check.WINDOW_END)
+        dailyCheck.define_numeric_property(daily_cluster_check.WINDOW_HOURS, daily_cluster_check.WINDOW_HOURS)
 
         vSphereHA = clusterConfiguration.define_group("vSphere HA", "vSphere HA")
         vSphereHA.define_string_property("Host Monitoring", "Host Monitoring")
@@ -662,6 +675,7 @@ def collect(adapter_instance: AdapterInstance) -> CollectResult:
                     future_cls = data_executor.submit(
                         collect_cluster_data, client, adapter_instance_id, result, content, availability,
                         adapter_instance.get_identifier_value(daily_cluster_check.TIME_SETTING),
+                        adapter_instance.get_identifier_value(daily_cluster_check.PERIOD_SETTING),
                     )
 
                     # 2. Host feature definition

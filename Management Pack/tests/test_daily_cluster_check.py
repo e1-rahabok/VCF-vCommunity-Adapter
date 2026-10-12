@@ -84,8 +84,8 @@ HISTORY = {"cl-1": samples([10.0, 20.0], [95.0], [40.0], [70.0]), "cl-2": sample
 
 def test_only_clusters_without_the_latest_window_are_due():
     api = FakeSuiteApi(resources=CLUSTERS, samples=HISTORY,
-                       properties={"cl-1": {dc.WINDOW_END_KEY: "2026-10-12 00:00 UTC"},
-                                   "cl-2": {dc.WINDOW_END_KEY: "2026-10-11 00:00 UTC"}})
+                       properties={"cl-1": {dc.WINDOW_END_KEY: "2026-10-12 00:00 UTC", dc.WINDOW_HOURS_KEY: "24"},
+                                   "cl-2": {dc.WINDOW_END_KEY: "2026-10-11 00:00 UTC", dc.WINDOW_HOURS_KEY: "24"}})
     results = dc.read_daily_cluster_check(api, "ai-1", "00:00", NOW)
     assert list(results) == ["domain-c2"]
     assert results["domain-c2"].window_end == "2026-10-12 00:00 UTC"
@@ -95,16 +95,16 @@ def test_only_clusters_without_the_latest_window_are_due():
 
 def test_nothing_due_reads_no_history():
     api = FakeSuiteApi(resources=CLUSTERS, samples=HISTORY,
-                       properties={"cl-1": {dc.WINDOW_END_KEY: "2026-10-12 00:00 UTC"},
-                                   "cl-2": {dc.WINDOW_END_KEY: "2026-10-12 00:00 UTC"}})
+                       properties={"cl-1": {dc.WINDOW_END_KEY: "2026-10-12 00:00 UTC", dc.WINDOW_HOURS_KEY: "24"},
+                                   "cl-2": {dc.WINDOW_END_KEY: "2026-10-12 00:00 UTC", dc.WINDOW_HOURS_KEY: "24"}})
     assert dc.read_daily_cluster_check(api, "ai-1", "00:00", NOW) == {}
     assert "api/resources/stats/query" not in api.paths
 
 
 def test_a_changed_time_makes_every_cluster_due_again():
     api = FakeSuiteApi(resources=CLUSTERS, samples=HISTORY,
-                       properties={"cl-1": {dc.WINDOW_END_KEY: "2026-10-12 00:00 UTC"},
-                                   "cl-2": {dc.WINDOW_END_KEY: "2026-10-12 00:00 UTC"}})
+                       properties={"cl-1": {dc.WINDOW_END_KEY: "2026-10-12 00:00 UTC", dc.WINDOW_HOURS_KEY: "24"},
+                                   "cl-2": {dc.WINDOW_END_KEY: "2026-10-12 00:00 UTC", dc.WINDOW_HOURS_KEY: "24"}})
     assert set(dc.read_daily_cluster_check(api, "ai-1", "06:00", NOW)) == {"domain-c1", "domain-c2"}
 
 
@@ -130,6 +130,7 @@ def test_publish():
         f"{group}|95th Percentile Cluster Performance": 20.0,
         f"{group}|99th Percentile Capacity Utilization": 70.0,
         f"{group}|Close for Business": 1,
+        f"{group}|Window Hours": 24,
         f"{group}|Window End": "2026-10-12 00:00 UTC",
     }
 
@@ -151,3 +152,53 @@ def test_the_24_hours_end_at_the_set_time():
     assert history["end"] == end
     assert history["begin"] == end - 24 * 3600 * 1000
     assert history["intervalQuantifier"] == 5
+
+
+# --- Period --------------------------------------------------------------------------------------------------
+
+def test_parse_period():
+    assert dc.parse_period("6") == 6
+    assert dc.parse_period(None) == 24
+    assert dc.parse_period("") == 24
+    assert dc.parse_period("5") == 24          # not in the list: the default
+
+
+def test_window_ends_every_period_from_the_set_time():
+    # 09:30 now. Set time 00:00, every 6 hours: ends at 00:00, 06:00, 12:00, 18:00. Latest: 06:00.
+    assert dc.latest_window_end(NOW, 0, 0, 6) == datetime(2026, 10, 12, 6, 0, tzinfo=timezone.utc)
+    # Every hour, from 00:15: latest 09:15.
+    assert dc.latest_window_end(NOW, 0, 15, 1) == datetime(2026, 10, 12, 9, 15, tzinfo=timezone.utc)
+    # Set time 10:00, every 8 hours: ends at 02:00, 10:00, 18:00. Latest: 02:00.
+    assert dc.latest_window_end(NOW, 10, 0, 8) == datetime(2026, 10, 12, 2, 0, tzinfo=timezone.utc)
+    # 24 hours is unchanged.
+    assert dc.latest_window_end(NOW, 12, 0, 24) == datetime(2026, 10, 11, 12, 0, tzinfo=timezone.utc)
+
+
+def test_the_window_is_as_long_as_the_period():
+    api = FakeSuiteApi(resources=CLUSTERS, samples=HISTORY)
+    sent = []
+    original = api.post
+    api.post = lambda path, json: (sent.append(json), original(path, json))[1]
+    results = dc.read_daily_cluster_check(api, "ai-1", "00:00", NOW, period_setting="6")
+    history = [request for request in sent if "begin" in request][0]
+    end = int(datetime(2026, 10, 12, 6, 0, tzinfo=timezone.utc).timestamp() * 1000)
+    assert history["end"] == end
+    assert history["begin"] == end - 6 * 3600 * 1000
+    assert results["domain-c2"].window_hours == 6
+
+
+def test_a_changed_period_with_the_same_end_is_due_again():
+    # At 09:30, with 00:00: a 24-hour and a 12-hour window both end at 00:00. The stored window is 24 hours;
+    # changing the setting to 12 hours makes every cluster due again.
+    api = FakeSuiteApi(resources=CLUSTERS, samples=HISTORY,
+                       properties={"cl-1": {dc.WINDOW_END_KEY: "2026-10-12 00:00 UTC", dc.WINDOW_HOURS_KEY: "24"},
+                                   "cl-2": {dc.WINDOW_END_KEY: "2026-10-12 00:00 UTC", dc.WINDOW_HOURS_KEY: "24"}})
+    assert dc.read_daily_cluster_check(api, "ai-1", "00:00", NOW, period_setting="24") == {}
+    assert set(dc.read_daily_cluster_check(api, "ai-1", "00:00", NOW, period_setting="12")) == {"domain-c1", "domain-c2"}
+
+
+def test_a_window_without_its_length_is_due_again():
+    # Stored before Window Hours existed: recalculated once after the upgrade.
+    api = FakeSuiteApi(resources=CLUSTERS, samples=HISTORY,
+                       properties={"cl-1": {dc.WINDOW_END_KEY: "2026-10-12 00:00 UTC"}})
+    assert "domain-c1" in dc.read_daily_cluster_check(api, "ai-1", "00:00", NOW)
