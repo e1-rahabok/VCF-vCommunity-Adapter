@@ -161,4 +161,4 @@ The properties endpoint `POST api/resources/properties/latest/query`, on VCF Ope
 
 The latest stats endpoint `POST api/resources/stats/latest/query`, on VCF Operations 9.1.1. Asked for a stat, it also returns every instance of it, such as `cpu:26|utilization_average` for CPU thread 26. The code keeps only the keys it asked for. The response is kept in `tests/test_ops_inventory.py`.
 
-`net|packetsRx_summation_sum` and `net|packetsTx_summation_sum`, used by Bad Network Packets, are deactivated by default: see [Required Policy Settings](../README.md#required-policy-settings).
+`net|packetsRx_summation_sum` and `net|packetsTx_summation_sum`, used by Bad Network Packets, are deactivated by default: see [Required Policy Settings](installation.md#activate-the-required-metrics-in-the-policy).
