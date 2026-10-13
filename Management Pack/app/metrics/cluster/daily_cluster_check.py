@@ -230,7 +230,16 @@ def read_daily_cluster_check(
         # Not read: leave it due, so the next cycle tries again.
         if cluster.id in failed:
             continue
-        results[cluster.moid] = DailyResult(daily_values(history.get(cluster.id, {})), end_text, period_hours)
+        samples = history.get(cluster.id, {})
+        values = daily_values(samples)
+        results[cluster.moid] = DailyResult(values, end_text, period_hours)
+        if values[CLOSE_FOR_BUSINESS] is None:
+            counts = ", ".join(f"{key.split('|')[-1]}: {len(samples.get(key, []))}" for key in STAT_KEYS)
+            logger.info(f"Daily Cluster Check of {cluster.name}: no Close for Business for the window to "
+                        f"{end_text} - samples in the window: {counts}")
+    published = sum(1 for result in results.values() if result.values[CLOSE_FOR_BUSINESS] is not None)
+    logger.info(f"Daily Cluster Check: Close for Business set on {published} of {len(results)} due clusters "
+                f"for the {period_hours} hours to {end_text}.")
     return results
 
 

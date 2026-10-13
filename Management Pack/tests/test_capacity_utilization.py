@@ -87,3 +87,13 @@ def test_publish():
     cluster = FakeObject("cluster-a")
     cu.publish(cluster, {cu.CPU: 80.004, cu.MEMORY: None})
     assert cluster.metrics == {"vCommunity|Capacity|CPU Utilization": 80.0}
+
+
+def test_a_missing_value_is_explained_in_the_log(caplog):
+    import logging
+    caplog.set_level(logging.INFO)
+    hosts = [host("h1", connection="notResponding")] + HEALTHY[1:]
+    cu.utilization_values(hosts, {}, N_PLUS_1, "cluster-a")
+    assert "Capacity CPU Utilization of cluster-a: no value" in caplog.text
+    assert "h1: no current value" in caplog.text
+    assert "N=4" in caplog.text and "k=1" in caplog.text

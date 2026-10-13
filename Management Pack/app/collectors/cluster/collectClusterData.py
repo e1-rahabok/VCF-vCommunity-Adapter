@@ -133,10 +133,12 @@ def collect_cluster_data(
             stats_by_host = collect_cluster_risk_metrics(cluster_obj, cluster_name, hosts_inventory, suite_api_client)
 
             # Capacity Utilization, from the same host stats. See metrics/cluster/capacity_utilization.py.
+            if ha_by_cluster is not None and not stats_by_host:
+                logger.info(f"Capacity of {cluster_name}: no value - no host stats were read this cycle")
             if ha_by_cluster is not None and stats_by_host:
                 ha = ha_by_cluster.get(cluster_obj.get_key().name, ClusterHa(None, None))
                 capacity_utilization.publish(cluster_obj, capacity_utilization.utilization_values(
-                    cluster_hosts, stats_by_host, ha))
+                    cluster_hosts, stats_by_host, ha, cluster_name))
 
             # Operational Availability, read once per cycle for the whole vCenter by the adapter.
             publish(cluster_obj, CLUSTER_METRIC, availability.by_cluster.get(cluster_obj.get_key().name))

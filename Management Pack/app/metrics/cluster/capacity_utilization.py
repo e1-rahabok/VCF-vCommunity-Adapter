@@ -40,9 +40,12 @@ Known limitations (see docs/capacity-utilization.md):
 Used by the Daily Cluster Check (daily_cluster_check.py), which takes the 99th percentile of the 24 hours.
 Called from: collectors/cluster/collectClusterData.py, once per cluster.
 """
+import logging
 from typing import Dict, List, Optional
 from metrics.cluster.cluster_risk_metrics import CPU_THREAD_UTIL, memory_consumed_pct
 from utils.ops_inventory import ClusterHa, HostInfo
+
+logger = logging.getLogger(__name__)
 
 GROUP = "Capacity"
 CPU = "CPU Utilization"
@@ -90,14 +93,34 @@ def cluster_utilization(hosts: List[HostInfo], values: List[Optional[float]], ha
     return sum(running) / usable
 
 
+def explain(hosts: List[HostInfo], values: List[Optional[float]], ha: ClusterHa) -> str:
+    """Why a value is what it is, for the log: N, k, and each host that counts as gone, with the reason."""
+    reasons = []
+    for host, value in zip(hosts, values):
+        if value is None:
+            reasons.append(f"{host.name}: no current value")
+        elif host_is_gone(host, value):
+            reasons.append(f"{host.name}: {host.connection_state}/{host.power_state}/{host.maintenance_state}")
+    missing = max(int(ha.host_count or 0) - len(hosts), 0)
+    if missing:
+        reasons.append(f"{missing} host(s) counted by VCF Operations but not found")
+    return (f"N={max(int(ha.host_count or 0), len(hosts))} (host count {ha.host_count}, found {len(hosts)}), "
+            f"k={ha.failover_level}, gone: {'; '.join(reasons) or 'none'}")
+
+
 def utilization_values(hosts: List[HostInfo], stats_by_host: Dict[str, Dict[str, float]],
-                       ha: ClusterHa) -> Dict[str, Optional[float]]:
-    """{CPU: %, MEMORY: %} of one cluster. None means "no data"."""
+                       ha: ClusterHa, cluster_name: str = "") -> Dict[str, Optional[float]]:
+    """{CPU: %, MEMORY: %} of one cluster. None means "no data". A value with no data is logged with why."""
     host_stats = [stats_by_host.get(host.id, {}) for host in hosts]
-    return {
-        CPU: cluster_utilization(hosts, [stats.get(CPU_THREAD_UTIL) for stats in host_stats], ha),
-        MEMORY: cluster_utilization(hosts, [memory_consumed_pct(stats) for stats in host_stats], ha),
+    inputs = {
+        CPU: [stats.get(CPU_THREAD_UTIL) for stats in host_stats],
+        MEMORY: [memory_consumed_pct(stats) for stats in host_stats],
     }
+    values = {name: cluster_utilization(hosts, host_values, ha) for name, host_values in inputs.items()}
+    for name, value in values.items():
+        if value is None:
+            logger.info(f"Capacity {name} of {cluster_name}: no value - {explain(hosts, inputs[name], ha)}")
+    return values
 
 
 def publish(cluster_obj, values: Dict[str, Optional[float]]) -> None:
