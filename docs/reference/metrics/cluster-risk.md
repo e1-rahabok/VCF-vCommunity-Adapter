@@ -13,7 +13,7 @@ All 13 metrics are published on the cluster object under `vCommunity|Cluster Ris
 
 Code: [`Management Pack/app/metrics/cluster/cluster_risk_metrics.py`](../../../Management%20Pack/app/metrics/cluster/cluster_risk_metrics.py)
 
-Source of the limits: [`images/complex-metrics/cluster-risk.png`](../../images/complex-metrics/cluster-risk.png)
+Source of the limits: [`formula/cluster-risk.png`](formula/cluster-risk.png)
 
 ## Change in version 0.1.0: higher is worse
 
@@ -22,7 +22,7 @@ Before version 0.1.0 of VCF vCommunity Adapter, Cluster Risk was published as a 
 - **History before the upgrade reads the opposite way.** A chart that spans the upgrade jumps from, say, 98 to 2 for the same healthy cluster.
 - **Thresholds set on the old value must be inverted.** An alert or a color range "below 25" becomes "above 75".
 - The 12 sub-metrics did not change.
-- On vSphere World, "10th Percentile Cluster Risk" is replaced by "90th Percentile Cluster Risk", and "Worst Cluster Risk" is now the highest value. See [vSphere World Cluster Metrics](../metrics/vsphere-world-metrics.md).
+- On vSphere World, "10th Percentile Cluster Risk" is replaced by "90th Percentile Cluster Risk", and "Worst Cluster Risk" is now the highest value. See [vSphere World Cluster Metrics](vsphere-world-metrics.md).
 
 ## The 12 sub-metrics and their limits
 
@@ -147,7 +147,7 @@ The same examples are checked by the tests in [`Management Pack/tests/test_clust
 
 A sub-metric with no data is not published for that cycle, and it is left out of the KPI. It is never counted as 0, because a sub-metric value of 0 means "no risk".
 
-A stat whose latest value is more than 10 minutes old counts as no data. A last known value is never used. See [No stale values](../how-it-works.md#no-stale-values).
+A stat whose latest value is more than 10 minutes old counts as no data. A last known value is never used. See [No stale values](../../reference/metrics/README.md#no-stale-values).
 
 - If the stats request to VCF Operations fails, only the property-based rows (the two Monster VM ratios) are scored.
 - A host that VCF Operations does not know is left out.
@@ -161,4 +161,4 @@ The properties endpoint `POST api/resources/properties/latest/query`, on VCF Ope
 
 The latest stats endpoint `POST api/resources/stats/latest/query`, on VCF Operations 9.1.1. Asked for a stat, it also returns every instance of it, such as `cpu:26|utilization_average` for CPU thread 26. The code keeps only the keys it asked for. The response is kept in `tests/test_ops_inventory.py`.
 
-`net|packetsRx_summation_sum` and `net|packetsTx_summation_sum`, used by Bad Network Packets, are deactivated by default: see [Required Policy Settings](../../how-to/installation.md#activate-the-required-metrics-in-the-policy).
+`net|packetsRx_summation_sum` and `net|packetsTx_summation_sum`, used by Bad Network Packets, are deactivated by default: see [Required Policy Settings](../../configuration-guide/policy.md).

@@ -31,7 +31,7 @@ Inputs, from VCF Operations, the same per-host values as Cluster Risk (cluster_r
 Memory uses Consumed only. Ballooned, compressed (zip) and swapped memory are not added: they are already
 scored in Cluster Risk (Worst ESXi Memory Ballooned, Worst ESXi Memory Zip Swap).
 
-Known limitations (see docs/explanation/metrics/capacity-utilization.md):
+Known limitations (see docs/reference/metrics/capacity-utilization.md):
     - All hosts of the cluster are assumed to be the same size. A percentage of a big host and of a small
       host are added as if they were equal.
     - A disconnected host whose VMs still run counts as gone: its load is not visible, so it is understated.

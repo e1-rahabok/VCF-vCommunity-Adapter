@@ -4,7 +4,7 @@ A Python adapter (`Management Pack/app`) that collects extra properties and metr
 
 ## Documentation
 
-Pages go in `docs/` by the rules in [docs/README.md](docs/README.md#where-a-new-page-goes). Add every new page to that index.
+Pages go in `docs/` by the rules in [CONTRIBUTING.md](CONTRIBUTING.md#documentation). Add every new page to the contents in `docs/README.md`.
 
 ## Testing
 

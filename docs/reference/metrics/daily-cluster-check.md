@@ -9,7 +9,7 @@ It is decided from the last period of Capacity Utilization, Cluster Performance 
 
 ## Settings
 
-Two settings in the account's **Advanced Settings** (see [Configuration](../../how-to/configuration.md#2-advanced-settings-optional)):
+Two settings in the account's **Advanced Settings** (see [Configuration](../../configuration-guide/adapter-instance.md#2-advanced-settings-optional)):
 
 | Setting | Values | Default | Meaning |
 | :--- | :--- | :--- | :--- |

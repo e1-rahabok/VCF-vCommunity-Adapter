@@ -62,7 +62,7 @@ HEALTHY = {"host-1": host_stats(), "host-2": host_stats()}
 # --- The table --------------------------------------------------------------
 
 def test_limits_match_the_source_table():
-    # docs/images/complex-metrics/cluster-risk.png
+    # docs/reference/metrics/formula/cluster-risk.png
     limits = {m.name: (m.best, m.green, m.yellow, m.orange, m.zero_at, m.skip_when_green) for m in cr.METRICS}
     assert limits["Highest ESXi CPU Thread Utilization"] == (0, 60, 80, 90, 95, True)
     assert limits["Worst ESXi CPU Imbalance"] == (1, 1, 1.3, 1.6, 2, False)            # green is exactly 1

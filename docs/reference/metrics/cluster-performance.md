@@ -8,7 +8,7 @@ All 10 metrics are published on the cluster object under `vCommunity|Cluster Per
 
 Code: [`Management Pack/app/metrics/cluster/cluster_performance_metrics.py`](../../../Management%20Pack/app/metrics/cluster/cluster_performance_metrics.py)
 
-Source of the sub-metrics and limits: [`images/complex-metrics/cluster-performance.png`](../../images/complex-metrics/cluster-performance.png)
+Source of the sub-metrics and limits: [`formula/cluster-performance.png`](formula/cluster-performance.png)
 
 ## Step 1: Collect the 9 sub-metrics
 
@@ -36,7 +36,7 @@ Notes:
 - **Which VMs count.** The powered-on VMs on the cluster's ESXi hosts. A powered-off VM is left out, because its last stats are old. All of this is read from VCF Operations properties: a host belongs to the cluster named in its `summary|parentCluster`, a VM runs on the host named in its `summary|parentHost`, and it is powered on when `summary|runtime|powerState` is "Powered On". Placement is by name, so do not mix datacenters in one adapter instance.
 - **20-second peaks.** The VM stats are the 20-second peaks, not the 5-minute averages. This makes the KPI a leading indicator.
 - **90th percentile.** The value that 90 % of the VMs are at or below. The VMs are sorted, and the one at position 90 % of the count, rounded up, is taken. With 20 VMs that is the 18th lowest. With fewer than 10 VMs it is the highest, the same as the worst VM.
-- **Bad network packets** use the last collection cycle (5 minutes), the same as the former "Bad Network Packets" super metric, which this metric replaces. They are never averaged or added up over a longer time, because that would hide a spike. Two of its counters, Total Packets Received and Transmitted, are deactivated by default in VCF Operations. Activate them first: see [Required Policy Settings](../../how-to/installation.md#activate-the-required-metrics-in-the-policy).
+- **Bad network packets** use the last collection cycle (5 minutes), the same as the former "Bad Network Packets" super metric, which this metric replaces. They are never averaged or added up over a longer time, because that would hide a spike. Two of its counters, Total Packets Received and Transmitted, are deactivated by default in VCF Operations. Activate them first: see [Required Policy Settings](../../configuration-guide/policy.md).
 
 ## Step 2: Score each sub-metric
 
@@ -97,7 +97,7 @@ The same examples are checked by the tests in [`Management Pack/tests/test_clust
 
 A sub-metric with no data is not published for that collection cycle, and it is left out of the KPI. It is never counted as 0, because 0 means "perfect" and would make the cluster look healthier than it is.
 
-A stat whose latest value is more than 10 minutes old counts as no data. A last known value is never used. See [No stale values](../how-it-works.md#no-stale-values).
+A stat whose latest value is more than 10 minutes old counts as no data. A last known value is never used. See [No stale values](../../reference/metrics/README.md#no-stale-values).
 
 - The adapter log lists the sub-metrics that were left out, per cluster.
 - If no sub-metric has data, the KPI itself is not published.

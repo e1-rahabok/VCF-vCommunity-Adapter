@@ -23,7 +23,7 @@ A Datacenter is in one vCenter, so the count is from the same collection cycle.
 vSphere World: the stored values of all hosts of all vCenters, so it has the known limitations of the other
 vSphere World metrics.
 
-All inputs come from VCF Operations. See docs/explanation/metrics/network-speed-degradation.md, including its known limitations.
+All inputs come from VCF Operations. See docs/reference/metrics/network-speed-degradation.md, including its known limitations.
 """
 import logging
 from typing import Dict, List, NamedTuple, Optional

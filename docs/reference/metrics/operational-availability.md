@@ -10,7 +10,7 @@ Code: [`Management Pack/app/metrics/availability/operational_availability.py`](.
 
 > **Read this before using the metrics.**
 
-- **No stale values.** A stat whose latest value is more than 10 minutes old is treated as no data, so the metric is left blank rather than showing a value that no longer reflects reality. Properties keep their last known value. See [How It Works](../how-it-works.md#no-stale-values).
+- **No stale values.** A stat whose latest value is more than 10 minutes old is treated as no data, so the metric is left blank rather than showing a value that no longer reflects reality. Properties keep their last known value. See [How It Works](../../reference/metrics/README.md#no-stale-values).
 - **No HA host failover level counts as N+0.** This applies when vSphere HA is off, when admission control uses a percentage of resources or a dedicated failover host, or when the value was not collected. The cluster value is then lower than the real availability, never higher. A collection failure can therefore cause a false alarm, but never false assurance.
 - **A cluster where HA tolerates the failure of every host has no value.** For example, a 2-host cluster with a failover level of 2: N − k is 0.
 - **Worst Cluster leaves out a cluster with no value.** There is no number to compare. Such a cluster is not shown as the worst, even if it is unavailable.

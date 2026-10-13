@@ -22,7 +22,7 @@ object, but one account of this pack per vCenter. Every account reads the cluste
 publish the same values instead of overwriting each other with the clusters of their own vCenter only.
 
 Known limitation: the stored score of a cluster is the one of its last collection, so a value can be up to one
-collection cycle old. See docs/explanation/metrics/vsphere-world-metrics.md.
+collection cycle old. See docs/reference/metrics/vsphere-world-metrics.md.
 """
 import logging
 import math

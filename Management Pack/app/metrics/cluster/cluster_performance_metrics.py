@@ -28,7 +28,7 @@ How it is calculated
 
 Where the limits come from
 --------------------------
-docs/images/complex-metrics/cluster-performance.png. The worst-VM rows
+docs/reference/metrics/formula/cluster-performance.png. The worst-VM rows
 have higher limits than the 90th-percentile rows, because a single VM peaks far
 above most of the others.
 
@@ -45,7 +45,7 @@ host/esxi_performance_metrics.py.
 
 Called from: collectors/cluster/collectClusterData.py, once per cluster.
 Overall approach for all KPIs: metrics/README.md
-Description for people who do not read code: docs/explanation/kpis/cluster-performance.md
+Description for people who do not read code: docs/reference/metrics/cluster-performance.md
 """
 import logging
 from typing import Dict, List, Optional

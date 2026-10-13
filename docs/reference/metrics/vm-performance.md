@@ -10,7 +10,7 @@ It is published on every powered-on VM as `vCommunity|VM Performance|VM Performa
 
 Code: [`Management Pack/app/metrics/vm/vm_performance_metrics.py`](../../../Management%20Pack/app/metrics/vm/vm_performance_metrics.py)
 
-Source of the sub-metrics and limits: [`images/complex-metrics/vm-performance.png`](../../images/complex-metrics/vm-performance.png)
+Source of the sub-metrics and limits: [`formula/vm-performance.png`](formula/vm-performance.png)
 
 ## Step 1: Collect the 9 sub-metrics
 
@@ -77,7 +77,7 @@ The same examples are checked by the tests in [`Management Pack/tests/test_vm_pe
 
 A sub-metric with no data is left out of the KPI. It is never counted as perfect.
 
-A stat whose latest value is more than 10 minutes old counts as no data. A last known value is never used. See [No stale values](../how-it-works.md#no-stale-values).
+A stat whose latest value is more than 10 minutes old counts as no data. A last known value is never used. See [No stale values](../../reference/metrics/README.md#no-stale-values).
 
 - A VM without VMware Tools has no Memory Zip Swap, because that needs `guest|used_memory`. The KPI of such a VM is built from the other sub-metrics.
 - If no sub-metric has data, the KPI is not published.

@@ -33,7 +33,7 @@ Design choices (strict: a problem must never be hidden)
     - When no host has any data at all, the request to VCF Operations failed: nothing is published,
       instead of every host and cluster at 0 %.
 
-All inputs come from VCF Operations. See docs/explanation/metrics/operational-availability.md, including its known limitations.
+All inputs come from VCF Operations. See docs/reference/metrics/operational-availability.md, including its known limitations.
 """
 import logging
 from typing import Dict, List, NamedTuple, Optional

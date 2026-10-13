@@ -8,7 +8,7 @@ It is published on every powered-on VM with VMware Tools as `vCommunity|Guest OS
 
 Code: [`Management Pack/app/metrics/vm/guest_os_performance_metrics.py`](../../../Management%20Pack/app/metrics/vm/guest_os_performance_metrics.py)
 
-Source of the sub-metrics and limits: [`images/complex-metrics/guest-os-performance.png`](../../images/complex-metrics/guest-os-performance.png)
+Source of the sub-metrics and limits: [`formula/guest-os-performance.png`](formula/guest-os-performance.png)
 
 ## The 4 sub-metrics
 
@@ -42,4 +42,4 @@ The same examples are checked by the tests in [`Management Pack/tests/test_guest
 - A sub-metric with no data is left out of the KPI. It is never counted as perfect.
 - A powered-off VM gets no KPI.
 
-A stat whose latest value is more than 10 minutes old counts as no data. A last known value is never used. See [No stale values](../how-it-works.md#no-stale-values).
+A stat whose latest value is more than 10 minutes old counts as no data. A last known value is never used. See [No stale values](../../reference/metrics/README.md#no-stale-values).

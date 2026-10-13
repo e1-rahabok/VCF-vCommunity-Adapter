@@ -34,7 +34,7 @@ How it is calculated
 
 Where the limits come from
 --------------------------
-docs/images/complex-metrics/cluster-risk.png. Six green ranges are
+docs/reference/metrics/formula/cluster-risk.png. Six green ranges are
 marked "Excluded": while green, those rows are left out of the KPI rather than
 scored 100, see "Skip when green" in metrics/kpi_score.py.
 
@@ -46,7 +46,7 @@ tiering has no Memory Tiering Latency, so that sub-metric is left out for it.
 
 Called from: collectors/cluster/collectClusterData.py, once per cluster.
 Overall approach for all KPIs: metrics/README.md
-Description for people who do not read code: docs/explanation/kpis/cluster-risk.md
+Description for people who do not read code: docs/reference/metrics/cluster-risk.md
 """
 import logging
 from typing import Dict, List, NamedTuple, Optional

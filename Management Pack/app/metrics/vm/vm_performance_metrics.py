@@ -28,7 +28,7 @@ How it is calculated
 
 Where the limits come from
 --------------------------
-docs/images/complex-metrics/vm-performance.png. CPU Overlap,
+docs/reference/metrics/formula/vm-performance.png. CPU Overlap,
 Network Dropped Tx and CPU Run have their green range marked "Excluded": while
 green they are left out of the KPI rather than scored 100, see "Skip when green"
 in metrics/kpi_score.py.
@@ -46,7 +46,7 @@ a VM stat as it is, add a row to METRICS and a line to SOURCE_STATS.
 Called from: collectors/vm/collectVMData.py. Stats are read once for all VMs,
 then the entry point runs once per powered-on VM.
 Overall approach for all KPIs: metrics/README.md
-Description for people who do not read code: docs/explanation/kpis/vm-performance.md
+Description for people who do not read code: docs/reference/metrics/vm-performance.md
 """
 import logging
 from typing import Dict, List, Optional
