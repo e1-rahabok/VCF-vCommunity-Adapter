@@ -81,6 +81,7 @@ Some metrics this pack needs are deactivated by default in VCF Operations: the p
 - [VM Shares](docs/vm-shares.md) (read its Known Limitations)
 - [Capacity Utilization](docs/capacity-utilization.md) (read its Known Limitations)
 - [Daily Cluster Check](docs/daily-cluster-check.md) (read its Known Limitations)
+- [Extreme Capacity Dashboard](docs/extreme-capacity-dashboard.md) (read its Known Limitations)
 
 **Planned (future work, not built):**
 
