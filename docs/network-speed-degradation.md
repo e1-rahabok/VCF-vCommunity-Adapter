@@ -11,7 +11,7 @@ Code: [`Management Pack/app/metrics/network/network_speed_degradation.py`](../Ma
 > **Read this before using the metrics.**
 
 - **Needs a metric that is deactivated by default.** `net|configuredSpeed` must be activated in the policy, with **Instanced State** on (one value per NIC). Without it there is no value. See [Activate the Required Metrics in the Policy](installation.md#activate-the-required-metrics-in-the-policy).
-- **Not working in versions 0.1.0 and 0.1.1.** The actual NIC speed (`net:vmnic0|speed`) is stored as a property, but the pack reads it as a metric, so it finds none. To be fixed.
+- **Not working in versions 0.1.0 to 0.1.2.** The actual NIC speed (`net:vmnic0|speed`) is stored as a property, but the pack reads it as a metric, so it finds none. To be fixed.
 - **No stale values.** A stat whose latest value is more than 10 minutes old is treated as no data, so the metric is left blank rather than showing a value that no longer reflects reality. Properties keep their last known value. See [How It Works](how-it-works.md#no-stale-values).
 - **A NIC set to auto-negotiate may have no configured speed.** A NIC without a configured speed (none or 0) cannot be compared, so it is left out. A host whose NICs all auto-negotiate then has no value, and is not counted. *To verify on a live system:* the value of `net|configuredSpeed` for an auto-negotiating NIC.
 - **A NIC that is down is not counted as degraded.** A speed of 0 means the NIC is down or unused, which is a different problem from running slower. It is left out.

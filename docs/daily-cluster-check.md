@@ -16,6 +16,8 @@ Two settings in the account's **Advanced Settings** (see [Configuration](configu
 | **Cluster Check Period (hours)** | 1, 2, 4, 6, 8, 12, 24 | 24 | How long each window is, and how often it is calculated. |
 | **Cluster Check Time (UTC)** | HH:MM | 00:00 | When one window ends. The others end every period from it. |
 
+**Upgrade from 0.1.0 or 0.1.1.** The drop-down values are now "01" to "24", so they sort as numbers. An account saved with a period other than 24 keeps working with that period. Its drop-down may show "--Select--" until you choose the period again.
+
 Each period divides a day, so the windows end at the same times every day. Each window is as long as the period, so every hour is covered exactly once.
 
 | Period | Time | Windows end at (UTC) | Each covers |

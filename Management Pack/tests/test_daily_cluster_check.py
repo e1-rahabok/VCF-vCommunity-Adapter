@@ -204,11 +204,22 @@ def test_a_window_without_its_length_is_due_again():
     assert "domain-c1" in dc.read_daily_cluster_check(api, "ai-1", "00:00", NOW)
 
 
-def test_period_labels_sort_like_numbers():
-    # VCF Operations sorts the drop-down by label, as text.
+def test_period_drop_down_sorts_like_numbers():
+    # VCF Operations sorts the drop-down by stored value, as text. The labels are kept in the same order.
+    values = [value for value, _ in dc.PERIOD_CHOICES]
     labels = [label for _, label in dc.PERIOD_CHOICES]
+    assert sorted(values) == values == dc.PERIOD_HOURS
+    assert [int(value) for value in values] == [1, 2, 4, 6, 8, 12, 24]
     assert sorted(labels) == labels
     assert labels[0] == "01 hour" and labels[-1] == "24 hours"
-    # The stored values do not change, so existing accounts keep their setting.
-    assert [value for value, _ in dc.PERIOD_CHOICES] == dc.PERIOD_HOURS
+    assert dc.DEFAULT_PERIOD in values
+
+
+def test_parse_period_accepts_values_saved_without_the_zero():
+    assert dc.parse_period("06") == 6
+    assert dc.parse_period("6") == 6
+    assert dc.parse_period("1") == 1
+    assert dc.parse_period("24") == 24
+    assert dc.parse_period("006") == 6
+    assert dc.parse_period("x") == 24
 

@@ -54,10 +54,11 @@ TIME_SETTING = "daily_cluster_check_time"
 DEFAULT_TIME = "00:00"
 # Account setting (Advanced Settings): the length of the window, which is also how often it is calculated.
 PERIOD_SETTING = "cluster_check_period_hours"
-PERIOD_HOURS = ["1", "2", "4", "6", "8", "12", "24"]     # each divides 24
-# Labels in the Advanced Settings drop-down. VCF Operations sorts the drop-down by label, as text, so the
-# hours are zero-padded: "01 hour" ... "24 hours" sort as 1 ... 24, not as "1", "12", "2", "24".
-PERIOD_CHOICES = [(hours, f"{int(hours):02d} hour{'s' if hours != '1' else ''}") for hours in PERIOD_HOURS]
+# The stored values of the Advanced Settings drop-down. VCF Operations sorts the drop-down by stored value,
+# as text, so they are zero-padded: "01" ... "24" sort as 1 ... 24, not as "1", "12", "2", "24".
+# The labels are padded the same way, in case a version sorts by label.
+PERIOD_HOURS = ["01", "02", "04", "06", "08", "12", "24"]     # each divides 24
+PERIOD_CHOICES = [(hours, f"{hours} hour{'s' if hours != '01' else ''}") for hours in PERIOD_HOURS]
 DEFAULT_PERIOD = "24"
 
 # The inputs, as stored in VCF Operations.
@@ -116,9 +117,12 @@ def parse_time(text: Optional[str]) -> Tuple[int, int]:
 
 
 def parse_period(text: Optional[str]) -> int:
-    """The period in hours. An empty or unknown setting falls back to DEFAULT_PERIOD, with a warning."""
+    """The period in hours. An empty or unknown setting falls back to DEFAULT_PERIOD, with a warning.
+
+    "6" and "06" are both 6: accounts saved with version 0.1.1 or earlier store the hours without the zero.
+    """
     value = (text or "").strip()
-    if value in PERIOD_HOURS:
+    if value.isdigit() and f"{int(value):02d}" in PERIOD_HOURS:
         return int(value)
     if value:
         logger.warning(f"Cluster Check Period '{text}' is not one of {', '.join(PERIOD_HOURS)}. "
