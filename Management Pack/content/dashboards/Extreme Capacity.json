@@ -773,7 +773,7 @@
                "type": "HealthChart",
                "title": "Risk",
                "config": {
-                  "yellowBound": 5,
+                  "yellowBound": 25,
                   "metricName": "vCommunity|Cluster Risk|Cluster Risk Score",
                   "metricKey": "vCommunity|Cluster Risk|Cluster Risk Score",
                   "relationshipMode": {
