@@ -5605,8 +5605,6 @@ Source: vSphere Adapter</Description>
                                         
                                     <Property name="resourceKind" value="VirtualMachine"/>
                                         
-                                    <Property name="rollUpType" value="NONE"/>
-                                        
                                     <Property name="rollUpCount" value="0"/>
                                         
                                     <Property name="transformations">
@@ -5619,7 +5617,7 @@ Source: vSphere Adapter</Description>
                                             
                                     </Property>
                                         
-                                    <Property name="isProperty" value="false"/>
+                                    <Property name="isProperty" value="true"/>
                                         
                                     <Property name="displayName" value="Share per vCPU"/>
                                         
@@ -6948,8 +6946,6 @@ Write latency is used as read latency tends to be much lower due to cache. </Des
                                         
                                     <Property name="resourceKind" value="VirtualMachine"/>
                                         
-                                    <Property name="rollUpType" value="NONE"/>
-                                        
                                     <Property name="rollUpCount" value="0"/>
                                         
                                     <Property name="transformations">
@@ -6962,7 +6958,7 @@ Write latency is used as read latency tends to be much lower due to cache. </Des
                                             
                                     </Property>
                                         
-                                    <Property name="isProperty" value="false"/>
+                                    <Property name="isProperty" value="true"/>
                                         
                                     <Property name="displayName" value="Share per MB of Memory"/>
                                         

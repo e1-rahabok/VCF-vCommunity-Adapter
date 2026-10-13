@@ -10,7 +10,8 @@ they can: a VM above Normal gets more than its fair part when there is contentio
 They replace the "Share per vCPU" and "Share per GB of Memory" super metrics, which had to be enabled by hand.
 The memory super metric was in fact per MB (shares / KB x 1024), so it is now named per MB, with the same values.
 
-Published on every VM, powered on or off: shares apply either way. No value when the VM has no vCPU or memory
+Published as properties, not metrics, on every VM, powered on or off: shares apply either way. They change
+only when the VM's configuration changes, and VCF Operations stores a property only when its value changes. No value when the VM has no vCPU or memory
 size, or no shares, instead of a division by zero. All inputs come from VCF Operations.
 See docs/vm-shares.md.
 """
@@ -23,10 +24,10 @@ from utils.ops_stats import as_number, read_latest_properties, read_latest_stats
 
 logger = logging.getLogger(__name__)
 
-# Where the metrics are published: the existing "Configuration" group of the VM, next to the share levels.
+# Where the properties are published: the existing "Configuration" group of the VM, next to the share levels.
 GROUP = "Configuration"
-CPU_METRIC = "Share per vCPU"
-MEMORY_METRIC = "Share per MB of Memory"
+CPU_PROPERTY = "Share per vCPU"
+MEMORY_PROPERTY = "Share per MB of Memory"
 
 CPU_SHARES = "config|cpuAllocation|shares|shares"
 MEMORY_SHARES = "config|memoryAllocation|shares|shares"
@@ -64,11 +65,11 @@ def collect_vm_shares(vm_obj: Object, vm_name: str, vm: VmInfo, shares: Dict[str
     """Publishes Share per vCPU and Share per MB of Memory. shares is the entry of this VM in read_vm_shares()."""
     try:
         values = {
-            CPU_METRIC: per_unit(shares.get(CPU_SHARES), vm.vcpus),
-            MEMORY_METRIC: per_unit(shares.get(MEMORY_SHARES), vm.memory_mb),
+            CPU_PROPERTY: per_unit(shares.get(CPU_SHARES), vm.vcpus),
+            MEMORY_PROPERTY: per_unit(shares.get(MEMORY_SHARES), vm.memory_mb),
         }
-        for metric, value in values.items():
+        for name, value in values.items():
             if value is not None:
-                vm_obj.with_metric(f"vCommunity|{GROUP}|{metric}", round(value, 2))
+                vm_obj.with_property(f"vCommunity|{GROUP}|{name}", round(value, 2))
     except Exception as e:
         logger.warning(f"Failed to publish the VM shares for : {vm_name} - {repr(e)}")

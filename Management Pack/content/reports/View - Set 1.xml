@@ -641,8 +641,6 @@
                                         
                                     <Property name="resourceKind" value="VirtualMachine"/>
                                         
-                                    <Property name="rollUpType" value="NONE"/>
-                                        
                                     <Property name="rollUpCount" value="0"/>
                                         
                                     <Property name="transformations">
@@ -655,7 +653,7 @@
                                             
                                     </Property>
                                         
-                                    <Property name="isProperty" value="false"/>
+                                    <Property name="isProperty" value="true"/>
                                         
                                     <Property name="displayName" value="Share per vCPU"/>
                                         
@@ -773,8 +771,6 @@
                                         
                                     <Property name="resourceKind" value="VirtualMachine"/>
                                         
-                                    <Property name="rollUpType" value="NONE"/>
-                                        
                                     <Property name="rollUpCount" value="0"/>
                                         
                                     <Property name="transformations">
@@ -787,7 +783,7 @@
                                             
                                     </Property>
                                         
-                                    <Property name="isProperty" value="false"/>
+                                    <Property name="isProperty" value="true"/>
                                         
                                     <Property name="displayName" value="Share per MB of Memory"/>
                                         

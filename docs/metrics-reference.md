@@ -171,8 +171,8 @@ Every property and metric the vCommunity Management Pack pushes to VCF Operation
 | :--- | :--- | :--- |
 | 🟢 Metric | `vCommunity\|VM Performance\|VM Performance Score` | Key Performance Indicator (0-100 %) of a powered-on VM as a virtual motherboard, combining 9 sub-metrics. 100 is perfect. See [VM Performance KPI](vm-performance-kpi.md) for the formula. |
 | 🟢 Metric | `vCommunity\|VM Performance\|Memory Zip Swap` | Compressed plus swapped memory of the VM, as a share (%) of the memory the guest uses. |
-| 🟢 Metric | `vCommunity\|Configuration\|Share per vCPU` | CPU shares ÷ vCPUs, on every VM. Normal = 1000. See [VM Shares](vm-shares.md). |
-| 🟢 Metric | `vCommunity\|Configuration\|Share per MB of Memory` | Memory shares ÷ configured MB, on every VM. Normal = 10. Replaces "Share per GB of Memory", which was in fact per MB. See [VM Shares](vm-shares.md#known-limitations). |
+| ⚪ Property | `vCommunity\|Configuration\|Share per vCPU` | CPU shares ÷ vCPUs, on every VM. Normal = 1000. See [VM Shares](vm-shares.md). |
+| ⚪ Property | `vCommunity\|Configuration\|Share per MB of Memory` | Memory shares ÷ configured MB, on every VM. Normal = 10. Replaces "Share per GB of Memory", which was in fact per MB. See [VM Shares](vm-shares.md#known-limitations). |
 | 🟢 Metric | `vCommunity\|VM Guest OS KPI` | Average (0-100 %) of VM Performance Score and Guest OS Performance Score. A VM without VMware Tools has no Guest OS Performance; its VM Guest OS KPI is then its VM Performance Score alone. Replaces the "vSphere VM Performance" super metric. |
 | 🟢 Metric | `vCommunity\|Guest OS Performance\|Guest OS Performance Score` | Key Performance Indicator (0-100 %) of the guest OS of a powered-on VM with VMware Tools, combining 4 sub-metrics. 100 is perfect. See [Guest OS Performance KPI](guest-os-performance-kpi.md) for the formula. |
 | ⚪ Property | `vCommunity\|Options\|`<config_path>`` | Value of a VM config field (e.g. config.bootOptions.bootDelay) tracked via the vm_options config file. One property per tracked field; skipped entirely if the value is None. |
@@ -303,8 +303,8 @@ These super metrics were removed from `content/supermetrics`. Their dashboards, 
 | ESXi Host Operational Availability ("ESXi Host Availability") | Host | `vCommunity\|Availability\|ESXi Host Operational Availability` |
 | ESXi Hosts Operational Availability ("ESXi Hosts Average Availability") | vSphere World | `vCommunity\|Availability\|ESXi Hosts Operational Availability` |
 | Cluster Operational Availability | Cluster | `vCommunity\|Availability\|Cluster Operational Availability` |
-| Share per vCPU | VM | `vCommunity\|Configuration\|Share per vCPU` |
-| Share per GB of Memory | VM | `vCommunity\|Configuration\|Share per MB of Memory` (same values: it was per MB) |
+| Share per vCPU | VM | `vCommunity\|Configuration\|Share per vCPU` (property) |
+| Share per GB of Memory | VM | `vCommunity\|Configuration\|Share per MB of Memory` (property; same values: it was per MB) |
 | Network Speed Degradation | Host | `vCommunity\|Network\|Network Speed Degradation` |
 | Total Network Speed Degradation | vSphere World, Datacenter | `vCommunity\|Network\|Total Network Speed Degradation` |
 | Worst Cluster Operational Availability | vSphere World, vCenter | `vCommunity\|Availability\|Worst Cluster Operational Availability`. No longer provided on Custom Datacenter. |

@@ -364,9 +364,9 @@ def get_adapter_definition() -> AdapterDefinition:
         vCommunity.define_metric(vm_guest_os_kpi.KPI_KEY, vm_guest_os_kpi.KPI_KEY, unit=Units.RATIO.PERCENT)
 
         configuration.define_string_property("CPU Allocation Share Level", "CPU Allocation Share Level")
-        # Normalized shares. See metrics/vm/vm_shares.py.
-        configuration.define_metric(vm_shares.CPU_METRIC, vm_shares.CPU_METRIC)
-        configuration.define_metric(vm_shares.MEMORY_METRIC, vm_shares.MEMORY_METRIC)
+        # Normalized shares, as properties: they change only with the VM configuration. See metrics/vm/vm_shares.py.
+        configuration.define_numeric_property(vm_shares.CPU_PROPERTY, vm_shares.CPU_PROPERTY)
+        configuration.define_numeric_property(vm_shares.MEMORY_PROPERTY, vm_shares.MEMORY_PROPERTY)
         configuration.define_string_property("VM Change Version", "VM Change Version")
         configuration.define_string_property("VM Firmware", "VM Firmware")
         configuration.define_string_property("VM Latency Sensitivity Level", "VM Latency Sensitivity Level")
