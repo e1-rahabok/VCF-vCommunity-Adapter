@@ -13,7 +13,7 @@ All 13 metrics are published on the cluster object under `vCommunity|Cluster Ris
 
 Code: [`Management Pack/app/metrics/cluster/cluster_risk_metrics.py`](../../../Management%20Pack/app/metrics/cluster/cluster_risk_metrics.py)
 
-Source of the limits: [`Complex Metrics/vSphere Cluster Risk metric.png`](../../images/complex-metrics/cluster-risk.png)
+Source of the limits: [`images/complex-metrics/cluster-risk.png`](../../images/complex-metrics/cluster-risk.png)
 
 ## Change in version 0.1.0: higher is worse
 

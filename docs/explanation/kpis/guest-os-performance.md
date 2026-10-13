@@ -8,7 +8,7 @@ It is published on every powered-on VM with VMware Tools as `vCommunity|Guest OS
 
 Code: [`Management Pack/app/metrics/vm/guest_os_performance_metrics.py`](../../../Management%20Pack/app/metrics/vm/guest_os_performance_metrics.py)
 
-Source of the sub-metrics and limits: [`Complex Metrics/Guest OS Performance metric.png`](../../images/complex-metrics/guest-os-performance.png)
+Source of the sub-metrics and limits: [`images/complex-metrics/guest-os-performance.png`](../../images/complex-metrics/guest-os-performance.png)
 
 ## The 4 sub-metrics
 

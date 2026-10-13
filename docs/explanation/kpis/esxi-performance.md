@@ -11,7 +11,7 @@ All 10 metrics are published on the host object under `vCommunity|ESXi Performan
 
 Code: [`Management Pack/app/metrics/host/esxi_performance_metrics.py`](../../../Management%20Pack/app/metrics/host/esxi_performance_metrics.py)
 
-Source of the limits: [`Complex Metrics/vSphere ESXi Performance metric.png`](../../images/complex-metrics/esxi-performance.png)
+Source of the limits: [`images/complex-metrics/esxi-performance.png`](../../images/complex-metrics/esxi-performance.png)
 
 ## The 9 sub-metrics
 

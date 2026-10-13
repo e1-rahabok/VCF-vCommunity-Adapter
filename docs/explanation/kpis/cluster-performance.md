@@ -8,7 +8,7 @@ All 10 metrics are published on the cluster object under `vCommunity|Cluster Per
 
 Code: [`Management Pack/app/metrics/cluster/cluster_performance_metrics.py`](../../../Management%20Pack/app/metrics/cluster/cluster_performance_metrics.py)
 
-Source of the sub-metrics and limits: [`Complex Metrics/vSphere Cluster Performance metric.png`](../../images/complex-metrics/cluster-performance.png)
+Source of the sub-metrics and limits: [`images/complex-metrics/cluster-performance.png`](../../images/complex-metrics/cluster-performance.png)
 
 ## Step 1: Collect the 9 sub-metrics
 

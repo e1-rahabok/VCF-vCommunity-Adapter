@@ -10,7 +10,7 @@ It is published on every powered-on VM as `vCommunity|VM Performance|VM Performa
 
 Code: [`Management Pack/app/metrics/vm/vm_performance_metrics.py`](../../../Management%20Pack/app/metrics/vm/vm_performance_metrics.py)
 
-Source of the sub-metrics and limits: [`Complex Metrics/Virtual Motherboard Performance metric.png`](../../images/complex-metrics/vm-performance.png)
+Source of the sub-metrics and limits: [`images/complex-metrics/vm-performance.png`](../../images/complex-metrics/vm-performance.png)
 
 ## Step 1: Collect the 9 sub-metrics
 
