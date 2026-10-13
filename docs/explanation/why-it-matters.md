@@ -1,4 +1,4 @@
-# VCF Operations vCommunity Management Pack — Why It Matters
+# Why It Matters
 
 *An overview for technical leads, managers, and architects evaluating whether to deploy this Management Pack.*
 
@@ -24,7 +24,7 @@ The tools organizations already use to catch this — periodic best-practice hea
 |---|---|
 | **Configuration drift detection** | Catch a changed advanced setting, a modified VM parameter, or an inconsistent cluster config the moment it happens — not months later during an RCA. |
 | **Security hardening alignment** | Continuously surface the specific ESXi/VM settings your hardening guide calls out (see below), instead of relying solely on point-in-time assessments. |
-| **Standardization across environments** | Compare lab vs. production, or site A vs. site B, against the same baseline — config files can be scoped per-environment (see [Configuration](docs/configuration.md#3-advanced-configuration-tailoring-monitoring-scope)). |
+| **Standardization across environments** | Compare lab vs. production, or site A vs. site B, against the same baseline — config files can be scoped per-environment (see [Configuration](../how-to/configuration.md#3-advanced-configuration-tailoring-monitoring-scope)). |
 | **Feeding compliance tooling** | VCF Operations Compliance Templates can only evaluate data that's actually collected. This Management Pack is what makes your config workbook's settings visible to that layer in the first place. |
 | **Faster incident root-cause** | When something breaks, "what changed" is a dashboard query instead of a guess — configuration history lives alongside the rest of your VCF Operations data. |
 | **Continuous evidence between formal reviews** | Complements periodic engagements like the VMware Health and Security Toolkit (HST) — HST provides deep, point-in-time best-practice and security assessments (typically quarterly or annual, run with your VCF TAM); this Management Pack provides the continuous layer in between, so drift doesn't go unnoticed for months at a time. |
@@ -61,10 +61,10 @@ This Management Pack isn't a replacement for anything you're already using — i
 
 ## What It Costs to Adopt
 
-- **Free**, community-licensed (see [License](LICENSE)).
+- **Free**, community-licensed (see [License](../../LICENSE)).
 - Deploys like any other VCF Operations Management Pack — no agents on ESXi hosts, no changes to vCenter. Guest OS features (Windows Services/Event Logs) are optional and agentless via GuestAPI.
 - Built and performance-tuned for scale: a full collection cycle stays comfortably under 5 minutes even at 1,500+ hosts and 15,000+ VMs.
-- You control exactly what's monitored — start with a handful of settings from your hardening guide, expand over time. See [Installation](docs/installation.md) and [Configuration](docs/configuration.md).
+- You control exactly what's monitored — start with a handful of settings from your hardening guide, expand over time. See [Installation](../how-to/installation.md) and [Configuration](../how-to/configuration.md).
 
 ---
 

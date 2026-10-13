@@ -6,7 +6,7 @@ There are two kinds of metric here:
 
 - **Plain metrics.** One value, read from vCenter and published. Example: DRS Score.
 - **KPIs.** One 0-100 % score per object, built from many sub-metrics. Most of this page is about KPIs. 100 is best, except Cluster Risk, which is published as 100 minus the score so that higher means more risk (`publish_kpi(..., higher_is_worse=True)`).
-- **No stale values.** `read_latest_stats()` drops any stat older than `STALE_AFTER_MINUTES` (10 minutes), so it counts as no data. Properties keep their last known value. See `docs/how-it-works.md`.
+- **No stale values.** `read_latest_stats()` drops any stat older than `STALE_AFTER_MINUTES` (10 minutes), so it counts as no data. Properties keep their last known value. See `docs/explanation/how-it-works.md`.
 
 ## The five KPIs
 
@@ -14,13 +14,13 @@ All five use the same scoring, in `kpi_score.py`. Each has its own table of sub-
 
 | KPI | Object | Sub-metrics | Status | Source of the limits |
 | :--- | :--- | :--- | :--- | :--- |
-| Cluster Performance | Cluster | 9 | Working | `docs/Complex Metrics/vSphere Cluster Performance metric.png` |
-| VM Performance | VM | 9 | Working | `docs/Complex Metrics/Virtual Motherboard Performance metric.png` |
-| Guest OS Performance | VM | 4 | Working | `docs/Complex Metrics/Guest OS Performance metric.png` |
-| Cluster Risk | Cluster | 12 | Working | `docs/Complex Metrics/vSphere Cluster Risk metric.png` |
-| ESXi Performance | ESXi host | 9 | Working | `docs/Complex Metrics/vSphere ESXi Performance metric.png` |
+| Cluster Performance | Cluster | 9 | Working | `docs/images/complex-metrics/cluster-performance.png` |
+| VM Performance | VM | 9 | Working | `docs/images/complex-metrics/vm-performance.png` |
+| Guest OS Performance | VM | 4 | Working | `docs/images/complex-metrics/guest-os-performance.png` |
+| Cluster Risk | Cluster | 12 | Working | `docs/images/complex-metrics/cluster-risk.png` |
+| ESXi Performance | ESXi host | 9 | Working | `docs/images/complex-metrics/esxi-performance.png` |
 
-All five are called by a collector and declared in `adapter.py`. The VCF Operations keys and the properties endpoint were confirmed on a live system. See "Confirmed on a live system" on the [Cluster Risk page](../../../docs/cluster-risk-kpi.md#confirmed-on-a-live-system).
+All five are called by a collector and declared in `adapter.py`. The VCF Operations keys and the properties endpoint were confirmed on a live system. See "Confirmed on a live system" on the [Cluster Risk page](../../../docs/explanation/kpis/cluster-risk.md#confirmed-on-a-live-system).
 
 ## What is in this folder
 
@@ -30,16 +30,16 @@ All five are called by a collector and declared in `adapter.py`. The VCF Operati
 | `cluster/cluster_performance_metrics.py` | Cluster Performance KPI. One score per cluster, from 9 sub-metrics. |
 | `cluster/cluster_risk_metrics.py` | Cluster Risk KPI. One score per cluster, from 12 sub-metrics. |
 | `cluster/drs_metrics.py` | DRS Score. A plain metric, not a KPI. |
-| `cluster/capacity_utilization.py` | Capacity CPU and Memory Utilization per cluster: sum of the running hosts' % ÷ (N − max(k, gone hosts)). Not a KPI. See `docs/capacity-utilization.md`, including its known limitations. |
-| `cluster/daily_cluster_check.py` | Daily Cluster Check: once per period (1 to 24 hours, default 24), Close for Business per cluster from the window's percentiles. See `docs/daily-cluster-check.md`. |
+| `cluster/capacity_utilization.py` | Capacity CPU and Memory Utilization per cluster: sum of the running hosts' % ÷ (N − max(k, gone hosts)). Not a KPI. See `docs/explanation/metrics/capacity-utilization.md`, including its known limitations. |
+| `cluster/daily_cluster_check.py` | Daily Cluster Check: once per period (1 to 24 hours, default 24), Close for Business per cluster from the window's percentiles. See `docs/explanation/metrics/daily-cluster-check.md`. |
 | `vm/vm_performance_metrics.py` | VM Performance KPI. One score per powered-on VM, from 9 sub-metrics. Also reads the stats of Guest OS Performance. |
 | `vm/guest_os_performance_metrics.py` | Guest OS Performance KPI. One score per powered-on VM with VMware Tools, from 4 sub-metrics. |
 | `host/esxi_performance_metrics.py` | ESXi Performance KPI. One score per connected ESXi host, from 9 sub-metrics. |
-| `world/cluster_summary_metrics.py` | 10th percentile and worst Cluster Performance, 90th percentile and worst Cluster Risk, over all clusters of all vCenters, on vSphere World. Not a KPI. See `docs/vsphere-world-metrics.md`, including its known limitations. |
-| `availability/operational_availability.py` | ESXi Host and Cluster Operational Availability, and the worst cluster per vCenter. Not a KPI. See `docs/operational-availability.md`, including its known limitations. |
+| `world/cluster_summary_metrics.py` | 10th percentile and worst Cluster Performance, 90th percentile and worst Cluster Risk, over all clusters of all vCenters, on vSphere World. Not a KPI. See `docs/explanation/metrics/vsphere-world-metrics.md`, including its known limitations. |
+| `availability/operational_availability.py` | ESXi Host and Cluster Operational Availability, and the worst cluster per vCenter. Not a KPI. See `docs/explanation/metrics/operational-availability.md`, including its known limitations. |
 | `world/availability_summary_metrics.py` | Worst Cluster and average ESXi Host Operational Availability, over all vCenters, on vSphere World. |
-| `network/network_speed_degradation.py` | Network Speed Degradation per host, and the count of degraded hosts per Datacenter and on vSphere World. Not a KPI. See `docs/network-speed-degradation.md`, including its known limitations. |
-| `vm/vm_shares.py` | Share per vCPU and Share per MB of Memory, as properties, on every VM. Not a KPI. See `docs/vm-shares.md`. |
+| `network/network_speed_degradation.py` | Network Speed Degradation per host, and the count of degraded hosts per Datacenter and on vSphere World. Not a KPI. See `docs/explanation/metrics/network-speed-degradation.md`, including its known limitations. |
+| `vm/vm_shares.py` | Share per vCPU and Share per MB of Memory, as properties, on every VM. Not a KPI. See `docs/explanation/metrics/vm-shares.md`. |
 | `vm_contention.py` | The worst-VM, 90th-percentile and bad-packet formulas, shared by Cluster Performance and ESXi Performance. |
 
 Two files outside this folder belong to the same design:
@@ -232,9 +232,9 @@ python -m pytest tests
 
 ## Pages for users
 
-- [Cluster Performance KPI](../../../docs/cluster-performance-kpi.md)
-- [VM Performance KPI](../../../docs/vm-performance-kpi.md)
-- [Guest OS Performance KPI](../../../docs/guest-os-performance-kpi.md)
-- [Cluster Risk KPI](../../../docs/cluster-risk-kpi.md)
-- [ESXi Performance KPI](../../../docs/esxi-performance-kpi.md)
-- [Metrics & Properties Reference](../../../docs/metrics-reference.md)
+- [Cluster Performance KPI](../../../docs/explanation/kpis/cluster-performance.md)
+- [VM Performance KPI](../../../docs/explanation/kpis/vm-performance.md)
+- [Guest OS Performance KPI](../../../docs/explanation/kpis/guest-os-performance.md)
+- [Cluster Risk KPI](../../../docs/explanation/kpis/cluster-risk.md)
+- [ESXi Performance KPI](../../../docs/explanation/kpis/esxi-performance.md)
+- [Metrics & Properties Reference](../../../docs/reference/metrics-and-properties.md)

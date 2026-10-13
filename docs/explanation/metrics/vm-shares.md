@@ -4,14 +4,14 @@
 
 They replace the "Share per vCPU" and "Share per GB of Memory" super metrics. Unlike a super metric, they need no manual enablement in the policy.
 
-Code: [`Management Pack/app/metrics/vm/vm_shares.py`](../Management%20Pack/app/metrics/vm/vm_shares.py)
+Code: [`Management Pack/app/metrics/vm/vm_shares.py`](../../../Management%20Pack/app/metrics/vm/vm_shares.py)
 
 ## Known limitations
 
 > **Read this before using the properties.**
 
 - **Properties, not metrics, since version 0.1.0.** History from before the upgrade stays under the old metric, and is not shown with the property. A chart of the property shows a point only when the value changes.
-- **Inputs read as stats are not used when stale.** When VCF Operations stores the shares as stats rather than properties, a value more than 10 minutes old counts as no data. See [How It Works](how-it-works.md#no-stale-values).
+- **Inputs read as stats are not used when stale.** When VCF Operations stores the shares as stats rather than properties, a value more than 10 minutes old counts as no data. See [How It Works](../how-it-works.md#no-stale-values).
 - **"Share per GB of Memory" is now "Share per MB of Memory".** The super metric calculated shares ÷ memoryKB × 1024, which is per MB, not per GB. The values are the same as before; only the name is correct now. Normal is 10.
 - **No value when the VM has no vCPU count, no memory size or no shares in VCF Operations**, instead of a division by zero.
 - **Custom shares are compared as they are.** A VM with custom shares can be anywhere; the Normal, Low and High values below apply to the standard levels only.
@@ -39,4 +39,4 @@ Published as **properties** on every VM, powered on or off, in the VM's `vCommun
 
 A VM with 4 vCPU and 16 GB at Normal has 4,000 CPU shares and 163,840 memory shares: Share per vCPU = 1,000, Share per MB of Memory = 10.
 
-The same example is checked by the tests in [`Management Pack/tests/test_vm_shares.py`](../Management%20Pack/tests/test_vm_shares.py).
+The same example is checked by the tests in [`Management Pack/tests/test_vm_shares.py`](../../../Management%20Pack/tests/test_vm_shares.py).

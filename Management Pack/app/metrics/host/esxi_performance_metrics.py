@@ -32,7 +32,7 @@ How it is calculated
 
 Where the limits come from
 --------------------------
-docs/Complex Metrics/vSphere ESXi Performance metric.png.
+docs/images/complex-metrics/esxi-performance.png.
 
 Missing data
 ------------
@@ -42,7 +42,7 @@ never treated as 0, because 0 means "perfect".
 Called from: collectors/host/collectHostData.py. Stats are read once for all
 hosts, then the entry point runs once per connected host.
 Overall approach for all KPIs: metrics/README.md
-Description for people who do not read code: docs/esxi-performance-kpi.md
+Description for people who do not read code: docs/explanation/kpis/esxi-performance.md
 """
 import logging
 from typing import Dict, List, Optional

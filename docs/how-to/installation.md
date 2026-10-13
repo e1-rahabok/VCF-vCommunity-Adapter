@@ -10,7 +10,7 @@
 
 ## Enable Unsigned PAK Installation
 
-Since the PAK file is not signed by VMware/Broadcom (this is a community-built, unofficial Management Pack — see the main [README](../README.md)), you need to enable unsigned PAK installation once per VCF Operations instance:
+Since the PAK file is not signed by VMware/Broadcom (this is a community-built, unofficial Management Pack — see the main [README](../../README.md)), you need to enable unsigned PAK installation once per VCF Operations instance:
 
 1. Go to `https://<VCF_Ops>/admin` → **Administrator Settings** → **Security Settings** → **Activate Unsigned PAK Installation**.
 
@@ -41,7 +41,7 @@ Some metrics and properties this pack needs are **deactivated by default** in VC
 | :--- | :--- | :--- | :--- |
 | Bad Network Packets (in Cluster Performance and ESXi Performance) | **Total Packets Received** (`net|packetsRx_summation_sum`) | Activated | Optional |
 | | **Total Packets Transmitted** (`net|packetsTx_summation_sum`) | Activated | Optional |
-| [Network Speed Degradation](network-speed-degradation.md) | **Configured Speed** (`net|configuredSpeed`), a property | Activated | **Activated**: one value per physical NIC is needed |
+| [Network Speed Degradation](../explanation/metrics/network-speed-degradation.md) | **Configured Speed** (`net|configuredSpeed`), a property | Activated | **Activated**: one value per physical NIC is needed |
 
 1. Go to **Administration** > **Configurations** > **Policy Definition**.
 2. Edit the **Default Policy**, and open **Metrics and Properties**.
@@ -57,7 +57,7 @@ Some metrics and properties this pack needs are **deactivated by default** in VC
    - **Total Error Packets Transmitted** (`net|errorsTx_summation_sum`)
 7. Save the policy.
 
-![Default Policy, Host System, Network: Total Packets Received and Total Packets Transmitted activated](images/policy-host-network-packets.png)
+![Default Policy, Host System, Network: Total Packets Received and Total Packets Transmitted activated](../images/policy-host-network-packets.png)
 
 The metrics have data from the next collection cycle.
 

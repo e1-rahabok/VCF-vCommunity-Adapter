@@ -27,7 +27,7 @@ def collect(vm_stats):
 
 
 def test_limits_match_the_source_table():
-    # docs/Complex Metrics/Guest OS Performance metric.png
+    # docs/images/complex-metrics/guest-os-performance.png
     limits = {m.name: (m.best, m.green, m.yellow, m.orange, m.zero_at) for m in go.METRICS}
     assert limits["Guest CPU Run Queue per vCPU"] == (0, 2, 4, 8, 16)
     assert limits["Guest Disk Queue"] == (0, 20, 40, 80, 160)

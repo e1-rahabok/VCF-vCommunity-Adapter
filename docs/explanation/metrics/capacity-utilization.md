@@ -4,7 +4,7 @@
 
 It feeds the [Daily Cluster Check](daily-cluster-check.md), which takes its 99th percentile over each window (24 hours by default).
 
-Code: [`Management Pack/app/metrics/cluster/capacity_utilization.py`](../Management%20Pack/app/metrics/cluster/capacity_utilization.py)
+Code: [`Management Pack/app/metrics/cluster/capacity_utilization.py`](../../../Management%20Pack/app/metrics/cluster/capacity_utilization.py)
 
 ## Known limitations
 
@@ -12,9 +12,9 @@ Code: [`Management Pack/app/metrics/cluster/capacity_utilization.py`](../Managem
 
 - **All ESXi hosts of the cluster are assumed to be the same size.** The host percentages are added up as if every host had the same CPU and memory. In a cluster that mixes big and small hosts, a busy small host counts as much as a busy big host, so the value can be off in either direction.
 - **It can be above 100 %.** This is intended, not an error. Above 100 %, the hosts left after a host failure cannot hold the load. See the [example](#example).
-- **Memory is Consumed only.** Ballooned, compressed (zip) and swapped memory are not added, because they are already scored in [Cluster Risk](cluster-risk-kpi.md) (Worst ESXi Memory Ballooned, Worst ESXi Memory Zip Swap).
+- **Memory is Consumed only.** Ballooned, compressed (zip) and swapped memory are not added, because they are already scored in [Cluster Risk](../kpis/cluster-risk.md) (Worst ESXi Memory Ballooned, Worst ESXi Memory Zip Swap).
 - **A disconnected host counts as gone, even if its VMs still run.** When a host is disconnected, neither vCenter nor VCF Operations can see whether its VMs run, or how busy it is. Its load is then missing, so the value is understated while the host stays disconnected.
-- **No last known values.** A host whose latest CPU or memory value is more than 10 minutes old counts as gone. See [No stale values](how-it-works.md#no-stale-values).
+- **No last known values.** A host whose latest CPU or memory value is more than 10 minutes old counts as gone. See [No stale values](../how-it-works.md#no-stale-values).
 - **No HA failover level counts as N+0.** That is the case when HA is off, or when admission control uses a percentage or dedicated failover hosts. The value is then divided by all hosts, so it is lower than with a host set aside.
 - **No value when no capacity is left**: N − max(k, gone hosts) is 0 or less, for example when every host is gone, or a 1-host cluster set to N+1.
 
@@ -59,7 +59,7 @@ A 4-host cluster, N+1. On paper the maximum is 4 × 100 ÷ 3 = 133 %.
 | Hosts 1 and 2 gone | hosts 3 – 4 at 80 % | 160 ÷ 2 | **80 %** |
 | All 4 gone | | 0 ÷ 0 | blank |
 
-**Inputs**, from VCF Operations, the same per-host values as [Cluster Risk](cluster-risk-kpi.md), plus the host state:
+**Inputs**, from VCF Operations, the same per-host values as [Cluster Risk](../kpis/cluster-risk.md), plus the host state:
 
 - ESXi CPU Utilization: `cpu|utilization_average`, the share of the host's CPU threads in use.
 - ESXi Memory Consumed: `mem|consumed_average` as a share of the host's DRAM (`mem:DRAM|memory_tier_total_capacity`, or `mem|host_provisioned` when that has no value). A memory tier such as NVMe is not added.
@@ -80,4 +80,4 @@ A 4-host cluster, N+1. Each host is at 90 % CPU Utilization.
 - CPU Utilization = `(90 + 90 + 90 + 90) ÷ (4 − 1)` = **120 %**.
 - If one host fails, the three left must run 360 % of one host's load: 120 % each. They cannot.
 
-The same examples are checked by the tests in [`Management Pack/tests/test_capacity_utilization.py`](../Management%20Pack/tests/test_capacity_utilization.py).
+The same examples are checked by the tests in [`Management Pack/tests/test_capacity_utilization.py`](../../../Management%20Pack/tests/test_capacity_utilization.py).

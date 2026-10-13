@@ -7,7 +7,7 @@
 
 # VCF Operations vCommunity Management Pack
 
-If your team maintains a config workbook as the source of truth for ESXi and VM settings, this Management Pack is what turns that workbook into continuously monitored, compliance-checkable data in VCF Operations. Please read [Why it matters ?](docs/why-it-matters.md) Page for use cases.
+If your team maintains a config workbook as the source of truth for ESXi and VM settings, this Management Pack is what turns that workbook into continuously monitored, compliance-checkable data in VCF Operations. Please read [Why it matters ?](docs/explanation/why-it-matters.md) Page for use cases.
 
 
 This free Management Pack was developed by [Onur Yuzseven](https://www.linkedin.com/in/oyuzseven/) as his contribution to the vCommunity (VMUG, vExpert, VCP). It's not an official VMware project, and there is no support from VMware GSS. Deploy at your own risk, or consult PSO for a custom solution.
@@ -63,30 +63,16 @@ Login to VMware Hands-on Lab, then test drive [this MP](https://labs.hol.vmware.
 
 ## Required Policy Settings
 
-Some metrics this pack needs are deactivated by default in VCF Operations: the packet counts for Bad Network Packets, and the NIC configured speed for Network Speed Degradation. Without them, those features have no data. See [Activate the Required Metrics in the Policy](docs/installation.md#activate-the-required-metrics-in-the-policy).
+Some metrics this pack needs are deactivated by default in VCF Operations: the packet counts for Bad Network Packets, and the NIC configured speed for Network Speed Degradation. Without them, those features have no data. See [Activate the Required Metrics in the Policy](docs/how-to/installation.md#activate-the-required-metrics-in-the-policy).
 
 ## Documentation
 
-- [Introduction](docs/introduction.md)
-- [Why it matters ?](docs/why-it-matters.md)
-- [System Requirements](docs/system-requirements.md)
-- [Installation](docs/installation.md)
-- [Configuration](docs/configuration.md)
-- [How It Works](docs/how-it-works.md)
-- [Dark Site Installation](docs/dark-site.md)
-- [Metrics & Properties Reference](docs/metrics-reference.md)
-- [vSphere World Cluster Metrics](docs/vsphere-world-metrics.md) (read its Known Limitations)
-- [Operational Availability](docs/operational-availability.md) (read its Known Limitations)
-- [Network Speed Degradation](docs/network-speed-degradation.md) (read its Known Limitations)
-- [VM Shares](docs/vm-shares.md) (read its Known Limitations)
-- [Capacity Utilization](docs/capacity-utilization.md) (read its Known Limitations)
-- [Daily Cluster Check](docs/daily-cluster-check.md) (read its Known Limitations)
-- [Extreme Capacity Dashboard](docs/extreme-capacity-dashboard.md) (read its Known Limitations)
+All pages are listed in the [Documentation index](docs/README.md). To start:
 
-**Planned (future work, not built):**
-
-- [Distributed Switch Health Check](docs/planning/distributed-switch-health-check.md)
-- [Running Without the Container](docs/planning/runtime-without-container.md)
+- [System Requirements](docs/reference/system-requirements.md)
+- [Installation](docs/how-to/installation.md)
+- [Configuration](docs/how-to/configuration.md)
+- [Metrics and Properties](docs/reference/metrics-and-properties.md)
 
 ## Tools
 

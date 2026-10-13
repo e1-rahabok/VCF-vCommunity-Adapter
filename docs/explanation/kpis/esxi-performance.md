@@ -9,9 +9,9 @@ It answers two questions about the powered-on VMs on the host:
 
 All 10 metrics are published on the host object under `vCommunity|ESXi Performance`. The KPI itself is `vCommunity|ESXi Performance|ESXi Performance Score`.
 
-Code: [`Management Pack/app/metrics/host/esxi_performance_metrics.py`](../Management%20Pack/app/metrics/host/esxi_performance_metrics.py)
+Code: [`Management Pack/app/metrics/host/esxi_performance_metrics.py`](../../../Management%20Pack/app/metrics/host/esxi_performance_metrics.py)
 
-Source of the limits: [`Complex Metrics/vSphere ESXi Performance metric.png`](Complex%20Metrics/vSphere%20ESXi%20Performance%20metric.png)
+Source of the limits: [`Complex Metrics/vSphere ESXi Performance metric.png`](../../images/complex-metrics/esxi-performance.png)
 
 ## The 9 sub-metrics
 
@@ -38,14 +38,14 @@ The same way as every KPI:
 1. Each sub-metric value gets a score from 100 to 0, depending on the tier it is in.
 2. The KPI is the weighted average of the scores. A sub-metric in the red tier weighs 8×, orange 4×, yellow 2×, green 1×.
 
-The full explanation, with a worked example, is in [Cluster Performance KPI](cluster-performance-kpi.md#step-2-score-each-sub-metric). The code is [`kpi_score.py`](../Management%20Pack/app/metrics/kpi_score.py).
+The full explanation, with a worked example, is in [Cluster Performance KPI](cluster-performance.md#step-2-score-each-sub-metric). The code is [`kpi_score.py`](../../../Management%20Pack/app/metrics/kpi_score.py).
 
 ## How each sub-metric is calculated
 
-They are the same sub-metrics as [Cluster Performance](cluster-performance-kpi.md#step-1-collect-the-9-sub-metrics), measured over the VMs of one host instead of a whole cluster. The formulas exist once, in [`metrics/vm_contention.py`](../Management%20Pack/app/metrics/vm_contention.py).
+They are the same sub-metrics as [Cluster Performance](cluster-performance.md#step-1-collect-the-9-sub-metrics), measured over the VMs of one host instead of a whole cluster. The formulas exist once, in [`metrics/vm_contention.py`](../../../Management%20Pack/app/metrics/vm_contention.py).
 
 - The 8 VM sub-metrics are the worst value and the 90th percentile of `cpu|20_sec_peak_readyPct`, `cpu|20_sec_peak_costopPct`, `mem|20_sec_peak_host_contentionPct` and `virtualDisk|20_sec_peak_totalLatency_average`, over the powered-on VMs on the host. A VM runs on the host named in its `summary|parentHost` property, and is powered on when `summary|runtime|powerState` is "Powered On", both read from VCF Operations.
-- Bad network packets are `(errorsRx + errorsTx + droppedRx + droppedTx) / (packetsRx + packetsTx) × 100` of the host, in the last collection cycle (5 minutes), the same as the former "ESXi Bad Network Packets" super metric, which this metric replaces. It is never averaged over a longer time, because that would hide a spike. Two of its counters, Total Packets Received and Transmitted, are deactivated by default in VCF Operations. Activate them first: see [Required Policy Settings](installation.md#activate-the-required-metrics-in-the-policy).
+- Bad network packets are `(errorsRx + errorsTx + droppedRx + droppedTx) / (packetsRx + packetsTx) × 100` of the host, in the last collection cycle (5 minutes), the same as the former "ESXi Bad Network Packets" super metric, which this metric replaces. It is never averaged over a longer time, because that would hide a spike. Two of its counters, Total Packets Received and Transmitted, are deactivated by default in VCF Operations. Activate them first: see [Required Policy Settings](../../how-to/installation.md#activate-the-required-metrics-in-the-policy).
 
 The stats of all VMs and all hosts are read in bulk, once per collection cycle, not once per host.
 
@@ -55,10 +55,10 @@ The stats of all VMs and all hosts are read in bulk, once per collection cycle, 
 - **One VM with 200 ms disk latency.** Worst VM Disk Latency is a quarter of the way through red (160 to 320): 18.75 with weight 8. The 90th percentile stays 0, because one VM is not a broad problem. KPI = `(7 × 100 + 18.75 × 8) / (7 + 8)` ≈ **56.67**.
 - **A host with no powered-on VMs.** No VM sub-metric has data. Bad packets are 0 and left out. Nothing is wrong, so the KPI is **100**.
 
-The same examples are checked by the tests in [`Management Pack/tests/test_esxi_performance_metrics.py`](../Management%20Pack/tests/test_esxi_performance_metrics.py).
+The same examples are checked by the tests in [`Management Pack/tests/test_esxi_performance_metrics.py`](../../../Management%20Pack/tests/test_esxi_performance_metrics.py).
 
 ## Missing data
 
 A sub-metric with no data is not published for that cycle, and it is left out of the KPI. It is never counted as 0. A host that is not connected gets no KPI.
 
-A stat whose latest value is more than 10 minutes old counts as no data. A last known value is never used. See [No stale values](how-it-works.md#no-stale-values).
+A stat whose latest value is more than 10 minutes old counts as no data. A last known value is never used. See [No stale values](../how-it-works.md#no-stale-values).

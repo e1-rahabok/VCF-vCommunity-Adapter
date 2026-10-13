@@ -2,6 +2,10 @@
 
 A Python adapter (`Management Pack/app`) that collects extra properties and metrics from vCenter and publishes them onto the existing vCenter objects in VCF Operations under the `vCommunity|` key prefix.
 
+## Documentation
+
+Pages go in `docs/` by the rules in [docs/README.md](docs/README.md#where-a-new-page-goes). Add every new page to that index.
+
 ## Testing
 
 Run both layers after any change under `Management Pack/app`, and report the results of each.

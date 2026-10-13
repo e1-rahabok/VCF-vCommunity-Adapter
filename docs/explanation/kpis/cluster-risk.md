@@ -2,7 +2,7 @@
 
 **Cluster Risk** is a single 0-100 % value for a vSphere cluster. **Higher is worse: 0 means no risk, 100 means maximum risk.** It is the only KPI of this pack where higher is worse. It is a leading indicator: it warns before the VMs feel contention. It covers both capacity and performance.
 
-- [Cluster Performance](cluster-performance-kpi.md) shows contention that is happening now.
+- [Cluster Performance](cluster-performance.md) shows contention that is happening now.
 - Cluster Risk shows how close the cluster is to it.
 
 Every sub-metric takes the highest or worst ESXi host in the cluster. One full host can hurt its VMs while the cluster average still looks fine.
@@ -11,9 +11,9 @@ Every sub-metric takes the highest or worst ESXi host in the cluster. One full h
 
 All 13 metrics are published on the cluster object under `vCommunity|Cluster Risk`. The KPI itself is `vCommunity|Cluster Risk|Cluster Risk Score`.
 
-Code: [`Management Pack/app/metrics/cluster/cluster_risk_metrics.py`](../Management%20Pack/app/metrics/cluster/cluster_risk_metrics.py)
+Code: [`Management Pack/app/metrics/cluster/cluster_risk_metrics.py`](../../../Management%20Pack/app/metrics/cluster/cluster_risk_metrics.py)
 
-Source of the limits: [`Complex Metrics/vSphere Cluster Risk metric.png`](Complex%20Metrics/vSphere%20Cluster%20Risk%20metric.png)
+Source of the limits: [`Complex Metrics/vSphere Cluster Risk metric.png`](../../images/complex-metrics/cluster-risk.png)
 
 ## Change in version 0.1.0: higher is worse
 
@@ -22,7 +22,7 @@ Before version 0.1.0 of VCF vCommunity Adapter, Cluster Risk was published as a 
 - **History before the upgrade reads the opposite way.** A chart that spans the upgrade jumps from, say, 98 to 2 for the same healthy cluster.
 - **Thresholds set on the old value must be inverted.** An alert or a color range "below 25" becomes "above 75".
 - The 12 sub-metrics did not change.
-- On vSphere World, "10th Percentile Cluster Risk" is replaced by "90th Percentile Cluster Risk", and "Worst Cluster Risk" is now the highest value. See [vSphere World Cluster Metrics](vsphere-world-metrics.md).
+- On vSphere World, "10th Percentile Cluster Risk" is replaced by "90th Percentile Cluster Risk", and "Worst Cluster Risk" is now the highest value. See [vSphere World Cluster Metrics](../metrics/vsphere-world-metrics.md).
 
 ## The 12 sub-metrics and their limits
 
@@ -110,7 +110,7 @@ The same way as every KPI:
 2. The weighted average of the scores is a health score, where 100 is best. A sub-metric in the red tier weighs 8×, orange 4×, yellow 2×, green 1×.
 3. **Cluster Risk = 100 − that health score**, so that higher means more risk.
 
-The full explanation, with a worked example, is in [Cluster Performance KPI](cluster-performance-kpi.md#step-2-score-each-sub-metric). The code is [`kpi_score.py`](../Management%20Pack/app/metrics/kpi_score.py).
+The full explanation, with a worked example, is in [Cluster Performance KPI](cluster-performance.md#step-2-score-each-sub-metric). The code is [`kpi_score.py`](../../../Management%20Pack/app/metrics/kpi_score.py).
 
 ### Bands: red is high
 
@@ -141,13 +141,13 @@ Two hosts, each with 32 cores (64 threads) and 512 GB of DRAM. Each runs four VM
   - CPU Imbalance of host 1 is `57.6 running threads / 32 running cores` = 1.8. Host 2 is 1.0. The worst, 1.8, is halfway through red: 12.5 with weight 8.
   - Health = `(25 × 8 + 12.5 × 8 + 100 + 100 + 93.75 + 98) / (8 + 8 + 4)` = 34.59. Cluster Risk = `100 − 34.59` = **65.41**.
 
-The same examples are checked by the tests in [`Management Pack/tests/test_cluster_risk_metrics.py`](../Management%20Pack/tests/test_cluster_risk_metrics.py).
+The same examples are checked by the tests in [`Management Pack/tests/test_cluster_risk_metrics.py`](../../../Management%20Pack/tests/test_cluster_risk_metrics.py).
 
 ## Missing data
 
 A sub-metric with no data is not published for that cycle, and it is left out of the KPI. It is never counted as 0, because a sub-metric value of 0 means "no risk".
 
-A stat whose latest value is more than 10 minutes old counts as no data. A last known value is never used. See [No stale values](how-it-works.md#no-stale-values).
+A stat whose latest value is more than 10 minutes old counts as no data. A last known value is never used. See [No stale values](../how-it-works.md#no-stale-values).
 
 - If the stats request to VCF Operations fails, only the property-based rows (the two Monster VM ratios) are scored.
 - A host that VCF Operations does not know is left out.
@@ -161,4 +161,4 @@ The properties endpoint `POST api/resources/properties/latest/query`, on VCF Ope
 
 The latest stats endpoint `POST api/resources/stats/latest/query`, on VCF Operations 9.1.1. Asked for a stat, it also returns every instance of it, such as `cpu:26|utilization_average` for CPU thread 26. The code keeps only the keys it asked for. The response is kept in `tests/test_ops_inventory.py`.
 
-`net|packetsRx_summation_sum` and `net|packetsTx_summation_sum`, used by Bad Network Packets, are deactivated by default: see [Required Policy Settings](installation.md#activate-the-required-metrics-in-the-policy).
+`net|packetsRx_summation_sum` and `net|packetsTx_summation_sum`, used by Bad Network Packets, are deactivated by default: see [Required Policy Settings](../../how-to/installation.md#activate-the-required-metrics-in-the-policy).

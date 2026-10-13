@@ -9,7 +9,7 @@ It is decided from the last period of Capacity Utilization, Cluster Performance 
 
 ## Settings
 
-Two settings in the account's **Advanced Settings** (see [Configuration](configuration.md#2-advanced-settings-optional)):
+Two settings in the account's **Advanced Settings** (see [Configuration](../../how-to/configuration.md#2-advanced-settings-optional)):
 
 | Setting | Values | Default | Meaning |
 | :--- | :--- | :--- | :--- |
@@ -27,7 +27,7 @@ Each period divides a day, so the windows end at the same times every day. Each 
 | 8 | 10:00 | 02:00, 10:00, 18:00 | the 8 hours before |
 | 1 | 00:15 | every hour at :15 | the hour before |
 
-Code: [`Management Pack/app/metrics/cluster/daily_cluster_check.py`](../Management%20Pack/app/metrics/cluster/daily_cluster_check.py)
+Code: [`Management Pack/app/metrics/cluster/daily_cluster_check.py`](../../../Management%20Pack/app/metrics/cluster/daily_cluster_check.py)
 
 ## Known limitations
 
@@ -108,4 +108,4 @@ The limits are in `decide()` and the constants above it, in the code.
 
 A cluster with a quiet 24-hour window of Cluster Performance at 90 %, and one 5-minute dip to 20 %: the 95th percentile is 90 %. With CPU utilization at 40 % and memory at 70 % all day, Capacity Utilization is 70 %. Rule 1 does not match (70 is not above 95, 90 is not below 25), and rule 2 does not match (90 is not below 50): Close for Business is 0.
 
-The same cases are checked by the tests in [`Management Pack/tests/test_daily_cluster_check.py`](../Management%20Pack/tests/test_daily_cluster_check.py).
+The same cases are checked by the tests in [`Management Pack/tests/test_daily_cluster_check.py`](../../../Management%20Pack/tests/test_daily_cluster_check.py).

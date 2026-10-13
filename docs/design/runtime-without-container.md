@@ -29,7 +29,7 @@ This page lists the workarounds, and the option of a native Java adapter, which 
 ## Option 1: Private registry
 
 - Copy the image into the customer's internal registry (Harbor, Artifactory, ...), and point the pack at it.
-- Already documented: [Dark Site Installation](../dark-site.md). Pull, re-tag, push, set `REGISTRY` in `vCommunity.conf` on each node, restart the collector.
+- Already documented: [Dark Site Installation](../how-to/dark-site-installation.md). Pull, re-tag, push, set `REGISTRY` in `vCommunity.conf` on each node, restart the collector.
 - **Limitation:** a manual step per site, repeated for every new version of the pack.
 
 ## Option 2: Pak per customer registry

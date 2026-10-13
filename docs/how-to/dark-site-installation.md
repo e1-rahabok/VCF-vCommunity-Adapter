@@ -2,7 +2,7 @@
 
 This document describes a workaround for environments where Cloud Proxies have no internet access, by pulling the VCF Operations vCommunity MP container image manually and pushing it to a private registry.
 
-> **Do you actually need this?** If your Cloud Proxy already has internet access to pull the container image, you don't need this workaround — once the Adapter Instance is configured, the Cloud Proxy will automatically pull the image on its own. See [How It Works](how-it-works.md) for the normal (internet-connected) flow.
+> **Do you actually need this?** If your Cloud Proxy already has internet access to pull the container image, you don't need this workaround — once the Adapter Instance is configured, the Cloud Proxy will automatically pull the image on its own. See [How It Works](../explanation/how-it-works.md) for the normal (internet-connected) flow.
 
 **On this page:**
 
@@ -74,6 +74,6 @@ Once steps 1–6 are complete, proceed with [Adapter Instance configuration](con
 
 ---
 
-> Other options for sites where the container is a problem: [Running Without the Container](planning/runtime-without-container.md) (future work).
+> Other options for sites where the container is a problem: [Running Without the Container](../design/runtime-without-container.md) (future work).
 
-**Next:** [Configuration](configuration.md) · [How It Works](how-it-works.md)
+**Next:** [Configuration](configuration.md) · [How It Works](../explanation/how-it-works.md)

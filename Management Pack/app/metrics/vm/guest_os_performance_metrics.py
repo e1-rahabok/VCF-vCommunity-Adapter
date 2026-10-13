@@ -27,12 +27,12 @@ How it is calculated
 
 Where the limits come from
 --------------------------
-docs/Complex Metrics/Guest OS Performance metric.png. Free Memory is "higher is
+docs/images/complex-metrics/guest-os-performance.png. Free Memory is "higher is
 better", so its limits go down.
 
 Called from: collectors/vm/collectVMData.py, once per powered-on VM.
 Overall approach for all KPIs: metrics/README.md
-Description for people who do not read code: docs/guest-os-performance-kpi.md
+Description for people who do not read code: docs/explanation/kpis/guest-os-performance.md
 """
 import logging
 from typing import Dict, Optional

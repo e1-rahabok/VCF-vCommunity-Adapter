@@ -30,7 +30,7 @@ def collect(vm_stats):
 # --- The table --------------------------------------------------------------
 
 def test_limits_match_the_source_table():
-    # docs/Complex Metrics/Virtual Motherboard Performance metric.png
+    # docs/images/complex-metrics/vm-performance.png
     limits = {m.name: (m.green, m.yellow, m.orange, m.zero_at, m.skip_when_green) for m in vp.METRICS}
     assert limits["CPU Co-Stop"] == (1, 2, 4, 8, False)
     assert limits["CPU Ready"] == (2, 4, 8, 16, False)

@@ -1,7 +1,7 @@
 #  Copyright 2026 VCF Operations vCommunity Management Pack
 """Cluster Capacity Utilization: sum of the running hosts' % / (N - max(k, gone)).
 
-The scenario table in docs/capacity-utilization.md is checked here, one test per row.
+The scenario table in docs/explanation/metrics/capacity-utilization.md is checked here, one test per row.
 Run from the "Management Pack" folder:  python -m pytest tests
 """
 import sys

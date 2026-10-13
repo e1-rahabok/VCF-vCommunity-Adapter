@@ -34,7 +34,7 @@ No state is kept in the adapter: the Window End property, stored in VCF Operatio
 an upgrade of the pack does not lose it.
 
 Inputs, all from VCF Operations: the 5-minute history of the four stats in STAT_KEYS.
-Docs: docs/daily-cluster-check.md
+Docs: docs/explanation/metrics/daily-cluster-check.md
 """
 import logging
 import math

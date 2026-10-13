@@ -37,7 +37,7 @@ Out of the box, and fully customizable via simple configuration files, the Manag
 - **Microsoft Windows Services and Event Logs** *(optional, agentless via GuestAPI)*
 - **Virtual Machine Snapshot Count** and other properties commonly missing from default inventory
 
-Every one of these is documented, with its exact object path and description, in the [Metrics & Properties Reference](metrics-reference.md).
+Every one of these is documented, with its exact object path and description, in the [Metrics & Properties Reference](../reference/metrics-and-properties.md).
 
 ## Built for Scale
 
@@ -45,11 +45,11 @@ Configuration drift monitoring is only useful if it actually finishes collecting
 
 ## Community-Driven
 
-This is a free Management Pack developed by [Onur Yuzseven](https://www.linkedin.com/in/oyuzseven/) as a contribution to the vCommunity (VMUG, vExpert, VCP). It's not an official VMware/Broadcom project and comes with no VMware GSS support — see [Support](../SUPPORT.md) and [License](../LICENSE) for details. Contributions, dashboards, and reports from the wider community (see the main [README](../README.md)) extend it well beyond the core data collection described here.
+This is a free Management Pack developed by [Onur Yuzseven](https://www.linkedin.com/in/oyuzseven/) as a contribution to the vCommunity (VMUG, vExpert, VCP). It's not an official VMware/Broadcom project and comes with no VMware GSS support — see [Support](../../SUPPORT.md) and [License](../../LICENSE) for details. Contributions, dashboards, and reports from the wider community (see the main [README](../../README.md)) extend it well beyond the core data collection described here.
 
 ## Where to Go Next
 
-- [System Requirements](system-requirements.md)
-- [Installation](installation.md)
-- [Configuration](configuration.md) — how to choose exactly which settings get monitored
+- [System Requirements](../reference/system-requirements.md)
+- [Installation](../how-to/installation.md)
+- [Configuration](../how-to/configuration.md) — how to choose exactly which settings get monitored
 - [How It Works](how-it-works.md)

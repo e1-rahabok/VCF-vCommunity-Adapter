@@ -6,18 +6,18 @@ It is in the `vCommunity` dashboard folder.
 
 Content:
 
-- [`Management Pack/content/dashboards/Extreme Capacity.json`](../Management%20Pack/content/dashboards/Extreme%20Capacity.json)
-- [`Management Pack/content/reports/vSphere Clusters Capacity List.xml`](../Management%20Pack/content/reports/vSphere%20Clusters%20Capacity%20List.xml)
+- [`Management Pack/content/dashboards/Extreme Capacity.json`](../../../Management%20Pack/content/dashboards/Extreme%20Capacity.json)
+- [`Management Pack/content/reports/vSphere Clusters Capacity List.xml`](../../../Management%20Pack/content/reports/vSphere%20Clusters%20Capacity%20List.xml)
 
 ## Known limitations
 
 > **Read this before using the dashboard.**
 
-- **Requires the pack's metrics.** Most widgets show pack metrics. A widget is blank until the pack has collected them. The Daily Cluster Check columns stay blank until the first check period ends. See [Daily Cluster Check](daily-cluster-check.md).
-- **Blank, not stale.** A metric whose latest value is more than 10 minutes old is left blank. Properties (the Daily Cluster Check columns) keep their last known value. See [How It Works](how-it-works.md#no-stale-values).
-- **"Worst 10%" equals "worst" with 10 clusters or fewer.** The 10th (or 90th) percentile takes the lowest (or highest) cluster when there are 10 clusters or fewer. See [vSphere World Cluster Metrics](vsphere-world-metrics.md).
-- **Risk is red when high.** The Risk widgets are red from 75. The Performance widgets are red below 25. See [Cluster Risk KPI](cluster-risk-kpi.md#bands-red-is-high).
-- **Capacity Utilization can be above 100 %.** That means the cluster cannot hold its load if a host fails. See [Capacity Utilization](capacity-utilization.md).
+- **Requires the pack's metrics.** Most widgets show pack metrics. A widget is blank until the pack has collected them. The Daily Cluster Check columns stay blank until the first check period ends. See [Daily Cluster Check](../metrics/daily-cluster-check.md).
+- **Blank, not stale.** A metric whose latest value is more than 10 minutes old is left blank. Properties (the Daily Cluster Check columns) keep their last known value. See [How It Works](../how-it-works.md#no-stale-values).
+- **"Worst 10%" equals "worst" with 10 clusters or fewer.** The 10th (or 90th) percentile takes the lowest (or highest) cluster when there are 10 clusters or fewer. See [vSphere World Cluster Metrics](../metrics/vsphere-world-metrics.md).
+- **Risk is red when high.** The Risk widgets are red from 75. The Performance widgets are red below 25. See [Cluster Risk KPI](../kpis/cluster-risk.md#bands-red-is-high).
+- **Capacity Utilization can be above 100 %.** That means the cluster cannot hold its load if a host fails. See [Capacity Utilization](../metrics/capacity-utilization.md).
 - **Capacity Remaining and Time Remaining are not from this pack.** They come from the VCF Operations capacity engine (`OnlineCapacityAnalytics`).
 - **The third section has no name.** It is titled "Section 3".
 
@@ -42,7 +42,7 @@ All on the vSphere World object, so they cover every cluster of every vCenter.
 | Worst 10% Cluster Risk | `vCommunity\|90th Percentile Cluster Risk` | as Highest Risk |
 | Average ESXi Hosts Operational Availability | `vCommunity\|Availability\|ESXi Hosts Operational Availability` | red below 94, orange below 96, yellow below 98 |
 
-See [vSphere World Cluster Metrics](vsphere-world-metrics.md) and [Operational Availability](operational-availability.md).
+See [vSphere World Cluster Metrics](../metrics/vsphere-world-metrics.md) and [Operational Availability](../metrics/operational-availability.md).
 
 ## vSphere Clusters
 
@@ -50,7 +50,7 @@ See [vSphere World Cluster Metrics](vsphere-world-metrics.md) and [Operational A
 
 | Column | Key | Source |
 | :--- | :--- | :--- |
-| Closed? | `vCommunity\|Daily Cluster Check\|Close for Business` | property, [Daily Cluster Check](daily-cluster-check.md). 1 = closed for new workload. |
+| Closed? | `vCommunity\|Daily Cluster Check\|Close for Business` | property, [Daily Cluster Check](../metrics/daily-cluster-check.md). 1 = closed for new workload. |
 | 99P Utilization | `vCommunity\|Daily Cluster Check\|99th Percentile Capacity Utilization` | property, Daily Cluster Check |
 | 95P Performance | `vCommunity\|Daily Cluster Check\|95th Percentile Cluster Performance` | property, Daily Cluster Check |
 | 95P Risk | `vCommunity\|Daily Cluster Check\|95th Percentile Cluster Risk` | property, Daily Cluster Check |
@@ -66,7 +66,7 @@ Selecting a cluster fills the widgets below.
 | Utilization | `vCommunity\|Capacity\|CPU Utilization` and `Memory Utilization` | CPU: 70 / 80 / 90. Memory: 80 / 85 / 90. |
 | High Memory Utilization | Ballooned (`mem\|vmmemctl_average`), Zipped (`mem\|compressed_average`), Swapped (`mem\|swapout_average`) | Ballooned: 5 / 25 / 100 GB. Zipped and Swapped: 1 / 2.5 / 10. |
 
-See [Cluster Performance KPI](cluster-performance-kpi.md), [Cluster Risk KPI](cluster-risk-kpi.md) and [Capacity Utilization](capacity-utilization.md).
+See [Cluster Performance KPI](../kpis/cluster-performance.md), [Cluster Risk KPI](../kpis/cluster-risk.md) and [Capacity Utilization](../metrics/capacity-utilization.md).
 
 ## Hosts and VMs
 

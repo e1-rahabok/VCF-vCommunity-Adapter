@@ -2,13 +2,13 @@
 
 **Guest OS Performance** is a single 0-100 % score for the operating system inside a VM, Windows or Linux. 100 is perfect. It answers: is the guest OS getting the CPU, disk and memory it needs? It combines 4 sub-metrics.
 
-[VM Performance](vm-performance-kpi.md) scores the virtual motherboard. This KPI scores what runs on it.
+[VM Performance](vm-performance.md) scores the virtual motherboard. This KPI scores what runs on it.
 
 It is published on every powered-on VM with VMware Tools as `vCommunity|Guest OS Performance|Guest OS Performance Score`.
 
-Code: [`Management Pack/app/metrics/vm/guest_os_performance_metrics.py`](../Management%20Pack/app/metrics/vm/guest_os_performance_metrics.py)
+Code: [`Management Pack/app/metrics/vm/guest_os_performance_metrics.py`](../../../Management%20Pack/app/metrics/vm/guest_os_performance_metrics.py)
 
-Source of the sub-metrics and limits: [`Complex Metrics/Guest OS Performance metric.png`](Complex%20Metrics/Guest%20OS%20Performance%20metric.png)
+Source of the sub-metrics and limits: [`Complex Metrics/Guest OS Performance metric.png`](../../images/complex-metrics/guest-os-performance.png)
 
 ## The 4 sub-metrics
 
@@ -26,7 +26,7 @@ All four come from VMware Tools. They are stats the VM already has, or a simple 
 
 ## How the score is calculated
 
-The same way as every KPI: each sub-metric gets a score from 100 to 0 by tier, and the KPI is the weighted average, with weights 1, 2, 4 and 8 for green, yellow, orange and red. See [Cluster Performance KPI](cluster-performance-kpi.md#step-2-score-each-sub-metric).
+The same way as every KPI: each sub-metric gets a score from 100 to 0 by tier, and the KPI is the weighted average, with weights 1, 2, 4 and 8 for green, yellow, orange and red. See [Cluster Performance KPI](cluster-performance.md#step-2-score-each-sub-metric).
 
 ## Worked examples
 
@@ -34,7 +34,7 @@ The same way as every KPI: each sub-metric gets a score from 100 to 0 by tier, a
 - **CPU run queue of 3 per vCPU.** Halfway through yellow (2 to 4): 62.5 with weight 2. KPI = `(3 × 100 + 62.5 × 2) / (3 + 2)` = **85.0**.
 - **192 MB free memory.** Halfway through orange (256 down to 128): 37.5 with weight 4. KPI = `(3 × 100 + 37.5 × 4) / (3 + 4)` ≈ **64.29**.
 
-The same examples are checked by the tests in [`Management Pack/tests/test_guest_os_performance_metrics.py`](../Management%20Pack/tests/test_guest_os_performance_metrics.py).
+The same examples are checked by the tests in [`Management Pack/tests/test_guest_os_performance_metrics.py`](../../../Management%20Pack/tests/test_guest_os_performance_metrics.py).
 
 ## Missing data
 
@@ -42,4 +42,4 @@ The same examples are checked by the tests in [`Management Pack/tests/test_guest
 - A sub-metric with no data is left out of the KPI. It is never counted as perfect.
 - A powered-off VM gets no KPI.
 
-A stat whose latest value is more than 10 minutes old counts as no data. A last known value is never used. See [No stale values](how-it-works.md#no-stale-values).
+A stat whose latest value is more than 10 minutes old counts as no data. A last known value is never used. See [No stale values](../how-it-works.md#no-stale-values).

@@ -40,7 +40,7 @@ def test_everything_at_its_worst_is_0():
 
 
 def test_limits_match_the_source_table():
-    # docs/Complex Metrics/vSphere Cluster Performance metric.png
+    # docs/images/complex-metrics/cluster-performance.png
     limits = {m.name: (m.green, m.yellow, m.orange, m.zero_at) for m in cp.METRICS}
     assert limits["Worst VM CPU Ready"] == (4, 8, 16, 32)
     assert limits["Worst VM CPU Co-Stop"] == (2, 4, 8, 16)

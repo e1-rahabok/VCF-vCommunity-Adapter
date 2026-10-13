@@ -41,7 +41,7 @@ def collect(samples, host_id="host-1", vm_ids=HOST_1_VMS, status_code=200):
 
 
 def test_limits_match_the_source_table():
-    # docs/Complex Metrics/vSphere ESXi Performance metric.png
+    # docs/images/complex-metrics/esxi-performance.png
     limits = {m.name: (m.green, m.yellow, m.orange, m.zero_at, m.skip_when_green) for m in ep.METRICS}
     assert limits["Worst VM CPU Ready"] == (4, 8, 16, 32, False)
     assert limits["Worst VM Disk Latency"] == (40, 80, 160, 320, False)

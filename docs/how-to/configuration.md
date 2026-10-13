@@ -54,7 +54,7 @@ You can expand the adapter configuration by clicking **Advanced Settings**.
 | Advanced Setting | Default Value | Description |
 | :--- | :--- | :--- |
 | **Port** | `443` | The port used to connect to vCenter Server. |
-| **Cluster Check Period (hours)** | `24` | Length of each [Daily Cluster Check](daily-cluster-check.md#settings) window, and how often it is calculated: 1, 2, 4, 6, 8, 12 or 24 hours. |
+| **Cluster Check Period (hours)** | `24` | Length of each [Daily Cluster Check](../explanation/metrics/daily-cluster-check.md#settings) window, and how often it is calculated: 1, 2, 4, 6, 8, 12 or 24 hours. |
 | **Cluster Check Time (UTC)** | `00:00` | Time of day, as HH:MM in UTC, when a Daily Cluster Check window ends. With a shorter period, the other windows end every period from it. An empty or invalid value uses `00:00`. |
 | **Windows Service Configuration File** | `windows_service_list.xml` | File used to define which Windows Services to monitor. (Location: System Defined configurations) |
 | **Guest OS Service Monitoring Status** | `Disabled` | Toggles Windows Service monitoring using the `windows_service_list.xml` file. Set to `Enabled` to activate. |
@@ -79,7 +79,7 @@ You can **tailor the monitoring scope** for different vCenter servers or environ
 4. **Edit the new file:** Modify the content of the cloned file to include only the settings or items you wish to monitor for the specific environment.
 5. **Reference it in a new Adapter Instance:** Create a new Adapter Instance ([Section 1](#1-creating-the-adapter-instance)), but when you reach the **Configuration File Selection** fields, enter the **custom file name** you created (e.g., `esxi_adv_settings_non_prod.xml`).
 
-This is also the right mechanism for scoping *what* gets monitored to match your organization's actual hardening guides, KBs, or internal best practices — see [Introduction](introduction.md#why-you-need-it) for why that matters.
+This is also the right mechanism for scoping *what* gets monitored to match your organization's actual hardening guides, KBs, or internal best practices — see [Introduction](../explanation/introduction.md#why-you-need-it) for why that matters.
 
 ---
 
@@ -91,4 +91,4 @@ Once completed, your Management Pack will now be configured and will begin colle
 
 ---
 
-**Next:** [How It Works](how-it-works.md) · [Metrics & Properties Reference](metrics-reference.md)
+**Next:** [How It Works](../explanation/how-it-works.md) · [Metrics & Properties Reference](../reference/metrics-and-properties.md)

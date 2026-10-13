@@ -13,7 +13,7 @@ The memory super metric was in fact per MB (shares / KB x 1024), so it is now na
 Published as properties, not metrics, on every VM, powered on or off: shares apply either way. They change
 only when the VM's configuration changes, and VCF Operations stores a property only when its value changes. No value when the VM has no vCPU or memory
 size, or no shares, instead of a division by zero. All inputs come from VCF Operations.
-See docs/vm-shares.md.
+See docs/explanation/metrics/vm-shares.md.
 """
 import logging
 from typing import Dict, List, Optional

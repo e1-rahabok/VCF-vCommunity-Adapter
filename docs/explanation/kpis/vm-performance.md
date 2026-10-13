@@ -2,15 +2,15 @@
 
 **VM Performance** is a single 0-100 % score for a virtual machine. 100 is perfect. It scores the VM as a virtual motherboard: is ESXi giving it the CPU, memory, disk and network it asks for? It combines 9 sub-metrics, and the worse a sub-metric is, the more it pulls the score down.
 
-What happens inside Windows or Linux is scored separately, by [Guest OS Performance](guest-os-performance-kpi.md).
+What happens inside Windows or Linux is scored separately, by [Guest OS Performance](guest-os-performance.md).
 
 It is published on every powered-on VM as `vCommunity|VM Performance|VM Performance Score`. A powered-off VM gets no score.
 
-**VM Guest OS KPI.** `vCommunity|VM Guest OS KPI` is the average of this KPI and [Guest OS Performance](guest-os-performance-kpi.md), for one score per VM. A VM without VMware Tools has no Guest OS Performance, so its VM Guest OS KPI is its VM Performance alone. It replaces the "vSphere VM Performance" super metric. Code: [`vm_guest_os_kpi.py`](../Management%20Pack/app/metrics/vm/vm_guest_os_kpi.py).
+**VM Guest OS KPI.** `vCommunity|VM Guest OS KPI` is the average of this KPI and [Guest OS Performance](guest-os-performance.md), for one score per VM. A VM without VMware Tools has no Guest OS Performance, so its VM Guest OS KPI is its VM Performance alone. It replaces the "vSphere VM Performance" super metric. Code: [`vm_guest_os_kpi.py`](../../../Management%20Pack/app/metrics/vm/vm_guest_os_kpi.py).
 
-Code: [`Management Pack/app/metrics/vm/vm_performance_metrics.py`](../Management%20Pack/app/metrics/vm/vm_performance_metrics.py)
+Code: [`Management Pack/app/metrics/vm/vm_performance_metrics.py`](../../../Management%20Pack/app/metrics/vm/vm_performance_metrics.py)
 
-Source of the sub-metrics and limits: [`Complex Metrics/Virtual Motherboard Performance metric.png`](Complex%20Metrics/Virtual%20Motherboard%20Performance%20metric.png)
+Source of the sub-metrics and limits: [`Complex Metrics/Virtual Motherboard Performance metric.png`](../../images/complex-metrics/vm-performance.png)
 
 ## Step 1: Collect the 9 sub-metrics
 
@@ -34,7 +34,7 @@ The 20-second peaks are used where they exist, not the 5-minute averages. This m
 
 ## Step 2 and 3: Score each sub-metric, then combine
 
-The scoring is the same for every KPI. It is described in [Cluster Performance KPI](cluster-performance-kpi.md#step-2-score-each-sub-metric): four tiers, 25 points per tier, and a weight that doubles with each tier.
+The scoring is the same for every KPI. It is described in [Cluster Performance KPI](cluster-performance.md#step-2-score-each-sub-metric): four tiers, 25 points per tier, and a weight that doubles with each tier.
 
 ## Limits per sub-metric
 
@@ -71,13 +71,13 @@ Every sub-metric is "lower is better", and 0 is perfect.
   - It is halfway through yellow (from 0 to 0.5), so it scores `62.5`, with weight 2.
   - KPI = `(6 × 100 + 62.5 × 2) / (6 + 2)` = `725 / 8` ≈ **90.62**.
 
-The same examples are checked by the tests in [`Management Pack/tests/test_vm_performance_metrics.py`](../Management%20Pack/tests/test_vm_performance_metrics.py).
+The same examples are checked by the tests in [`Management Pack/tests/test_vm_performance_metrics.py`](../../../Management%20Pack/tests/test_vm_performance_metrics.py).
 
 ## Missing data
 
 A sub-metric with no data is left out of the KPI. It is never counted as perfect.
 
-A stat whose latest value is more than 10 minutes old counts as no data. A last known value is never used. See [No stale values](how-it-works.md#no-stale-values).
+A stat whose latest value is more than 10 minutes old counts as no data. A last known value is never used. See [No stale values](../how-it-works.md#no-stale-values).
 
 - A VM without VMware Tools has no Memory Zip Swap, because that needs `guest|used_memory`. The KPI of such a VM is built from the other sub-metrics.
 - If no sub-metric has data, the KPI is not published.

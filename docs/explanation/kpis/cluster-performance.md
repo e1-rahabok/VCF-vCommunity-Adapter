@@ -6,9 +6,9 @@ Use it to watch many clusters at once. When the score drops, open the 9 sub-metr
 
 All 10 metrics are published on the cluster object under `vCommunity|Cluster Performance`. The KPI itself is `vCommunity|Cluster Performance|Cluster Performance Score`.
 
-Code: [`Management Pack/app/metrics/cluster/cluster_performance_metrics.py`](../Management%20Pack/app/metrics/cluster/cluster_performance_metrics.py)
+Code: [`Management Pack/app/metrics/cluster/cluster_performance_metrics.py`](../../../Management%20Pack/app/metrics/cluster/cluster_performance_metrics.py)
 
-Source of the sub-metrics and limits: [`Complex Metrics/vSphere Cluster Performance metric.png`](Complex%20Metrics/vSphere%20Cluster%20Performance%20metric.png)
+Source of the sub-metrics and limits: [`Complex Metrics/vSphere Cluster Performance metric.png`](../../images/complex-metrics/cluster-performance.png)
 
 ## Step 1: Collect the 9 sub-metrics
 
@@ -36,7 +36,7 @@ Notes:
 - **Which VMs count.** The powered-on VMs on the cluster's ESXi hosts. A powered-off VM is left out, because its last stats are old. All of this is read from VCF Operations properties: a host belongs to the cluster named in its `summary|parentCluster`, a VM runs on the host named in its `summary|parentHost`, and it is powered on when `summary|runtime|powerState` is "Powered On". Placement is by name, so do not mix datacenters in one adapter instance.
 - **20-second peaks.** The VM stats are the 20-second peaks, not the 5-minute averages. This makes the KPI a leading indicator.
 - **90th percentile.** The value that 90 % of the VMs are at or below. The VMs are sorted, and the one at position 90 % of the count, rounded up, is taken. With 20 VMs that is the 18th lowest. With fewer than 10 VMs it is the highest, the same as the worst VM.
-- **Bad network packets** use the last collection cycle (5 minutes), the same as the former "Bad Network Packets" super metric, which this metric replaces. They are never averaged or added up over a longer time, because that would hide a spike. Two of its counters, Total Packets Received and Transmitted, are deactivated by default in VCF Operations. Activate them first: see [Required Policy Settings](installation.md#activate-the-required-metrics-in-the-policy).
+- **Bad network packets** use the last collection cycle (5 minutes), the same as the former "Bad Network Packets" super metric, which this metric replaces. They are never averaged or added up over a longer time, because that would hide a spike. Two of its counters, Total Packets Received and Transmitted, are deactivated by default in VCF Operations. Activate them first: see [Required Policy Settings](../../how-to/installation.md#activate-the-required-metrics-in-the-policy).
 
 ## Step 2: Score each sub-metric
 
@@ -91,13 +91,13 @@ The worst-VM rows have higher limits than the 90th-percentile rows, because a si
 - **Same as the first example, except a tiny share of bad packets (0.005 %).** It is yellow, scores about 74.4 with weight 2, and now counts. KPI ≈ **94.88**.
 - **One VM has 200 ms disk latency, the others 0.** Worst VM Disk Latency is 200 (orange to red). The 90th percentile stays 0, because one VM is not a broad problem.
 
-The same examples are checked by the tests in [`Management Pack/tests/test_cluster_performance_metrics.py`](../Management%20Pack/tests/test_cluster_performance_metrics.py).
+The same examples are checked by the tests in [`Management Pack/tests/test_cluster_performance_metrics.py`](../../../Management%20Pack/tests/test_cluster_performance_metrics.py).
 
 ## Missing data
 
 A sub-metric with no data is not published for that collection cycle, and it is left out of the KPI. It is never counted as 0, because 0 means "perfect" and would make the cluster look healthier than it is.
 
-A stat whose latest value is more than 10 minutes old counts as no data. A last known value is never used. See [No stale values](how-it-works.md#no-stale-values).
+A stat whose latest value is more than 10 minutes old counts as no data. A last known value is never used. See [No stale values](../how-it-works.md#no-stale-values).
 
 - The adapter log lists the sub-metrics that were left out, per cluster.
 - If no sub-metric has data, the KPI itself is not published.
@@ -106,14 +106,14 @@ Common reasons for no data: the cluster has no powered-on VMs, the vCenter adapt
 
 ## Related KPIs
 
-- [ESXi Performance](esxi-performance-kpi.md) uses the same 9 sub-metrics, for the VMs on one host.
-- [Cluster Risk](cluster-risk-kpi.md) is the leading indicator: how close the cluster is to contention. Memory ballooning and swapping are scored there.
+- [ESXi Performance](esxi-performance.md) uses the same 9 sub-metrics, for the VMs on one host.
+- [Cluster Risk](cluster-risk.md) is the leading indicator: how close the cluster is to contention. Memory ballooning and swapping are scored there.
 
 ## Changing the KPI
 
 The sub-metrics, their units and their limits are one table, `METRICS`, at the top of the code file.
 
-The tiers and weights are a second table, `TIERS`, in [`Management Pack/app/metrics/kpi_score.py`](../Management%20Pack/app/metrics/kpi_score.py). That file holds the scoring for every KPI, so a change there changes all of them.
+The tiers and weights are a second table, `TIERS`, in [`Management Pack/app/metrics/kpi_score.py`](../../../Management%20Pack/app/metrics/kpi_score.py). That file holds the scoring for every KPI, so a change there changes all of them.
 
 - To change a limit, edit the row.
 - To add a VM stat, add a line to `VM_STATS` and its two rows (worst VM and 90th percentile) to `METRICS`.
