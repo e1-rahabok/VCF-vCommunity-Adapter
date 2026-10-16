@@ -14,35 +14,47 @@ This document describes a workaround for environments where Cloud Proxies have n
 
 ## Step 1–4: On the Local Machine
 
-**Step 1: Find the latest image tag.**
+The Cloud Proxy pulls the image named in `vCommunity.conf`, which is inside the PAK file. It joins three fields, and pulls by digest, not by tag:
 
-Find the latest VCF Operations vCommunity MP container image on GitHub, corresponding to the Management Pack version you want to install:
+| Field | Value in 0.2.0 |
+| :--- | :--- |
+| `REGISTRY` | `ghcr.io` |
+| `REPOSITORY` | `/e1-rahabok/vcf-operations-vcommunity` |
+| `DIGEST` | `sha256:673e168b3791f22c4d732d541b6e9dc3170b985b6d33f7e89d293d53cda5a909` |
+
+So in your private registry, keep the same repository path and the same digest. Only the registry changes, in Step 5.
+
+**Step 1: Find the image for your PAK version.**
+
+The images are listed on GitHub:
 
 ```
-https://github.com/vmbro/VCF-Operations-vCommunity/pkgs/container/vcf-operations-vcommunity
+https://github.com/users/e1-rahabok/packages/container/package/vcf-operations-vcommunity
 ```
 
-> The latest `0.2.0` tag as of Sep 2025 is `0.2.0_1757946951.149835`. You may find a newer tag — if so, replace the tag in every example command below with that newer version.
+Tags are `<version>_<build time>`. For 0.2.0, use `0.2.0_1792160496.3382835`. For another version, use the tag whose digest matches `DIGEST` in that PAK file's `vCommunity.conf`. Replace the tag in the commands below.
 
 **Step 2: Pull the image to your local machine.**
 
 ```bash
-docker pull ghcr.io/vmbro/vcf-operations-vcommunity:0.2.0_1757946951.149835
+docker pull ghcr.io/e1-rahabok/vcf-operations-vcommunity:0.2.0_1792160496.3382835
 ```
 
 **Step 3: Re-tag the image for your private registry.**
 
-> Replace `private-registry.local.network` with your own registry's FQDN in every command below. You may also replace the path `ghcr.io/vmbro/` with a different path in your registry, as long as you use the same replacement consistently in steps 3 and 4.
+> Replace `private-registry.local.network` with your own registry's FQDN in every command below. Keep the path `e1-rahabok/vcf-operations-vcommunity`: it must match `REPOSITORY`.
 
 ```bash
-docker tag ghcr.io/vmbro/vcf-operations-vcommunity:0.2.0_1757946951.149835 private-registry.local.network/ghcr.io/vmbro/vcf-operations-vcommunity:0.2.0_1757946951.149835
+docker tag ghcr.io/e1-rahabok/vcf-operations-vcommunity:0.2.0_1792160496.3382835 private-registry.local.network/e1-rahabok/vcf-operations-vcommunity:0.2.0_1792160496.3382835
 ```
 
 **Step 4: Push the image to your private registry.**
 
 ```bash
-docker push private-registry.local.network/ghcr.io/vmbro/vcf-operations-vcommunity:0.2.0_1757946951.149835
+docker push private-registry.local.network/e1-rahabok/vcf-operations-vcommunity:0.2.0_1792160496.3382835
 ```
+
+`docker push` prints a digest at the end. It must equal `DIGEST`. If it does not, the Cloud Proxy cannot find the image: copy the image with a tool that keeps the digest, such as `skopeo copy` or `crane copy`.
 
 ---
 

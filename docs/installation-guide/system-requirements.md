@@ -17,7 +17,7 @@
 The Cloud Proxy will try to pull the container image from the following example registry to set up the adapter. This is by design of the VCF Operations Integration SDK:
 
 ```
-ghcr.io/vmbro/vcf-operations-vcommunity:x.x.x_x.x
+ghcr.io/e1-rahabok/vcf-operations-vcommunity:x.x.x_x.x
 ```
 
 HTTPS access to **ghcr.io** is required for every Cloud Proxy that runs the VCF Operations vCommunity Management Pack.
