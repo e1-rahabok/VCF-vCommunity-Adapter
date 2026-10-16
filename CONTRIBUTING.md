@@ -8,6 +8,10 @@ Documentation is always an area that needs help. Using your GitHub account, fork
 To add a setting of any object (entity) in vSphere, we need to know the full path and name in the API.  
 For example, to add the vSphere Cluster HA property called ___
 
+## Testing
+
+Run the unit tests (`python -m pytest tests`, from `Management Pack`) and the live validation after any change to the adapter code. The test plan, and what each check means, is in [Live Validation Test Plan](tools/validate/validate.md).
+
 ## Documentation
 
 The documentation is in `docs/`. `docs/README.md` is the overview and lists every page.

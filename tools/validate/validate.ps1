@@ -31,7 +31,10 @@ param(
     # Objects checked per object type. 0 = all.
     [int]$SampleSize = 5,
     # Newest vCommunity metric and last collection must be younger than this.
-    [int]$MaxAgeMinutes = 20
+    [int]$MaxAgeMinutes = 20,
+    # Version the installed pack must have. A mismatch FAILs. When omitted, the
+    # version in manifest.txt is compared and a mismatch only WARNs.
+    [string]$ExpectedVersion
 )
 
 $ErrorActionPreference = 'Stop'
@@ -88,6 +91,19 @@ try {
     $kind = (Get-Api 'adapterkinds').'adapter-kind' | Where-Object key -eq $ADAPTER_KIND
     if ($kind) { Add-Result 'PASS' 'Adapter installed' "$($kind.name), $($kind.resourceKinds.Count) resource kinds" }
     else { Add-Result 'FAIL' 'Adapter installed' "Adapter kind '$ADAPTER_KIND' not found" }
+
+    $strict = [bool]$ExpectedVersion
+    if (-not $strict) {
+        $ExpectedVersion = (Get-Content (Join-Path $PSScriptRoot '..\..\Management Pack\manifest.txt') -Raw | ConvertFrom-Json).version
+    }
+    $solution = (Get-Api 'solutions').solution | Where-Object { $_.adapterKindKeys -contains $ADAPTER_KIND } | Select-Object -First 1
+    if (-not $solution) { Add-Result 'FAIL' 'Installed version' "No solution for adapter kind '$ADAPTER_KIND'" }
+    elseif ($solution.version -eq $ExpectedVersion -or $solution.version -like "$ExpectedVersion.*") {
+        Add-Result 'PASS' 'Installed version' "$($solution.version) (expected $ExpectedVersion)"
+    } else {
+        $source = $strict ? '-ExpectedVersion' : 'manifest.txt'
+        Add-Result ($strict ? 'FAIL' : 'WARN') 'Installed version' "$($solution.version), but $source says $ExpectedVersion"
+    }
 
     $instances = @((Get-Api "adapters?adapterKindKey=$ADAPTER_KIND").adapterInstancesInfoDto)
     if (-not $instances.Count) { Add-Result 'FAIL' 'Adapter instances' 'None configured' }
