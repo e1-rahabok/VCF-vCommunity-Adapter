@@ -13,8 +13,8 @@ Content:
 
 > **Read this before using the dashboard.**
 
-- **Requires the pack's metrics.** Most widgets show pack metrics. A widget is blank until the pack has collected them. The Daily Cluster Check columns stay blank until the first check period ends. See [Daily Cluster Check](../reference/metrics/daily-cluster-check.md).
-- **Blank, not stale.** A metric whose latest value is more than 10 minutes old is left blank. Properties (the Daily Cluster Check columns) keep their last known value. See [How It Works](../reference/metrics/README.md#no-stale-values).
+- **Requires the pack's metrics.** Most widgets show pack metrics. A widget is blank until the pack has collected them. The Periodic Cluster Check columns stay blank until the first check period ends. See [Periodic Cluster Check](../reference/metrics/periodic-cluster-check.md).
+- **Blank, not stale.** A metric whose latest value is more than 10 minutes old is left blank. Properties (the Periodic Cluster Check columns) keep their last known value. See [How It Works](../reference/metrics/README.md#no-stale-values).
 - **"Worst 10%" equals "worst" with 10 clusters or fewer.** The 10th (or 90th) percentile takes the lowest (or highest) cluster when there are 10 clusters or fewer. See [vSphere World Cluster Metrics](../reference/metrics/vsphere-world-metrics.md).
 - **Risk is red when high.** The Risk widgets are red from 75. The Performance widgets are red below 25. See [Cluster Risk KPI](../reference/metrics/cluster-risk.md#bands-red-is-high).
 - **Capacity Utilization can be above 100 %.** That means the cluster cannot hold its load if a host fails. See [Capacity Utilization](../reference/metrics/capacity-utilization.md).
@@ -50,10 +50,10 @@ See [vSphere World Cluster Metrics](../reference/metrics/vsphere-world-metrics.m
 
 | Column | Key | Source |
 | :--- | :--- | :--- |
-| Closed? | `vCommunity\|Daily Cluster Check\|Close for Business` | property, [Daily Cluster Check](../reference/metrics/daily-cluster-check.md). 1 = closed for new workload. |
-| 99P Utilization | `vCommunity\|Daily Cluster Check\|99th Percentile Capacity Utilization` | property, Daily Cluster Check |
-| 95P Performance | `vCommunity\|Daily Cluster Check\|95th Percentile Cluster Performance` | property, Daily Cluster Check |
-| 95P Risk | `vCommunity\|Daily Cluster Check\|95th Percentile Cluster Risk` | property, Daily Cluster Check |
+| Closed? | `vCommunity\|Periodic Cluster Check\|Close for Business` | property, [Periodic Cluster Check](../reference/metrics/periodic-cluster-check.md). 1 = closed for new workload. |
+| 99P Utilization | `vCommunity\|Periodic Cluster Check\|99th Percentile Capacity Utilization` | property, Periodic Cluster Check |
+| 95P Performance | `vCommunity\|Periodic Cluster Check\|95th Percentile Cluster Performance` | property, Periodic Cluster Check |
+| 95P Risk | `vCommunity\|Periodic Cluster Check\|95th Percentile Cluster Risk` | property, Periodic Cluster Check |
 | Capacity Remaining | `OnlineCapacityAnalytics\|capacityRemainingPercentage` | VCF Operations |
 | Time Remaining | `OnlineCapacityAnalytics\|timeRemaining` | VCF Operations |
 

@@ -17,11 +17,13 @@ from properties.cluster.evc_properties import collect_evc_properties
 from properties.cluster.dpm_properties import collect_dpm_properties
 from properties.cluster.cluster_configuration_properties import collect_cluster_configuration_properties
 from metrics.cluster.cluster_performance_metrics import collect_cluster_performance_metrics
-from metrics.cluster.cluster_risk_metrics import collect_cluster_risk_metrics, HostInventory
+from metrics.cluster.cluster_risk_metrics import (
+    collect_cluster_risk_metrics, HostInventory, MonsterVmSize, DEFAULT_MONSTER_VM,
+)
 from utils.ops_inventory import read_hosts, read_vms, powered_on_vms_by_host, hosts_by_cluster, read_cluster_ha, ClusterHa
 from utils.ops_stats import query_resources
 from metrics.availability.operational_availability import OperationalAvailability, NO_DATA, CLUSTER_METRIC, publish
-from metrics.cluster import daily_cluster_check, capacity_utilization
+from metrics.cluster import periodic_cluster_check, capacity_utilization
 from pyVmomi import vim
 
 logger = logging.getLogger(__name__)
@@ -32,8 +34,9 @@ def collect_cluster_data(
     result: CollectResult,
     content: Any,
     availability: OperationalAvailability = NO_DATA,
-    daily_check_time: Optional[str] = None,
-    daily_check_period: Optional[str] = None,
+    check_time: Optional[str] = None,
+    check_period: Optional[str] = None,
+    monster_vm: MonsterVmSize = DEFAULT_MONSTER_VM,
 ) -> None:
     
     propertyPaths: List[str] = []
@@ -88,14 +91,14 @@ def collect_cluster_data(
         logger.warning(f"Failed to read the cluster HA failover levels, so no Capacity Utilization - {repr(e)}")
         ha_by_cluster = None
 
-    # Daily Cluster Check: only the clusters due this cycle. See metrics/cluster/daily_cluster_check.py.
+    # Periodic Cluster Check: only the clusters due this cycle. See metrics/cluster/periodic_cluster_check.py.
     try:
-        daily = daily_cluster_check.read_daily_cluster_check(
-            suite_api_client, adapter_instance_id, daily_check_time, period_setting=daily_check_period)
+        checks = periodic_cluster_check.read_periodic_cluster_check(
+            suite_api_client, adapter_instance_id, check_time, period_setting=check_period)
     except Exception as e:
         # A failure here must not stop the rest of the collection. The clusters stay due for the next cycle.
-        logger.warning(f"Failed to read the Daily Cluster Check - {repr(e)}")
-        daily = {}
+        logger.warning(f"Failed to read the Periodic Cluster Check - {repr(e)}")
+        checks = {}
 
     for cluster_data in cluster_props:
         try:
@@ -130,7 +133,8 @@ def collect_cluster_data(
                 HostInventory(host.id, host.cores, host.threads, vms_on_host.get(host.name, []))
                 for host in cluster_hosts
             ]
-            stats_by_host = collect_cluster_risk_metrics(cluster_obj, cluster_name, hosts_inventory, suite_api_client)
+            stats_by_host = collect_cluster_risk_metrics(
+                cluster_obj, cluster_name, hosts_inventory, suite_api_client, monster_vm)
 
             # Capacity Utilization, from the same host stats. See metrics/cluster/capacity_utilization.py.
             if ha_by_cluster is not None and not stats_by_host:
@@ -143,7 +147,7 @@ def collect_cluster_data(
             # Operational Availability, read once per cycle for the whole vCenter by the adapter.
             publish(cluster_obj, CLUSTER_METRIC, availability.by_cluster.get(cluster_obj.get_key().name))
 
-            daily_cluster_check.publish(cluster_obj, daily.get(cluster_moid))
+            periodic_cluster_check.publish(cluster_obj, checks.get(cluster_moid))
 
             result.add_object(cluster_obj)
 

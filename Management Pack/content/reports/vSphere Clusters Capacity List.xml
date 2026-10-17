@@ -43,7 +43,7 @@
                                                                         
                                     <Property name="objectType" value="RESOURCE"/>
                                                                         
-                                    <Property name="attributeKey" value="vCommunity|Daily Cluster Check|Close for Business"/>
+                                    <Property name="attributeKey" value="vCommunity|Periodic Cluster Check|Close for Business"/>
                                                                         
                                     <Property name="isStringAttribute" value="false"/>
                                                                         
@@ -89,7 +89,7 @@
                                                                         
                                     <Property name="objectType" value="RESOURCE"/>
                                                                         
-                                    <Property name="attributeKey" value="vCommunity|Daily Cluster Check|99th Percentile Capacity Utilization"/>
+                                    <Property name="attributeKey" value="vCommunity|Periodic Cluster Check|99th Percentile Capacity Utilization"/>
                                                                         
                                     <Property name="isStringAttribute" value="false"/>
                                                                         
@@ -135,7 +135,7 @@
                                                                         
                                     <Property name="objectType" value="RESOURCE"/>
                                                                         
-                                    <Property name="attributeKey" value="vCommunity|Daily Cluster Check|95th Percentile Cluster Performance"/>
+                                    <Property name="attributeKey" value="vCommunity|Periodic Cluster Check|95th Percentile Cluster Performance"/>
                                                                         
                                     <Property name="isStringAttribute" value="false"/>
                                                                         
@@ -181,7 +181,7 @@
                                                                         
                                     <Property name="objectType" value="RESOURCE"/>
                                                                         
-                                    <Property name="attributeKey" value="vCommunity|Daily Cluster Check|95th Percentile Cluster Risk"/>
+                                    <Property name="attributeKey" value="vCommunity|Periodic Cluster Check|95th Percentile Cluster Risk"/>
                                                                         
                                     <Property name="isStringAttribute" value="false"/>
                                                                         

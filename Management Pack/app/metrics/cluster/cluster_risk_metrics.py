@@ -100,7 +100,7 @@ METRICS = [
     Metric("Highest ESXi Memory Overcommit Ratio",    None,  0.0,  1.0,   1.4,    1.8,    2.2,    True),
 
     # --- Monster VM: the largest VM against the size where a VM becomes a monster on its host ---
-    # 1 means the largest VM is exactly at that size. See MONSTER_VM_* below.
+    # 1 means the largest VM is exactly at that size. See MONSTER_*_SETTING below.
     Metric("Highest CPU Monster VM to Host Ratio",    None,  0.0,  1.0,   2.0,    3.0,    4.0),
     Metric("Highest Memory Monster VM to Host Ratio", None,  0.0,  1.0,   2.0,    3.0,    4.0),
 ]
@@ -143,15 +143,48 @@ HOST_STATS = [
 ]
 
 
-# When a VM is a monster, on a given host.
-# CPU: more than half of the host's physical cores. Cores, not threads: on a host with 64 cores and
+# When a VM is a monster, on a given host. Three account settings (Advanced Settings), with these defaults:
+# CPU: more than 50 % of the host's physical cores. Cores, not threads: on a host with 64 cores and
 # 128 threads, a VM with more than 32 vCPUs is a monster.
-MONSTER_VM_SHARE_OF_CORES = 0.5
 # Memory: more than 40 % of the host's DRAM (MEM_DRAM_CAPACITY), or 256 GB, whichever is smaller.
 # A memory tier such as NVMe does not count.
 # On a host with 768 GB of DRAM and 768 GB of NVMe, a VM of 256 GB is a monster.
-MONSTER_VM_SHARE_OF_DRAM = 0.4
-MONSTER_VM_MEMORY_MB = 256.0 * 1024.0
+MONSTER_CPU_SETTING = "monster_vm_cpu_percent_of_cores"
+MONSTER_MEMORY_SETTING = "monster_vm_memory_percent_of_dram"
+MONSTER_MEMORY_MIN_SETTING = "monster_vm_memory_min_gb"
+DEFAULT_MONSTER_CPU_PERCENT = 50
+DEFAULT_MONSTER_MEMORY_PERCENT = 40
+DEFAULT_MONSTER_MEMORY_MIN_GB = 256
+
+
+class MonsterVmSize(NamedTuple):
+    """The size at which a VM becomes a monster on its host. See MONSTER_*_SETTING above."""
+    share_of_cores: float           # 0.5 = 50 % of the host's physical cores
+    share_of_dram: float            # 0.4 = 40 % of the host's DRAM ...
+    memory_min_mb: float            # ... or this, whichever is smaller: a VM this big is a monster on any host
+
+
+def parse_setting(text, default: int, label: str, highest: Optional[int] = None) -> int:
+    """A whole number from 1 to highest. An empty or invalid setting falls back to default, with a warning."""
+    value = str(text if text is not None else "").strip()
+    if value.isdigit() and 1 <= int(value) and (highest is None or int(value) <= highest):
+        return int(value)
+    if value:
+        allowed = f"from 1 to {highest}" if highest else "of 1 or more"
+        logger.warning(f"{label} '{text}' is not a whole number {allowed}. Using {default}.")
+    return default
+
+
+def monster_vm_size(cpu_percent=None, memory_percent=None, memory_min_gb=None) -> MonsterVmSize:
+    """The Monster VM size from the three account settings, as get_identifier_value returns them."""
+    return MonsterVmSize(
+        parse_setting(cpu_percent, DEFAULT_MONSTER_CPU_PERCENT, "Monster VM CPU (% of host cores)", 100) / 100.0,
+        parse_setting(memory_percent, DEFAULT_MONSTER_MEMORY_PERCENT, "Monster VM Memory (% of host DRAM)", 100) / 100.0,
+        parse_setting(memory_min_gb, DEFAULT_MONSTER_MEMORY_MIN_GB, "Monster VM Memory Minimum (GB)") * 1024.0,
+    )
+
+
+DEFAULT_MONSTER_VM = monster_vm_size()
 
 
 class HostInventory(NamedTuple):
@@ -245,26 +278,30 @@ def memory_overcommit(stats: Dict[str, float]) -> Optional[float]:
     return stats[MEM_ALLOCATED] / dram_kb
 
 
-def cpu_monster_ratio(host: HostInventory) -> Optional[float]:
+def cpu_monster_ratio(host: HostInventory, monster: MonsterVmSize = DEFAULT_MONSTER_VM) -> Optional[float]:
     """vCPUs of the largest VM, against the vCPUs at which a VM becomes a monster on this host."""
     vcpus = [vm.vcpus for vm in host.vms if vm.vcpus]
     if not host.cores or not vcpus:
         return None
-    monster_vcpus = MONSTER_VM_SHARE_OF_CORES * host.cores
+    monster_vcpus = monster.share_of_cores * host.cores
     return max(vcpus) / monster_vcpus
 
 
-def memory_monster_ratio(stats: Dict[str, float], host: HostInventory) -> Optional[float]:
+def memory_monster_ratio(
+    stats: Dict[str, float], host: HostInventory, monster: MonsterVmSize = DEFAULT_MONSTER_VM
+) -> Optional[float]:
     """Memory of the largest VM, against the memory at which a VM becomes a monster on this host."""
     memory = [vm.memory_mb for vm in host.vms if vm.memory_mb]
     dram_kb = dram_capacity_kb(stats)
     if dram_kb is None or not memory:
         return None
-    monster_mb = min(MONSTER_VM_SHARE_OF_DRAM * dram_kb / 1024.0, MONSTER_VM_MEMORY_MB)
+    monster_mb = min(monster.share_of_dram * dram_kb / 1024.0, monster.memory_min_mb)
     return max(memory) / monster_mb
 
 
-def host_risk_values(host: HostInventory, stats: Dict[str, float]) -> Dict[str, Optional[float]]:
+def host_risk_values(
+    host: HostInventory, stats: Dict[str, float], monster: MonsterVmSize = DEFAULT_MONSTER_VM
+) -> Dict[str, Optional[float]]:
     """Step 2a: the value of every sub-metric in METRICS for ONE host. None means "no data"."""
     return {
         "Highest ESXi CPU Thread Utilization": stats.get(CPU_THREAD_UTIL),
@@ -277,16 +314,17 @@ def host_risk_values(host: HostInventory, stats: Dict[str, float]) -> Dict[str, 
         "Highest ESXi Memory Reservation": memory_reservation_pct(stats),
         "Highest ESXi CPU Overcommit Ratio": cpu_overcommit(stats, host),
         "Highest ESXi Memory Overcommit Ratio": memory_overcommit(stats),
-        "Highest CPU Monster VM to Host Ratio": cpu_monster_ratio(host),
-        "Highest Memory Monster VM to Host Ratio": memory_monster_ratio(stats, host),
+        "Highest CPU Monster VM to Host Ratio": cpu_monster_ratio(host, monster),
+        "Highest Memory Monster VM to Host Ratio": memory_monster_ratio(stats, host, monster),
     }
 
 
 def cluster_risk_values(
-    hosts: List[HostInventory], stats_by_host: Dict[str, Dict[str, float]]
+    hosts: List[HostInventory], stats_by_host: Dict[str, Dict[str, float]],
+    monster: MonsterVmSize = DEFAULT_MONSTER_VM,
 ) -> Dict[str, Optional[float]]:
     """Step 2b: the value of every sub-metric for the cluster: the highest host. None means "no data"."""
-    per_host = [host_risk_values(host, stats_by_host.get(host.host_id, {})) for host in hosts]
+    per_host = [host_risk_values(host, stats_by_host.get(host.host_id, {}), monster) for host in hosts]
 
     cluster_values = {}
     for metric in METRICS:
@@ -300,11 +338,13 @@ def cluster_risk_values(
 # ---------------------------------------------------------------------------
 
 def collect_cluster_risk_metrics(
-    cluster_obj: Object, cluster_name: str, hosts: List[HostInventory], suite_api_client: SuiteApiClient
+    cluster_obj: Object, cluster_name: str, hosts: List[HostInventory], suite_api_client: SuiteApiClient,
+    monster: MonsterVmSize = DEFAULT_MONSTER_VM,
 ) -> Dict[str, Dict[str, float]]:
     """Publishes the sub-metrics in METRICS, then the Cluster Risk KPI computed from them.
 
     hosts holds one HostInventory per ESXi host of the cluster that VCF Operations knows about.
+    monster is the Monster VM size from the account settings, see monster_vm_size().
     Returns the host stats it read, {host id: {stat key: value}}, so that Capacity Utilization uses the same
     values without reading them again. Empty when the read failed.
     """
@@ -314,7 +354,7 @@ def collect_cluster_risk_metrics(
         stats_by_host = read_latest_stats(suite_api_client, [host.host_id for host in hosts], HOST_STATS)
 
         # Step 2: calculate each sub-metric per host, then keep the highest host.
-        values = cluster_risk_values(hosts, stats_by_host)
+        values = cluster_risk_values(hosts, stats_by_host, monster)
 
         # Step 3: publish the sub-metrics, then score them and publish the KPI.
         no_data = publish_kpi(cluster_obj, GROUP, KPI_KEY, METRICS, PUBLISHED_METRICS, values,

@@ -34,7 +34,7 @@ from collectors.datastore.collectDatastoreData import collect_datastore_data
 from collectors.vcenter.collectvCenterData import collect_vcenter_data
 from collectors.world.collectWorldData import collect_world_data
 from collectors.datacenter.collectDatacenterData import collect_datacenter_data
-from metrics.cluster import cluster_performance_metrics, cluster_risk_metrics, daily_cluster_check, capacity_utilization
+from metrics.cluster import cluster_performance_metrics, cluster_risk_metrics, periodic_cluster_check, capacity_utilization
 from metrics.host import esxi_performance_metrics
 from metrics.vm import vm_performance_metrics, guest_os_performance_metrics, vm_guest_os_kpi, vm_shares
 from metrics.world import cluster_summary_metrics, availability_summary_metrics
@@ -126,23 +126,54 @@ def get_adapter_definition() -> AdapterDefinition:
         )
 
         definition.define_enum_parameter(
-            daily_cluster_check.PERIOD_SETTING,
-            values=daily_cluster_check.PERIOD_CHOICES,
+            periodic_cluster_check.PERIOD_SETTING,
+            values=periodic_cluster_check.PERIOD_CHOICES,
             label="Cluster Check Period (hours)",
-            description="Length of the Daily Cluster Check window, and how often it is calculated: "
+            description="Length of the Periodic Cluster Check window, and how often it is calculated: "
                         "1, 2, 4, 6, 8, 12 or 24 hours.",
-            default=daily_cluster_check.DEFAULT_PERIOD,
+            default=periodic_cluster_check.DEFAULT_PERIOD,
             required=False,
             advanced=True,
         )
 
         definition.define_string_parameter(
-            daily_cluster_check.TIME_SETTING,
+            periodic_cluster_check.TIME_SETTING,
             label="Cluster Check Time (UTC)",
-            description="Time of day, as HH:MM in UTC, when a Daily Cluster Check window ends. With a period "
+            description="Time of day, as HH:MM in UTC, when a Periodic Cluster Check window ends. With a period "
                         "shorter than 24 hours, the other windows end every period from it. The clusters are "
                         "calculated in the collection cycles after each end.",
-            default=daily_cluster_check.DEFAULT_TIME,
+            default=periodic_cluster_check.DEFAULT_TIME,
+            required=False,
+            advanced=True,
+        )
+
+        # The size at which a VM becomes a monster on its host, for Cluster Risk. See cluster_risk_metrics.py.
+        definition.define_int_parameter(
+            cluster_risk_metrics.MONSTER_CPU_SETTING,
+            label="Monster VM CPU (% of host cores)",
+            description="A VM is a CPU monster when its vCPUs are more than this share of its host's physical "
+                        "cores (not threads). 1 to 100.",
+            default=cluster_risk_metrics.DEFAULT_MONSTER_CPU_PERCENT,
+            required=False,
+            advanced=True,
+        )
+
+        definition.define_int_parameter(
+            cluster_risk_metrics.MONSTER_MEMORY_SETTING,
+            label="Monster VM Memory (% of host DRAM)",
+            description="A VM is a memory monster when its memory is more than this share of its host's DRAM, "
+                        "or the Monster VM Memory Minimum, whichever is smaller. 1 to 100.",
+            default=cluster_risk_metrics.DEFAULT_MONSTER_MEMORY_PERCENT,
+            required=False,
+            advanced=True,
+        )
+
+        definition.define_int_parameter(
+            cluster_risk_metrics.MONSTER_MEMORY_MIN_SETTING,
+            label="Monster VM Memory Minimum (GB)",
+            description="The memory that qualifies a VM as a memory monster on any host, however large. On a "
+                        "host where the % of host DRAM is smaller, a smaller VM already qualifies.",
+            default=cluster_risk_metrics.DEFAULT_MONSTER_MEMORY_MIN_GB,
             required=False,
             advanced=True,
         )
@@ -212,13 +243,13 @@ def get_adapter_definition() -> AdapterDefinition:
         for name in capacity_utilization.METRICS:
             capacity.define_metric(name, name, unit=Units.RATIO.PERCENT)
 
-        # Daily Cluster Check: properties, set once a day. See metrics/cluster/daily_cluster_check.py.
-        dailyCheck = vCommunity.define_group(daily_cluster_check.GROUP, daily_cluster_check.GROUP)
-        for name in (daily_cluster_check.RISK, daily_cluster_check.PERFORMANCE, daily_cluster_check.UTILIZATION):
-            dailyCheck.define_numeric_property(name, name, unit=Units.RATIO.PERCENT)
-        dailyCheck.define_numeric_property(daily_cluster_check.CLOSE_FOR_BUSINESS, daily_cluster_check.CLOSE_FOR_BUSINESS)
-        dailyCheck.define_string_property(daily_cluster_check.WINDOW_END, daily_cluster_check.WINDOW_END)
-        dailyCheck.define_numeric_property(daily_cluster_check.WINDOW_HOURS, daily_cluster_check.WINDOW_HOURS)
+        # Periodic Cluster Check: properties, set once per period. See metrics/cluster/periodic_cluster_check.py.
+        periodicCheck = vCommunity.define_group(periodic_cluster_check.GROUP, periodic_cluster_check.GROUP)
+        for name in (periodic_cluster_check.RISK, periodic_cluster_check.PERFORMANCE, periodic_cluster_check.UTILIZATION):
+            periodicCheck.define_numeric_property(name, name, unit=Units.RATIO.PERCENT)
+        periodicCheck.define_numeric_property(periodic_cluster_check.CLOSE_FOR_BUSINESS, periodic_cluster_check.CLOSE_FOR_BUSINESS)
+        periodicCheck.define_string_property(periodic_cluster_check.WINDOW_END, periodic_cluster_check.WINDOW_END)
+        periodicCheck.define_numeric_property(periodic_cluster_check.WINDOW_HOURS, periodic_cluster_check.WINDOW_HOURS)
 
         vSphereHA = clusterConfiguration.define_group("vSphere HA", "vSphere HA")
         vSphereHA.define_string_property("Host Monitoring", "Host Monitoring")
@@ -674,8 +705,13 @@ def collect(adapter_instance: AdapterInstance) -> CollectResult:
                     start_times["collect_cluster_data"] = time.perf_counter()
                     future_cls = data_executor.submit(
                         collect_cluster_data, client, adapter_instance_id, result, content, availability,
-                        adapter_instance.get_identifier_value(daily_cluster_check.TIME_SETTING),
-                        adapter_instance.get_identifier_value(daily_cluster_check.PERIOD_SETTING),
+                        adapter_instance.get_identifier_value(periodic_cluster_check.TIME_SETTING),
+                        adapter_instance.get_identifier_value(periodic_cluster_check.PERIOD_SETTING),
+                        cluster_risk_metrics.monster_vm_size(
+                            adapter_instance.get_identifier_value(cluster_risk_metrics.MONSTER_CPU_SETTING),
+                            adapter_instance.get_identifier_value(cluster_risk_metrics.MONSTER_MEMORY_SETTING),
+                            adapter_instance.get_identifier_value(cluster_risk_metrics.MONSTER_MEMORY_MIN_SETTING),
+                        ),
                     )
 
                     # 2. Host feature definition

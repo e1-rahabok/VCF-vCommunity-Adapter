@@ -1,6 +1,6 @@
-# Daily Cluster Check
+# Periodic Cluster Check
 
-**Daily Cluster Check** sets **Close for Business** on every vSphere cluster once per period: every 24 hours by default. It marks whether the cluster is open to accept new VMs:
+**Periodic Cluster Check** sets **Close for Business** on every vSphere cluster once per period: every 24 hours by default. It marks whether the cluster is open to accept new VMs:
 
 - **1: closed for business.** The cluster is full. Do not place new VMs on it.
 - **0: open.** The cluster can accept new VMs.
@@ -27,7 +27,7 @@ Each period divides a day, so the windows end at the same times every day. Each 
 | 8 | 10:00 | 02:00, 10:00, 18:00 | the 8 hours before |
 | 1 | 00:15 | every hour at :15 | the hour before |
 
-Code: [`Management Pack/app/metrics/cluster/daily_cluster_check.py`](../../../Management%20Pack/app/metrics/cluster/daily_cluster_check.py)
+Code: [`Management Pack/app/metrics/cluster/periodic_cluster_check.py`](../../../Management%20Pack/app/metrics/cluster/periodic_cluster_check.py)
 
 ## Known limitations
 
@@ -45,7 +45,7 @@ Code: [`Management Pack/app/metrics/cluster/daily_cluster_check.py`](../../../Ma
 
 ## The properties
 
-On every vSphere cluster, under `vCommunity|Daily Cluster Check`. Properties, not metrics: one value per window.
+On every vSphere cluster, under `vCommunity|Periodic Cluster Check`. Properties, not metrics: one value per window.
 
 | Property | Calculation |
 | :--- | :--- |
@@ -108,4 +108,4 @@ The limits are in `decide()` and the constants above it, in the code.
 
 A cluster with a quiet 24-hour window of Cluster Performance at 90 %, and one 5-minute dip to 20 %: the 95th percentile is 90 %. With CPU utilization at 40 % and memory at 70 % all day, Capacity Utilization is 70 %. Rule 1 does not match (70 is not above 95, 90 is not below 25), and rule 2 does not match (90 is not below 50): Close for Business is 0.
 
-The same cases are checked by the tests in [`Management Pack/tests/test_daily_cluster_check.py`](../../../Management%20Pack/tests/test_daily_cluster_check.py).
+The same cases are checked by the tests in [`Management Pack/tests/test_periodic_cluster_check.py`](../../../Management%20Pack/tests/test_periodic_cluster_check.py).

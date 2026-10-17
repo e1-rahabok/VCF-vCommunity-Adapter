@@ -13,7 +13,7 @@ KPIs:
 Other metrics:
 
 - [Capacity Utilization](capacity-utilization.md)
-- [Daily Cluster Check](daily-cluster-check.md)
+- [Periodic Cluster Check](periodic-cluster-check.md)
 - [Network Speed Degradation](network-speed-degradation.md)
 - [Operational Availability](operational-availability.md)
 - [VM Shares](vm-shares.md)

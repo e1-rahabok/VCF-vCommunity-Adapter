@@ -97,10 +97,20 @@ Placement is by name, because `summary|parentCluster` and `summary|parentHost` h
 
 The Monster VM ratios compare the largest VM with the size at which a VM becomes a monster on its host. 1 means the largest VM is exactly that size. Above 1 it is a monster.
 
-| | A VM is a monster when it has | Example |
+| | A VM is a monster when it has (defaults) | Example |
 | :--- | :--- | :--- |
 | CPU | More than 50 % of the host's physical cores. Cores, not threads. | A host with 64 cores and 128 threads: more than 32 vCPU. |
 | Memory | More than 40 % of the host's DRAM (`MEM_DRAM_CAPACITY`), or 256 GB, whichever is smaller. A memory tier such as NVMe does not count. | A host with 768 GB of DRAM and 768 GB of NVMe: 40 % is 307 GB, so 256 GB. |
+
+The three numbers are account settings, under **Advanced Settings** of the [adapter instance](../../configuration-guide/adapter-instance.md#2-advanced-settings-optional):
+
+| Setting | Default | Allowed |
+| :--- | :--- | :--- |
+| **Monster VM CPU (% of host cores)** | 50 | 1 to 100 |
+| **Monster VM Memory (% of host DRAM)** | 40 | 1 to 100 |
+| **Monster VM Memory Minimum (GB)** | 256 | 1 or more |
+
+An empty or invalid value uses the default and logs a warning. A change applies from the next collection cycle; values already published are not recalculated. The limits of the ratio (green to 1, then 2, 3, 4) do not change: 1 is always "exactly the monster size". The worked examples below use the defaults.
 
 ## How the score is calculated
 
@@ -126,7 +136,7 @@ Because Cluster Risk is published as `100 − health`, its bands are the mirror 
 - **Only the published number is flipped.** The sub-metrics, their limits from the source table, the tier weights (1, 2, 4, 8), "Excluded" and missing data are calculated exactly as for every KPI, in the same shared code. The flip is the last step, in `publish_kpi(..., higher_is_worse=True)`.
 - **The order and the distances are kept.** A cluster 10 points healthier than another is 10 points less at risk.
 - **Set thresholds the other way round.** Any symptom, alert, or widget color range on `Cluster Risk Score` must treat high as bad: red from 75, not below 25. The pack's Extreme Capacity dashboard uses the score, with red from 75. The pack's other dashboards and reports use only the Risk sub-metrics.
-- **"Worst" means highest.** That is why vSphere World uses the 90th percentile and the highest Cluster Risk, and the Daily Cluster Check tests `Cluster Risk > 75`.
+- **"Worst" means highest.** That is why vSphere World uses the 90th percentile and the highest Cluster Risk, and the Periodic Cluster Check tests `Cluster Risk > 75`.
 
 ## Worked examples
 

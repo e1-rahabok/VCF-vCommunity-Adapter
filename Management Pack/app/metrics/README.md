@@ -31,7 +31,7 @@ All five are called by a collector and declared in `adapter.py`. The VCF Operati
 | `cluster/cluster_risk_metrics.py` | Cluster Risk KPI. One score per cluster, from 12 sub-metrics. |
 | `cluster/drs_metrics.py` | DRS Score. A plain metric, not a KPI. |
 | `cluster/capacity_utilization.py` | Capacity CPU and Memory Utilization per cluster: sum of the running hosts' % ÷ (N − max(k, gone hosts)). Not a KPI. See `docs/reference/metrics/capacity-utilization.md`, including its known limitations. |
-| `cluster/daily_cluster_check.py` | Daily Cluster Check: once per period (1 to 24 hours, default 24), Close for Business per cluster from the window's percentiles. See `docs/reference/metrics/daily-cluster-check.md`. |
+| `cluster/periodic_cluster_check.py` | Periodic Cluster Check: once per period (1 to 24 hours, default 24), Close for Business per cluster from the window's percentiles. See `docs/reference/metrics/periodic-cluster-check.md`. |
 | `vm/vm_performance_metrics.py` | VM Performance KPI. One score per powered-on VM, from 9 sub-metrics. Also reads the stats of Guest OS Performance. |
 | `vm/guest_os_performance_metrics.py` | Guest OS Performance KPI. One score per powered-on VM with VMware Tools, from 4 sub-metrics. |
 | `host/esxi_performance_metrics.py` | ESXi Performance KPI. One score per connected ESXi host, from 9 sub-metrics. |
@@ -225,7 +225,7 @@ python -m pytest tests
 | `test_cluster_summary_metrics.py` | vSphere World: 10th percentile and worst cluster scores, over the clusters of all vCenters. |
 | `test_cluster_risk_metrics.py` | Cluster Risk formulas and worked examples. |
 | `test_capacity_utilization.py` | Capacity Utilization formulas: N − k, above 100 %, missing hosts. |
-| `test_daily_cluster_check.py` | Daily Cluster Check: schedule, percentiles, Close for Business rule. |
+| `test_periodic_cluster_check.py` | Periodic Cluster Check: schedule, percentiles, Close for Business rule. |
 | `test_esxi_performance_metrics.py` | ESXi Performance formulas and worked examples. |
 | `test_ops_inventory.py` | Reading placement, power state, sizes, cores and threads from VCF Operations, and the Suite API endpoints used. |
 | `test_guest_os_performance_metrics.py` | Guest OS Performance formulas and worked examples. |

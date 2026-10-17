@@ -37,7 +37,7 @@ Known limitations (see docs/reference/metrics/capacity-utilization.md):
     - A disconnected host whose VMs still run counts as gone: its load is not visible, so it is understated.
     - No failover level (HA off, percentage-based or dedicated-host admission control) counts as k = 0.
 
-Used by the Daily Cluster Check (daily_cluster_check.py), which takes the 99th percentile of the 24 hours.
+Used by the Periodic Cluster Check (periodic_cluster_check.py), which takes the 99th percentile of each window.
 Called from: collectors/cluster/collectClusterData.py, once per cluster.
 """
 import logging

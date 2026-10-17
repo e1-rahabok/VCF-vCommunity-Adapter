@@ -135,6 +135,38 @@ def test_memory_monster_is_40_percent_of_dimm_or_256_gb():
     assert cr.memory_monster_ratio(untiered, host(vms=[vm(4.0, 204.8 * 1024.0)])) == 1.0
 
 
+def test_monster_vm_size_comes_from_the_account_settings():
+    # 25 % of cores, 20 % of DRAM, at most 128 GB. As get_identifier_value returns them: text.
+    monster = cr.monster_vm_size("25", "20", "128")
+    # 64 cores: a monster from 16 vCPU, so 32 vCPU is 2.
+    assert cr.cpu_monster_ratio(big_host([vm(32.0, 1024.0)]), monster) == 2.0
+    # 20 % of 512 GB is 102.4 GB, less than 128 GB.
+    untiered = {cr.MEM_DRAM_CAPACITY: 512.0 * GB_IN_KB}
+    assert cr.memory_monster_ratio(untiered, host(vms=[vm(4.0, 102.4 * 1024.0)]), monster) == 1.0
+    # 20 % of 768 GB is 153.6 GB, more than 128 GB, so 128 GB.
+    tiered = {cr.MEM_DRAM_CAPACITY: 768.0 * GB_IN_KB}
+    assert cr.memory_monster_ratio(tiered, big_host([vm(4.0, 128.0 * 1024.0)]), monster) == 1.0
+
+
+def test_monster_vm_settings_fall_back_to_the_defaults():
+    # Empty (an account saved before the settings existed), or out of range, or not a whole number.
+    assert cr.monster_vm_size() == cr.DEFAULT_MONSTER_VM == cr.MonsterVmSize(0.5, 0.4, 256.0 * 1024.0)
+    assert cr.monster_vm_size("", " ", None) == cr.DEFAULT_MONSTER_VM
+    assert cr.monster_vm_size("0", "101", "-1") == cr.DEFAULT_MONSTER_VM
+    assert cr.monster_vm_size("50.5", "forty", "1e3") == cr.DEFAULT_MONSTER_VM
+    assert cr.monster_vm_size(100, 1, 2048) == cr.MonsterVmSize(1.0, 0.01, 2048.0 * 1024.0)
+
+
+def test_the_monster_vm_setting_reaches_the_kpi():
+    # Monster from 25 % of 32 cores = 8 vCPU: the 4 vCPU VMs are at 0.5.
+    hosts = [host(f"host-{n}", vms=SMALL_VMS) for n in (1, 2)]
+    cluster_obj = FakeObject("cluster-1")
+    cr.collect_cluster_risk_metrics(cluster_obj, "Cluster 1", hosts, FakeSuiteApi(HEALTHY),
+                                    cr.monster_vm_size("25", "40", "256"))
+    published = {key.split("|")[-1]: value for key, value in cluster_obj.metrics.items()}
+    assert published["Highest CPU Monster VM to Host Ratio"] == 0.5
+
+
 def test_memory_shares_are_of_the_host_capacity():
     stats = {cr.MEM_BALLOONED: 5.12 * GB_IN_KB, cr.MEM_DRAM_CAPACITY: 512.0 * GB_IN_KB}
     assert cr.memory_ballooned_pct(stats) == 1.0

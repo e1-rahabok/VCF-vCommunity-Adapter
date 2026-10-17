@@ -1,9 +1,9 @@
 #  Copyright 2026 VCF Operations vCommunity Management Pack
-"""Daily Cluster Check: once per period, per cluster, whether it is closed for business (full for new VMs).
+"""Periodic Cluster Check: once per period, per cluster, whether it is closed for business (full for new VMs).
 
 What it is
 ----------
-Once per period, every cluster gets these properties, under vCommunity|Daily Cluster Check:
+Once per period, every cluster gets these properties, under vCommunity|Periodic Cluster Check:
 
     95th Percentile Cluster Risk             of Cluster Risk Score (higher is worse), over the period
     95th Percentile Cluster Performance      of Cluster Performance Score (higher is better), over the period
@@ -34,7 +34,7 @@ No state is kept in the adapter: the Window End property, stored in VCF Operatio
 an upgrade of the pack does not lose it.
 
 Inputs, all from VCF Operations: the 5-minute history of the four stats in STAT_KEYS.
-Docs: docs/reference/metrics/daily-cluster-check.md
+Docs: docs/reference/metrics/periodic-cluster-check.md
 """
 import logging
 import math
@@ -47,10 +47,10 @@ from utils.ops_stats import as_number, query_resources, read_latest_properties, 
 
 logger = logging.getLogger(__name__)
 
-GROUP = "Daily Cluster Check"
+GROUP = "Periodic Cluster Check"
 
 # Account setting (Advanced Settings): the time of day, in UTC, when a window ends.
-TIME_SETTING = "daily_cluster_check_time"
+TIME_SETTING = "periodic_cluster_check_time"
 DEFAULT_TIME = "00:00"
 # Account setting (Advanced Settings): the length of the window, which is also how often it is calculated.
 PERIOD_SETTING = "cluster_check_period_hours"
@@ -92,7 +92,7 @@ CLUSTERS_PER_REQUEST = 100
 
 
 
-class DailyResult(NamedTuple):
+class PeriodicResult(NamedTuple):
     """What is published on one cluster. A value of None is not published: it had no data."""
     values: Dict[str, Optional[float]]     # RISK, PERFORMANCE, UTILIZATION, CLOSE_FOR_BUSINESS
     window_end: str
@@ -176,7 +176,7 @@ def decide(risk: float, performance: float, utilization: float) -> int:
     return 0
 
 
-def daily_values(samples: Dict[str, List[float]]) -> Dict[str, Optional[float]]:
+def window_values(samples: Dict[str, List[float]]) -> Dict[str, Optional[float]]:
     """The published values of one cluster, from the samples of its window. None means "no data"."""
     risk = percentile(samples.get(CLUSTER_RISK_SCORE, []), 95)
     performance = percentile(samples.get(CLUSTER_PERFORMANCE_SCORE, []), 95)
@@ -194,11 +194,11 @@ def daily_values(samples: Dict[str, List[float]]) -> Dict[str, Optional[float]]:
 # Reading from VCF Operations, and publishing.
 # ---------------------------------------------------------------------------
 
-def read_daily_cluster_check(
+def read_periodic_cluster_check(
     suite_api_client: SuiteApiClient, adapter_instance_id: str, time_setting: Optional[str],
     now: Optional[datetime] = None, period_setting: Optional[str] = None,
-) -> Dict[str, DailyResult]:
-    """{cluster MoRef id: DailyResult} for the clusters of this vCenter that are due this cycle.
+) -> Dict[str, PeriodicResult]:
+    """{cluster MoRef id: PeriodicResult} for the clusters of this vCenter that are due this cycle.
 
     Empty when no cluster is due: the properties already published stay in VCF Operations.
     """
@@ -221,7 +221,7 @@ def read_daily_cluster_check(
     if not due:
         return {}
     due = sorted(due, key=lambda cluster: cluster.id)[:MAX_CLUSTERS_PER_CYCLE]
-    logger.info(f"Daily Cluster Check: {len(due)} of {len(clusters)} clusters due for the {period_hours} hours to {end_text}.")
+    logger.info(f"Periodic Cluster Check: {len(due)} of {len(clusters)} clusters due for the {period_hours} hours to {end_text}.")
 
     end_ms = int(window_end.timestamp() * 1000)
     begin_ms = int((window_end - timedelta(hours=period_hours)).timestamp() * 1000)
@@ -235,25 +235,25 @@ def read_daily_cluster_check(
         if cluster.id in failed:
             continue
         samples = history.get(cluster.id, {})
-        values = daily_values(samples)
-        results[cluster.moid] = DailyResult(values, end_text, period_hours)
+        values = window_values(samples)
+        results[cluster.moid] = PeriodicResult(values, end_text, period_hours)
         if values[CLOSE_FOR_BUSINESS] is None:
             counts = ", ".join(f"{key.split('|')[-1]}: {len(samples.get(key, []))}" for key in STAT_KEYS)
-            logger.info(f"Daily Cluster Check of {cluster.name}: no Close for Business for the window to "
+            logger.info(f"Periodic Cluster Check of {cluster.name}: no Close for Business for the window to "
                         f"{end_text} - samples in the window: {counts}")
     published = sum(1 for result in results.values() if result.values[CLOSE_FOR_BUSINESS] is not None)
-    logger.info(f"Daily Cluster Check: Close for Business set on {published} of {len(results)} due clusters "
+    logger.info(f"Periodic Cluster Check: Close for Business set on {published} of {len(results)} due clusters "
                 f"for the {period_hours} hours to {end_text}.")
     return results
 
 
-def publish(cluster_obj, daily: Optional[DailyResult]) -> None:
-    """Publishes the Daily Cluster Check properties of one cluster. Nothing when it is not due this cycle."""
-    if daily is None:
+def publish(cluster_obj, result: Optional[PeriodicResult]) -> None:
+    """Publishes the Periodic Cluster Check properties of one cluster. Nothing when it is not due this cycle."""
+    if result is None:
         return
-    for name, value in daily.values.items():
+    for name, value in result.values.items():
         if value is not None:
             cluster_obj.with_property(f"vCommunity|{GROUP}|{name}", round(value, 2))
     # Last, and also without data: the cluster was calculated for this window, so it is not due again.
-    cluster_obj.with_property(WINDOW_HOURS_KEY, daily.window_hours)
-    cluster_obj.with_property(WINDOW_END_KEY, daily.window_end)
+    cluster_obj.with_property(WINDOW_HOURS_KEY, result.window_hours)
+    cluster_obj.with_property(WINDOW_END_KEY, result.window_end)
