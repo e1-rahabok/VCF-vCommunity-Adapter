@@ -34,7 +34,7 @@ The script is read-only. It calls the Suite API with `GET` only, plus the login 
 pwsh tools/validate/validate.ps1
 
 # Release sign-off: the installed version must match
-pwsh tools/validate/validate.ps1 -ExpectedVersion 0.2.0
+pwsh tools/validate/validate.ps1 -ExpectedVersion 0.4.0
 
 # Every object instead of a sample of 5 per type
 pwsh tools/validate/validate.ps1 -SampleSize 0

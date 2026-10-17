@@ -95,19 +95,26 @@ def test_a_value_on_a_limit_belongs_to_the_better_band():
     assert pc.band(50.0, True) == "yellow"
 
 
-def test_close_for_business_when_any_is_red():
+def test_close_for_business_when_consumption_or_contention_is_red():
     # decide(performance, risk, consumption)
-    assert pc.decide(24.0, 0.0, 0.0) == 1       # Performance red
-    assert pc.decide(99.0, 76.0, 0.0) == 1      # Risk red
-    assert pc.decide(99.0, 0.0, 76.0) == 1      # Consumption red
+    assert pc.decide(24.0, 0.0, 0.0) == 1       # Performance red: the VMs already suffer
+    assert pc.decide(99.0, 0.0, 76.0) == 1      # Consumption red: the cluster is full
 
 
-def test_close_for_business_when_all_three_are_orange():
-    assert pc.decide(40.0, 60.0, 60.0) == 1
-    # Two orange, one yellow: open.
-    assert pc.decide(40.0, 60.0, 40.0) == 0
-    assert pc.decide(60.0, 60.0, 60.0) == 0
-    # Limits: Performance 50 is yellow, so not all three are orange.
+def test_risk_never_closes_a_cluster_on_its_own():
+    # Risk is a leading indicator. Red Risk with healthy Consumption and Performance stays open.
+    assert pc.decide(99.0, 99.0, 0.0) == 0
+    # Only one of Consumption and Performance orange: Risk is not looked at.
+    assert pc.decide(40.0, 99.0, 40.0) == 0
+    assert pc.decide(60.0, 99.0, 60.0) == 0
+
+
+def test_risk_decides_when_consumption_and_contention_are_both_orange():
+    assert pc.decide(40.0, 60.0, 60.0) == 1     # Risk orange: the threshold of a critical cluster
+    assert pc.decide(40.0, 90.0, 60.0) == 1     # Risk red
+    assert pc.decide(40.0, 40.0, 60.0) == 0     # Risk yellow
+    assert pc.decide(40.0, 10.0, 60.0) == 0     # Risk green
+    # Limits: Performance 50 is yellow, so not both orange.
     assert pc.decide(50.0, 60.0, 60.0) == 0
     assert pc.decide(49.99, 50.01, 50.01) == 1
 
@@ -115,7 +122,7 @@ def test_close_for_business_when_all_three_are_orange():
 def test_open_when_healthy_or_on_the_red_limit():
     assert pc.decide(95.0, 10.0, 30.0) == 0
     assert pc.decide(25.0, 75.0, 75.0) == 1     # not red, but all three orange
-    assert pc.decide(25.0, 0.0, 0.0) == 0       # Performance 25 is orange, the others green
+    assert pc.decide(25.0, 0.0, 0.0) == 0       # Performance 25 is orange, Consumption green
 
 
 def samples(performance, risk, consumption):

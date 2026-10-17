@@ -81,7 +81,8 @@ def collect_cluster_data(
 
     # KPIs: read from VCF Operations once, for all clusters, which hosts are in each cluster and which
     # powered-on VMs run on each host, with their sizes. See utils/ops_inventory.py.
-    hosts_in_cluster = hosts_by_cluster(read_hosts(suite_api_client, adapter_instance_id))
+    all_hosts = read_hosts(suite_api_client, adapter_instance_id)
+    hosts_in_cluster = hosts_by_cluster(all_hosts)
     vms_on_host = powered_on_vms_by_host(read_vms(suite_api_client, adapter_instance_id))
     # Host count and HA failover level of every cluster, for Capacity Utilization.
     try:
@@ -92,14 +93,18 @@ def collect_cluster_data(
         ops_clusters = []
         ha_by_cluster = None
 
-    # The cluster stats of Cluster Consumption, in one request for all clusters: {cluster name: {stat key: value}}.
+    # The stats of Cluster Consumption that Cluster Risk does not read, one request each for all clusters and all
+    # hosts: usable capacity per cluster {cluster name: {stat key: value}}, NVMe memory tier per host {host id: ...}.
     try:
         consumption_stats = read_latest_stats(
             suite_api_client, [cluster.id for cluster in ops_clusters], cluster_consumption_metrics.CLUSTER_STATS)
         consumption_stats_by_cluster = {cluster.name: consumption_stats.get(cluster.id, {}) for cluster in ops_clusters}
+        tier_stats_by_host = read_latest_stats(
+            suite_api_client, [host.id for host in all_hosts], cluster_consumption_metrics.HOST_STATS)
     except Exception as e:
-        logger.warning(f"Failed to read the cluster stats of Cluster Consumption - {repr(e)}")
+        logger.warning(f"Failed to read the usable capacity and memory tier stats of Cluster Consumption - {repr(e)}")
         consumption_stats_by_cluster = {}
+        tier_stats_by_host = {}
 
     # Periodic Cluster Check: only the clusters due this cycle. See metrics/cluster/periodic_cluster_check.py.
     try:
@@ -149,7 +154,7 @@ def collect_cluster_data(
 
             # Cluster Consumption, from the same host stats. See metrics/cluster/cluster_consumption_metrics.py.
             cluster_consumption_metrics.collect_cluster_consumption_metrics(
-                cluster_obj, cluster_name, cluster_hosts, stats_by_host,
+                cluster_obj, cluster_name, cluster_hosts, stats_by_host, tier_stats_by_host,
                 consumption_stats_by_cluster.get(cluster_obj.get_key().name, {}))
 
             # Capacity Utilization, from the same host stats. See metrics/cluster/capacity_utilization.py.

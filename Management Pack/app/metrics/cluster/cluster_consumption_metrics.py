@@ -4,8 +4,8 @@
 What it is
 ----------
 One 0-100 % score per vSphere cluster. 0 is nothing consumed, 100 is fully consumed: higher is worse, like
-Cluster Risk. It measures actual utilization and saturation of the cluster as a whole. It is built from the
-5 sub-metrics in METRICS below.
+Cluster Risk. It measures actual utilization and saturation of the cluster as a whole, against its usable
+capacity. It is built from the 5 sub-metrics in METRICS below.
 
 Unlike Cluster Risk, every sub-metric is cluster-wide, not the worst ESXi host: the hosts are added up, so a
 big host counts more than a small one. Saturation (ballooned, swapped and zipped memory) is not contention,
@@ -15,14 +15,25 @@ Published on the cluster as:
     vCommunity|Cluster Consumption|Cluster Consumption Score    the KPI
     vCommunity|Cluster Consumption|<sub-metric name>            each of the 5 sub-metrics
 
-How it is calculated
---------------------
-1. Take the running hosts of the cluster (capacity_utilization.host_is_gone) and the host stats that Cluster
-   Risk already read this cycle (cluster_risk_metrics.HOST_STATS), so nothing is read twice.
-2. Add them up: the CPU threads in use against all CPU threads, and each memory amount against all DRAM.
-   Memory Tiering Consumption is a cluster stat of VCF Operations, read as it is.
-3. Score each value and combine the scores, as for every KPI (metrics/kpi_score.py). The published Cluster
-   Consumption is 100 minus that score (HIGHER_IS_WORSE).
+Usable capacity
+---------------
+Usable = Total - HA - Buffer. VCF Operations calculates it per cluster, from the cluster's HA admission
+control and the capacity buffer (Demand) of its policy: CPU_USABLE and MEM_USABLE. Their share of the
+cluster total (CPU_TOTAL, MEM_TOTAL) is the usable fraction, applied to what the hosts have:
+
+    CPU Thread Utilization   threads in use / (all threads x CPU usable fraction)
+    Memory Consumed          consumed / (DRAM x memory usable fraction)
+    Memory Ballooned         ballooned / (DRAM x memory usable fraction)
+    Memory Zip Swap          (compressed + swapped) / (DRAM x memory usable fraction)
+    Memory Tiering           NVMe tier in use / (NVMe tier size x memory usable fraction)
+
+All sums are over the running hosts of the cluster (capacity_utilization.host_is_gone). DRAM and the NVMe tier
+are kept apart: the DRAM rows never include the tier, and the tier row never includes DRAM. A usable value of
+0 or none is no data, never "full".
+
+Host stats: the DRAM, CPU and memory stats are the ones Cluster Risk already read this cycle
+(cluster_risk_metrics.HOST_STATS). The NVMe tier stats (HOST_STATS here) and the cluster stats (CLUSTER_STATS)
+are read once per cycle for all hosts and clusters by the cluster collector.
 
 Where the limits come from
 --------------------------
@@ -63,7 +74,7 @@ BALLOONED = "Cluster-wide ESXi Memory Ballooned"
 ZIP_SWAP = "Cluster-wide ESXi Memory Zip Swap"
 
 # One row per sub-metric. The five numbers are the values where its score is 100, 75, 50, 25 and 0.
-# Every sub-metric here is "lower is better".
+# Every sub-metric here is "lower is better", in % of the usable capacity.
 METRICS = [
     #       name        unit   best  green  yellow  orange  zero-at
 
@@ -78,21 +89,44 @@ METRICS = [
 ]
 
 # Every sub-metric is published on the cluster, because none of them exists there as a stat already.
-# Memory Tiering Consumption does, but under its own key; publishing it here keeps the KPI's inputs together.
 PUBLISHED_METRICS = METRICS
 
-# The cluster stat of VCF Operations behind Memory Tiering Consumption (%). Only clusters with NVMe memory
-# tiering have it.
-MEM_TIERING_USAGE = "mem|tier_1_usage_percent"
-CLUSTER_STATS = [MEM_TIERING_USAGE]
+# Cluster stats of VCF Operations. Usable is Total - HA - Buffer (Demand), in the same unit as its total.
+CPU_USABLE = "cpu|demand|usableCapacity"            # MHz
+CPU_TOTAL = "cpu|capacity_provisioned"              # MHz
+MEM_USABLE = "mem|demand|usableCapacity"            # KB
+MEM_TOTAL = "mem|host_provisioned"                  # KB
+CLUSTER_STATS = [CPU_USABLE, CPU_TOTAL, MEM_USABLE, MEM_TOTAL]
+
+# Host stats of the NVMe memory tier. Only hosts with memory tiering have them.
+NVME_TIER_USAGE = "mem:NVMe|tier.usage"             # MB in use
+NVME_TIER_SIZE = "mem:NVMe|memory_tier_size"        # KB
+HOST_STATS = [NVME_TIER_USAGE, NVME_TIER_SIZE]
+
+
+# ---------------------------------------------------------------------------
+# Usable capacity.
+# ---------------------------------------------------------------------------
+
+def usable_fraction(cluster_stats: Dict[str, float], usable_key: str, total_key: str) -> Optional[float]:
+    """Usable / total of one resource of the cluster, such as 0.8. None when either is missing or 0."""
+    usable = cluster_stats.get(usable_key)
+    total = cluster_stats.get(total_key)
+    if not usable or not total or usable <= 0 or total <= 0:
+        return None
+    return usable / total
 
 
 # ---------------------------------------------------------------------------
 # Sub-metric formulas for the whole cluster. Each returns None when it has no data to work with.
 # ---------------------------------------------------------------------------
 
-def cpu_thread_utilization(hosts: List[HostInfo], stats_by_host: Dict[str, Dict[str, float]]) -> Optional[float]:
-    """CPU threads in use on the running hosts, as a share of all their CPU threads."""
+def cpu_thread_utilization(
+    hosts: List[HostInfo], stats_by_host: Dict[str, Dict[str, float]], cpu_fraction: Optional[float]
+) -> Optional[float]:
+    """CPU threads in use on the running hosts, as a share of their usable CPU threads."""
+    if cpu_fraction is None:
+        return None
     threads_in_use = 0.0
     threads = 0.0
     for host in hosts:
@@ -101,15 +135,20 @@ def cpu_thread_utilization(hosts: List[HostInfo], stats_by_host: Dict[str, Dict[
             continue
         threads_in_use += utilization / 100.0 * host.threads
         threads += host.threads
-    return percent(threads_in_use, threads) if threads else None
+    return percent(threads_in_use, threads * cpu_fraction) if threads else None
 
 
-def memory_share(hosts: List[HostInfo], stats_by_host: Dict[str, Dict[str, float]], stat_keys: List[str]) -> Optional[float]:
-    """The stats in stat_keys, added up over the running hosts, as a share of their DRAM.
+def dram_share(
+    hosts: List[HostInfo], stats_by_host: Dict[str, Dict[str, float]], stat_keys: List[str],
+    memory_fraction: Optional[float],
+) -> Optional[float]:
+    """The stats in stat_keys, added up over the running hosts, as a share of their usable DRAM.
 
     A host counts only when it has all of stat_keys and its DRAM. Several keys, such as compressed and
     swapped, are added per host first.
     """
+    if memory_fraction is None:
+        return None
     memory_kb = 0.0
     dram_kb = 0.0
     for host in hosts:
@@ -121,19 +160,41 @@ def memory_share(hosts: List[HostInfo], stats_by_host: Dict[str, Dict[str, float
             continue
         memory_kb += amount
         dram_kb += host_dram_kb
-    return percent(memory_kb, dram_kb) if dram_kb else None
+    return percent(memory_kb, dram_kb * memory_fraction) if dram_kb else None
+
+
+def tiering_share(
+    hosts: List[HostInfo], tier_stats_by_host: Dict[str, Dict[str, float]], memory_fraction: Optional[float]
+) -> Optional[float]:
+    """NVMe tier in use on the running hosts, as a share of their usable NVMe tier. None without a tier."""
+    if memory_fraction is None:
+        return None
+    used_kb = 0.0
+    size_kb = 0.0
+    for host in hosts:
+        stats = tier_stats_by_host.get(host.id, {})
+        host_size_kb = stats.get(NVME_TIER_SIZE)
+        used_mb = stats.get(NVME_TIER_USAGE)
+        if not host_size_kb or host_is_gone(host, used_mb):
+            continue
+        used_kb += used_mb * 1024.0
+        size_kb += host_size_kb
+    return percent(used_kb, size_kb * memory_fraction) if size_kb else None
 
 
 def consumption_values(
-    hosts: List[HostInfo], stats_by_host: Dict[str, Dict[str, float]], cluster_stats: Dict[str, float]
+    hosts: List[HostInfo], stats_by_host: Dict[str, Dict[str, float]],
+    tier_stats_by_host: Dict[str, Dict[str, float]], cluster_stats: Dict[str, float],
 ) -> Dict[str, Optional[float]]:
     """The value of every sub-metric in METRICS for one cluster. None means "no data"."""
+    cpu_fraction = usable_fraction(cluster_stats, CPU_USABLE, CPU_TOTAL)
+    memory_fraction = usable_fraction(cluster_stats, MEM_USABLE, MEM_TOTAL)
     return {
-        CPU: cpu_thread_utilization(hosts, stats_by_host),
-        MEMORY: memory_share(hosts, stats_by_host, [MEM_CONSUMED]),
-        TIERING: cluster_stats.get(MEM_TIERING_USAGE),
-        BALLOONED: memory_share(hosts, stats_by_host, [MEM_BALLOONED]),
-        ZIP_SWAP: memory_share(hosts, stats_by_host, [MEM_COMPRESSED, MEM_SWAPPED]),
+        CPU: cpu_thread_utilization(hosts, stats_by_host, cpu_fraction),
+        MEMORY: dram_share(hosts, stats_by_host, [MEM_CONSUMED], memory_fraction),
+        TIERING: tiering_share(hosts, tier_stats_by_host, memory_fraction),
+        BALLOONED: dram_share(hosts, stats_by_host, [MEM_BALLOONED], memory_fraction),
+        ZIP_SWAP: dram_share(hosts, stats_by_host, [MEM_COMPRESSED, MEM_SWAPPED], memory_fraction),
     }
 
 
@@ -143,16 +204,21 @@ def consumption_values(
 
 def collect_cluster_consumption_metrics(
     cluster_obj: Object, cluster_name: str, hosts: List[HostInfo],
-    stats_by_host: Dict[str, Dict[str, float]], cluster_stats: Dict[str, float],
+    stats_by_host: Dict[str, Dict[str, float]], tier_stats_by_host: Dict[str, Dict[str, float]],
+    cluster_stats: Dict[str, float],
 ) -> None:
     """Publishes the sub-metrics in METRICS, then the Cluster Consumption KPI computed from them.
 
     hosts are the ESXi hosts of the cluster, stats_by_host the host stats Cluster Risk read this cycle
-    ({host id: {stat key: value}}, empty when that read failed), and cluster_stats the CLUSTER_STATS of
-    this cluster.
+    ({host id: {stat key: value}}, empty when that read failed), tier_stats_by_host the HOST_STATS of the
+    hosts, and cluster_stats the CLUSTER_STATS of this cluster.
     """
     try:
-        values = consumption_values(hosts, stats_by_host, cluster_stats)
+        for name, usable, total in (("CPU", CPU_USABLE, CPU_TOTAL), ("memory", MEM_USABLE, MEM_TOTAL)):
+            if usable_fraction(cluster_stats, usable, total) is None:
+                logger.info(f"Cluster Consumption for {cluster_name}: no usable {name} capacity "
+                            f"({usable} = {cluster_stats.get(usable)}, {total} = {cluster_stats.get(total)})")
+        values = consumption_values(hosts, stats_by_host, tier_stats_by_host, cluster_stats)
         no_data = publish_kpi(cluster_obj, GROUP, KPI_KEY, METRICS, PUBLISHED_METRICS, values,
                               higher_is_worse=HIGHER_IS_WORSE).no_data
         if no_data:

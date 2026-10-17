@@ -84,16 +84,20 @@ Close for Business is **1** when either rule matches, else **0**:
 
 | Rule | Condition | Meaning |
 | :--- | :--- | :--- |
-| 1 | **Any** of the three is red. | One of them is already bad enough on its own. |
-| 2 | **All three** are orange. | Slow, at risk and busy, all at once. |
+| 1 | Consumption is red, **or** Performance is red. | The cluster is full, or its VMs already suffer. |
+| 2 | Consumption and Performance are **both orange**, **and** Risk is orange or red. | Busy and slow at once, and heading the wrong way. |
+
+**Risk never closes a cluster on its own.** It is a leading indicator: it buys time. It decides only when Consumption and Performance are both orange. Orange is the lower Risk threshold of a critical cluster, and it is used for every cluster. See [Closing the cluster](../../concepts/capacity-management.md#closing-the-cluster).
 
 | Worst Performance | Worst Risk | Worst Consumption | Close for Business |
 | :--- | :--- | :--- | :--- |
 | 20 | 10 | 30 | 1 (rule 1: Performance red) |
-| 90 | 80 | 30 | 1 (rule 1: Risk red) |
 | 90 | 10 | 80 | 1 (rule 1: Consumption red) |
-| 40 | 60 | 60 | 1 (rule 2: all three orange) |
-| 40 | 60 | 40 | 0 (Consumption is yellow) |
+| 40 | 60 | 60 | 1 (rule 2: both orange, Risk orange) |
+| 40 | 90 | 60 | 1 (rule 2: both orange, Risk red) |
+| 40 | 40 | 60 | 0 (both orange, but Risk is yellow) |
+| 90 | 90 | 30 | 0 (Risk red alone does not close) |
+| 40 | 90 | 40 | 0 (Consumption is yellow, so Risk is not looked at) |
 | 25 | 10 | 10 | 0 (25 is orange, not red) |
 | 90 | 10 | 30 | 0 (healthy) |
 
@@ -112,7 +116,7 @@ The rule is in `decide()` and `band()`, in the code.
 
 ## Design considerations
 
-- **Three KPIs on the same 0-100 scale.** Performance, Risk and Consumption share the same bands, so one rule covers all three.
+- **Three KPIs on the same 0-100 scale.** Performance, Risk and Consumption share the same bands, so the rule reads the same colours for all three.
 - **The worst end, not the average.** A cluster that is bad for an hour a day is not fine for new VMs. The worst percent ignores short spikes, but not a sustained problem.
 - **The percentile is calculated in code.** VCF Operations roll-ups have AVG, MAX, MIN and SUM, but no percentile. An estimate from Max and Avg is driven by the Max: one spike in a quiet day decides it. With a 0/1 result that is a wrong answer, not a small error.
 - **A window ends at a fixed time, not when the calculation runs.** Every cluster has the same window, even when it is calculated a few cycles later.
@@ -123,7 +127,7 @@ The rule is in `decide()` and `band()`, in the code.
 
 ## Example
 
-A cluster with a quiet 24-hour window of Cluster Performance at 90 %, and one 5-minute dip to 20 %. With the default of 5 %, the dip is one of the 14 samples ignored: Worst Cluster Performance is 90 %, green. With Cluster Risk at 40 % (yellow) and Cluster Consumption at 60 % (orange) all day, nothing is red and not all three are orange: Close for Business is 0.
+A cluster with a quiet 24-hour window of Cluster Performance at 90 %, and one 5-minute dip to 20 %. With the default of 5 %, the dip is one of the 14 samples ignored: Worst Cluster Performance is 90 %, green. With Cluster Risk at 80 % (red) and Cluster Consumption at 60 % (orange) all day, nothing but Risk is red, and Performance is not orange: Close for Business is 0.
 
 With Worst Percent set to 0, the dip decides: Worst Cluster Performance is 20 %, red, and Close for Business is 1.
 

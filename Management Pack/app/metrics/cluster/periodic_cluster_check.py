@@ -219,14 +219,18 @@ def band(value: float, higher_is_worse: bool) -> str:
 def decide(performance: float, risk: float, consumption: float) -> int:
     """Close for Business: 1 when the cluster is full for new VMs, else 0.
 
-    1. Any of the three is red.
-    2. All three are orange.
+    1. Consumption is red, or Performance (contention) is red.
+    2. Consumption and Performance are both orange, and Risk is orange or red.
+
+    Risk is a leading indicator: it never closes a cluster on its own. Orange is the Risk threshold of a
+    critical (production) cluster, used for every cluster.
     """
-    bands = [band(value, higher_is_worse)
-             for value, (_, _, higher_is_worse) in zip([performance, risk, consumption], INPUTS)]
-    if "red" in bands:
+    performance_band = band(performance, higher_is_worse=False)
+    risk_band = band(risk, cluster_risk_metrics.HIGHER_IS_WORSE)
+    consumption_band = band(consumption, cluster_consumption_metrics.HIGHER_IS_WORSE)
+    if "red" in (performance_band, consumption_band):
         return 1
-    if all(colour == "orange" for colour in bands):
+    if performance_band == consumption_band == "orange" and risk_band in ("orange", "red"):
         return 1
     return 0
 
