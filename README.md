@@ -7,12 +7,14 @@
 
 # VCF Operations vCommunity Management Pack
 
+This free Management Pack was built upon the great work of  [Onur Yuzseven](https://www.linkedin.com/in/oyuzseven/) , assisted by [Mark Arbogast ]https://www.linkedin.com/in/mark-arbogast/ and [Robert Mesropyan]
+https://www.linkedin.com/in/robert-mesropyan/
+
+This project is a contribution to the Broadcom VMware vCommunity (VMUG, vExpert, VCP, VCDX). It's not an official VMware project, and there is no support from VMware GSS. Deploy at your own risk, or consult VMware TAM or PSO for a custom solution.
+
 If your team maintains a config workbook as the source of truth for ESXi and VM settings, this Management Pack is what turns that workbook into continuously monitored, compliance-checkable data in VCF Operations. See the [use cases](docs/README.md#use-cases).
 
-
-This free Management Pack was developed by [Onur Yuzseven](https://www.linkedin.com/in/oyuzseven/) as his contribution to the vCommunity (VMUG, vExpert, VCP). It's not an official VMware project, and there is no support from VMware GSS. Deploy at your own risk, or consult PSO for a custom solution.
-
-It's built using the [VCF Operations Integration SDK](https://github.com/vmware/vmware-aria-operations-integration-sdk).  It uses the Python programming language and the VCF Operations API.  It was developed originally for the following use cases:
+It was developed originally for the following use cases:
 
 1.  Capture ESXi Host Advanced System Settings (esxi_advanced_system_settings.xml)
 2.  Capture ESXi Host Software Packages (esxi_packages.xml)
@@ -54,11 +56,9 @@ They are used in the dashboards. Super Metrics can be found [here](https://githu
 
 The above was provided by [Iwan Rahabok](https://www.linkedin.com/in/e1ang/). They are documented in his books, available for download [here](https://broadcom.box.com/v/OpsYourWorld).
 
-Additional Properties & Metrics:
-- Cluster HA/DRS/EVC
-- Virtual Machine Snapshot Count
-
 Login to VMware Hands-on Lab, then test drive [this MP](https://labs.hol.vmware.com/HOL/catalog/lab/26848). [Abhijit Timble](https://www.linkedin.com/in/abhijit-timble-75878514/) has installed it so you can evaluate it before deciding in your environment.
+
+It's built using the [VCF Operations Integration SDK](https://github.com/vmware/vmware-aria-operations-integration-sdk).  It uses the Python programming language and the VCF Operations API.  
 
 
 ## Required Policy Settings
