@@ -30,29 +30,27 @@ Code: [`Management Pack/app/metrics/cluster/periodic_cluster_check.py`](../../..
 
 ## Known limitations
 
-> **Read this before using the properties.**
+> **Read this before using the metrics.**
 
 - **The first window after installing has less history.** Cluster Consumption is calculated from the first collection, so the first check covers only the hours since then.
 - **A short period is less stable.** A 1-hour window has 12 five-minute samples. With the default of 5 %, nothing is ignored (5 % of 12 rounds down to 0 samples): the single worst sample decides.
 - **The time is in UTC.** There is no time zone setting. For 02:00 in Singapore (UTC+8), enter `18:00`.
 - **The result can come up to a few cycles late.** The calculation runs in the first collection cycle (every 5 minutes) after a window ends. With more than 500 due clusters in one vCenter, the rest follow in the next cycles: 2,000 clusters in one vCenter take 4 cycles, about 20 minutes. The window is still the same for all.
-- **A value with no data keeps the previous window's value.** VCF Operations keeps a property until it is set again. When a KPI has no data for the window, its value is not published, and the property still shows the previous window's. Check **Window End** to see which window the values are for: it is always set.
-- **Close for Business is not published when one of the three values has no data.** It keeps the previous window's value, like every property (see above).
+- **A value with no data leaves a gap.** When a KPI has no data for the window, its metric is not published for that window, so the chart has no point there. The time of a point is when it was calculated: just after its window ended.
+- **Close for Business is not published when one of the three values has no data.** That window has no point (see above).
+- **One point per period.** The values are metrics produced once per period, not every 5 minutes. A chart of a day with a 24-hour period has one point.
 - **A cluster added during a window is calculated over the history it has.** Fewer samples, but still a percentile.
 
-## The properties
+## The metrics
 
-On every vSphere cluster, under `vCommunity|Periodic Cluster Check`. Properties, not metrics: one value per window.
+On every vSphere cluster, under `vCommunity|Periodic Cluster Check`. **Metrics**: numbers produced once per period, a fixed interval. There are no properties: every cluster has the same window and settings, which are the account's, and the log states them for each calculation.
 
-| Property | Calculation |
+| Key | Calculation |
 | :--- | :--- |
-| `Worst Cluster Performance` (%) | The worst end of `vCommunity\|Cluster Performance\|Cluster Performance Score` over the window: its low end, because higher is better. |
-| `Worst Cluster Risk` (%) | The worst end of `vCommunity\|Cluster Risk\|Cluster Risk Score` over the window: its high end, because higher is worse. |
-| `Worst Cluster Consumption` (%) | The worst end of `vCommunity\|Cluster Consumption\|Cluster Consumption Score` over the window: its high end, because higher is worse. |
-| `Close for Business` | 1: the cluster is full, do not place new VMs. 0: open. From the three values above, see [The rule](#the-rule). Not published when one of them has no data. |
-| `Worst Percent` | The Cluster Check Worst Percent the values were calculated with. |
-| `Window Hours` | The length of the window, in hours: the Cluster Check Period when it was calculated. |
-| `Window End` | The end of the window, such as `2026-10-12 00:00 UTC`. |
+| `Worst Cluster Performance` (metric) (%) | The worst end of `vCommunity\|Cluster Performance\|Cluster Performance Score` over the window: its low end, because higher is better. |
+| `Worst Cluster Risk` (metric) (%) | The worst end of `vCommunity\|Cluster Risk\|Cluster Risk Score` over the window: its high end, because higher is worse. |
+| `Worst Cluster Consumption` (metric) (%) | The worst end of `vCommunity\|Cluster Consumption\|Cluster Consumption Score` over the window: its high end, because higher is worse. |
+| `Close for Business` (metric) | 1: the cluster is full, do not place new VMs. 0: open. From the three values above, see [The rule](#the-rule). Not published when one of them has no data. |
 
 ### Worst
 
@@ -107,11 +105,11 @@ The rule is in `decide()` and `band()`, in the code.
 
 ## How it runs
 
-1. Every cycle, the cluster collection reads the `Window End`, `Window Hours` and `Worst Percent` properties of the clusters of its vCenter. One request per 1,000 clusters.
+1. Every cycle, the cluster collection reads the time of the latest sample of these metrics, and of the three KPIs, for the clusters of its vCenter. One request per 1,000 clusters.
 2. The latest window end is the last window end at or before now: the set time, or a whole number of periods after it.
-3. A cluster is **due** when its `Window End` is not the latest window end, its `Window Hours` is not the period, or its `Worst Percent` is not the setting. After a window ends, every cluster is due.
+3. A cluster is **due** when its latest Periodic Cluster Check metric is older than the latest window end, and a KPI has data in that window. After a window ends, every cluster with KPI data is due. A cluster without any KPI data is not, so it is not read every cycle.
 4. At most 500 due clusters are read per cycle, 100 per request: the window's 5-minute samples, for the three KPIs.
-5. The properties are published, `Worst Percent`, `Window Hours` and `Window End` last. The cluster is no longer due until the next window ends.
+5. The metrics are published. Their timestamp is after the window end, so the cluster is no longer due until the next window ends.
 6. A cluster whose request failed is not published, so it stays due, and the next cycle tries again.
 
 ## Design considerations
@@ -120,9 +118,9 @@ The rule is in `decide()` and `band()`, in the code.
 - **The worst end, not the average.** A cluster that is bad for an hour a day is not fine for new VMs. The worst percent ignores short spikes, but not a sustained problem.
 - **The percentile is calculated in code.** VCF Operations roll-ups have AVG, MAX, MIN and SUM, but no percentile. An estimate from Max and Avg is driven by the Max: one spike in a quiet day decides it. With a 0/1 result that is a wrong answer, not a small error.
 - **A window ends at a fixed time, not when the calculation runs.** Every cluster has the same window, even when it is calculated a few cycles later.
-- **The state is in VCF Operations, not in the adapter.** The `Window End`, `Window Hours` and `Worst Percent` properties say which window and setting a cluster was calculated for. A restart of the pack loses nothing, and needs no file in the container.
+- **No state is stored.** The timestamps of the published metrics say whether a cluster was calculated for the latest window. Nothing is kept in the adapter or stored per cluster, so a restart of the pack loses nothing.
 - **Spread over cycles.** At most 500 clusters per vCenter per cycle, so the history is not read all at once. Each account reads only the clusters of its own vCenter.
-- **Changing a setting makes every cluster due again**, because the window or its summary changes. They are recalculated in the next cycles.
+- **A changed setting applies from the next window.** A window already calculated is not recalculated.
 - **Load.** 24 hours of 5-minute samples is 288 per stat, 3 stats per cluster: about 860 values per cluster, 1.7 million for 2,000 clusters, once a day. A shorter period reads the same total per day, in smaller pieces. A dashboard or report over 2,000 objects for 24 hours reads a similar amount.
 
 ## Example

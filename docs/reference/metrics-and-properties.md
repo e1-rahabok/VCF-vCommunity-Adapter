@@ -36,11 +36,11 @@ Every property and metric the vCommunity Management Pack pushes to VCF Operation
 | ⚪ Property | `vCommunity\|Cluster Configuration\|vSphere HA\|Max Failure Window` | Time window (seconds) within which VM Monitoring allows a maximum number of restart attempts (works together with Max Failures). |
 | ⚪ Property | `vCommunity\|Cluster Configuration\|vSphere HA\|Max Failures` | Maximum number of restart attempts VM Monitoring allows within the Max Failure Window. |
 | ⚪ Property | `vCommunity\|Cluster Configuration\|vSphere HA\|Minimum Up Time` | Minimum uptime (seconds) a VM must run after a restart before VM Monitoring resumes watching it. |
-| ⚪ Property | `vCommunity\|Cluster Configuration\|DRS\|Proactive DRS` | Whether Proactive DRS is enabled - proactively migrates VMs ahead of predicted hardware failures. |
-| ⚪ Property | `vCommunity\|Cluster Configuration\|DRS\|Scale Descendants Shares` | Whether share values of descendant VMs in the resource pool hierarchy are automatically scaled. |
-| ⚪ Property | `vCommunity\|Cluster Configuration\|DRS\|CPU Over-Commitment` | Value of the 'MaxVcpusPerCore' advanced option, which caps the max vCPU-to-pCPU ratio DRS will allow. |
-| ⚪ Property | `vCommunity\|Cluster Configuration\|DRS\|Virtual Machine Automation Enabled` | Whether DRS allows per-VM automation level overrides (Enable VM Overrides). |
-| 🟢 Metric | `vCommunity\|Cluster Configuration\|DRS\|DRS Score` | vCenter's computed DRS Score (0-100) - a summary indicator of resource imbalance in the cluster (100 = perfectly balanced). |
+| ⚪ Property | `vCommunity\|Cluster Configuration\|Distributed Resource Scheduler\|Proactive DRS` | Whether Proactive DRS is enabled - proactively migrates VMs ahead of predicted hardware failures. |
+| ⚪ Property | `vCommunity\|Cluster Configuration\|Distributed Resource Scheduler\|Scale Descendants Shares` | Whether share values of descendant VMs in the resource pool hierarchy are automatically scaled. |
+| ⚪ Property | `vCommunity\|Cluster Configuration\|Distributed Resource Scheduler\|CPU Over-Commitment` | Value of the 'MaxVcpusPerCore' advanced option, which caps the max vCPU-to-pCPU ratio DRS will allow. |
+| ⚪ Property | `vCommunity\|Cluster Configuration\|Distributed Resource Scheduler\|Virtual Machine Automation Enabled` | Whether DRS allows per-VM automation level overrides (Enable VM Overrides). |
+| 🟢 Metric | `vCommunity\|Cluster Configuration\|Distributed Resource Scheduler\|DRS Score` | vCenter's computed DRS Score (0-100) - a summary indicator of resource imbalance in the cluster (100 = perfectly balanced). |
 | ⚪ Property | `vCommunity\|Cluster Configuration\|EVC\|Enabled` | Whether Enhanced vMotion Compatibility (EVC) mode is enabled on the cluster. |
 | ⚪ Property | `vCommunity\|Cluster Configuration\|EVC\|Mode` | If enabled, the EVC mode key the cluster is running (e.g. intel-cascadelake) - determines the exposed CPU feature baseline. |
 | ⚪ Property | `vCommunity\|Cluster Configuration\|DPM\|Host Power Action Rate` | If Distributed Power Management (DPM) is enabled, the aggressiveness level (1-5) controlling how fast hosts are powered on/off. |
@@ -54,7 +54,7 @@ Every property and metric the vCommunity Management Pack pushes to VCF Operation
 | 🟢 Metric | `vCommunity\|Cluster Performance\|90th Percentile VM Memory Latency` | 20-second peak memory contention (%) that 90 % of the powered-on VMs in the cluster are at or below. |
 | 🟢 Metric | `vCommunity\|Cluster Performance\|90th Percentile VM Disk Latency` | 20-second peak virtual disk latency (ms) that 90 % of the powered-on VMs in the cluster are at or below. |
 | 🟢 Metric | `vCommunity\|Cluster Performance\|Highest ESXi Bad Network Packets` | Errored and dropped packets as a share (%) of all packets in the last 5 minutes, on the worst host in the cluster. Needs Total Packets Received and Transmitted activated in the policy: see [Required Policy Settings](../configuration-guide/policy.md). |
-| 🟢 Metric | `vCommunity\|Cluster Risk\|Cluster Risk Score` | Key Performance Indicator (0-100 %) of the cluster's risk, combining the 12 sub-metrics below. Higher is worse: 0 is no risk, 100 is maximum risk, red is 75–100 (the other KPIs are red at 0–25). Inverted in version 0.1.0. See [Bands](metrics/cluster-risk.md#bands-red-is-high). See [Cluster Risk KPI](metrics/cluster-risk.md) for the formula. |
+| 🟢 Metric | `vCommunity\|Cluster Risk\|Cluster Risk Score` | Key Performance Indicator (0-100 %) of the cluster's risk, combining the 12 sub-metrics below. Higher is worse: 0 is no risk, 100 is maximum risk, red is 75–100 (the other KPIs are red at 0–25). See [Bands](metrics/cluster-risk.md#bands-red-is-high). See [Cluster Risk KPI](metrics/cluster-risk.md) for the formula. |
 | 🟢 Metric | `vCommunity\|Cluster Risk\|Highest ESXi CPU Thread Utilization` | CPU thread utilization (%, `cpu.utilization`) of the busiest host in the cluster. |
 | 🟢 Metric | `vCommunity\|Cluster Risk\|Worst ESXi CPU Imbalance` | Running CPU threads divided by running CPU cores, on the worst host. 1 is one thread per busy core, 2 is both hyper-threads on every busy core. |
 | 🟢 Metric | `vCommunity\|Cluster Risk\|Highest ESXi Memory Consumed` | Consumed memory as a share (%) of host DRAM, on the fullest host. |
@@ -75,13 +75,10 @@ Every property and metric the vCommunity Management Pack pushes to VCF Operation
 | 🟢 Metric | `vCommunity\|Cluster Consumption\|Cluster-wide ESXi Memory Zip Swap` | Compressed plus swapped memory of all running hosts, as a share (%) of their usable DRAM. |
 | 🟢 Metric | `vCommunity\|Capacity\|CPU Utilization` | Sum of the running hosts' CPU Utilization (%) ÷ (N − max(k, gone hosts)), k = HA host failures tolerated. Can be above 100 %. Assumes hosts of equal size. See [Capacity Utilization](metrics/capacity-utilization.md#known-limitations). |
 | 🟢 Metric | `vCommunity\|Capacity\|Memory Utilization` | Sum of the running hosts' Memory Consumed (% of DRAM) ÷ (N − max(k, gone hosts)). Same limitations. |
-| ⚪ Property | `vCommunity\|Periodic Cluster Check\|Worst Cluster Performance` | The low end (%) of Cluster Performance Score over the window to Window End (24 hours by default), with the worst Worst Percent of samples ignored. Set once per window. See [Worst](metrics/periodic-cluster-check.md#worst). |
-| ⚪ Property | `vCommunity\|Periodic Cluster Check\|Worst Cluster Risk` | The high end (%) of Cluster Risk Score over the same window, the same way. |
-| ⚪ Property | `vCommunity\|Periodic Cluster Check\|Worst Cluster Consumption` | The high end (%) of Cluster Consumption Score over the same window, the same way. |
-| ⚪ Property | `vCommunity\|Periodic Cluster Check\|Close for Business` | 1: the cluster is full, do not place new VMs. 0: open to new VMs. See [the rule](metrics/periodic-cluster-check.md#the-rule). |
-| ⚪ Property | `vCommunity\|Periodic Cluster Check\|Worst Percent` | The account's Cluster Check Worst Percent when the values were calculated. |
-| ⚪ Property | `vCommunity\|Periodic Cluster Check\|Window Hours` | Length of the window in hours: the account's Cluster Check Period when the values were calculated. |
-| ⚪ Property | `vCommunity\|Periodic Cluster Check\|Window End` | End of the window the values are for, such as `2026-10-12 00:00 UTC`. Set by the account's Cluster Check Time (UTC). |
+| 🟢 Metric | `vCommunity\|Periodic Cluster Check\|Worst Cluster Performance` | The low end (%) of Cluster Performance Score over the last window (24 hours by default), with the account's Cluster Check Worst Percent of the worst samples ignored. Set once per window. See [Worst](metrics/periodic-cluster-check.md#worst). |
+| 🟢 Metric | `vCommunity\|Periodic Cluster Check\|Worst Cluster Risk` | The high end (%) of Cluster Risk Score over the same window, the same way. |
+| 🟢 Metric | `vCommunity\|Periodic Cluster Check\|Worst Cluster Consumption` | The high end (%) of Cluster Consumption Score over the same window, the same way. |
+| 🟢 Metric | `vCommunity\|Periodic Cluster Check\|Close for Business` | 1: the cluster is full, do not place new VMs. 0: open to new VMs. See [the rule](metrics/periodic-cluster-check.md#the-rule). |
 
 [⬆ Back to top](#metrics--properties-reference)
 
@@ -263,9 +260,9 @@ Every property and metric the vCommunity Management Pack pushes to VCF Operation
 
 | Type | Path | Description |
 | :--- | :--- | :--- |
-| 🟢 Metric | `vCommunity\|10th Percentile Cluster Performance` | The Cluster Performance score that 90 % of all clusters, of all vCenters, are at or above. Can be up to one collection cycle old. See [vSphere World Cluster Metrics](metrics/vsphere-world-metrics.md#known-limitations). |
+| 🟢 Metric | `vCommunity\|Bottom 10 Percent Cluster Performance` | The Cluster Performance score that 90 % of all clusters, of all vCenters, are at or above. Can be up to one collection cycle old. See [vSphere World Cluster Metrics](metrics/vsphere-world-metrics.md#known-limitations). |
 | 🟢 Metric | `vCommunity\|Worst Cluster Performance` | The lowest Cluster Performance score of all clusters. Same limitation. |
-| 🟢 Metric | `vCommunity\|90th Percentile Cluster Risk` | The Cluster Risk that 90 % of all clusters are at or below (Cluster Risk is higher-is-worse). Same limitation. |
+| 🟢 Metric | `vCommunity\|Bottom 10 Percent Cluster Risk` | The Cluster Risk that 90 % of all clusters are at or below (Cluster Risk is higher-is-worse). Same limitation. |
 | 🟢 Metric | `vCommunity\|Availability\|Worst Cluster Operational Availability` | The lowest Cluster Operational Availability of all clusters, of all vCenters. Can be up to one collection cycle old. See [Operational Availability](metrics/operational-availability.md#known-limitations). |
 | 🟢 Metric | `vCommunity\|Availability\|ESXi Hosts Operational Availability` | The average ESXi Host Operational Availability of all hosts, of all vCenters. Same limitation. |
 | 🟢 Metric | `vCommunity\|Network\|Total Network Speed Degradation` | The number of hosts below 100 % Network Speed Degradation, of all vCenters. Can be up to one collection cycle old. See [Network Speed Degradation](metrics/network-speed-degradation.md#known-limitations). |
@@ -306,7 +303,7 @@ These super metrics were removed from `content/supermetrics`. Their dashboards, 
 | ESXi Bad Network Packets | Host | `vCommunity\|ESXi Performance\|ESXi Bad Network Packets` |
 | vSphere VM Memory Zip Swap | VM | `vCommunity\|VM Performance\|Memory Zip Swap` |
 | vSphere VM Performance | VM | `vCommunity\|VM Guest OS KPI` |
-| vSphere Clusters Performance (average of all clusters) | vSphere World | `vCommunity\|10th Percentile Cluster Performance` |
+| vSphere Clusters Performance (average of all clusters) | vSphere World | `vCommunity\|Bottom 10 Percent Cluster Performance` |
 | ESXi Host Operational Availability ("ESXi Host Availability") | Host | `vCommunity\|Availability\|ESXi Host Operational Availability` |
 | ESXi Hosts Operational Availability ("ESXi Hosts Average Availability") | vSphere World | `vCommunity\|Availability\|ESXi Hosts Operational Availability` |
 | Cluster Operational Availability | Cluster | `vCommunity\|Availability\|Cluster Operational Availability` |

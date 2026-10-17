@@ -63,7 +63,7 @@
                                                                             
                                     </Property>
                                                                         
-                                    <Property name="isProperty" value="true"/>
+                                    <Property name="isProperty" value="false"/>
                                                                         
                                     <Property name="yellowBound" value="0.1"/>
                                                                         
@@ -109,7 +109,7 @@
                                                                             
                                     </Property>
                                                                         
-                                    <Property name="isProperty" value="true"/>
+                                    <Property name="isProperty" value="false"/>
                                                                         
                                     <Property name="yellowBound" value="25"/>
                                                                         
@@ -155,7 +155,7 @@
                                                                             
                                     </Property>
                                                                         
-                                    <Property name="isProperty" value="true"/>
+                                    <Property name="isProperty" value="false"/>
                                                                         
                                     <Property name="yellowBound" value="75"/>
                                                                         
@@ -201,7 +201,7 @@
                                                                             
                                     </Property>
                                                                         
-                                    <Property name="isProperty" value="true"/>
+                                    <Property name="isProperty" value="false"/>
                                                                         
                                     <Property name="yellowBound" value="25"/>
                                                                         

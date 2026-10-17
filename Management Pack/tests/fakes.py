@@ -22,9 +22,10 @@ class FakeSuiteApi:
     resources:  {resource kind: [(resource id, name, MoRef id)]}, for the resources query.
     stale:      {resource id: [stat keys]} whose samples are an hour old. All other samples are current:
                 the last one now, the others one 5-minute cycle apart.
+    latest_at:  {resource id: {stat key: epoch ms}}: the time of the last sample of that stat, instead of now.
     """
 
-    def __init__(self, samples=None, status_code=200, properties=None, resources=None, stale=None):
+    def __init__(self, samples=None, status_code=200, properties=None, resources=None, stale=None, latest_at=None):
         self.samples = samples or {}
         self.properties = properties or {}
         self.resources = resources or {}
@@ -33,6 +34,7 @@ class FakeSuiteApi:
         self.paths = []
         self.resource_queries = []
         self.stale = stale or {}
+        self.latest_at = latest_at or {}
 
     def paged_post(self, path, key, json):
         self.paths.append(path)
@@ -59,7 +61,9 @@ class FakeSuiteApi:
         return FakeResponse({"values": values}, self.status_code)
 
     def _timestamps(self, resource_id, key, count):
-        end = time.time() * 1000 - (3600 * 1000 if key in self.stale.get(resource_id, []) else 0)
+        end = self.latest_at.get(resource_id, {}).get(key)
+        if end is None:
+            end = time.time() * 1000 - (3600 * 1000 if key in self.stale.get(resource_id, []) else 0)
         return [end - (count - 1 - i) * CYCLE_MS for i in range(count)]
 
     @staticmethod

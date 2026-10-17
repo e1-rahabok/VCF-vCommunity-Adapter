@@ -108,12 +108,19 @@ def test_memory_tiering_is_against_the_usable_nvme_tier_only():
         cc.consumption_values(HOSTS, STATS, {}, HA_AND_BUFFER)[cc.MEMORY]
 
 
-def test_no_usable_capacity_is_no_data_not_full():
-    # Seen on a live system: usable capacity reported as 0 for a while. Never divide by it.
+def test_rows_have_no_value_without_a_usable_share():
+    # Usable missing, usable 0, or no total: there is no meaningful %, so the rows have no value.
     for stats in ({}, cluster(0.0), {**cluster(1.0), cc.MEM_TOTAL: 0.0}):
         values = cc.consumption_values(HOSTS, STATS, {}, stats)
         assert values[cc.MEMORY] is None
     assert cc.consumption_values(HOSTS, STATS, {}, cluster(0.0))[cc.CPU] is None
+
+
+def test_usable_zero_is_full_but_missing_usable_is_no_data():
+    assert cc.has_no_usable_capacity(cluster(0.0))
+    assert cc.has_no_usable_capacity({**cluster(1.0), cc.CPU_USABLE: 0.0})     # CPU alone is enough
+    assert not cc.has_no_usable_capacity({})                                   # not reported: no data
+    assert not cc.has_no_usable_capacity(cluster(0.8))
 
 
 def test_a_host_in_maintenance_mode_is_left_out():
@@ -153,7 +160,24 @@ def test_a_full_cluster_is_red():
     assert obj.metrics[f"vCommunity|{cc.GROUP}|{cc.KPI_KEY}"] > 75.0
 
 
-def test_no_usable_capacity_publishes_no_kpi():
+def test_no_usable_capacity_is_fully_consumed():
+    # Seen on a live system: HA tolerates one host failure and only one of two hosts runs. VCF Operations
+    # reports usable capacity 0. The cluster is full: the KPI is 100, and the rows have no meaningful %.
     obj = FakeObject("cluster-1")
     cc.collect_cluster_consumption_metrics(obj, "Cluster 1", HOSTS, STATS, {}, cluster(0.0))
+    assert obj.metrics == {f"vCommunity|{cc.GROUP}|{cc.KPI_KEY}": 100.0}
+
+
+def test_no_usable_cpu_keeps_the_memory_rows():
+    obj = FakeObject("cluster-1")
+    cc.collect_cluster_consumption_metrics(obj, "Cluster 1", HOSTS, STATS, {}, {**cluster(1.0), cc.CPU_USABLE: 0.0})
+    published = {key.split("|")[-1]: value for key, value in obj.metrics.items()}
+    assert published[cc.KPI_KEY] == 100.0
+    assert cc.CPU not in published
+    assert published[cc.MEMORY] == 63.33
+
+
+def test_usable_capacity_not_reported_publishes_no_kpi():
+    obj = FakeObject("cluster-1")
+    cc.collect_cluster_consumption_metrics(obj, "Cluster 1", HOSTS, STATS, {}, {})
     assert obj.metrics == {}

@@ -28,8 +28,11 @@ cluster total (CPU_TOTAL, MEM_TOTAL) is the usable fraction, applied to what the
     Memory Tiering           NVMe tier in use / (NVMe tier size x memory usable fraction)
 
 All sums are over the running hosts of the cluster (capacity_utilization.host_is_gone). DRAM and the NVMe tier
-are kept apart: the DRAM rows never include the tier, and the tier row never includes DRAM. A usable value of
-0 or none is no data, never "full".
+are kept apart: the DRAM rows never include the tier, and the tier row never includes DRAM.
+
+No usable capacity: when the cluster has CPU or memory but HA and the buffer leave none of it to VMs (usable = 0),
+the cluster is full. The rows of that resource have no meaningful % and are not published, and the KPI is
+published as FULL (100). A missing usable value is no data.
 
 Host stats: the DRAM, CPU and memory stats are the ones Cluster Risk already read this cycle
 (cluster_risk_metrics.HOST_STATS). The NVMe tier stats (HOST_STATS here) and the cluster stats (CLUSTER_STATS)
@@ -66,6 +69,8 @@ KPI_NAME = "Cluster Consumption"
 KPI_KEY = "Cluster Consumption Score"
 # Published as 100 minus the score: 100 = fully consumed. See publish_kpi() in metrics/kpi_score.py.
 HIGHER_IS_WORSE = True
+# The KPI of a cluster with no usable capacity: fully consumed.
+FULL = 100.0
 
 CPU = "Cluster-wide ESXi CPU Thread Utilization"
 MEMORY = "Cluster-wide ESXi Memory Consumed"
@@ -109,12 +114,22 @@ HOST_STATS = [NVME_TIER_USAGE, NVME_TIER_SIZE]
 # ---------------------------------------------------------------------------
 
 def usable_fraction(cluster_stats: Dict[str, float], usable_key: str, total_key: str) -> Optional[float]:
-    """Usable / total of one resource of the cluster, such as 0.8. None when either is missing or 0."""
+    """Usable / total of one resource of the cluster, such as 0.8. None when either is missing, or the total is 0.
+
+    0.0 is a real answer: the cluster has capacity, but HA and the buffer leave none of it to VMs, for example
+    when HA tolerates one host failure and only one host runs. Such a cluster is full.
+    """
     usable = cluster_stats.get(usable_key)
     total = cluster_stats.get(total_key)
-    if not usable or not total or usable <= 0 or total <= 0:
+    if usable is None or not total or total <= 0:
         return None
-    return usable / total
+    return max(usable, 0.0) / total
+
+
+def has_no_usable_capacity(cluster_stats: Dict[str, float]) -> bool:
+    """True when the cluster has CPU or memory, but none of it is usable by VMs: it is full."""
+    return any(usable_fraction(cluster_stats, usable, total) == 0.0
+               for usable, total in ((CPU_USABLE, CPU_TOTAL), (MEM_USABLE, MEM_TOTAL)))
 
 
 # ---------------------------------------------------------------------------
@@ -125,7 +140,7 @@ def cpu_thread_utilization(
     hosts: List[HostInfo], stats_by_host: Dict[str, Dict[str, float]], cpu_fraction: Optional[float]
 ) -> Optional[float]:
     """CPU threads in use on the running hosts, as a share of their usable CPU threads."""
-    if cpu_fraction is None:
+    if not cpu_fraction:
         return None
     threads_in_use = 0.0
     threads = 0.0
@@ -147,7 +162,7 @@ def dram_share(
     A host counts only when it has all of stat_keys and its DRAM. Several keys, such as compressed and
     swapped, are added per host first.
     """
-    if memory_fraction is None:
+    if not memory_fraction:
         return None
     memory_kb = 0.0
     dram_kb = 0.0
@@ -167,7 +182,7 @@ def tiering_share(
     hosts: List[HostInfo], tier_stats_by_host: Dict[str, Dict[str, float]], memory_fraction: Optional[float]
 ) -> Optional[float]:
     """NVMe tier in use on the running hosts, as a share of their usable NVMe tier. None without a tier."""
-    if memory_fraction is None:
+    if not memory_fraction:
         return None
     used_kb = 0.0
     size_kb = 0.0
@@ -215,10 +230,19 @@ def collect_cluster_consumption_metrics(
     """
     try:
         for name, usable, total in (("CPU", CPU_USABLE, CPU_TOTAL), ("memory", MEM_USABLE, MEM_TOTAL)):
-            if usable_fraction(cluster_stats, usable, total) is None:
+            if not usable_fraction(cluster_stats, usable, total):
                 logger.info(f"Cluster Consumption for {cluster_name}: no usable {name} capacity "
                             f"({usable} = {cluster_stats.get(usable)}, {total} = {cluster_stats.get(total)})")
         values = consumption_values(hosts, stats_by_host, tier_stats_by_host, cluster_stats)
+
+        if has_no_usable_capacity(cluster_stats):
+            # HA and the buffer leave nothing to VMs: the cluster is full, whatever the rows say. Publish the rows
+            # that still have a value (metrics=[] scores nothing), then the KPI at 100: fully consumed.
+            publish_kpi(cluster_obj, GROUP, KPI_KEY, [], PUBLISHED_METRICS, values, higher_is_worse=HIGHER_IS_WORSE)
+            cluster_obj.with_metric(f"vCommunity|{GROUP}|{KPI_KEY}", FULL)
+            logger.info(f"Cluster Consumption for {cluster_name}: no usable capacity, so {FULL} (fully consumed)")
+            return
+
         no_data = publish_kpi(cluster_obj, GROUP, KPI_KEY, METRICS, PUBLISHED_METRICS, values,
                               higher_is_worse=HIGHER_IS_WORSE).no_data
         if no_data:

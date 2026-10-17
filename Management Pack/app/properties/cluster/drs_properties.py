@@ -9,10 +9,10 @@ NULL_STATUS = "null"
 
 def collect_drs_properties(cluster_obj, cluster_name, prop_dict):
     try:
-        proactiveDrsEnabled = "vCommunity|Cluster Configuration|DRS|Proactive DRS"
-        scaleDescendantsShares = "vCommunity|Cluster Configuration|DRS|Scale Descendants Shares"
-        cpuOverCommitment = "vCommunity|Cluster Configuration|DRS|CPU Over-Commitment"
-        enableVmBehaviorOverrides = "vCommunity|Cluster Configuration|DRS|Virtual Machine Automation Enabled"
+        proactiveDrsEnabled = "vCommunity|Cluster Configuration|Distributed Resource Scheduler|Proactive DRS"
+        scaleDescendantsShares = "vCommunity|Cluster Configuration|Distributed Resource Scheduler|Scale Descendants Shares"
+        cpuOverCommitment = "vCommunity|Cluster Configuration|Distributed Resource Scheduler|CPU Over-Commitment"
+        enableVmBehaviorOverrides = "vCommunity|Cluster Configuration|Distributed Resource Scheduler|Virtual Machine Automation Enabled"
         cpuOverCommitmentValue = None
         drsEnabled = prop_dict.get("configuration.drsConfig.enabled")
         clusterConfigurationEx = prop_dict.get("configurationEx")

@@ -3,15 +3,12 @@
 
 What it is
 ----------
-Once per period, every cluster gets these properties, under vCommunity|Periodic Cluster Check:
+Once per period, every cluster gets these metrics, under vCommunity|Periodic Cluster Check:
 
     Worst Cluster Performance     of Cluster Performance Score (higher is better): its low end over the period
     Worst Cluster Risk            of Cluster Risk Score (higher is worse): its high end over the period
     Worst Cluster Consumption     of Cluster Consumption Score (higher is worse): its high end over the period
     Close for Business            1 = the cluster is full, do not place new VMs. 0 = open. See decide().
-    Worst Percent                 the Cluster Check Worst Percent the values were calculated with
-    Window End                    the end of the period, such as "2026-10-12 00:00 UTC"
-    Window Hours                  the length of the period, in hours
 
 "Worst" is the value with only the worst N % of the period's samples beyond it: the (100 - N)th percentile
 of Risk and Consumption, the Nth percentile of Performance. See worst().
@@ -30,13 +27,16 @@ as long as the period, so every hour is covered once.
 
 How it runs
 -----------
-The pack collects every 5 minutes. Each cycle, the cluster collection reads the Window End property of its
-clusters. A cluster is due when it does not have the latest window end yet. At most MAX_CLUSTERS_PER_CYCLE due
-clusters are calculated per cycle, the rest in the next cycles, so the history is not read all at once.
-A cluster whose history could not be read stays due, and is tried again in the next cycle.
+The pack collects every 5 minutes. Each cycle, the cluster collection reads the time of the latest sample of
+the check's own metrics, and of the three KPIs, for all its clusters. A cluster is due when:
+    - its latest check metric is older than the latest window end: not yet calculated for that window, and
+    - a KPI has a sample at or after the start of that window: there is something to calculate.
+The second condition keeps a cluster without any KPI from being due, and read, every cycle.
+At most MAX_CLUSTERS_PER_CYCLE due clusters are calculated per cycle, the rest in the next cycles, so the
+history is not read all at once. A cluster whose history could not be read stays due, and is tried again.
 
-No state is kept in the adapter: the Window End property, stored in VCF Operations, is the state. A restart or
-an upgrade of the pack does not lose it.
+No state is kept, in the adapter or as properties: the timestamps of the published metrics are the state. A
+restart or an upgrade of the pack does not lose it. A changed setting applies from the next window.
 
 Inputs, all from VCF Operations: the 5-minute history of the three KPIs in STAT_KEYS.
 Docs: docs/reference/metrics/periodic-cluster-check.md
@@ -48,7 +48,7 @@ from typing import Dict, List, NamedTuple, Optional, Tuple
 from aria.ops.suite_api_client import SuiteApiClient
 from constants.main import VCENTER_ADAPTER_KIND
 from metrics.cluster import cluster_performance_metrics, cluster_risk_metrics, cluster_consumption_metrics
-from utils.ops_stats import as_number, query_resources, read_latest_properties, read_stat_history
+from utils.ops_stats import query_resources, read_latest_timestamps, read_stat_history
 
 logger = logging.getLogger(__name__)
 
@@ -77,19 +77,14 @@ CLUSTER_RISK_SCORE = f"vCommunity|{cluster_risk_metrics.GROUP}|{cluster_risk_met
 CLUSTER_CONSUMPTION_SCORE = f"vCommunity|{cluster_consumption_metrics.GROUP}|{cluster_consumption_metrics.KPI_KEY}"
 STAT_KEYS = [CLUSTER_PERFORMANCE_SCORE, CLUSTER_RISK_SCORE, CLUSTER_CONSUMPTION_SCORE]
 
-# The published properties.
+# The published metrics.
 PERFORMANCE = "Worst Cluster Performance"
 RISK = "Worst Cluster Risk"
 CONSUMPTION = "Worst Cluster Consumption"
 CLOSE_FOR_BUSINESS = "Close for Business"
-WORST_PERCENT = "Worst Percent"
-WORST_PERCENT_KEY = f"vCommunity|{GROUP}|{WORST_PERCENT}"
-WINDOW_END = "Window End"
-WINDOW_END_KEY = f"vCommunity|{GROUP}|{WINDOW_END}"
-WINDOW_HOURS = "Window Hours"
-WINDOW_HOURS_KEY = f"vCommunity|{GROUP}|{WINDOW_HOURS}"
+PUBLISHED_KEYS = [f"vCommunity|{GROUP}|{name}" for name in (PERFORMANCE, RISK, CONSUMPTION, CLOSE_FOR_BUSINESS)]
 
-# Each input: (published property, its stat, True when higher is worse).
+# Each input: (published metric, its stat, True when higher is worse).
 INPUTS = [
     (PERFORMANCE, CLUSTER_PERFORMANCE_SCORE, False),
     (RISK, CLUSTER_RISK_SCORE, cluster_risk_metrics.HIGHER_IS_WORSE),
@@ -110,7 +105,7 @@ CLUSTERS_PER_REQUEST = 100
 class PeriodicResult(NamedTuple):
     """What is published on one cluster. A value of None is not published: it had no data."""
     values: Dict[str, Optional[float]]     # PERFORMANCE, RISK, CONSUMPTION, CLOSE_FOR_BUSINESS
-    window_end: str
+    window_end: str                        # for the log, such as "2026-10-12 00:00 UTC"
     window_hours: int = 24
     worst_percent: int = DEFAULT_WORST_PERCENT
 
@@ -257,7 +252,7 @@ def read_periodic_cluster_check(
 ) -> Dict[str, PeriodicResult]:
     """{cluster MoRef id: PeriodicResult} for the clusters of this vCenter that are due this cycle.
 
-    Empty when no cluster is due: the properties already published stay in VCF Operations.
+    Empty when no cluster is due: the metrics already published for the window stay in VCF Operations.
     """
     now = now or datetime.now(timezone.utc)
     period_hours = parse_period(period_setting)
@@ -265,26 +260,28 @@ def read_periodic_cluster_check(
     window_end = latest_window_end(now, *parse_time(time_setting), period_hours)
     end_text = window_end_text(window_end)
 
+    end_ms = int(window_end.timestamp() * 1000)
+    begin_ms = int((window_end - timedelta(hours=period_hours)).timestamp() * 1000)
+
     clusters = query_resources(suite_api_client, VCENTER_ADAPTER_KIND, "ClusterComputeResource", adapter_instance_id)
-    stored = read_latest_properties(suite_api_client, [cluster.id for cluster in clusters],
-                                    [WINDOW_END_KEY, WINDOW_HOURS_KEY, WORST_PERCENT_KEY])
+    latest = read_latest_timestamps(suite_api_client, [cluster.id for cluster in clusters], PUBLISHED_KEYS + STAT_KEYS)
+    if latest is None:
+        # Without the timestamps, every cluster would look due. Wait for the next cycle instead.
+        logger.warning("Periodic Cluster Check: could not read which clusters are calculated. Trying next cycle.")
+        return {}
 
     def is_due(cluster) -> bool:
-        # Due when it does not have this window yet. A changed period is a new window, even with the same end,
-        # and a changed worst percent needs the window calculated again.
-        properties = stored.get(cluster.id, {})
-        return (properties.get(WINDOW_END_KEY) != end_text
-                or as_number(properties.get(WINDOW_HOURS_KEY)) != period_hours
-                or as_number(properties.get(WORST_PERCENT_KEY)) != worst_percent)
+        timestamps = latest.get(cluster.id, {})
+        calculated = max((timestamps.get(key, 0.0) for key in PUBLISHED_KEYS), default=0.0)
+        has_kpi_data = any(timestamps.get(key, 0.0) >= begin_ms for key in STAT_KEYS)
+        return calculated < end_ms and has_kpi_data
 
     due = [cluster for cluster in clusters if is_due(cluster)]
     if not due:
         return {}
     due = sorted(due, key=lambda cluster: cluster.id)[:MAX_CLUSTERS_PER_CYCLE]
-    logger.info(f"Periodic Cluster Check: {len(due)} of {len(clusters)} clusters due for the {period_hours} hours to {end_text}.")
-
-    end_ms = int(window_end.timestamp() * 1000)
-    begin_ms = int((window_end - timedelta(hours=period_hours)).timestamp() * 1000)
+    logger.info(f"Periodic Cluster Check: {len(due)} of {len(clusters)} clusters due for the {period_hours} hours "
+                f"to {end_text}, worst {worst_percent} %.")
     failed: List[str] = []
     history = read_stat_history(suite_api_client, [cluster.id for cluster in due], STAT_KEYS,
                                 begin_ms, end_ms, CLUSTERS_PER_REQUEST, failed)
@@ -308,13 +305,13 @@ def read_periodic_cluster_check(
 
 
 def publish(cluster_obj, result: Optional[PeriodicResult]) -> None:
-    """Publishes the Periodic Cluster Check properties of one cluster. Nothing when it is not due this cycle."""
+    """Publishes the Periodic Cluster Check metrics of one cluster. Nothing when it is not due this cycle.
+
+    The values are metrics: numbers produced once per period, a fixed interval. Their timestamp is also how the
+    next cycles know the cluster was calculated for this window.
+    """
     if result is None:
         return
     for name, value in result.values.items():
         if value is not None:
-            cluster_obj.with_property(f"vCommunity|{GROUP}|{name}", round(value, 2))
-    # Last, and also without data: the cluster was calculated for this window, so it is not due again.
-    cluster_obj.with_property(WORST_PERCENT_KEY, result.worst_percent)
-    cluster_obj.with_property(WINDOW_HOURS_KEY, result.window_hours)
-    cluster_obj.with_property(WINDOW_END_KEY, result.window_end)
+            cluster_obj.with_metric(f"vCommunity|{GROUP}|{name}", round(value, 2))

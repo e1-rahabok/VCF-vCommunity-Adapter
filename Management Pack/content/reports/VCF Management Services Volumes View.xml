@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Content>
+        
+    <Views>
+                
+        <ViewDef id="cadb4cc0-aba9-4ca1-a035-64a0d0cae5c1">
+                        
+            <Title>VCF Management Services Volumes View</Title>
+                        
+            <Description>This view displays the volumes associated with the VCF Management Services, including their utilization and the component to which each volume belongs.</Description>
+                        
+            <SubjectType adapterKind="VMSP" resourceKind="vmsp-platform-volume" type="descendant"/>
+                        
+            <SubjectType adapterKind="VMSP" resourceKind="vmsp-platform-volume" type="self"/>
+                        
+            <Usage>dashboard</Usage>
+                        
+            <Usage>content</Usage>
+                        
+            <Controls>
+                                
+                <Control id="time-interval-selector_id_257" type="time-interval-selector" visible="false">
+                                        
+                    <Property name="advancedTimeMode" value="false"/>
+                                        
+                    <Property name="unit" value="DAYS"/>
+                                        
+                    <Property name="count" value="7"/>
+                                    
+                </Control>
+                                
+                <Control id="attributes-selector_id_258" type="attributes-selector" visible="false">
+                                        
+                    <Property name="attributeInfos">
+                                                
+                        <List>
+                                                        
+                            <Item>
+                                                                
+                                <Value>
+                                                                        
+                                    <Property name="objectType" value="RESOURCE"/>
+                                                                        
+                                    <Property name="attributeKey" value="summary|volumeGroupName"/>
+                                                                        
+                                    <Property name="isStringAttribute" value="false"/>
+                                                                        
+                                    <Property name="adapterKind" value="VMSP"/>
+                                                                        
+                                    <Property name="resourceKind" value="vmsp-platform-volume"/>
+                                                                        
+                                    <Property name="rollUpCount" value="0"/>
+                                                                        
+                                    <Property name="transformations">
+                                                                                
+                                        <List>
+                                                                                        
+                                            <Item value="LAST"/>
+                                                                                    
+                                        </List>
+                                                                            
+                                    </Property>
+                                                                        
+                                    <Property name="isProperty" value="true"/>
+                                                                        
+                                    <Property name="displayName" value="Volume Group"/>
+                                                                        
+                                    <Property name="addTimestampAsColumn" value="false"/>
+                                                                        
+                                    <Property name="isShowRelativeTimestamp" value="false"/>
+                                                                    
+                                </Value>
+                                                            
+                            </Item>
+                                                        
+                            <Item>
+                                                                
+                                <Value>
+                                                                        
+                                    <Property name="objectType" value="RESOURCE"/>
+                                                                        
+                                    <Property name="attributeKey" value="summary|componentName"/>
+                                                                        
+                                    <Property name="isStringAttribute" value="false"/>
+                                                                        
+                                    <Property name="adapterKind" value="VMSP"/>
+                                                                        
+                                    <Property name="resourceKind" value="vmsp-platform-volume"/>
+                                                                        
+                                    <Property name="rollUpCount" value="0"/>
+                                                                        
+                                    <Property name="transformations">
+                                                                                
+                                        <List>
+                                                                                        
+                                            <Item value="LAST"/>
+                                                                                    
+                                        </List>
+                                                                            
+                                    </Property>
+                                                                        
+                                    <Property name="isProperty" value="true"/>
+                                                                        
+                                    <Property name="displayName" value="Component Name"/>
+                                                                        
+                                    <Property name="addTimestampAsColumn" value="false"/>
+                                                                        
+                                    <Property name="isShowRelativeTimestamp" value="false"/>
+                                                                    
+                                </Value>
+                                                            
+                            </Item>
+                                                        
+                            <Item>
+                                                                
+                                <Value>
+                                                                        
+                                    <Property name="objectType" value="RESOURCE"/>
+                                                                        
+                                    <Property name="attributeKey" value="disk|usage"/>
+                                                                        
+                                    <Property name="preferredUnitId" value="percent"/>
+                                                                        
+                                    <Property name="isStringAttribute" value="false"/>
+                                                                        
+                                    <Property name="adapterKind" value="VMSP"/>
+                                                                        
+                                    <Property name="resourceKind" value="vmsp-platform-volume"/>
+                                                                        
+                                    <Property name="rollUpCount" value="0"/>
+                                                                        
+                                    <Property name="transformations">
+                                                                                
+                                        <List>
+                                                                                        
+                                            <Item value="CURRENT"/>
+                                                                                    
+                                        </List>
+                                                                            
+                                    </Property>
+                                                                        
+                                    <Property name="sortCriteria" value="false"/>
+                                                                        
+                                    <Property name="isProperty" value="true"/>
+                                                                        
+                                    <Property name="yellowBound" value="70"/>
+                                                                        
+                                    <Property name="orangeBound" value="80"/>
+                                                                        
+                                    <Property name="redBound" value="90"/>
+                                                                        
+                                    <Property name="ascendingRange" value="false"/>
+                                                                        
+                                    <Property name="displayName" value="Volume Utilization"/>
+                                                                        
+                                    <Property name="addTimestampAsColumn" value="false"/>
+                                                                        
+                                    <Property name="isShowRelativeTimestamp" value="false"/>
+                                                                    
+                                </Value>
+                                                            
+                            </Item>
+                                                    
+                        </List>
+                                            
+                    </Property>
+                                    
+                </Control>
+                                
+                <Control id="pagination-control_id_259" type="pagination-control" visible="true">
+                                        
+                    <Property name="start" value="0"/>
+                                        
+                    <Property name="size" value="50"/>
+                                    
+                </Control>
+                                
+                <Control id="metadata_id_260" type="metadata" visible="false">
+                                        
+                    <Property name="maxPointsCount" value="5000"/>
+                                        
+                    <Property name="hideObjectNameColumn" value="false"/>
+                                        
+                    <Property name="listTopResultSize" value="-1"/>
+                                    
+                </Control>
+                            
+            </Controls>
+                        
+            <DataProviders>
+                                
+                <DataProvider dataType="list-view" id="list-view_id_256"/>
+                            
+            </DataProviders>
+                        
+            <Presentation type="list"/>
+                    
+        </ViewDef>
+    </Views>
+</Content>

@@ -45,6 +45,32 @@ def read_latest_stats(
     }
 
 
+def read_latest_timestamps(
+    suite_api_client: SuiteApiClient, resource_ids: List[str], stat_keys: List[str]
+) -> Optional[Dict[str, Dict[str, float]]]:
+    """Returns {resource id: {stat key: time of its latest sample, in epoch ms}}, however old the sample is.
+
+    A stat that was never published is absent. None when a request failed: the caller cannot tell "never
+    published" from "not read", so it must not act on a partial answer.
+    """
+    timestamps = {}
+    requested_keys = set(stat_keys)
+    for start in range(0, len(resource_ids), RESOURCES_PER_REQUEST):
+        batch = resource_ids[start:start + RESOURCES_PER_REQUEST]
+        response = suite_api_client.post(LATEST_STATS_PATH, json={"resourceId": batch, "statKey": stat_keys})
+        if response.status_code != 200:
+            logger.warning(f"Stats query {LATEST_STATS_PATH} failed with HTTP {response.status_code}")
+            return None
+        for resource in response.json().get("values", []):
+            stat_list = resource.get("stat-list") or resource.get("stats") or {}
+            by_key = timestamps.setdefault(resource.get("resourceId"), {})
+            for stat in stat_list.get("stat", []):
+                stat_key = stat.get("statKey", {}).get("key")
+                if stat_key in requested_keys and stat.get("timestamps"):
+                    by_key[stat_key] = float(max(stat["timestamps"]))
+    return timestamps
+
+
 def read_latest_instance_stats(
     suite_api_client: SuiteApiClient, resource_ids: List[str], stat_keys: List[str]
 ) -> Dict[str, Dict[str, Dict[str, float]]]:

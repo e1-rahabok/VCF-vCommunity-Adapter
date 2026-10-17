@@ -37,7 +37,7 @@ All six are called by a collector and declared in `adapter.py`. The VCF Operatio
 | `vm/vm_performance_metrics.py` | VM Performance KPI. One score per powered-on VM, from 9 sub-metrics. Also reads the stats of Guest OS Performance. |
 | `vm/guest_os_performance_metrics.py` | Guest OS Performance KPI. One score per powered-on VM with VMware Tools, from 4 sub-metrics. |
 | `host/esxi_performance_metrics.py` | ESXi Performance KPI. One score per connected ESXi host, from 9 sub-metrics. |
-| `world/cluster_summary_metrics.py` | 10th percentile and worst Cluster Performance, 90th percentile and worst Cluster Risk, over all clusters of all vCenters, on vSphere World. Not a KPI. See `docs/reference/metrics/vsphere-world-metrics.md`, including its known limitations. |
+| `world/cluster_summary_metrics.py` | Bottom 10 Percent and worst Cluster Performance, Bottom 10 Percent and worst Cluster Risk, over all clusters of all vCenters, on vSphere World. Not a KPI. See `docs/reference/metrics/vsphere-world-metrics.md`, including its known limitations. |
 | `availability/operational_availability.py` | ESXi Host and Cluster Operational Availability, and the worst cluster per vCenter. Not a KPI. See `docs/reference/metrics/operational-availability.md`, including its known limitations. |
 | `world/availability_summary_metrics.py` | Worst Cluster and average ESXi Host Operational Availability, over all vCenters, on vSphere World. |
 | `network/network_speed_degradation.py` | Network Speed Degradation per host, and the count of degraded hosts per Datacenter and on vSphere World. Not a KPI. See `docs/reference/metrics/network-speed-degradation.md`, including its known limitations. |
@@ -224,7 +224,7 @@ python -m pytest tests
 | `test_operational_availability.py` | Host and cluster Operational Availability: the three super-metric bugs, N+0 to N+2, missing data, and the vSphere World summary. |
 | `test_network_speed_degradation.py` | Network Speed Degradation: NIC by NIC, NICs that are down or have no configured speed, and the counts. |
 | `test_vm_shares.py` | Share per vCPU and per MB: normal values, the super metric's values, and no division by zero. |
-| `test_cluster_summary_metrics.py` | vSphere World: 10th percentile and worst cluster scores, over the clusters of all vCenters. |
+| `test_cluster_summary_metrics.py` | vSphere World: Bottom 10 Percent and worst cluster scores, over the clusters of all vCenters. |
 | `test_cluster_risk_metrics.py` | Cluster Risk formulas and worked examples. |
 | `test_capacity_utilization.py` | Capacity Utilization formulas: N − k, above 100 %, missing hosts. |
 | `test_cluster_consumption_metrics.py` | Cluster Consumption formulas and a worked example. |

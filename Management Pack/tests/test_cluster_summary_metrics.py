@@ -35,9 +35,9 @@ def test_summary_of_all_clusters():
         "cl-3": {PERFORMANCE: 50.0},                 # no Cluster Risk score this cycle: left out of it
     }
     assert cs.summary_values(scores) == {
-        "10th Percentile Cluster Performance": 50.0,
+        "Bottom 10 Percent Cluster Performance": 50.0,
         "Worst Cluster Performance": 50.0,
-        "90th Percentile Cluster Risk": 75.0,      # Risk is higher-is-worse: the high end
+        "Bottom 10 Percent Cluster Risk": 75.0,      # Risk is higher-is-worse: the high end
         "Worst Cluster Risk": 75.0,
     }
 
@@ -56,9 +56,9 @@ def test_reads_the_clusters_of_all_vcenters_and_publishes_on_vsphere_world():
     # No adapter instance filter: the clusters of every vCenter.
     assert "adapterInstanceId" not in api.resource_queries[0]
     assert world.metrics == {
-        "vCommunity|10th Percentile Cluster Performance": 86.35,
+        "vCommunity|Bottom 10 Percent Cluster Performance": 86.35,
         "vCommunity|Worst Cluster Performance": 86.35,
-        "vCommunity|90th Percentile Cluster Risk": 75.0,
+        "vCommunity|Bottom 10 Percent Cluster Risk": 75.0,
         "vCommunity|Worst Cluster Risk": 75.0,
     }
 

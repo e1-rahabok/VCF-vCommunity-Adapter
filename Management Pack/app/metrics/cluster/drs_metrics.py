@@ -10,7 +10,7 @@ it is read from vCenter and published as it is. It is not a KPI and does not
 use metrics/kpi_score.py.
 
 Published on the cluster as:
-    vCommunity|Cluster Configuration|DRS|DRS Score
+    vCommunity|Cluster Configuration|Distributed Resource Scheduler|DRS Score
 
 Where the value comes from
 --------------------------
@@ -34,7 +34,7 @@ logger = logging.getLogger(__name__)
 def collect_drs_metrics(cluster_obj, cluster_name, prop_dict):
     """Publishes the DRS Score of one cluster. prop_dict holds the cluster properties read from vCenter."""
     try:
-        drsScore = "vCommunity|Cluster Configuration|DRS|DRS Score"
+        drsScore = "vCommunity|Cluster Configuration|Distributed Resource Scheduler|DRS Score"
         drsSummary = prop_dict.get("summary")
         drsScoreValue= getattr(drsSummary, "drsScore")
         drsEnabled = prop_dict.get("configuration.drsConfig.enabled")

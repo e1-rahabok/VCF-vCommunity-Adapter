@@ -15,15 +15,6 @@ Code: [`Management Pack/app/metrics/cluster/cluster_risk_metrics.py`](../../../M
 
 Source of the limits: [`formula/cluster-risk.png`](formula/cluster-risk.png)
 
-## Change in version 0.1.0: higher is worse
-
-Before version 0.1.0 of VCF vCommunity Adapter, Cluster Risk was published as a health score: 100 meant no risk. That contradicted its name. It is now inverted: **new value = 100 − old value**.
-
-- **History before the upgrade reads the opposite way.** A chart that spans the upgrade jumps from, say, 98 to 2 for the same healthy cluster.
-- **Thresholds set on the old value must be inverted.** An alert or a color range "below 25" becomes "above 75".
-- The 12 sub-metrics did not change.
-- On vSphere World, "10th Percentile Cluster Risk" is replaced by "90th Percentile Cluster Risk", and "Worst Cluster Risk" is now the highest value. See [vSphere World Cluster Metrics](vsphere-world-metrics.md).
-
 ## The 12 sub-metrics and their limits
 
 Every sub-metric is "lower is better".

@@ -14,7 +14,7 @@ Content:
 > **Read this before using the dashboard.**
 
 - **Requires the pack's metrics.** Most widgets show pack metrics. A widget is blank until the pack has collected them. The Periodic Cluster Check columns stay blank until the first check period ends. See [Periodic Cluster Check](../reference/metrics/periodic-cluster-check.md).
-- **Blank, not stale.** A metric whose latest value is more than 10 minutes old is left blank. Properties (the Periodic Cluster Check columns) keep their last known value. See [How It Works](../reference/metrics/README.md#no-stale-values).
+- **Blank, not stale.** A metric whose latest value is more than 10 minutes old is left blank. The Periodic Cluster Check columns are metrics produced once per period, so they show the last window. See [How It Works](../reference/metrics/README.md#no-stale-values).
 - **"Worst 10%" equals "worst" with 10 clusters or fewer.** The 10th (or 90th) percentile takes the lowest (or highest) cluster when there are 10 clusters or fewer. See [vSphere World Cluster Metrics](../reference/metrics/vsphere-world-metrics.md).
 - **Risk is red when high.** The Risk widgets are red from 75. The Performance widgets are red below 25. See [Cluster Risk KPI](../reference/metrics/cluster-risk.md#bands-red-is-high).
 - **Capacity Utilization can be above 100 %.** That means the cluster cannot hold its load if a host fails. See [Capacity Utilization](../reference/metrics/capacity-utilization.md).
@@ -38,8 +38,8 @@ All on the vSphere World object, so they cover every cluster of every vCenter.
 | Worst Performance of all Clusters | `vCommunity\|Worst Cluster Performance` | red below 25, orange below 50, yellow below 75 |
 | Highest Risk of all Clusters | `vCommunity\|Worst Cluster Risk` | yellow from 25, orange from 50, red from 75 |
 | Worst Cluster Operational Availability | `vCommunity\|Availability\|Worst Cluster Operational Availability` | red below 90, orange below 95, yellow below 99 |
-| Worst 10% Cluster Performance | `vCommunity\|10th Percentile Cluster Performance` | as Worst Performance |
-| Worst 10% Cluster Risk | `vCommunity\|90th Percentile Cluster Risk` | as Highest Risk |
+| Worst 10% Cluster Performance | `vCommunity\|Bottom 10 Percent Cluster Performance` | as Worst Performance |
+| Worst 10% Cluster Risk | `vCommunity\|Bottom 10 Percent Cluster Risk` | as Highest Risk |
 | Average ESXi Hosts Operational Availability | `vCommunity\|Availability\|ESXi Hosts Operational Availability` | red below 94, orange below 96, yellow below 98 |
 
 See [vSphere World Cluster Metrics](../reference/metrics/vsphere-world-metrics.md) and [Operational Availability](../reference/metrics/operational-availability.md).
@@ -50,10 +50,10 @@ See [vSphere World Cluster Metrics](../reference/metrics/vsphere-world-metrics.m
 
 | Column | Key | Source |
 | :--- | :--- | :--- |
-| Closed? | `vCommunity\|Periodic Cluster Check\|Close for Business` | property, [Periodic Cluster Check](../reference/metrics/periodic-cluster-check.md). 1 = closed for new workload. |
-| Worst Consumption | `vCommunity\|Periodic Cluster Check\|Worst Cluster Consumption` | property, Periodic Cluster Check. Yellow from 25, orange from 50, red from 75. |
-| Worst Performance | `vCommunity\|Periodic Cluster Check\|Worst Cluster Performance` | property, Periodic Cluster Check. Red below 25, orange below 50, yellow below 75. |
-| Worst Risk | `vCommunity\|Periodic Cluster Check\|Worst Cluster Risk` | property, Periodic Cluster Check. Yellow from 25, orange from 50, red from 75. |
+| Closed? | `vCommunity\|Periodic Cluster Check\|Close for Business` | metric, [Periodic Cluster Check](../reference/metrics/periodic-cluster-check.md). 1 = closed for new workload. |
+| Worst Consumption | `vCommunity\|Periodic Cluster Check\|Worst Cluster Consumption` | metric, Periodic Cluster Check. Yellow from 25, orange from 50, red from 75. |
+| Worst Performance | `vCommunity\|Periodic Cluster Check\|Worst Cluster Performance` | metric, Periodic Cluster Check. Red below 25, orange below 50, yellow below 75. |
+| Worst Risk | `vCommunity\|Periodic Cluster Check\|Worst Cluster Risk` | metric, Periodic Cluster Check. Yellow from 25, orange from 50, red from 75. |
 | Capacity Remaining | `OnlineCapacityAnalytics\|capacityRemainingPercentage` | VCF Operations |
 | Time Remaining | `OnlineCapacityAnalytics\|timeRemaining` | VCF Operations |
 

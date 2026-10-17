@@ -257,15 +257,12 @@ def get_adapter_definition() -> AdapterDefinition:
         for name in capacity_utilization.METRICS:
             capacity.define_metric(name, name, unit=Units.RATIO.PERCENT)
 
-        # Periodic Cluster Check: properties, set once per period. See metrics/cluster/periodic_cluster_check.py.
+        # Periodic Cluster Check: set once per period. See metrics/cluster/periodic_cluster_check.py.
         periodicCheck = vCommunity.define_group(periodic_cluster_check.GROUP, periodic_cluster_check.GROUP)
+        # Metrics, produced once per period. No properties: the metrics' timestamps say which window is done.
         for name in (periodic_cluster_check.PERFORMANCE, periodic_cluster_check.RISK, periodic_cluster_check.CONSUMPTION):
-            periodicCheck.define_numeric_property(name, name, unit=Units.RATIO.PERCENT)
-        periodicCheck.define_numeric_property(periodic_cluster_check.CLOSE_FOR_BUSINESS, periodic_cluster_check.CLOSE_FOR_BUSINESS)
-        periodicCheck.define_numeric_property(periodic_cluster_check.WORST_PERCENT, periodic_cluster_check.WORST_PERCENT,
-                                              unit=Units.RATIO.PERCENT)
-        periodicCheck.define_string_property(periodic_cluster_check.WINDOW_END, periodic_cluster_check.WINDOW_END)
-        periodicCheck.define_numeric_property(periodic_cluster_check.WINDOW_HOURS, periodic_cluster_check.WINDOW_HOURS)
+            periodicCheck.define_metric(name, name, unit=Units.RATIO.PERCENT)
+        periodicCheck.define_metric(periodic_cluster_check.CLOSE_FOR_BUSINESS, periodic_cluster_check.CLOSE_FOR_BUSINESS)
 
         vSphereHA = clusterConfiguration.define_group("vSphere HA", "vSphere HA")
         vSphereHA.define_string_property("Host Monitoring", "Host Monitoring")
@@ -280,7 +277,7 @@ def get_adapter_definition() -> AdapterDefinition:
         vSphereHA.define_string_property("Max Failures", "Max Failures")
         vSphereHA.define_string_property("Minimum Up Time", "Minimum Up Time")
 
-        drs = clusterConfiguration.define_group("DRS", "DRS")
+        drs = clusterConfiguration.define_group("Distributed Resource Scheduler", "Distributed Resource Scheduler")
         drs.define_string_property("Proactive DRS", "Proactive DRS")
         drs.define_string_property("Scale Descendants Shares", "Scale Descendants Shares")
         drs.define_string_property("CPU Over-Commitment","CPU Over-Commitment")

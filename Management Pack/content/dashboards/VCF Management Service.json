@@ -1,0 +1,595 @@
+{
+   "entries": {
+      "resourceKind": [
+         {
+            "resourceKindKey": "VirtualMachine",
+            "internalId": "resourceKind:id:4_::_",
+            "adapterKindKey": "VMWARE"
+         },
+         {
+            "resourceKindKey": "pgdatabase-resource",
+            "internalId": "resourceKind:id:12_::_",
+            "adapterKindKey": "VMSP"
+         },
+         {
+            "resourceKindKey": "Datastore",
+            "internalId": "resourceKind:id:11_::_",
+            "adapterKindKey": "VMWARE"
+         },
+         {
+            "resourceKindKey": "registry-service-resource",
+            "internalId": "resourceKind:id:13_::_",
+            "adapterKindKey": "VMSP"
+         },
+         {
+            "resourceKindKey": "HostSystem",
+            "internalId": "resourceKind:id:1_::_",
+            "adapterKindKey": "VMWARE"
+         },
+         {
+            "resourceKindKey": "ClusterComputeResource",
+            "internalId": "resourceKind:id:0_::_",
+            "adapterKindKey": "VMWARE"
+         }
+      ],
+      "resource": [
+         {
+            "resourceKindKey": "Universe",
+            "internalId": "resource:id:3_::_",
+            "adapterKindKey": "Container",
+            "identifiers": [],
+            "name": "Universe"
+         }
+      ]
+   },
+   "dashboards": [
+      {
+         "shared": false,
+         "hidden": false,
+         "creationTime": 0,
+         "autoswitchEnabled": false,
+         "importAttempts": 0,
+         "lastUpdateUserId": "936105f8-faa4-48cb-b268-0eec2ea9e205",
+         "columnProportion": "1",
+         "importComplete": true,
+         "description": "Health monitoring of VCF 9.1 Management Service platform.",
+         "columnCount": 0,
+         "widgets": [
+            {
+               "tabId": "bacf36d9-fb4d-49ff-ad97-e55b1fe9a4b2",
+               "collapsed": false,
+               "id": "4c615ad1-af2e-4359-bf13-2fa437e224e2",
+               "gridsterCoords": {
+                  "w": 12,
+                  "x": 1,
+                  "h": 3,
+                  "y": 1
+               },
+               "state": "",
+               "type": "View",
+               "title": "VCF Management Instance",
+               "config": {
+                  "refreshInterval": 300,
+                  "resource": {
+                     "resourceId": "resource:id:3_::_",
+                     "traversalSpecId": "",
+                     "resourceName": "Universe",
+                     "resourceKindId": "002009ContainerUniverse",
+                     "id": "Ext.vcops.chrome.model.Resource-1"
+                  },
+                  "widgetId": "4c615ad1-af2e-4359-bf13-2fa437e224e2",
+                  "traversalSpecId": null,
+                  "refreshContent": {
+                     "refreshContent": false
+                  },
+                  "description": "",
+                  "isUpdatedView": true,
+                  "title": "VCF Management Instance",
+                  "viewDefinitionId": "9170baca-1e15-4a8e-be52-8bed7ef73f72",
+                  "titleLocalized": "VCF Management Instance",
+                  "chartViewItems": [],
+                  "selectFirstRow": {
+                     "selectFirstRow": false
+                  },
+                  "viewDetails": "",
+                  "selfProvider": {
+                     "selfProvider": true
+                  }
+               },
+               "height": 0,
+               "states": [
+                  {
+                     "value": "s%3A%7B%22minType%22%3A%22.TimeIntervalControl%22%2C%22advancedTimeMode%22%3Afalse%2C%22fromTime%22%3Anull%2C%22unit%22%3A%22DAYS%22%2C%22count%22%3A7%2C%22priorUnit%22%3Anull%2C%22priorCount%22%3Anull%2C%22startSubUnit%22%3Anull%2C%22startPeriod%22%3Anull%2C%22toTime%22%3Anull%2C%22endUnit%22%3Anull%2C%22endCount%22%3Anull%2C%22endSubUnit%22%3Anull%2C%22endPeriod%22%3Anull%2C%22mondayHours%22%3A%5B%5D%2C%22tuesdayHours%22%3A%5B%5D%2C%22wednesdayHours%22%3A%5B%5D%2C%22thursdayHours%22%3A%5B%5D%2C%22fridayHours%22%3A%5B%5D%2C%22saturdayHours%22%3A%5B%5D%2C%22sundayHours%22%3A%5B%5D%7D",
+                     "key": "permSelectedDate_widget_bacf36d9-fb4d-49ff-ad97-e55b1fe9a4b2_4c615ad1-af2e-4359-bf13-2fa437e224e2"
+                  },
+                  {
+                     "value": "b%3A0",
+                     "key": "perm_toolbarVisible_widget_bacf36d9-fb4d-49ff-ad97-e55b1fe9a4b2_4c615ad1-af2e-4359-bf13-2fa437e224e2"
+                  },
+                  {
+                     "value": "o%3Acolumns%3Da%253Ao%25253Aid%25253Ds%2525253ApermTableView_widget_bacf36d9-fb4d-49ff-ad97-e55b1fe9a4b2_4c615ad1-af2e-4359-bf13-2fa437e224e2-column-0%25255Ehidden%25253Db%2525253A0%25255Ewidth%25253Dn%2525253A247.60000610351562%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_bacf36d9-fb4d-49ff-ad97-e55b1fe9a4b2_4c615ad1-af2e-4359-bf13-2fa437e224e2-column-summary%2525257Ccomponents%2525257Ccritical_availability_issues1%25255Ehidden%25253Db%2525253A0%25255Ewidth%25253Dn%2525253A134.20001220703125%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_bacf36d9-fb4d-49ff-ad97-e55b1fe9a4b2_4c615ad1-af2e-4359-bf13-2fa437e224e2-column-summary%2525257Ccomponents%2525257Cno_availability_issues2%25255Ehidden%25253Db%2525253A0%25255Ewidth%25253Dn%2525253A339%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_bacf36d9-fb4d-49ff-ad97-e55b1fe9a4b2_4c615ad1-af2e-4359-bf13-2fa437e224e2-column-cpu%2525257Cusage_percent3%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_bacf36d9-fb4d-49ff-ad97-e55b1fe9a4b2_4c615ad1-af2e-4359-bf13-2fa437e224e2-column-disk%2525257Cusage_percent4%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_bacf36d9-fb4d-49ff-ad97-e55b1fe9a4b2_4c615ad1-af2e-4359-bf13-2fa437e224e2-column-memory%2525257Cusage_percent5%25255Ehidden%25253Db%2525253A0",
+                     "key": "permTableView_widget_bacf36d9-fb4d-49ff-ad97-e55b1fe9a4b2_4c615ad1-af2e-4359-bf13-2fa437e224e2"
+                  }
+               ]
+            },
+            {
+               "tabId": "bacf36d9-fb4d-49ff-ad97-e55b1fe9a4b2",
+               "collapsed": false,
+               "id": "286a8976-58cb-4a66-b08a-e31f9c807e69",
+               "gridsterCoords": {
+                  "w": 4,
+                  "x": 1,
+                  "h": 9,
+                  "y": 4
+               },
+               "state": "",
+               "type": "View",
+               "title": "K8 Nodes",
+               "config": {
+                  "refreshInterval": 300,
+                  "resource": null,
+                  "widgetId": "286a8976-58cb-4a66-b08a-e31f9c807e69",
+                  "traversalSpecId": "",
+                  "refreshContent": {
+                     "refreshContent": false
+                  },
+                  "description": "",
+                  "isUpdatedView": true,
+                  "title": "K8 Nodes",
+                  "viewDefinitionId": "4747af30-e22c-44b8-b2cf-e206e7310f12",
+                  "viewType": "LIST",
+                  "chartViewItems": [],
+                  "selectFirstRow": {
+                     "selectFirstRow": false
+                  },
+                  "viewDetails": "",
+                  "selfProvider": {
+                     "selfProvider": false
+                  }
+               },
+               "height": 0,
+               "states": [
+                  {
+                     "value": "o%3Acolumns%3Da%253Ao%25253Aid%25253Ds%2525253ApermTableView_widget_bacf36d9-fb4d-49ff-ad97-e55b1fe9a4b2_286a8976-58cb-4a66-b08a-e31f9c807e69-column-0%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_bacf36d9-fb4d-49ff-ad97-e55b1fe9a4b2_286a8976-58cb-4a66-b08a-e31f9c807e69-column-cpu%2525257Ccpu_usage_percent_15min1%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_bacf36d9-fb4d-49ff-ad97-e55b1fe9a4b2_286a8976-58cb-4a66-b08a-e31f9c807e69-column-memory%2525257Cmem_usage_15min2%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_bacf36d9-fb4d-49ff-ad97-e55b1fe9a4b2_286a8976-58cb-4a66-b08a-e31f9c807e69-column-disk%2525257Cusage_percent_15min3%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_bacf36d9-fb4d-49ff-ad97-e55b1fe9a4b2_286a8976-58cb-4a66-b08a-e31f9c807e69-column-status%2525257Cstatus4%25255Ehidden%25253Db%2525253A0",
+                     "key": "permTableView_widget_bacf36d9-fb4d-49ff-ad97-e55b1fe9a4b2_286a8976-58cb-4a66-b08a-e31f9c807e69"
+                  }
+               ]
+            },
+            {
+               "tabId": "bacf36d9-fb4d-49ff-ad97-e55b1fe9a4b2",
+               "collapsed": false,
+               "id": "1f1e5a87-7bfe-47ee-8d42-7d4e399b2f5c",
+               "gridsterCoords": {
+                  "w": 4,
+                  "x": 5,
+                  "h": 9,
+                  "y": 4
+               },
+               "state": "",
+               "type": "View",
+               "title": "Volumes",
+               "config": {
+                  "refreshInterval": 300,
+                  "resource": null,
+                  "widgetId": "1f1e5a87-7bfe-47ee-8d42-7d4e399b2f5c",
+                  "traversalSpecId": "",
+                  "refreshContent": {
+                     "refreshContent": false
+                  },
+                  "description": "VCF Management Services storage volume",
+                  "isUpdatedView": true,
+                  "title": "Volumes",
+                  "viewDefinitionId": "cadb4cc0-aba9-4ca1-a035-64a0d0cae5c1",
+                  "viewType": "LIST",
+                  "chartViewItems": [],
+                  "selectFirstRow": {
+                     "selectFirstRow": false
+                  },
+                  "viewDetails": "",
+                  "selfProvider": {
+                     "selfProvider": false
+                  }
+               },
+               "height": 0,
+               "states": [
+                  {
+                     "value": "o%3Acolumns%3Da%253Ao%25253Aid%25253Ds%2525253ApermTableView_widget_bacf36d9-fb4d-49ff-ad97-e55b1fe9a4b2_1f1e5a87-7bfe-47ee-8d42-7d4e399b2f5c-column-0%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_bacf36d9-fb4d-49ff-ad97-e55b1fe9a4b2_1f1e5a87-7bfe-47ee-8d42-7d4e399b2f5c-column-summary%2525257CvolumeGroupName1%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_bacf36d9-fb4d-49ff-ad97-e55b1fe9a4b2_1f1e5a87-7bfe-47ee-8d42-7d4e399b2f5c-column-summary%2525257CcomponentName2%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_bacf36d9-fb4d-49ff-ad97-e55b1fe9a4b2_1f1e5a87-7bfe-47ee-8d42-7d4e399b2f5c-column-disk%2525257Cusage3%25255Ehidden%25253Db%2525253A0",
+                     "key": "permTableView_widget_bacf36d9-fb4d-49ff-ad97-e55b1fe9a4b2_1f1e5a87-7bfe-47ee-8d42-7d4e399b2f5c"
+                  }
+               ]
+            },
+            {
+               "tabId": "bacf36d9-fb4d-49ff-ad97-e55b1fe9a4b2",
+               "collapsed": false,
+               "id": "efeb0695-6da9-4753-933e-bb1956f6984a",
+               "gridsterCoords": {
+                  "w": 4,
+                  "x": 9,
+                  "h": 9,
+                  "y": 4
+               },
+               "state": "",
+               "type": "View",
+               "title": "Services",
+               "config": {
+                  "refreshInterval": 300,
+                  "resource": null,
+                  "widgetId": "efeb0695-6da9-4753-933e-bb1956f6984a",
+                  "traversalSpecId": "",
+                  "refreshContent": {
+                     "refreshContent": false
+                  },
+                  "description": "VCF Services Runtime Component",
+                  "isUpdatedView": true,
+                  "title": "Services",
+                  "viewDefinitionId": "df8479d3-45c0-4e1a-9cb3-9c3412f93579",
+                  "titleLocalized": "Services",
+                  "viewType": "LIST",
+                  "chartViewItems": [],
+                  "selectFirstRow": {
+                     "selectFirstRow": false
+                  },
+                  "viewDetails": "",
+                  "selfProvider": {
+                     "selfProvider": false
+                  }
+               },
+               "height": 0,
+               "states": [
+                  {
+                     "value": "n%3A50",
+                     "key": "permPageSize_widget_bacf36d9-fb4d-49ff-ad97-e55b1fe9a4b2_efeb0695-6da9-4753-933e-bb1956f6984a"
+                  },
+                  {
+                     "value": "o%3Acolumns%3Da%253Ao%25253Aid%25253Ds%2525253ApermTableView_widget_bacf36d9-fb4d-49ff-ad97-e55b1fe9a4b2_efeb0695-6da9-4753-933e-bb1956f6984a-column-0%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_bacf36d9-fb4d-49ff-ad97-e55b1fe9a4b2_efeb0695-6da9-4753-933e-bb1956f6984a-column-status%2525257Chealth_15min1%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_bacf36d9-fb4d-49ff-ad97-e55b1fe9a4b2_efeb0695-6da9-4753-933e-bb1956f6984a-column-memory%2525257CutilizationVsRequests-max-15min2%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_bacf36d9-fb4d-49ff-ad97-e55b1fe9a4b2_efeb0695-6da9-4753-933e-bb1956f6984a-column-memory%2525257CutilizationVsRequests-avg-15min3%25255Ehidden%25253Db%2525253A0",
+                     "key": "permTableView_widget_bacf36d9-fb4d-49ff-ad97-e55b1fe9a4b2_efeb0695-6da9-4753-933e-bb1956f6984a"
+                  },
+                  {
+                     "value": "s%3A%7B%22minType%22%3A%22.TimeIntervalControl%22%2C%22advancedTimeMode%22%3Afalse%2C%22fromTime%22%3Anull%2C%22unit%22%3A%22DAYS%22%2C%22count%22%3A7%2C%22priorUnit%22%3Anull%2C%22priorCount%22%3Anull%2C%22startSubUnit%22%3Anull%2C%22startPeriod%22%3Anull%2C%22toTime%22%3Anull%2C%22endUnit%22%3Anull%2C%22endCount%22%3Anull%2C%22endSubUnit%22%3Anull%2C%22endPeriod%22%3Anull%2C%22mondayHours%22%3Anull%2C%22tuesdayHours%22%3Anull%2C%22wednesdayHours%22%3Anull%2C%22thursdayHours%22%3Anull%2C%22fridayHours%22%3Anull%2C%22saturdayHours%22%3Anull%2C%22sundayHours%22%3Anull%7D",
+                     "key": "permSelectedDate_widget_bacf36d9-fb4d-49ff-ad97-e55b1fe9a4b2_efeb0695-6da9-4753-933e-bb1956f6984a"
+                  }
+               ]
+            },
+            {
+               "tabId": "bacf36d9-fb4d-49ff-ad97-e55b1fe9a4b2",
+               "collapsed": false,
+               "id": "98d19cd7-c3e8-47b7-a011-b9be6ce9d4b1",
+               "gridsterCoords": {
+                  "w": 2,
+                  "x": 1,
+                  "h": 15,
+                  "y": 13
+               },
+               "state": "",
+               "type": "ResourceRelationshipAdvanced",
+               "title": "Infrastructure Context",
+               "config": {
+                  "visualTheme": false,
+                  "resourceId": null,
+                  "refreshInterval": 300,
+                  "widgetId": "98d19cd7-c3e8-47b7-a011-b9be6ce9d4b1",
+                  "traversalSpecId": "",
+                  "refreshContent": {
+                     "refreshContent": false
+                  },
+                  "relationshipMode": "",
+                  "description": "Shows the associated vSphere VM",
+                  "resourceName": null,
+                  "title": "Infrastructure Context",
+                  "filterMode": "tagPicker",
+                  "tagFilter": {
+                     "path": [
+                        "/source/kind/kind:resourceKind:id:11_::_",
+                        "/source/kind/kind:resourceKind:id:0_::_",
+                        "/source/kind/kind:resourceKind:id:1_::_",
+                        "/source/kind/kind:resourceKind:id:4_::_"
+                     ],
+                     "value": {
+                        "bus": [],
+                        "adapterKind": [],
+                        "kind": [
+                           "resourceKind:id:11_::_",
+                           "resourceKind:id:0_::_",
+                           "resourceKind:id:1_::_",
+                           "resourceKind:id:4_::_"
+                        ],
+                        "exclaim": false,
+                        "healthRange": [],
+                        "maintenanceSchedule": [],
+                        "adapterInstance": [],
+                        "collector": [],
+                        "tier": [],
+                        "state": [],
+                        "tag": [],
+                        "day": [],
+                        "status": []
+                     }
+                  },
+                  "paginationNumber": 5,
+                  "depth": "3,0",
+                  "titleLocalized": "Infrastructure Context",
+                  "customFilter": {
+                     "filter": [],
+                     "filterMode": "tagPicker",
+                     "excludedResources": null,
+                     "includedResources": null
+                  },
+                  "selectFirstRow": {
+                     "selectFirstRow": true
+                  },
+                  "viewDetails": "",
+                  "selfProvider": {
+                     "selfProvider": false
+                  }
+               },
+               "height": 0,
+               "states": [
+                  {
+                     "value": "b%3A0",
+                     "key": "perm_toolbarVisible_widget_bacf36d9-fb4d-49ff-ad97-e55b1fe9a4b2_98d19cd7-c3e8-47b7-a011-b9be6ce9d4b1"
+                  }
+               ]
+            },
+            {
+               "tabId": "bacf36d9-fb4d-49ff-ad97-e55b1fe9a4b2",
+               "collapsed": false,
+               "id": "ca00ad46-193a-4bb9-ac56-df07d2ee5ce8",
+               "gridsterCoords": {
+                  "w": 5,
+                  "x": 3,
+                  "h": 15,
+                  "y": 13
+               },
+               "state": "",
+               "type": "HealthChart",
+               "title": "Pod CPU Throttled",
+               "config": {
+                  "yellowBound": 2,
+                  "metricName": "CPU|CPU Throttling (%)",
+                  "metricKey": "cpu|throttlingPercent",
+                  "relationshipMode": {
+                     "relationshipMode": -1
+                  },
+                  "description": "",
+                  "sortByDir": {
+                     "orderByDir": "desc"
+                  },
+                  "title": "Pod CPU Throttled",
+                  "showResourceName": {
+                     "showResourceName": true
+                  },
+                  "chartHeight": 135,
+                  "metricUnit": {
+                     "metricUnitId": -1,
+                     "metricUnitName": "Default Unit"
+                  },
+                  "undefined": [
+                     {
+                        "name": "%",
+                        "id": "percent"
+                     }
+                  ],
+                  "mode": "all",
+                  "metricType": {
+                     "metricType": "custom"
+                  },
+                  "filterMode": "tagPicker",
+                  "tagFilter": null,
+                  "paginationNumber": 30,
+                  "titleLocalized": "Pod CPU Throttled",
+                  "customFilter": {
+                     "filter": [],
+                     "filterMode": "tagPicker",
+                     "excludedResources": null,
+                     "includedResources": null
+                  },
+                  "selectFirstRow": {
+                     "selectFirstRow": false
+                  },
+                  "sortBy": "metricValue",
+                  "viewDetails": "",
+                  "selfProvider": {
+                     "selfProvider": false
+                  },
+                  "refreshInterval": 300,
+                  "resource": [],
+                  "widgetId": "ca00ad46-193a-4bb9-ac56-df07d2ee5ce8",
+                  "refreshContent": {
+                     "refreshContent": false
+                  },
+                  "resourceKindId": "resourceKind:id:12_::_",
+                  "orangeBound": 4,
+                  "metricFullName": "CPU|CPU Throttling (%)",
+                  "showMetricLabel": {
+                     "showMetricLabel": false
+                  },
+                  "depth": 2,
+                  "metricLabel": "",
+                  "redBound": 8
+               },
+               "height": 0,
+               "states": [
+                  {
+                     "value": "s%3A%7B%22dateRange%22%3A%22dashboardTime%22%2C%22dateFrom%22%3Anull%2C%22dateTo%22%3Anull%2C%22timeFrom%22%3Anull%2C%22timeTo%22%3Anull%7D",
+                     "key": "permDateRange_HealthChart_widget_bacf36d9-fb4d-49ff-ad97-e55b1fe9a4b2_ca00ad46-193a-4bb9-ac56-df07d2ee5ce8"
+                  }
+               ]
+            },
+            {
+               "tabId": "bacf36d9-fb4d-49ff-ad97-e55b1fe9a4b2",
+               "collapsed": false,
+               "id": "a49460ea-e09c-4e22-a9c4-f95c3337585a",
+               "gridsterCoords": {
+                  "w": 5,
+                  "x": 8,
+                  "h": 15,
+                  "y": 13
+               },
+               "state": "",
+               "type": "HealthChart",
+               "title": "Pod Memory Usage",
+               "config": {
+                  "yellowBound": 85,
+                  "metricName": "Memory|Utilization vs Limits (%)",
+                  "metricKey": "memory|utilizationVsLimits",
+                  "relationshipMode": {
+                     "relationshipMode": -1
+                  },
+                  "description": "Utilization against Limit",
+                  "sortByDir": {
+                     "orderByDir": "desc"
+                  },
+                  "title": "Pod Memory Usage",
+                  "showResourceName": {
+                     "showResourceName": true
+                  },
+                  "chartHeight": 135,
+                  "metricUnit": {
+                     "metricUnitId": -1,
+                     "metricUnitName": "Default Unit"
+                  },
+                  "undefined": [
+                     {
+                        "name": "%",
+                        "id": "percent"
+                     }
+                  ],
+                  "mode": "all",
+                  "metricType": {
+                     "metricType": "custom"
+                  },
+                  "filterMode": "tagPicker",
+                  "tagFilter": {
+                     "path": [
+                        "/source/state/state:2",
+                        "/source/status/status:4"
+                     ],
+                     "value": {
+                        "bus": [],
+                        "adapterKind": [],
+                        "kind": [],
+                        "exclaim": false,
+                        "healthRange": [],
+                        "maintenanceSchedule": [],
+                        "adapterInstance": [],
+                        "collector": [],
+                        "tier": [],
+                        "state": [
+                           "2"
+                        ],
+                        "tag": [],
+                        "day": [],
+                        "status": [
+                           "4"
+                        ]
+                     }
+                  },
+                  "paginationNumber": 30,
+                  "titleLocalized": "Pod Memory Usage",
+                  "customFilter": {
+                     "filter": [],
+                     "filterMode": "tagPicker",
+                     "excludedResources": null,
+                     "includedResources": null
+                  },
+                  "selectFirstRow": {
+                     "selectFirstRow": false
+                  },
+                  "sortBy": "metricValue",
+                  "viewDetails": "",
+                  "selfProvider": {
+                     "selfProvider": false
+                  },
+                  "refreshInterval": 300,
+                  "resource": [],
+                  "widgetId": "a49460ea-e09c-4e22-a9c4-f95c3337585a",
+                  "refreshContent": {
+                     "refreshContent": false
+                  },
+                  "resourceKindId": "resourceKind:id:13_::_",
+                  "orangeBound": 90,
+                  "metricFullName": "Memory|Utilization vs Limits (%)",
+                  "showMetricLabel": {
+                     "showMetricLabel": false
+                  },
+                  "depth": 2,
+                  "metricLabel": "",
+                  "redBound": 95
+               },
+               "height": 0,
+               "states": [
+                  {
+                     "value": "s%3A%7B%22dateRange%22%3A%22dashboardTime%22%2C%22dateFrom%22%3Anull%2C%22dateTo%22%3Anull%2C%22timeFrom%22%3Anull%2C%22timeTo%22%3Anull%7D",
+                     "key": "permDateRange_HealthChart_widget_bacf36d9-fb4d-49ff-ad97-e55b1fe9a4b2_a49460ea-e09c-4e22-a9c4-f95c3337585a"
+                  }
+               ]
+            }
+         ],
+         "userId": "936105f8-faa4-48cb-b268-0eec2ea9e205",
+         "states": [
+            {
+               "value": "o%3AdateRange%3Ds%253Alast6Hour%5EdateRangeText%3Ds%253A6H",
+               "key": "permDashboardTime_dashboard_bacf36d9-fb4d-49ff-ad97-e55b1fe9a4b2"
+            }
+         ],
+         "editAllowed": true,
+         "homeTab": false,
+         "name": "VCF Management Service",
+         "gridsterMaxColumns": 12,
+         "rank": 0,
+         "disabled": false,
+         "id": "bacf36d9-fb4d-49ff-ad97-e55b1fe9a4b2",
+         "locked": false,
+         "dashboardNavigations": {},
+         "widgetInteractions": [
+            {
+               "widgetIdProvider": "286a8976-58cb-4a66-b08a-e31f9c807e69",
+               "type": "resourceId",
+               "widgetIdReceiver": "98d19cd7-c3e8-47b7-a011-b9be6ce9d4b1"
+            },
+            {
+               "widgetIdProvider": "4c615ad1-af2e-4359-bf13-2fa437e224e2",
+               "type": "resourceId",
+               "widgetIdReceiver": "286a8976-58cb-4a66-b08a-e31f9c807e69"
+            },
+            {
+               "widgetIdProvider": "4c615ad1-af2e-4359-bf13-2fa437e224e2",
+               "type": "resourceId",
+               "widgetIdReceiver": "1f1e5a87-7bfe-47ee-8d42-7d4e399b2f5c"
+            },
+            {
+               "widgetIdProvider": "4c615ad1-af2e-4359-bf13-2fa437e224e2",
+               "type": "resourceId",
+               "widgetIdReceiver": "efeb0695-6da9-4753-933e-bb1956f6984a"
+            },
+            {
+               "widgetIdProvider": "286a8976-58cb-4a66-b08a-e31f9c807e69",
+               "type": "resourceId",
+               "widgetIdReceiver": "ca00ad46-193a-4bb9-ac56-df07d2ee5ce8"
+            },
+            {
+               "widgetIdProvider": "4c615ad1-af2e-4359-bf13-2fa437e224e2",
+               "type": "resourceId",
+               "widgetIdReceiver": "ca00ad46-193a-4bb9-ac56-df07d2ee5ce8"
+            },
+            {
+               "widgetIdProvider": "4c615ad1-af2e-4359-bf13-2fa437e224e2",
+               "type": "resourceId",
+               "widgetIdReceiver": "a49460ea-e09c-4e22-a9c4-f95c3337585a"
+            },
+            {
+               "widgetIdProvider": "4c615ad1-af2e-4359-bf13-2fa437e224e2",
+               "type": "resourceId",
+               "widgetIdReceiver": "98d19cd7-c3e8-47b7-a011-b9be6ce9d4b1"
+            },
+            {
+               "widgetIdProvider": "286a8976-58cb-4a66-b08a-e31f9c807e69",
+               "type": "resourceId",
+               "widgetIdReceiver": "a49460ea-e09c-4e22-a9c4-f95c3337585a"
+            }
+         ],
+         "lastUpdateTime": 1792241936761
+      }
+   ],
+   "uuid": "62863cfb-a0c5-4c57-ad7e-137f153acfb8"
+}

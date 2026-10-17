@@ -521,8 +521,8 @@
                "title": "Worst 10% Cluster Performance",
                "config": {
                   "yellowBound": 75,
-                  "metricName": "vCommunity|10th Percentile Cluster Performance",
-                  "metricKey": "vCommunity|10th Percentile Cluster Performance",
+                  "metricName": "vCommunity|Bottom 10 Percent Cluster Performance",
+                  "metricKey": "vCommunity|Bottom 10 Percent Cluster Performance",
                   "relationshipMode": {
                      "relationshipMode": 0
                   },
@@ -574,7 +574,7 @@
                   },
                   "resourceKindId": "resourceKind:id:0_::_",
                   "orangeBound": 50,
-                  "metricFullName": "vCommunity|10th Percentile Cluster Performance",
+                  "metricFullName": "vCommunity|Bottom 10 Percent Cluster Performance",
                   "showMetricLabel": {
                      "showMetricLabel": false
                   },
@@ -605,8 +605,8 @@
                "title": "Worst 10% Cluster Risk",
                "config": {
                   "yellowBound": 25,
-                  "metricName": "vCommunity|90th Percentile Cluster Risk",
-                  "metricKey": "vCommunity|90th Percentile Cluster Risk",
+                  "metricName": "vCommunity|Bottom 10 Percent Cluster Risk",
+                  "metricKey": "vCommunity|Bottom 10 Percent Cluster Risk",
                   "relationshipMode": {
                      "relationshipMode": 0
                   },
@@ -658,7 +658,7 @@
                   },
                   "resourceKindId": "resourceKind:id:0_::_",
                   "orangeBound": 50,
-                  "metricFullName": "vCommunity|90th Percentile Cluster Risk",
+                  "metricFullName": "vCommunity|Bottom 10 Percent Cluster Risk",
                   "showMetricLabel": {
                      "showMetricLabel": false
                   },

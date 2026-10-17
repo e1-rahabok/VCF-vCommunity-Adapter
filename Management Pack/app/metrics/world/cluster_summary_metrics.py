@@ -6,9 +6,9 @@ What they are
 Four numbers that summarise the Cluster Performance and Cluster Risk scores of every cluster in VCF Operations,
 across all vCenters. They are published on the vSphere World object, under vCommunity:
 
-    10th Percentile Cluster Performance   90 % of the clusters score at or above it
+    Bottom 10 Percent Cluster Performance   90 % of the clusters score at or above it
     Worst Cluster Performance             the lowest Cluster Performance score
-    90th Percentile Cluster Risk          90 % of the clusters are at or below it
+    Bottom 10 Percent Cluster Risk          90 % of the clusters are at or below it
     Worst Cluster Risk                    the highest Cluster Risk
 
 Each takes the bad end. Cluster Performance is "higher is better", so the bad end is the low end: the 10th
@@ -42,9 +42,9 @@ CLUSTER_RISK_SCORE = f"vCommunity|{cluster_risk_metrics.GROUP}|{cluster_risk_met
 
 # Metric name -> (cluster score it summarises, how).
 METRICS = {
-    "10th Percentile Cluster Performance": (CLUSTER_PERFORMANCE_SCORE, "10th percentile"),
+    "Bottom 10 Percent Cluster Performance": (CLUSTER_PERFORMANCE_SCORE, "10th percentile"),
     "Worst Cluster Performance":           (CLUSTER_PERFORMANCE_SCORE, "lowest"),
-    "90th Percentile Cluster Risk":        (CLUSTER_RISK_SCORE, "90th percentile"),
+    "Bottom 10 Percent Cluster Risk":        (CLUSTER_RISK_SCORE, "90th percentile"),
     "Worst Cluster Risk":                  (CLUSTER_RISK_SCORE, "highest"),
 }
 

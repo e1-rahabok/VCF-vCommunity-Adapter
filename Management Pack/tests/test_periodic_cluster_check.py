@@ -141,18 +141,43 @@ def test_no_close_for_business_when_an_input_has_no_data():
 
 
 # --- Which clusters are due ----------------------------------------------------------------------------------
+# At 09:30 with 00:00 and 24 hours, the latest window is 2026-10-11 00:00 to 2026-10-12 00:00.
 
 CLUSTERS = {"ClusterComputeResource": [("cl-1", "cluster-a", "domain-c1"), ("cl-2", "cluster-b", "domain-c2")]}
+CLOSE_KEY = f"vCommunity|{pc.GROUP}|{pc.CLOSE_FOR_BUSINESS}"
+
+
+def ms(*args):
+    return datetime(*args, tzinfo=timezone.utc).timestamp() * 1000
+
+
+AFTER_THIS_WINDOW = ms(2026, 10, 12, 0, 5)      # calculated in the first cycle after the window ended
+AFTER_LAST_WINDOW = ms(2026, 10, 11, 0, 5)      # calculated for the window before
+
+
+def history(performance, risk, consumption, calculated_at=None):
+    """KPI samples of one cluster, and its last Close for Business when it was calculated before."""
+    stats = samples(performance, risk, consumption)
+    if calculated_at is not None:
+        stats[CLOSE_KEY] = [0.0]
+    return stats
+
+
+def api_with(calculated, kpi_at=None, **kwargs):
+    """Both clusters with KPI data. calculated: {cluster id: when its check metrics were last published}."""
+    data = {"cl-1": history([95.0], [10.0, 20.0], [40.0], calculated.get("cl-1")),
+            "cl-2": history([20.0], [80.0], [40.0], calculated.get("cl-2"))}
+    latest_at = {cluster: {CLOSE_KEY: at} for cluster, at in calculated.items() if at is not None}
+    for cluster, at in (kpi_at or {}).items():
+        latest_at.setdefault(cluster, {}).update({key: at for key in pc.STAT_KEYS})
+    return FakeSuiteApi(resources=CLUSTERS, samples=data, latest_at=latest_at, **kwargs)
+
+
 HISTORY = {"cl-1": samples([95.0], [10.0, 20.0], [40.0]), "cl-2": samples([20.0], [80.0], [40.0])}
 
 
-def stored(window_end, hours="24", worst_percent="5"):
-    return {pc.WINDOW_END_KEY: window_end, pc.WINDOW_HOURS_KEY: hours, pc.WORST_PERCENT_KEY: worst_percent}
-
-
-def test_only_clusters_without_the_latest_window_are_due():
-    api = FakeSuiteApi(resources=CLUSTERS, samples=HISTORY,
-                       properties={"cl-1": stored("2026-10-12 00:00 UTC"), "cl-2": stored("2026-10-11 00:00 UTC")})
+def test_only_clusters_not_calculated_for_the_latest_window_are_due():
+    api = api_with({"cl-1": AFTER_THIS_WINDOW, "cl-2": AFTER_LAST_WINDOW})
     results = pc.read_periodic_cluster_check(api, "ai-1", "00:00", NOW)
     assert list(results) == ["domain-c2"]
     assert results["domain-c2"].window_end == "2026-10-12 00:00 UTC"
@@ -160,26 +185,35 @@ def test_only_clusters_without_the_latest_window_are_due():
     assert api.resource_queries[0]["adapterInstanceId"] == ["ai-1"]
 
 
+def test_a_cluster_never_calculated_is_due():
+    assert set(pc.read_periodic_cluster_check(api_with({}), "ai-1", "00:00", NOW)) == {"domain-c1", "domain-c2"}
+
+
 def test_nothing_due_reads_no_history():
-    api = FakeSuiteApi(resources=CLUSTERS, samples=HISTORY,
-                       properties={"cl-1": stored("2026-10-12 00:00 UTC"), "cl-2": stored("2026-10-12 00:00 UTC")})
+    api = api_with({"cl-1": AFTER_THIS_WINDOW, "cl-2": AFTER_THIS_WINDOW})
     assert pc.read_periodic_cluster_check(api, "ai-1", "00:00", NOW) == {}
     assert "api/resources/stats/query" not in api.paths
 
 
-def test_a_changed_time_makes_every_cluster_due_again():
-    api = FakeSuiteApi(resources=CLUSTERS, samples=HISTORY,
-                       properties={"cl-1": stored("2026-10-12 00:00 UTC"), "cl-2": stored("2026-10-12 00:00 UTC")})
-    assert set(pc.read_periodic_cluster_check(api, "ai-1", "06:00", NOW)) == {"domain-c1", "domain-c2"}
+def test_a_cluster_without_kpi_data_in_the_window_is_not_due():
+    # Its KPIs stopped before the window began: nothing to calculate, so it is not read every cycle.
+    api = api_with({}, kpi_at={"cl-1": ms(2026, 10, 10, 12, 0), "cl-2": ms(2026, 10, 10, 12, 0)})
+    assert pc.read_periodic_cluster_check(api, "ai-1", "00:00", NOW) == {}
 
 
-def test_a_changed_worst_percent_makes_every_cluster_due_again():
-    api = FakeSuiteApi(resources=CLUSTERS, samples=HISTORY,
-                       properties={"cl-1": stored("2026-10-12 00:00 UTC"), "cl-2": stored("2026-10-12 00:00 UTC")})
-    assert pc.read_periodic_cluster_check(api, "ai-1", "00:00", NOW, worst_percent_setting="5") == {}
-    results = pc.read_periodic_cluster_check(api, "ai-1", "00:00", NOW, worst_percent_setting="10")
-    assert set(results) == {"domain-c1", "domain-c2"}
+def test_a_changed_setting_applies_from_the_next_window():
+    # Calculated for this window already: a new worst percent does not recalculate it.
+    api = api_with({"cl-1": AFTER_THIS_WINDOW, "cl-2": AFTER_THIS_WINDOW})
+    assert pc.read_periodic_cluster_check(api, "ai-1", "00:00", NOW, worst_percent_setting="10") == {}
+    # A cluster that is due uses the new setting.
+    results = pc.read_periodic_cluster_check(api_with({}), "ai-1", "00:00", NOW, worst_percent_setting="10")
     assert results["domain-c1"].worst_percent == 10
+
+
+def test_unreadable_timestamps_calculate_nothing():
+    # Without them every cluster would look due: wait for the next cycle instead.
+    api = api_with({}, status_code=500)
+    assert pc.read_periodic_cluster_check(api, "ai-1", "00:00", NOW) == {}
 
 
 def test_at_most_max_clusters_per_cycle(monkeypatch):
@@ -199,21 +233,22 @@ def test_publish():
     cluster = FakeObject("cluster-b")
     pc.publish(cluster, results["domain-c2"])
     group = f"vCommunity|{pc.GROUP}"
-    assert cluster.properties == {
+    # The values are metrics: numbers produced once per period.
+    assert cluster.metrics == {
         f"{group}|Worst Cluster Performance": 20.0,
         f"{group}|Worst Cluster Risk": 80.0,
         f"{group}|Worst Cluster Consumption": 40.0,
         f"{group}|Close for Business": 1,               # Performance 20 is red
-        f"{group}|Worst Percent": 5,
-        f"{group}|Window Hours": 24,
-        f"{group}|Window End": "2026-10-12 00:00 UTC",
     }
+    # No properties: the metrics' own timestamps say the cluster was calculated for this window.
+    assert cluster.properties == {}
 
 
 def test_not_due_publishes_nothing():
     cluster = FakeObject("cluster-a")
     pc.publish(cluster, None)
     assert cluster.properties == {}
+    assert cluster.metrics == {}
 
 
 def test_the_24_hours_end_at_the_set_time():
@@ -261,15 +296,6 @@ def test_the_window_is_as_long_as_the_period():
     assert history["end"] == end
     assert history["begin"] == end - 6 * 3600 * 1000
     assert results["domain-c2"].window_hours == 6
-
-
-def test_a_changed_period_with_the_same_end_is_due_again():
-    # At 09:30, with 00:00: a 24-hour and a 12-hour window both end at 00:00. The stored window is 24 hours;
-    # changing the setting to 12 hours makes every cluster due again.
-    api = FakeSuiteApi(resources=CLUSTERS, samples=HISTORY,
-                       properties={"cl-1": stored("2026-10-12 00:00 UTC"), "cl-2": stored("2026-10-12 00:00 UTC")})
-    assert pc.read_periodic_cluster_check(api, "ai-1", "00:00", NOW, period_setting="24") == {}
-    assert set(pc.read_periodic_cluster_check(api, "ai-1", "00:00", NOW, period_setting="12")) == {"domain-c1", "domain-c2"}
 
 
 def test_period_drop_down_sorts_like_numbers():

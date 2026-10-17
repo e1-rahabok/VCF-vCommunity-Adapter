@@ -36,6 +36,7 @@ New Dashboards:
 * Critical Business Application
 * vSphere Resource Management
 * VM Storage Configuration
+* VCF Management Service
 
 Enhanced Dashboards (replacing existing ones):
 * VM Configuration

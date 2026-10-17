@@ -1077,8 +1077,8 @@
                "title": "10th Percentile Performance of All Clusters",
                "config": {
                   "yellowBound": 75,
-                  "metricName": "vCommunity|10th Percentile Cluster Performance",
-                  "metricKey": "vCommunity|10th Percentile Cluster Performance",
+                  "metricName": "vCommunity|Bottom 10 Percent Cluster Performance",
+                  "metricKey": "vCommunity|Bottom 10 Percent Cluster Performance",
                   "relationshipMode": {"relationshipMode": 0},
                   "sortByDir": {"orderByDir": "asc"},
                   "title": "10th Percentile Performance of All Clusters",
@@ -5641,8 +5641,8 @@
                "title": "10th Percentile Performance of All Clusters",
                "config": {
                   "yellowBound": 75,
-                  "metricName": "vCommunity|10th Percentile Cluster Performance",
-                  "metricKey": "vCommunity|10th Percentile Cluster Performance",
+                  "metricName": "vCommunity|Bottom 10 Percent Cluster Performance",
+                  "metricKey": "vCommunity|Bottom 10 Percent Cluster Performance",
                   "relationshipMode": {"relationshipMode": 0},
                   "sortByDir": {"orderByDir": "asc"},
                   "title": "10th Percentile Performance of All Clusters",

@@ -19,7 +19,8 @@ Source of the limits: [`formula/cluster-consumption.png`](formula/cluster-consum
 > **Read this before using the metrics.**
 
 - **Memory Tiering Consumption is not yet confirmed on a live system.** The lab has a host with an NVMe tier but no value for its usage, so the stat and its unit (MB) are taken from the VCF Operations definition.
-- **Usable capacity comes from VCF Operations, and can be missing.** It has been seen reported as 0 for a while. Then CPU and memory have no value for that cycle, and are left out of the KPI. They are never scored against the total instead.
+- **No usable capacity means full.** When HA and the buffer leave nothing to VMs, VCF Operations reports usable capacity 0. Seen on a live system: HA tolerating one host failure, with one of two hosts running. Cluster Consumption is then 100, and the rows of that resource are not published: there is no meaningful % of nothing.
+- **Usable capacity not reported is no data.** Then CPU and memory have no value for that cycle, and are left out of the KPI. They are never scored against the total instead.
 - **The HA and buffer share applies to the hosts that run.** VCF Operations reports usable capacity for the whole cluster. Its share of the total is applied to the hosts that run, so a host in maintenance mode lowers the usable capacity by its own size, not more.
 
 ## The 5 sub-metrics and their limits

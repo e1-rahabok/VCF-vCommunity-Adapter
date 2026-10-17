@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Content>
+        
+    <Views>
+                
+        <ViewDef id="9170baca-1e15-4a8e-be52-8bed7ef73f72">
+                        
+            <Title>VCF Management Services</Title>
+                        
+            <Description>VCF Management Services instance</Description>
+                        
+            <SubjectType adapterKind="VMSP" resourceKind="VMSP_CLUSTER" type="descendant"/>
+                        
+            <SubjectType adapterKind="VMSP" resourceKind="VMSP_CLUSTER" type="self"/>
+                        
+            <Usage>dashboard</Usage>
+                        
+            <Usage>report</Usage>
+                        
+            <Usage>content</Usage>
+                        
+            <Controls>
+                                
+                <Control id="time-interval-selector_id_242" type="time-interval-selector" visible="false">
+                                        
+                    <Property name="advancedTimeMode" value="false"/>
+                                        
+                    <Property name="unit" value="DAYS"/>
+                                        
+                    <Property name="count" value="7"/>
+                                    
+                </Control>
+                                
+                <Control id="attributes-selector_id_243" type="attributes-selector" visible="false">
+                                        
+                    <Property name="attributeInfos">
+                                                
+                        <List>
+                                                        
+                            <Item>
+                                                                
+                                <Value>
+                                                                        
+                                    <Property name="objectType" value="RESOURCE"/>
+                                                                        
+                                    <Property name="attributeKey" value="summary|components|critical_availability_issues"/>
+                                                                        
+                                    <Property name="isStringAttribute" value="false"/>
+                                                                        
+                                    <Property name="adapterKind" value="VMSP"/>
+                                                                        
+                                    <Property name="resourceKind" value="VMSP_CLUSTER"/>
+                                                                        
+                                    <Property name="rollUpType" value="NONE"/>
+                                                                        
+                                    <Property name="rollUpCount" value="0"/>
+                                                                        
+                                    <Property name="transformations">
+                                                                                
+                                        <List>
+                                                                                        
+                                            <Item value="CURRENT"/>
+                                                                                    
+                                        </List>
+                                                                            
+                                    </Property>
+                                                                        
+                                    <Property name="isProperty" value="false"/>
+                                                                        
+                                    <Property name="yellowBound" value="0.1"/>
+                                                                        
+                                    <Property name="orangeBound" value="1"/>
+                                                                        
+                                    <Property name="redBound" value="2"/>
+                                                                        
+                                    <Property name="ascendingRange" value="false"/>
+                                                                        
+                                    <Property name="displayName" value="Issues"/>
+                                                                        
+                                    <Property name="addTimestampAsColumn" value="false"/>
+                                                                        
+                                    <Property name="isShowRelativeTimestamp" value="false"/>
+                                                                    
+                                </Value>
+                                                            
+                            </Item>
+                                                        
+                            <Item>
+                                                                
+                                <Value>
+                                                                        
+                                    <Property name="objectType" value="RESOURCE"/>
+                                                                        
+                                    <Property name="attributeKey" value="summary|components|no_availability_issues"/>
+                                                                        
+                                    <Property name="isStringAttribute" value="false"/>
+                                                                        
+                                    <Property name="adapterKind" value="VMSP"/>
+                                                                        
+                                    <Property name="resourceKind" value="VMSP_CLUSTER"/>
+                                                                        
+                                    <Property name="rollUpType" value="NONE"/>
+                                                                        
+                                    <Property name="rollUpCount" value="0"/>
+                                                                        
+                                    <Property name="transformations">
+                                                                                
+                                        <List>
+                                                                                        
+                                            <Item value="CURRENT"/>
+                                                                                    
+                                        </List>
+                                                                            
+                                    </Property>
+                                                                        
+                                    <Property name="isProperty" value="false"/>
+                                                                        
+                                    <Property name="yellowBound" value="2"/>
+                                                                        
+                                    <Property name="orangeBound" value="1"/>
+                                                                        
+                                    <Property name="redBound" value="0"/>
+                                                                        
+                                    <Property name="ascendingRange" value="true"/>
+                                                                        
+                                    <Property name="displayName" value="No Issue"/>
+                                                                        
+                                    <Property name="addTimestampAsColumn" value="false"/>
+                                                                        
+                                    <Property name="isShowRelativeTimestamp" value="false"/>
+                                                                    
+                                </Value>
+                                                            
+                            </Item>
+                                                        
+                            <Item>
+                                                                
+                                <Value>
+                                                                        
+                                    <Property name="objectType" value="RESOURCE"/>
+                                                                        
+                                    <Property name="attributeKey" value="cpu|usage_percent"/>
+                                                                        
+                                    <Property name="preferredUnitId" value="percent"/>
+                                                                        
+                                    <Property name="isStringAttribute" value="false"/>
+                                                                        
+                                    <Property name="adapterKind" value="VMSP"/>
+                                                                        
+                                    <Property name="resourceKind" value="VMSP_CLUSTER"/>
+                                                                        
+                                    <Property name="rollUpType" value="NONE"/>
+                                                                        
+                                    <Property name="rollUpCount" value="0"/>
+                                                                        
+                                    <Property name="transformations">
+                                                                                
+                                        <List>
+                                                                                        
+                                            <Item value="MAX"/>
+                                                                                    
+                                        </List>
+                                                                            
+                                    </Property>
+                                                                        
+                                    <Property name="isProperty" value="false"/>
+                                                                        
+                                    <Property name="yellowBound" value="80"/>
+                                                                        
+                                    <Property name="orangeBound" value="90"/>
+                                                                        
+                                    <Property name="redBound" value="95"/>
+                                                                        
+                                    <Property name="ascendingRange" value="false"/>
+                                                                        
+                                    <Property name="displayName" value="Peak CPU"/>
+                                                                        
+                                    <Property name="addTimestampAsColumn" value="false"/>
+                                                                        
+                                    <Property name="isShowRelativeTimestamp" value="false"/>
+                                                                    
+                                </Value>
+                                                            
+                            </Item>
+                                                        
+                            <Item>
+                                                                
+                                <Value>
+                                                                        
+                                    <Property name="objectType" value="RESOURCE"/>
+                                                                        
+                                    <Property name="attributeKey" value="disk|usage_percent"/>
+                                                                        
+                                    <Property name="preferredUnitId" value="percent"/>
+                                                                        
+                                    <Property name="isStringAttribute" value="false"/>
+                                                                        
+                                    <Property name="adapterKind" value="VMSP"/>
+                                                                        
+                                    <Property name="resourceKind" value="VMSP_CLUSTER"/>
+                                                                        
+                                    <Property name="rollUpType" value="NONE"/>
+                                                                        
+                                    <Property name="rollUpCount" value="0"/>
+                                                                        
+                                    <Property name="transformations">
+                                                                                
+                                        <List>
+                                                                                        
+                                            <Item value="CURRENT"/>
+                                                                                    
+                                        </List>
+                                                                            
+                                    </Property>
+                                                                        
+                                    <Property name="isProperty" value="false"/>
+                                                                        
+                                    <Property name="yellowBound" value="70"/>
+                                                                        
+                                    <Property name="orangeBound" value="80"/>
+                                                                        
+                                    <Property name="redBound" value="90"/>
+                                                                        
+                                    <Property name="ascendingRange" value="false"/>
+                                                                        
+                                    <Property name="displayName" value="Disk Usage"/>
+                                                                        
+                                    <Property name="addTimestampAsColumn" value="false"/>
+                                                                        
+                                    <Property name="isShowRelativeTimestamp" value="false"/>
+                                                                    
+                                </Value>
+                                                            
+                            </Item>
+                                                        
+                            <Item>
+                                                                
+                                <Value>
+                                                                        
+                                    <Property name="objectType" value="RESOURCE"/>
+                                                                        
+                                    <Property name="attributeKey" value="memory|usage_percent"/>
+                                                                        
+                                    <Property name="preferredUnitId" value="percent"/>
+                                                                        
+                                    <Property name="isStringAttribute" value="false"/>
+                                                                        
+                                    <Property name="adapterKind" value="VMSP"/>
+                                                                        
+                                    <Property name="resourceKind" value="VMSP_CLUSTER"/>
+                                                                        
+                                    <Property name="rollUpType" value="NONE"/>
+                                                                        
+                                    <Property name="rollUpCount" value="0"/>
+                                                                        
+                                    <Property name="transformations">
+                                                                                
+                                        <List>
+                                                                                        
+                                            <Item value="MAX"/>
+                                                                                    
+                                        </List>
+                                                                            
+                                    </Property>
+                                                                        
+                                    <Property name="isProperty" value="false"/>
+                                                                        
+                                    <Property name="yellowBound" value="80"/>
+                                                                        
+                                    <Property name="orangeBound" value="90"/>
+                                                                        
+                                    <Property name="redBound" value="95"/>
+                                                                        
+                                    <Property name="ascendingRange" value="false"/>
+                                                                        
+                                    <Property name="displayName" value="Memory Usage"/>
+                                                                        
+                                    <Property name="addTimestampAsColumn" value="false"/>
+                                                                        
+                                    <Property name="isShowRelativeTimestamp" value="false"/>
+                                                                    
+                                </Value>
+                                                            
+                            </Item>
+                                                    
+                        </List>
+                                            
+                    </Property>
+                                    
+                </Control>
+                                
+                <Control id="pagination-control_id_244" type="pagination-control" visible="true">
+                                        
+                    <Property name="start" value="0"/>
+                                        
+                    <Property name="size" value="50"/>
+                                    
+                </Control>
+                                
+                <Control id="metadata_id_245" type="metadata" visible="false">
+                                        
+                    <Property name="maxPointsCount" value="5000"/>
+                                        
+                    <Property name="hideObjectNameColumn" value="false"/>
+                                        
+                    <Property name="listTopResultSize" value="-1"/>
+                                    
+                </Control>
+                            
+            </Controls>
+                        
+            <DataProviders>
+                                
+                <DataProvider dataType="list-view" id="list-view_id_241"/>
+                            
+            </DataProviders>
+                        
+            <Presentation type="list"/>
+                    
+        </ViewDef>
+    </Views>
+</Content>
