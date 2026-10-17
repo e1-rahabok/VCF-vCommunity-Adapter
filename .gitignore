@@ -1,3 +1,5 @@
 .cursor/
 .secrets/
 .lab/
+__pycache__/
+*.pyc

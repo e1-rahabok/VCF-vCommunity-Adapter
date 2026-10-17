@@ -2,5 +2,6 @@ logs
 build
 config.json
 connections.json
-venv-VCF Operations vCommunity__pycache__/
+venv-VCF Operations vCommunity
+__pycache__/
 *.pyc
