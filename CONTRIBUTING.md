@@ -18,6 +18,7 @@ The documentation is in `docs/`. `docs/README.md` is the overview and lists ever
 
 | The page is about... | Folder |
 | :--- | :--- |
+| a model or functional architecture: what the parts are for and how they relate, not formulas | `docs/concepts/` |
 | what is needed before, and how to install, including dark sites | `docs/installation-guide/` |
 | what to set after installing: policy, Adapter Instance, customization | `docs/configuration-guide/` |
 | how to use the content: dashboards, views, reports | `docs/user-guide/` |

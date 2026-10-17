@@ -51,9 +51,9 @@ See [vSphere World Cluster Metrics](../reference/metrics/vsphere-world-metrics.m
 | Column | Key | Source |
 | :--- | :--- | :--- |
 | Closed? | `vCommunity\|Periodic Cluster Check\|Close for Business` | property, [Periodic Cluster Check](../reference/metrics/periodic-cluster-check.md). 1 = closed for new workload. |
-| 99P Utilization | `vCommunity\|Periodic Cluster Check\|99th Percentile Capacity Utilization` | property, Periodic Cluster Check |
-| 95P Performance | `vCommunity\|Periodic Cluster Check\|95th Percentile Cluster Performance` | property, Periodic Cluster Check |
-| 95P Risk | `vCommunity\|Periodic Cluster Check\|95th Percentile Cluster Risk` | property, Periodic Cluster Check |
+| Worst Consumption | `vCommunity\|Periodic Cluster Check\|Worst Cluster Consumption` | property, Periodic Cluster Check. Yellow from 25, orange from 50, red from 75. |
+| Worst Performance | `vCommunity\|Periodic Cluster Check\|Worst Cluster Performance` | property, Periodic Cluster Check. Red below 25, orange below 50, yellow below 75. |
+| Worst Risk | `vCommunity\|Periodic Cluster Check\|Worst Cluster Risk` | property, Periodic Cluster Check. Yellow from 25, orange from 50, red from 75. |
 | Capacity Remaining | `OnlineCapacityAnalytics\|capacityRemainingPercentage` | VCF Operations |
 | Time Remaining | `OnlineCapacityAnalytics\|timeRemaining` | VCF Operations |
 
@@ -66,7 +66,7 @@ Selecting a cluster fills the widgets below.
 | Utilization | `vCommunity\|Capacity\|CPU Utilization` and `Memory Utilization` | CPU: 70 / 80 / 90. Memory: 80 / 85 / 90. |
 | High Memory Utilization | Ballooned (`mem\|vmmemctl_average`), Zipped (`mem\|compressed_average`), Swapped (`mem\|swapout_average`) | Ballooned: 5 / 25 / 100 GB. Zipped and Swapped: 1 / 2.5 / 10. |
 
-See [Cluster Performance KPI](../reference/metrics/cluster-performance.md), [Cluster Risk KPI](../reference/metrics/cluster-risk.md) and [Capacity Utilization](../reference/metrics/capacity-utilization.md).
+See [Cluster Performance KPI](../reference/metrics/cluster-performance.md), [Cluster Risk KPI](../reference/metrics/cluster-risk.md), [Cluster Consumption KPI](../reference/metrics/cluster-consumption.md) and [Capacity Utilization](../reference/metrics/capacity-utilization.md).
 
 ## Hosts and VMs
 

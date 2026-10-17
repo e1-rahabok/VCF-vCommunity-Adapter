@@ -89,99 +89,7 @@
                                                                         
                                     <Property name="objectType" value="RESOURCE"/>
                                                                         
-                                    <Property name="attributeKey" value="vCommunity|Periodic Cluster Check|99th Percentile Capacity Utilization"/>
-                                                                        
-                                    <Property name="isStringAttribute" value="false"/>
-                                                                        
-                                    <Property name="adapterKind" value="VMWARE"/>
-                                                                        
-                                    <Property name="resourceKind" value="ClusterComputeResource"/>
-                                                                        
-                                    <Property name="rollUpCount" value="0"/>
-                                                                        
-                                    <Property name="transformations">
-                                                                                
-                                        <List>
-                                                                                        
-                                            <Item value="CURRENT"/>
-                                                                                    
-                                        </List>
-                                                                            
-                                    </Property>
-                                                                        
-                                    <Property name="isProperty" value="true"/>
-                                                                        
-                                    <Property name="yellowBound" value="75"/>
-                                                                        
-                                    <Property name="orangeBound" value="85"/>
-                                                                        
-                                    <Property name="redBound" value="95"/>
-                                                                        
-                                    <Property name="ascendingRange" value="false"/>
-                                                                        
-                                    <Property name="displayName" value="99P Utilization"/>
-                                                                        
-                                    <Property name="addTimestampAsColumn" value="false"/>
-                                                                        
-                                    <Property name="isShowRelativeTimestamp" value="false"/>
-                                                                    
-                                </Value>
-                                                            
-                            </Item>
-                                                        
-                            <Item>
-                                                                
-                                <Value>
-                                                                        
-                                    <Property name="objectType" value="RESOURCE"/>
-                                                                        
-                                    <Property name="attributeKey" value="vCommunity|Periodic Cluster Check|95th Percentile Cluster Performance"/>
-                                                                        
-                                    <Property name="isStringAttribute" value="false"/>
-                                                                        
-                                    <Property name="adapterKind" value="VMWARE"/>
-                                                                        
-                                    <Property name="resourceKind" value="ClusterComputeResource"/>
-                                                                        
-                                    <Property name="rollUpCount" value="0"/>
-                                                                        
-                                    <Property name="transformations">
-                                                                                
-                                        <List>
-                                                                                        
-                                            <Item value="CURRENT"/>
-                                                                                    
-                                        </List>
-                                                                            
-                                    </Property>
-                                                                        
-                                    <Property name="isProperty" value="true"/>
-                                                                        
-                                    <Property name="yellowBound" value="75"/>
-                                                                        
-                                    <Property name="orangeBound" value="50"/>
-                                                                        
-                                    <Property name="redBound" value="25"/>
-                                                                        
-                                    <Property name="ascendingRange" value="true"/>
-                                                                        
-                                    <Property name="displayName" value="95P Performance"/>
-                                                                        
-                                    <Property name="addTimestampAsColumn" value="false"/>
-                                                                        
-                                    <Property name="isShowRelativeTimestamp" value="false"/>
-                                                                    
-                                </Value>
-                                                            
-                            </Item>
-                                                        
-                            <Item>
-                                                                
-                                <Value>
-                                                                        
-                                    <Property name="objectType" value="RESOURCE"/>
-                                                                        
-                                    <Property name="attributeKey" value="vCommunity|Periodic Cluster Check|95th Percentile Cluster Risk"/>
+                                    <Property name="attributeKey" value="vCommunity|Periodic Cluster Check|Worst Cluster Consumption"/>
                                                                         
                                     <Property name="isStringAttribute" value="false"/>
                                                                         
@@ -211,7 +119,99 @@
                                                                         
                                     <Property name="ascendingRange" value="false"/>
                                                                         
-                                    <Property name="displayName" value="95P Risk"/>
+                                    <Property name="displayName" value="Worst Consumption"/>
+                                                                        
+                                    <Property name="addTimestampAsColumn" value="false"/>
+                                                                        
+                                    <Property name="isShowRelativeTimestamp" value="false"/>
+                                                                    
+                                </Value>
+                                                            
+                            </Item>
+                                                        
+                            <Item>
+                                                                
+                                <Value>
+                                                                        
+                                    <Property name="objectType" value="RESOURCE"/>
+                                                                        
+                                    <Property name="attributeKey" value="vCommunity|Periodic Cluster Check|Worst Cluster Performance"/>
+                                                                        
+                                    <Property name="isStringAttribute" value="false"/>
+                                                                        
+                                    <Property name="adapterKind" value="VMWARE"/>
+                                                                        
+                                    <Property name="resourceKind" value="ClusterComputeResource"/>
+                                                                        
+                                    <Property name="rollUpCount" value="0"/>
+                                                                        
+                                    <Property name="transformations">
+                                                                                
+                                        <List>
+                                                                                        
+                                            <Item value="CURRENT"/>
+                                                                                    
+                                        </List>
+                                                                            
+                                    </Property>
+                                                                        
+                                    <Property name="isProperty" value="true"/>
+                                                                        
+                                    <Property name="yellowBound" value="75"/>
+                                                                        
+                                    <Property name="orangeBound" value="50"/>
+                                                                        
+                                    <Property name="redBound" value="25"/>
+                                                                        
+                                    <Property name="ascendingRange" value="true"/>
+                                                                        
+                                    <Property name="displayName" value="Worst Performance"/>
+                                                                        
+                                    <Property name="addTimestampAsColumn" value="false"/>
+                                                                        
+                                    <Property name="isShowRelativeTimestamp" value="false"/>
+                                                                    
+                                </Value>
+                                                            
+                            </Item>
+                                                        
+                            <Item>
+                                                                
+                                <Value>
+                                                                        
+                                    <Property name="objectType" value="RESOURCE"/>
+                                                                        
+                                    <Property name="attributeKey" value="vCommunity|Periodic Cluster Check|Worst Cluster Risk"/>
+                                                                        
+                                    <Property name="isStringAttribute" value="false"/>
+                                                                        
+                                    <Property name="adapterKind" value="VMWARE"/>
+                                                                        
+                                    <Property name="resourceKind" value="ClusterComputeResource"/>
+                                                                        
+                                    <Property name="rollUpCount" value="0"/>
+                                                                        
+                                    <Property name="transformations">
+                                                                                
+                                        <List>
+                                                                                        
+                                            <Item value="CURRENT"/>
+                                                                                    
+                                        </List>
+                                                                            
+                                    </Property>
+                                                                        
+                                    <Property name="isProperty" value="true"/>
+                                                                        
+                                    <Property name="yellowBound" value="25"/>
+                                                                        
+                                    <Property name="orangeBound" value="50"/>
+                                                                        
+                                    <Property name="redBound" value="75"/>
+                                                                        
+                                    <Property name="ascendingRange" value="false"/>
+                                                                        
+                                    <Property name="displayName" value="Worst Risk"/>
                                                                         
                                     <Property name="addTimestampAsColumn" value="false"/>
                                                                         

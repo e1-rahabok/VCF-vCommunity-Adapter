@@ -136,7 +136,7 @@ Because Cluster Risk is published as `100 − health`, its bands are the mirror 
 - **Only the published number is flipped.** The sub-metrics, their limits from the source table, the tier weights (1, 2, 4, 8), "Excluded" and missing data are calculated exactly as for every KPI, in the same shared code. The flip is the last step, in `publish_kpi(..., higher_is_worse=True)`.
 - **The order and the distances are kept.** A cluster 10 points healthier than another is 10 points less at risk.
 - **Set thresholds the other way round.** Any symptom, alert, or widget color range on `Cluster Risk Score` must treat high as bad: red from 75, not below 25. The pack's Extreme Capacity dashboard uses the score, with red from 75. The pack's other dashboards and reports use only the Risk sub-metrics.
-- **"Worst" means highest.** That is why vSphere World uses the 90th percentile and the highest Cluster Risk, and the Periodic Cluster Check tests `Cluster Risk > 75`.
+- **"Worst" means highest.** That is why vSphere World uses the 90th percentile and the highest Cluster Risk, and the Periodic Cluster Check takes the high end of Cluster Risk and counts it red above 75.
 
 ## Worked examples
 

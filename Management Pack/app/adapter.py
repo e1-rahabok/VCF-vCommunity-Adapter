@@ -34,7 +34,10 @@ from collectors.datastore.collectDatastoreData import collect_datastore_data
 from collectors.vcenter.collectvCenterData import collect_vcenter_data
 from collectors.world.collectWorldData import collect_world_data
 from collectors.datacenter.collectDatacenterData import collect_datacenter_data
-from metrics.cluster import cluster_performance_metrics, cluster_risk_metrics, periodic_cluster_check, capacity_utilization
+from metrics.cluster import (
+    cluster_performance_metrics, cluster_risk_metrics, cluster_consumption_metrics, periodic_cluster_check,
+    capacity_utilization,
+)
 from metrics.host import esxi_performance_metrics
 from metrics.vm import vm_performance_metrics, guest_os_performance_metrics, vm_guest_os_kpi, vm_shares
 from metrics.world import cluster_summary_metrics, availability_summary_metrics
@@ -147,6 +150,16 @@ def get_adapter_definition() -> AdapterDefinition:
             advanced=True,
         )
 
+        definition.define_int_parameter(
+            periodic_cluster_check.WORST_PERCENT_SETTING,
+            label="Cluster Check Worst Percent",
+            description="Each window is summarised by its worst samples: the value with only this share of the "
+                        "samples worse than it. 0 is the single worst sample. 0 to 50.",
+            default=periodic_cluster_check.DEFAULT_WORST_PERCENT,
+            required=False,
+            advanced=True,
+        )
+
         # The size at which a VM becomes a monster on its host, for Cluster Risk. See cluster_risk_metrics.py.
         definition.define_int_parameter(
             cluster_risk_metrics.MONSTER_CPU_SETTING,
@@ -236,6 +249,7 @@ def get_adapter_definition() -> AdapterDefinition:
 
         define_kpi(vCommunity, cluster_performance_metrics)
         define_kpi(vCommunity, cluster_risk_metrics)
+        define_kpi(vCommunity, cluster_consumption_metrics)
         define_availability(vCommunity, operational_availability.CLUSTER_METRIC)
 
         # Capacity Utilization: CPU and memory, against N - k hosts. See metrics/cluster/capacity_utilization.py.
@@ -245,9 +259,11 @@ def get_adapter_definition() -> AdapterDefinition:
 
         # Periodic Cluster Check: properties, set once per period. See metrics/cluster/periodic_cluster_check.py.
         periodicCheck = vCommunity.define_group(periodic_cluster_check.GROUP, periodic_cluster_check.GROUP)
-        for name in (periodic_cluster_check.RISK, periodic_cluster_check.PERFORMANCE, periodic_cluster_check.UTILIZATION):
+        for name in (periodic_cluster_check.PERFORMANCE, periodic_cluster_check.RISK, periodic_cluster_check.CONSUMPTION):
             periodicCheck.define_numeric_property(name, name, unit=Units.RATIO.PERCENT)
         periodicCheck.define_numeric_property(periodic_cluster_check.CLOSE_FOR_BUSINESS, periodic_cluster_check.CLOSE_FOR_BUSINESS)
+        periodicCheck.define_numeric_property(periodic_cluster_check.WORST_PERCENT, periodic_cluster_check.WORST_PERCENT,
+                                              unit=Units.RATIO.PERCENT)
         periodicCheck.define_string_property(periodic_cluster_check.WINDOW_END, periodic_cluster_check.WINDOW_END)
         periodicCheck.define_numeric_property(periodic_cluster_check.WINDOW_HOURS, periodic_cluster_check.WINDOW_HOURS)
 
@@ -712,6 +728,7 @@ def collect(adapter_instance: AdapterInstance) -> CollectResult:
                             adapter_instance.get_identifier_value(cluster_risk_metrics.MONSTER_MEMORY_SETTING),
                             adapter_instance.get_identifier_value(cluster_risk_metrics.MONSTER_MEMORY_MIN_SETTING),
                         ),
+                        adapter_instance.get_identifier_value(periodic_cluster_check.WORST_PERCENT_SETTING),
                     )
 
                     # 2. Host feature definition

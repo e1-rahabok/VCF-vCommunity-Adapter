@@ -6,6 +6,10 @@ It is built with the [VCF Operations Integration SDK](https://github.com/vmware/
 
 ## Contents
 
+**Concepts**
+
+- [Capacity Management Model](concepts/capacity-management.md): how consumption, contention and risk decide, automatically, whether a cluster can take more VMs.
+
 **Installation Guide**
 
 1. [System Requirements](installation-guide/system-requirements.md): platform versions, registry access, accounts.
@@ -77,7 +81,7 @@ All of it is set by configuration files:
 - **Windows Services and Event Logs**: optional, agentless through GuestAPI.
 - **VM snapshot count**, and other properties missing from the default inventory.
 
-It also calculates metrics and KPIs, such as Cluster Performance, Cluster Risk and Capacity Utilization. Every key is listed in [Metrics and Properties](reference/metrics-and-properties.md).
+It also calculates metrics and KPIs, such as Cluster Performance, Cluster Risk, Cluster Consumption and Capacity Utilization. Every key is listed in [Metrics and Properties](reference/metrics-and-properties.md).
 
 ### Security hardening areas it can track
 

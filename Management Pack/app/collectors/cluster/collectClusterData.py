@@ -21,9 +21,9 @@ from metrics.cluster.cluster_risk_metrics import (
     collect_cluster_risk_metrics, HostInventory, MonsterVmSize, DEFAULT_MONSTER_VM,
 )
 from utils.ops_inventory import read_hosts, read_vms, powered_on_vms_by_host, hosts_by_cluster, read_cluster_ha, ClusterHa
-from utils.ops_stats import query_resources
+from utils.ops_stats import query_resources, read_latest_stats
 from metrics.availability.operational_availability import OperationalAvailability, NO_DATA, CLUSTER_METRIC, publish
-from metrics.cluster import periodic_cluster_check, capacity_utilization
+from metrics.cluster import periodic_cluster_check, capacity_utilization, cluster_consumption_metrics
 from pyVmomi import vim
 
 logger = logging.getLogger(__name__)
@@ -37,6 +37,7 @@ def collect_cluster_data(
     check_time: Optional[str] = None,
     check_period: Optional[str] = None,
     monster_vm: MonsterVmSize = DEFAULT_MONSTER_VM,
+    check_worst_percent: Optional[str] = None,
 ) -> None:
     
     propertyPaths: List[str] = []
@@ -84,17 +85,27 @@ def collect_cluster_data(
     vms_on_host = powered_on_vms_by_host(read_vms(suite_api_client, adapter_instance_id))
     # Host count and HA failover level of every cluster, for Capacity Utilization.
     try:
-        ha_by_cluster = read_cluster_ha(
-            suite_api_client,
-            query_resources(suite_api_client, VCENTER_ADAPTER_KIND, "ClusterComputeResource", adapter_instance_id))
+        ops_clusters = query_resources(suite_api_client, VCENTER_ADAPTER_KIND, "ClusterComputeResource", adapter_instance_id)
+        ha_by_cluster = read_cluster_ha(suite_api_client, ops_clusters)
     except Exception as e:
         logger.warning(f"Failed to read the cluster HA failover levels, so no Capacity Utilization - {repr(e)}")
+        ops_clusters = []
         ha_by_cluster = None
+
+    # The cluster stats of Cluster Consumption, in one request for all clusters: {cluster name: {stat key: value}}.
+    try:
+        consumption_stats = read_latest_stats(
+            suite_api_client, [cluster.id for cluster in ops_clusters], cluster_consumption_metrics.CLUSTER_STATS)
+        consumption_stats_by_cluster = {cluster.name: consumption_stats.get(cluster.id, {}) for cluster in ops_clusters}
+    except Exception as e:
+        logger.warning(f"Failed to read the cluster stats of Cluster Consumption - {repr(e)}")
+        consumption_stats_by_cluster = {}
 
     # Periodic Cluster Check: only the clusters due this cycle. See metrics/cluster/periodic_cluster_check.py.
     try:
         checks = periodic_cluster_check.read_periodic_cluster_check(
-            suite_api_client, adapter_instance_id, check_time, period_setting=check_period)
+            suite_api_client, adapter_instance_id, check_time, period_setting=check_period,
+            worst_percent_setting=check_worst_percent)
     except Exception as e:
         # A failure here must not stop the rest of the collection. The clusters stay due for the next cycle.
         logger.warning(f"Failed to read the Periodic Cluster Check - {repr(e)}")
@@ -135,6 +146,11 @@ def collect_cluster_data(
             ]
             stats_by_host = collect_cluster_risk_metrics(
                 cluster_obj, cluster_name, hosts_inventory, suite_api_client, monster_vm)
+
+            # Cluster Consumption, from the same host stats. See metrics/cluster/cluster_consumption_metrics.py.
+            cluster_consumption_metrics.collect_cluster_consumption_metrics(
+                cluster_obj, cluster_name, cluster_hosts, stats_by_host,
+                consumption_stats_by_cluster.get(cluster_obj.get_key().name, {}))
 
             # Capacity Utilization, from the same host stats. See metrics/cluster/capacity_utilization.py.
             if ha_by_cluster is not None and not stats_by_host:

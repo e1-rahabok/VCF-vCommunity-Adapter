@@ -6,6 +6,7 @@ KPIs:
 
 - [Cluster Performance](cluster-performance.md)
 - [Cluster Risk](cluster-risk.md)
+- [Cluster Consumption](cluster-consumption.md)
 - [ESXi Performance](esxi-performance.md)
 - [VM Performance](vm-performance.md)
 - [Guest OS Performance](guest-os-performance.md)

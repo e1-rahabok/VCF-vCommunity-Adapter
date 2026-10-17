@@ -5,12 +5,12 @@ This folder holds the code that calculates metrics and publishes them to VCF Ope
 There are two kinds of metric here:
 
 - **Plain metrics.** One value, read from vCenter and published. Example: DRS Score.
-- **KPIs.** One 0-100 % score per object, built from many sub-metrics. Most of this page is about KPIs. 100 is best, except Cluster Risk, which is published as 100 minus the score so that higher means more risk (`publish_kpi(..., higher_is_worse=True)`).
+- **KPIs.** One 0-100 % score per object, built from many sub-metrics. Most of this page is about KPIs. 100 is best, except Cluster Risk and Cluster Consumption, which are published as 100 minus the score so that higher means worse (`publish_kpi(..., higher_is_worse=True)`).
 - **No stale values.** `read_latest_stats()` drops any stat older than `STALE_AFTER_MINUTES` (10 minutes), so it counts as no data. Properties keep their last known value. See `docs/reference/metrics/README.md#no-stale-values`.
 
-## The five KPIs
+## The six KPIs
 
-All five use the same scoring, in `kpi_score.py`. Each has its own table of sub-metrics and limits.
+All six use the same scoring, in `kpi_score.py`. Each has its own table of sub-metrics and limits.
 
 | KPI | Object | Sub-metrics | Status | Source of the limits |
 | :--- | :--- | :--- | :--- | :--- |
@@ -18,9 +18,10 @@ All five use the same scoring, in `kpi_score.py`. Each has its own table of sub-
 | VM Performance | VM | 9 | Working | `docs/reference/metrics/formula/vm-performance.png` |
 | Guest OS Performance | VM | 4 | Working | `docs/reference/metrics/formula/guest-os-performance.png` |
 | Cluster Risk | Cluster | 12 | Working | `docs/reference/metrics/formula/cluster-risk.png` |
+| Cluster Consumption | Cluster | 5 | Working; Memory Tiering Consumption not yet confirmed live | `docs/reference/metrics/formula/cluster-consumption.png` |
 | ESXi Performance | ESXi host | 9 | Working | `docs/reference/metrics/formula/esxi-performance.png` |
 
-All five are called by a collector and declared in `adapter.py`. The VCF Operations keys and the properties endpoint were confirmed on a live system. See "Confirmed on a live system" on the [Cluster Risk page](../../../docs/reference/metrics/cluster-risk.md#confirmed-on-a-live-system).
+All six are called by a collector and declared in `adapter.py`. The VCF Operations keys and the properties endpoint were confirmed on a live system. See "Confirmed on a live system" on the [Cluster Risk page](../../../docs/reference/metrics/cluster-risk.md#confirmed-on-a-live-system).
 
 ## What is in this folder
 
@@ -29,9 +30,10 @@ All five are called by a collector and declared in `adapter.py`. The VCF Operati
 | `kpi_score.py` | The scoring shared by every KPI: it turns sub-metric values into one 0-100 % score. Also `publish_kpi()`, the last step of every KPI: round, publish the sub-metrics, publish the KPI. It makes no API calls. |
 | `cluster/cluster_performance_metrics.py` | Cluster Performance KPI. One score per cluster, from 9 sub-metrics. |
 | `cluster/cluster_risk_metrics.py` | Cluster Risk KPI. One score per cluster, from 12 sub-metrics. |
+| `cluster/cluster_consumption_metrics.py` | Cluster Consumption KPI. One score per cluster, from 5 cluster-wide sub-metrics, using the host stats Cluster Risk read. |
 | `cluster/drs_metrics.py` | DRS Score. A plain metric, not a KPI. |
 | `cluster/capacity_utilization.py` | Capacity CPU and Memory Utilization per cluster: sum of the running hosts' % ÷ (N − max(k, gone hosts)). Not a KPI. See `docs/reference/metrics/capacity-utilization.md`, including its known limitations. |
-| `cluster/periodic_cluster_check.py` | Periodic Cluster Check: once per period (1 to 24 hours, default 24), Close for Business per cluster from the window's percentiles. See `docs/reference/metrics/periodic-cluster-check.md`. |
+| `cluster/periodic_cluster_check.py` | Periodic Cluster Check: once per period (1 to 24 hours, default 24), Close for Business per cluster from the worst end of the window of Cluster Performance, Risk and Consumption. See `docs/reference/metrics/periodic-cluster-check.md`. |
 | `vm/vm_performance_metrics.py` | VM Performance KPI. One score per powered-on VM, from 9 sub-metrics. Also reads the stats of Guest OS Performance. |
 | `vm/guest_os_performance_metrics.py` | Guest OS Performance KPI. One score per powered-on VM with VMware Tools, from 4 sub-metrics. |
 | `host/esxi_performance_metrics.py` | ESXi Performance KPI. One score per connected ESXi host, from 9 sub-metrics. |
@@ -225,7 +227,8 @@ python -m pytest tests
 | `test_cluster_summary_metrics.py` | vSphere World: 10th percentile and worst cluster scores, over the clusters of all vCenters. |
 | `test_cluster_risk_metrics.py` | Cluster Risk formulas and worked examples. |
 | `test_capacity_utilization.py` | Capacity Utilization formulas: N − k, above 100 %, missing hosts. |
-| `test_periodic_cluster_check.py` | Periodic Cluster Check: schedule, percentiles, Close for Business rule. |
+| `test_cluster_consumption_metrics.py` | Cluster Consumption formulas and a worked example. |
+| `test_periodic_cluster_check.py` | Periodic Cluster Check: schedule, worst percent, Close for Business rule. |
 | `test_esxi_performance_metrics.py` | ESXi Performance formulas and worked examples. |
 | `test_ops_inventory.py` | Reading placement, power state, sizes, cores and threads from VCF Operations, and the Suite API endpoints used. |
 | `test_guest_os_performance_metrics.py` | Guest OS Performance formulas and worked examples. |
@@ -236,5 +239,6 @@ python -m pytest tests
 - [VM Performance KPI](../../../docs/reference/metrics/vm-performance.md)
 - [Guest OS Performance KPI](../../../docs/reference/metrics/guest-os-performance.md)
 - [Cluster Risk KPI](../../../docs/reference/metrics/cluster-risk.md)
+- [Cluster Consumption KPI](../../../docs/reference/metrics/cluster-consumption.md)
 - [ESXi Performance KPI](../../../docs/reference/metrics/esxi-performance.md)
 - [Metrics & Properties Reference](../../../docs/reference/metrics-and-properties.md)

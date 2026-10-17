@@ -65,14 +65,21 @@ Every property and metric the vCommunity Management Pack pushes to VCF Operation
 | 🟢 Metric | `vCommunity\|Cluster Risk\|Highest ESXi Memory Reservation` | Reserved memory as a share (%) of host DRAM, on the highest host. |
 | 🟢 Metric | `vCommunity\|Cluster Risk\|Highest ESXi CPU Overcommit Ratio` | vCPUs allocated to the powered-on VMs per physical core, on the highest host. |
 | 🟢 Metric | `vCommunity\|Cluster Risk\|Highest ESXi Memory Overcommit Ratio` | Memory allocated to the powered-on VMs per unit of host DRAM, on the highest host. |
-| 🟢 Metric | `vCommunity\|Cluster Risk\|Highest CPU Monster VM to Host Ratio` | vCPUs of the largest powered-on VM against half the physical cores of its host. Above 1 the VM is a monster. |
-| 🟢 Metric | `vCommunity\|Cluster Risk\|Highest Memory Monster VM to Host Ratio` | Memory of the largest powered-on VM against 40 % of its host's DRAM (not DRAM + NVMe) or 256 GB, whichever is smaller. Above 1 the VM is a monster. |
+| 🟢 Metric | `vCommunity\|Cluster Risk\|Highest CPU Monster VM to Host Ratio` | vCPUs of the largest powered-on VM against half the physical cores of its host (by default, see [When a VM is a monster](metrics/cluster-risk.md#when-a-vm-is-a-monster)). Above 1 the VM is a monster. |
+| 🟢 Metric | `vCommunity\|Cluster Risk\|Highest Memory Monster VM to Host Ratio` | Memory of the largest powered-on VM against 40 % of its host's DRAM (not DRAM + NVMe) or 256 GB, whichever is smaller (by default). Above 1 the VM is a monster. |
+| 🟢 Metric | `vCommunity\|Cluster Consumption\|Cluster Consumption Score` | Key Performance Indicator (0-100 %) of how much of the cluster is consumed, combining the 5 sub-metrics below. Higher is worse, like Cluster Risk: red is 75–100. See [Cluster Consumption KPI](metrics/cluster-consumption.md) for the formula. |
+| 🟢 Metric | `vCommunity\|Cluster Consumption\|Cluster-wide ESXi CPU Thread Utilization` | CPU threads in use on all running hosts, as a share (%) of all their threads. |
+| 🟢 Metric | `vCommunity\|Cluster Consumption\|Cluster-wide ESXi Memory Consumed` | Consumed memory of all running hosts, as a share (%) of their DRAM. |
+| 🟢 Metric | `vCommunity\|Cluster Consumption\|Cluster Memory Tiering Consumption` | NVMe memory tier usage (%) of the cluster, from the VCF Operations cluster stat `mem\|tier_1_usage_percent`. Published only when the cluster has memory tiering. |
+| 🟢 Metric | `vCommunity\|Cluster Consumption\|Cluster-wide ESXi Memory Ballooned` | Ballooned memory of all running hosts, as a share (%) of their DRAM. |
+| 🟢 Metric | `vCommunity\|Cluster Consumption\|Cluster-wide ESXi Memory Zip Swap` | Compressed plus swapped memory of all running hosts, as a share (%) of their DRAM. |
 | 🟢 Metric | `vCommunity\|Capacity\|CPU Utilization` | Sum of the running hosts' CPU Utilization (%) ÷ (N − max(k, gone hosts)), k = HA host failures tolerated. Can be above 100 %. Assumes hosts of equal size. See [Capacity Utilization](metrics/capacity-utilization.md#known-limitations). |
 | 🟢 Metric | `vCommunity\|Capacity\|Memory Utilization` | Sum of the running hosts' Memory Consumed (% of DRAM) ÷ (N − max(k, gone hosts)). Same limitations. |
-| ⚪ Property | `vCommunity\|Periodic Cluster Check\|99th Percentile Capacity Utilization` | max(99th percentile of Capacity CPU Utilization, of Capacity Memory Utilization) (%) over the window to Window End (24 hours by default). Set once per window. See [Periodic Cluster Check](metrics/periodic-cluster-check.md#known-limitations). |
-| ⚪ Property | `vCommunity\|Periodic Cluster Check\|95th Percentile Cluster Performance` | 95th percentile (%) of Cluster Performance Score over the same window. |
-| ⚪ Property | `vCommunity\|Periodic Cluster Check\|95th Percentile Cluster Risk` | 95th percentile (%) of Cluster Risk Score (higher is worse) over the same window. |
+| ⚪ Property | `vCommunity\|Periodic Cluster Check\|Worst Cluster Performance` | The low end (%) of Cluster Performance Score over the window to Window End (24 hours by default), with the worst Worst Percent of samples ignored. Set once per window. See [Worst](metrics/periodic-cluster-check.md#worst). |
+| ⚪ Property | `vCommunity\|Periodic Cluster Check\|Worst Cluster Risk` | The high end (%) of Cluster Risk Score over the same window, the same way. |
+| ⚪ Property | `vCommunity\|Periodic Cluster Check\|Worst Cluster Consumption` | The high end (%) of Cluster Consumption Score over the same window, the same way. |
 | ⚪ Property | `vCommunity\|Periodic Cluster Check\|Close for Business` | 1: the cluster is full, do not place new VMs. 0: open to new VMs. See [the rule](metrics/periodic-cluster-check.md#the-rule). |
+| ⚪ Property | `vCommunity\|Periodic Cluster Check\|Worst Percent` | The account's Cluster Check Worst Percent when the values were calculated. |
 | ⚪ Property | `vCommunity\|Periodic Cluster Check\|Window Hours` | Length of the window in hours: the account's Cluster Check Period when the values were calculated. |
 | ⚪ Property | `vCommunity\|Periodic Cluster Check\|Window End` | End of the window the values are for, such as `2026-10-12 00:00 UTC`. Set by the account's Cluster Check Time (UTC). |
 

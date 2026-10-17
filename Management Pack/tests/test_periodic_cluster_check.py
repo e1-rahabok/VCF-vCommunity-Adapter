@@ -1,5 +1,5 @@
 #  Copyright 2026 VCF Operations vCommunity Management Pack
-"""Periodic Cluster Check: the schedule, the 95th percentile, and which clusters are due.
+"""Periodic Cluster Check: the schedule, the worst percent, the rule, and which clusters are due.
 
 Run from the "Management Pack" folder:  python -m pytest tests
 """
@@ -33,59 +33,119 @@ def test_window_ends_at_the_last_time_the_clock_passed_the_setting():
     assert pc.window_end_text(NOW) == "2026-10-12 09:30 UTC"
 
 
+# --- Worst percent -------------------------------------------------------------------------------------------
+
+DAY = [float(n) for n in range(288, 0, -1)]      # 288 five-minute samples: 1 to 288, in any order
+
+
 def test_percentile_ignores_the_highest_samples():
-    day = [float(n) for n in range(288, 0, -1)]
-    # 95th: position ceil(0.95 x 288) = 274. 99th: position ceil(0.99 x 288) = 286.
-    assert pc.percentile(day, 95) == 274.0
-    assert pc.percentile(day, 99) == 286.0
-    # One spike in a quiet day is ignored.
-    assert pc.percentile([1.0] * 287 + [50.0], 95) == 1.0
+    # 95th: position ceil(0.95 x 288) = 274.
+    assert pc.percentile(DAY, 95) == 274.0
+    assert pc.percentile(DAY, 100) == 288.0
     assert pc.percentile([], 95) is None
 
 
-def samples(risk, performance, cpu, memory):
-    return {pc.CLUSTER_RISK_SCORE: risk, pc.CLUSTER_PERFORMANCE_SCORE: performance,
-            pc.CPU_UTILIZATION: cpu, pc.MEMORY_UTILIZATION: memory}
+def test_worst_takes_the_bad_end_of_each_kpi():
+    # Higher is worse (Risk, Consumption): the 14 highest samples (5 % of 288) are ignored.
+    assert pc.worst(DAY, 5, higher_is_worse=True) == 274.0
+    # Higher is better (Performance): the 14 lowest samples are ignored, not the highest.
+    assert pc.worst(DAY, 5, higher_is_worse=False) == 15.0
+    # 0: the single worst sample.
+    assert pc.worst(DAY, 0, higher_is_worse=True) == 288.0
+    assert pc.worst(DAY, 0, higher_is_worse=False) == 1.0
+    # 50: the middle.
+    assert pc.worst(DAY, 50, higher_is_worse=True) == 144.0
+    assert pc.worst(DAY, 50, higher_is_worse=False) == 145.0
+    assert pc.worst([], 5, higher_is_worse=True) is None
 
 
-def test_utilization_is_the_higher_of_cpu_and_memory():
-    values = pc.window_values(samples([10.0], [95.0], [40.0], [70.0]))
-    assert values == {pc.RISK: 10.0, pc.PERFORMANCE: 95.0, pc.UTILIZATION: 70.0, pc.CLOSE_FOR_BUSINESS: 0}
+def test_one_bad_sample_in_a_quiet_window_is_ignored():
+    # Performance at 90 all day, with one 5-minute dip to 20: the worst 5 % is still 90.
+    assert pc.worst([90.0] * 287 + [20.0], 5, higher_is_worse=False) == 90.0
+    # With 0 %, the dip decides.
+    assert pc.worst([90.0] * 287 + [20.0], 0, higher_is_worse=False) == 20.0
 
 
-def test_close_for_business_rules():
-    # decide(risk, performance, utilization)
-    # Rule 1: utilization above 95, or performance below 25.
-    assert pc.decide(0.0, 99.0, 96.0) == 1
-    assert pc.decide(0.0, 24.0, 10.0) == 1
-    # Rule 2: utilization above 75 AND performance below 50 AND risk above 75.
-    assert pc.decide(80.0, 40.0, 80.0) == 1
-    assert pc.decide(70.0, 40.0, 80.0) == 0      # risk not above 75
-    assert pc.decide(80.0, 60.0, 80.0) == 0      # performance not below 50
-    assert pc.decide(80.0, 40.0, 70.0) == 0      # utilization not above 75
-    # Healthy.
-    assert pc.decide(10.0, 95.0, 50.0) == 0
+def test_parse_worst_percent():
+    assert pc.parse_worst_percent("5") == 5
+    assert pc.parse_worst_percent("0") == 0
+    assert pc.parse_worst_percent("50") == 50
+    assert pc.parse_worst_percent(10) == 10            # as an int parameter may return it
+    # Empty or invalid: the default, 5.
+    assert pc.parse_worst_percent(None) == 5
+    assert pc.parse_worst_percent("") == 5
+    assert pc.parse_worst_percent("51") == 5
+    assert pc.parse_worst_percent("-1") == 5
+    assert pc.parse_worst_percent("2.5") == 5
 
 
-def test_limits_are_strict():
-    assert pc.decide(0.0, 99.0, 95.0) == 0       # 95 is not above 95
-    assert pc.decide(0.0, 25.0, 10.0) == 0       # 25 is not below 25
-    assert pc.decide(75.0, 49.0, 80.0) == 0      # 75 is not above 75
+# --- The rule ------------------------------------------------------------------------------------------------
+
+def test_bands():
+    # Performance, higher is better: red below 25, orange below 50, yellow below 75.
+    assert [pc.band(value, False) for value in (10.0, 30.0, 60.0, 90.0)] == ["red", "orange", "yellow", "green"]
+    # Risk and Consumption, higher is worse: red above 75, orange above 50, yellow above 25.
+    assert [pc.band(value, True) for value in (90.0, 70.0, 40.0, 10.0)] == ["red", "orange", "yellow", "green"]
+
+
+def test_a_value_on_a_limit_belongs_to_the_better_band():
+    assert pc.band(25.0, False) == "orange"     # Performance 25 is not red
+    assert pc.band(75.0, True) == "orange"      # Risk 75 is not red
+    assert pc.band(50.0, False) == "yellow"
+    assert pc.band(50.0, True) == "yellow"
+
+
+def test_close_for_business_when_any_is_red():
+    # decide(performance, risk, consumption)
+    assert pc.decide(24.0, 0.0, 0.0) == 1       # Performance red
+    assert pc.decide(99.0, 76.0, 0.0) == 1      # Risk red
+    assert pc.decide(99.0, 0.0, 76.0) == 1      # Consumption red
+
+
+def test_close_for_business_when_all_three_are_orange():
+    assert pc.decide(40.0, 60.0, 60.0) == 1
+    # Two orange, one yellow: open.
+    assert pc.decide(40.0, 60.0, 40.0) == 0
+    assert pc.decide(60.0, 60.0, 60.0) == 0
+    # Limits: Performance 50 is yellow, so not all three are orange.
+    assert pc.decide(50.0, 60.0, 60.0) == 0
+    assert pc.decide(49.99, 50.01, 50.01) == 1
+
+
+def test_open_when_healthy_or_on_the_red_limit():
+    assert pc.decide(95.0, 10.0, 30.0) == 0
+    assert pc.decide(25.0, 75.0, 75.0) == 1     # not red, but all three orange
+    assert pc.decide(25.0, 0.0, 0.0) == 0       # Performance 25 is orange, the others green
+
+
+def samples(performance, risk, consumption):
+    return {pc.CLUSTER_PERFORMANCE_SCORE: performance, pc.CLUSTER_RISK_SCORE: risk,
+            pc.CLUSTER_CONSUMPTION_SCORE: consumption}
+
+
+def test_window_values():
+    values = pc.window_values(samples([95.0], [10.0], [40.0]))
+    assert values == {pc.PERFORMANCE: 95.0, pc.RISK: 10.0, pc.CONSUMPTION: 40.0, pc.CLOSE_FOR_BUSINESS: 0}
 
 
 def test_no_close_for_business_when_an_input_has_no_data():
     values = pc.window_values({pc.CLUSTER_RISK_SCORE: [90.0], pc.CLUSTER_PERFORMANCE_SCORE: [95.0]})
-    assert values == {pc.RISK: 90.0, pc.PERFORMANCE: 95.0, pc.UTILIZATION: None, pc.CLOSE_FOR_BUSINESS: None}
+    assert values == {pc.PERFORMANCE: 95.0, pc.RISK: 90.0, pc.CONSUMPTION: None, pc.CLOSE_FOR_BUSINESS: None}
 
+
+# --- Which clusters are due ----------------------------------------------------------------------------------
 
 CLUSTERS = {"ClusterComputeResource": [("cl-1", "cluster-a", "domain-c1"), ("cl-2", "cluster-b", "domain-c2")]}
-HISTORY = {"cl-1": samples([10.0, 20.0], [95.0], [40.0], [70.0]), "cl-2": samples([80.0], [20.0], [40.0], [70.0])}
+HISTORY = {"cl-1": samples([95.0], [10.0, 20.0], [40.0]), "cl-2": samples([20.0], [80.0], [40.0])}
+
+
+def stored(window_end, hours="24", worst_percent="5"):
+    return {pc.WINDOW_END_KEY: window_end, pc.WINDOW_HOURS_KEY: hours, pc.WORST_PERCENT_KEY: worst_percent}
 
 
 def test_only_clusters_without_the_latest_window_are_due():
     api = FakeSuiteApi(resources=CLUSTERS, samples=HISTORY,
-                       properties={"cl-1": {pc.WINDOW_END_KEY: "2026-10-12 00:00 UTC", pc.WINDOW_HOURS_KEY: "24"},
-                                   "cl-2": {pc.WINDOW_END_KEY: "2026-10-11 00:00 UTC", pc.WINDOW_HOURS_KEY: "24"}})
+                       properties={"cl-1": stored("2026-10-12 00:00 UTC"), "cl-2": stored("2026-10-11 00:00 UTC")})
     results = pc.read_periodic_cluster_check(api, "ai-1", "00:00", NOW)
     assert list(results) == ["domain-c2"]
     assert results["domain-c2"].window_end == "2026-10-12 00:00 UTC"
@@ -95,21 +155,28 @@ def test_only_clusters_without_the_latest_window_are_due():
 
 def test_nothing_due_reads_no_history():
     api = FakeSuiteApi(resources=CLUSTERS, samples=HISTORY,
-                       properties={"cl-1": {pc.WINDOW_END_KEY: "2026-10-12 00:00 UTC", pc.WINDOW_HOURS_KEY: "24"},
-                                   "cl-2": {pc.WINDOW_END_KEY: "2026-10-12 00:00 UTC", pc.WINDOW_HOURS_KEY: "24"}})
+                       properties={"cl-1": stored("2026-10-12 00:00 UTC"), "cl-2": stored("2026-10-12 00:00 UTC")})
     assert pc.read_periodic_cluster_check(api, "ai-1", "00:00", NOW) == {}
     assert "api/resources/stats/query" not in api.paths
 
 
 def test_a_changed_time_makes_every_cluster_due_again():
     api = FakeSuiteApi(resources=CLUSTERS, samples=HISTORY,
-                       properties={"cl-1": {pc.WINDOW_END_KEY: "2026-10-12 00:00 UTC", pc.WINDOW_HOURS_KEY: "24"},
-                                   "cl-2": {pc.WINDOW_END_KEY: "2026-10-12 00:00 UTC", pc.WINDOW_HOURS_KEY: "24"}})
+                       properties={"cl-1": stored("2026-10-12 00:00 UTC"), "cl-2": stored("2026-10-12 00:00 UTC")})
     assert set(pc.read_periodic_cluster_check(api, "ai-1", "06:00", NOW)) == {"domain-c1", "domain-c2"}
 
 
+def test_a_changed_worst_percent_makes_every_cluster_due_again():
+    api = FakeSuiteApi(resources=CLUSTERS, samples=HISTORY,
+                       properties={"cl-1": stored("2026-10-12 00:00 UTC"), "cl-2": stored("2026-10-12 00:00 UTC")})
+    assert pc.read_periodic_cluster_check(api, "ai-1", "00:00", NOW, worst_percent_setting="5") == {}
+    results = pc.read_periodic_cluster_check(api, "ai-1", "00:00", NOW, worst_percent_setting="10")
+    assert set(results) == {"domain-c1", "domain-c2"}
+    assert results["domain-c1"].worst_percent == 10
+
+
 def test_at_most_max_clusters_per_cycle(monkeypatch):
-    monkeypatch.setattr(dc, "MAX_CLUSTERS_PER_CYCLE", 1)
+    monkeypatch.setattr(pc, "MAX_CLUSTERS_PER_CYCLE", 1)
     api = FakeSuiteApi(resources=CLUSTERS, samples=HISTORY)
     assert list(pc.read_periodic_cluster_check(api, "ai-1", "00:00", NOW)) == ["domain-c1"]
 
@@ -126,10 +193,11 @@ def test_publish():
     pc.publish(cluster, results["domain-c2"])
     group = f"vCommunity|{pc.GROUP}"
     assert cluster.properties == {
-        f"{group}|95th Percentile Cluster Risk": 80.0,
-        f"{group}|95th Percentile Cluster Performance": 20.0,
-        f"{group}|99th Percentile Capacity Utilization": 70.0,
-        f"{group}|Close for Business": 1,
+        f"{group}|Worst Cluster Performance": 20.0,
+        f"{group}|Worst Cluster Risk": 80.0,
+        f"{group}|Worst Cluster Consumption": 40.0,
+        f"{group}|Close for Business": 1,               # Performance 20 is red
+        f"{group}|Worst Percent": 5,
         f"{group}|Window Hours": 24,
         f"{group}|Window End": "2026-10-12 00:00 UTC",
     }
@@ -152,6 +220,7 @@ def test_the_24_hours_end_at_the_set_time():
     assert history["end"] == end
     assert history["begin"] == end - 24 * 3600 * 1000
     assert history["intervalQuantifier"] == 5
+    assert history["statKey"] == pc.STAT_KEYS
 
 
 # --- Period --------------------------------------------------------------------------------------------------
@@ -191,17 +260,9 @@ def test_a_changed_period_with_the_same_end_is_due_again():
     # At 09:30, with 00:00: a 24-hour and a 12-hour window both end at 00:00. The stored window is 24 hours;
     # changing the setting to 12 hours makes every cluster due again.
     api = FakeSuiteApi(resources=CLUSTERS, samples=HISTORY,
-                       properties={"cl-1": {pc.WINDOW_END_KEY: "2026-10-12 00:00 UTC", pc.WINDOW_HOURS_KEY: "24"},
-                                   "cl-2": {pc.WINDOW_END_KEY: "2026-10-12 00:00 UTC", pc.WINDOW_HOURS_KEY: "24"}})
+                       properties={"cl-1": stored("2026-10-12 00:00 UTC"), "cl-2": stored("2026-10-12 00:00 UTC")})
     assert pc.read_periodic_cluster_check(api, "ai-1", "00:00", NOW, period_setting="24") == {}
     assert set(pc.read_periodic_cluster_check(api, "ai-1", "00:00", NOW, period_setting="12")) == {"domain-c1", "domain-c2"}
-
-
-def test_a_window_without_its_length_is_due_again():
-    # Stored before Window Hours existed: recalculated once after the upgrade.
-    api = FakeSuiteApi(resources=CLUSTERS, samples=HISTORY,
-                       properties={"cl-1": {pc.WINDOW_END_KEY: "2026-10-12 00:00 UTC"}})
-    assert "domain-c1" in pc.read_periodic_cluster_check(api, "ai-1", "00:00", NOW)
 
 
 def test_period_drop_down_sorts_like_numbers():
@@ -215,11 +276,10 @@ def test_period_drop_down_sorts_like_numbers():
     assert pc.DEFAULT_PERIOD in values
 
 
-def test_parse_period_accepts_values_saved_without_the_zero():
+def test_parse_period_accepts_values_without_the_zero():
     assert pc.parse_period("06") == 6
     assert pc.parse_period("6") == 6
     assert pc.parse_period("1") == 1
     assert pc.parse_period("24") == 24
     assert pc.parse_period("006") == 6
     assert pc.parse_period("x") == 24
-
