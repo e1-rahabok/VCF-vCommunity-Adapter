@@ -7,8 +7,8 @@
 
 # VCF Operations vCommunity Management Pack
 
-This free Management Pack was built upon the great work of  [Onur Yuzseven](https://www.linkedin.com/in/oyuzseven/) , assisted by [Mark Arbogast ]https://www.linkedin.com/in/mark-arbogast/ and [Robert Mesropyan]
-https://www.linkedin.com/in/robert-mesropyan/
+This free Management Pack was built upon the great work of  [Onur Yuzseven](https://www.linkedin.com/in/oyuzseven/) , assisted by [Mark Arbogast ](https://www.linkedin.com/in/mark-arbogast/) and [Robert Mesropyan](
+https://www.linkedin.com/in/robert-mesropyan/)
 
 This project is a contribution to the Broadcom VMware vCommunity (VMUG, vExpert, VCP, VCDX). It's not an official VMware project, and there is no support from VMware GSS. Deploy at your own risk, or consult VMware TAM or PSO for a custom solution.
 
