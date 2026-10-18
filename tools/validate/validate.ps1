@@ -7,6 +7,8 @@
 .DESCRIPTION
   Talks to the Suite API only with GET calls (plus the token request). Nothing is
   changed on the instance. Exits 0 when no check fails, 1 otherwise.
+  The one exception is -Release: it starts a content export job (a POST) to check
+  the pack's views and dashboards. The export changes no content.
 
   It tests the build that is INSTALLED on the instance, not the code in this repo.
 
@@ -34,7 +36,12 @@ param(
     [int]$MaxAgeMinutes = 20,
     # Version the installed pack must have. A mismatch FAILs. When omitted, the
     # version in manifest.txt is compared and a mismatch only WARNs.
-    [string]$ExpectedVersion
+    [string]$ExpectedVersion,
+    # Release sign-off: also export the content and check the pack's views and
+    # dashboards. This starts a content export job on the instance (a POST).
+    [switch]$Release,
+    # A gap between two samples longer than this is reported by the continuity check.
+    [int]$MaxGapMinutes = 15
 )
 
 $ErrorActionPreference = 'Stop'
@@ -159,8 +166,208 @@ try {
         if ($notes) { $detail += " -- $($notes -join '; ')" }
         Add-Result $status $type $detail
     }
+
+    # --- Cluster KPIs and the Periodic Cluster Check -------------------------
+    $KPI = [ordered]@{
+        Performance = 'vCommunity|Cluster Performance|Cluster Performance Score'
+        Risk        = 'vCommunity|Cluster Risk|Cluster Risk Score'
+        Consumption = 'vCommunity|Cluster Consumption|Cluster Consumption Score'
+    }
+    $CHECK = 'vCommunity|Periodic Cluster Check|'
+    $CHECK_KEYS = 'Worst Cluster Performance', 'Worst Cluster Risk', 'Worst Cluster Consumption', 'Close for Business' |
+        ForEach-Object { "$CHECK$_" }
+    $clusters = @((Get-Api "resources?adapterKind=VMWARE&resourceKind=ClusterComputeResource&pageSize=5000").resourceList)
+    $clusterSample = $SampleSize -gt 0 ? @($clusters | Select-Object -First $SampleSize) : $clusters
+
+    # Latest value and time of every vCommunity stat of one object: @{ key = @{ Value; Time (epoch ms) } }.
+    function Get-Latest([string]$ResourceId) {
+        $latest = @{}
+        foreach ($s in @((Get-Api "resources/stats/latest?resourceId=$ResourceId").values.'stat-list'.stat | Where-Object { $_ })) {
+            if ($s.statKey.key -like $PREFIX) {
+                $latest[$s.statKey.key] = @{ Value = @($s.data)[-1]; Time = [long]@($s.timestamps)[-1] }
+            }
+        }
+        $latest
+    }
+    # 5-minute samples of some stats of one object between two times: @{ key = @(epoch ms, ...) }.
+    function Get-SampleTimes([string]$ResourceId, [string[]]$Keys, [long]$Begin, [long]$End) {
+        $query = ($Keys | ForEach-Object { "statKey=$([uri]::EscapeDataString($_))" }) -join '&'
+        $r = Get-Api "resources/$ResourceId/stats?$query&begin=$Begin&end=$End&rollUpType=AVG&intervalType=MINUTES&intervalQuantifier=5"
+        $times = @{}
+        foreach ($s in @($r.values.'stat-list'.stat | Where-Object { $_.statKey.key })) {
+            $times[$s.statKey.key] = @($s.timestamps | ForEach-Object { [long]$_ })
+        }
+        $times
+    }
+    # The KPI band of a value, on its health (the value, or 100 minus it when higher is worse).
+    # The same limits as band() in metrics/cluster/periodic_cluster_check.py.
+    function Get-Band([double]$Value, [bool]$HigherIsWorse) {
+        $health = $HigherIsWorse ? 100 - $Value : $Value
+        if ($health -lt 25) { 'red' } elseif ($health -lt 50) { 'orange' } elseif ($health -lt 75) { 'yellow' } else { 'green' }
+    }
+
+    if (-not $clusterSample.Count) {
+        Add-Result 'WARN' 'Cluster KPIs' 'No clusters on the instance'
+    } else {
+        $latestByCluster = @{}
+        foreach ($cl in $clusterSample) { $latestByCluster[$cl.identifier] = Get-Latest $cl.identifier }
+        $nowMs = [DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds()
+
+        # Every cluster has a current value of each KPI.
+        $status = 'PASS'; $parts = @()
+        foreach ($name in $KPI.Keys) {
+            $fresh = @($clusterSample | Where-Object {
+                $v = $latestByCluster[$_.identifier][$KPI[$name]]
+                $v -and ($nowMs - $v.Time) / 60000 -le $MaxAgeMinutes }).Count
+            $parts += "$name $fresh/$($clusterSample.Count)"
+            if ($fresh -eq 0) { $status = 'FAIL' } elseif ($fresh -lt $clusterSample.Count -and $status -eq 'PASS') { $status = 'WARN' }
+        }
+        Add-Result $status 'Cluster KPIs' "current (within $MaxAgeMinutes min): $($parts -join ', ')"
+
+        # No collection gap in the last 24 hours, on the Cluster Risk Score of the first cluster.
+        $first = $clusterSample[0]
+        $times = (Get-SampleTimes $first.identifier @($KPI.Risk) ($nowMs - 24 * 3600000) $nowMs)[$KPI.Risk]
+        if (-not $times) {
+            Add-Result 'WARN' 'Collection continuity' "No Cluster Risk Score in the last 24 hours on $($first.resourceKey.name)"
+        } else {
+            $gaps = @(for ($i = 1; $i -lt $times.Count; $i++) {
+                $minutes = ($times[$i] - $times[$i - 1]) / 60000
+                if ($minutes -gt $MaxGapMinutes) {
+                    [pscustomobject]@{ From = $times[$i - 1]; To = $times[$i]; Minutes = [math]::Round($minutes) }
+                }
+            })
+            if ($gaps) {
+                $largest = $gaps | Sort-Object Minutes -Descending | Select-Object -First 1
+                $when = '{0:MM-dd HH:mm} to {1:MM-dd HH:mm} UTC' -f [DateTimeOffset]::FromUnixTimeMilliseconds($largest.From).UtcDateTime,
+                    [DateTimeOffset]::FromUnixTimeMilliseconds($largest.To).UtcDateTime
+                Add-Result 'WARN' 'Collection continuity' "$($gaps.Count) gap(s) over $MaxGapMinutes min in 24 h; largest $($largest.Minutes) min, $when"
+            } else {
+                Add-Result 'PASS' 'Collection continuity' "$($times.Count) samples in 24 h, no gap over $MaxGapMinutes min"
+            }
+        }
+
+        # The Periodic Cluster Check published for the latest window that ended, allowing 3 cycles for it to run.
+        $ids = @($instances | ForEach-Object { $_.resourceKey.resourceIdentifiers }) | Group-Object { $_.identifierType.name } -AsHashTable -AsString
+        $periodText = $ids -and $ids['cluster_check_period_hours'] ? "$($ids['cluster_check_period_hours'][0].value)" : ''
+        $timeText = $ids -and $ids['periodic_cluster_check_time'] ? "$($ids['periodic_cluster_check_time'][0].value)" : ''
+        $period = $periodText -match '^\d+$' -and [int]$periodText -in 1, 2, 4, 6, 8, 12, 24 ? [int]$periodText : 24
+        $hour, $minute = 0, 0
+        if ($timeText -match '^\s*(\d{1,2}):(\d{2})\s*$' -and [int]$Matches[1] -le 23 -and [int]$Matches[2] -le 59) { $hour, $minute = [int]$Matches[1], [int]$Matches[2] }
+        $reference = [DateTimeOffset]::UtcNow.AddMinutes(-15)
+        $anchor = [DateTimeOffset]::new($reference.Year, $reference.Month, $reference.Day, $hour, $minute, 0, [TimeSpan]::Zero).AddDays(-1)
+        $windowEnd = $anchor.AddHours($period * [math]::Floor(($reference - $anchor).TotalHours / $period))
+        $endMs = $windowEnd.ToUnixTimeMilliseconds(); $beginMs = $windowEnd.AddHours(-$period).ToUnixTimeMilliseconds()
+        $onTime = 0; $noData = @(); $late = @()
+        foreach ($cl in $clusterSample) {
+            $latest = $latestByCluster[$cl.identifier]
+            $calculated = ($CHECK_KEYS | ForEach-Object { $latest[$_] ? $latest[$_].Time : 0 } | Measure-Object -Maximum).Maximum
+            if ($calculated -ge $endMs) { $onTime++; continue }
+            $inWindow = (Get-SampleTimes $cl.identifier @($KPI.Values) $beginMs $endMs).Values | ForEach-Object { $_ } | Where-Object { $_ -ge $beginMs -and $_ -lt $endMs }
+            if ($inWindow) { $late += $cl.resourceKey.name } else { $noData += $cl.resourceKey.name }
+        }
+        $window = "window to {0:yyyy-MM-dd HH:mm} UTC ({1} h)" -f $windowEnd.UtcDateTime, $period
+        if ($late) { Add-Result 'FAIL' 'Periodic Cluster Check' "$window not calculated, with KPI data, on: $($late -join ', ')" }
+        elseif ($noData) { Add-Result 'WARN' 'Periodic Cluster Check' "$window has no KPI data, so nothing to calculate, on: $($noData -join ', ') (collection gap?)" }
+        else { Add-Result 'PASS' 'Periodic Cluster Check' "$window calculated on $onTime/$($clusterSample.Count)" }
+
+        # Close for Business follows the rule from the published Worst values.
+        $checked = 0; $wrong = @()
+        foreach ($cl in $clusterSample) {
+            $latest = $latestByCluster[$cl.identifier]
+            if (@($CHECK_KEYS | Where-Object { -not $latest[$_] }).Count) { continue }
+            $times = $CHECK_KEYS | ForEach-Object { $latest[$_].Time }
+            if ((($times | Measure-Object -Maximum).Maximum - ($times | Measure-Object -Minimum).Minimum) -gt 60000) { continue }
+            $performance = Get-Band $latest["${CHECK}Worst Cluster Performance"].Value $false
+            $risk = Get-Band $latest["${CHECK}Worst Cluster Risk"].Value $true
+            $consumption = Get-Band $latest["${CHECK}Worst Cluster Consumption"].Value $true
+            $expected = ($performance -eq 'red' -or $consumption -eq 'red') -or
+                        ($performance -eq 'orange' -and $consumption -eq 'orange' -and $risk -in 'orange', 'red') ? 1 : 0
+            $actual = [int]$latest["${CHECK}Close for Business"].Value
+            $checked++
+            if ($actual -ne $expected) { $wrong += "$($cl.resourceKey.name): published $actual, rule gives $expected (Performance $performance, Risk $risk, Consumption $consumption)" }
+        }
+        if ($wrong) { Add-Result 'FAIL' 'Close for Business rule' ($wrong -join '; ') }
+        elseif (-not $checked) { Add-Result 'WARN' 'Close for Business rule' 'No cluster has a complete result yet (all four check metrics from one calculation)' }
+        else { Add-Result 'PASS' 'Close for Business rule' "matches the rule on $checked/$($clusterSample.Count)" }
+    }
+
+    # --- Content (release sign-off only) -------------------------------------
+    if ($Release) {
+        Add-Type -AssemblyName System.IO.Compression
+        $request = @{ scope = 'ALL'; contentTypes = @('VIEW_DEFINITIONS', 'DASHBOARDS') } | ConvertTo-Json
+        Invoke-RestMethod -Method Post -Uri "$base/content/operations/export" -Body $request -ContentType 'application/json' -Headers $headers @web | Out-Null
+        $deadline = (Get-Date).AddMinutes(10)
+        do { Start-Sleep -Seconds 5; $export = Get-Api 'content/operations/export' } while ($export.state -eq 'RUNNING' -and (Get-Date) -lt $deadline)
+        if ($export.state -ne 'FINISHED') {
+            Add-Result 'FAIL' 'Content export' "Export ended as $($export.state) $($export.errorMessages -join ' ')"
+        } else {
+            $zipFile = [IO.Path]::GetTempFileName()
+            try {
+                $zipHeaders = $headers.Clone(); $zipHeaders.Accept = 'application/octet-stream'
+                Invoke-WebRequest -Uri "$base/content/operations/export/zip" -Headers $zipHeaders -OutFile $zipFile @web
+                $outer = [IO.Compression.ZipFile]::OpenRead($zipFile)
+                function Read-Entry($Archive, [string]$Name) {
+                    $stream = $Archive.GetEntry($Name).Open(); $memory = [IO.MemoryStream]::new(); $stream.CopyTo($memory); $stream.Dispose(); $memory
+                }
+                function Read-Text($Archive, [string]$Name) { [Text.Encoding]::UTF8.GetString((Read-Entry $Archive $Name).ToArray()).TrimStart([char]0xFEFF) }
+
+                $viewsZip = [IO.Compression.ZipArchive]::new((Read-Entry $outer 'views.zip'))
+                $viewRegex = '<ViewDef id="([^"]+)">.*?</ViewDef>'
+                # VCF Operations renumbers the internal control IDs (such as pagination-control_id_109) on import,
+                # so they are left out of the comparison, like whitespace.
+                function Get-Normalised([string]$Block) { ($Block -replace '_id_\d+', '_id_N') -replace '\s+', ' ' }
+                $exported = @{}; $duplicates = 0
+                foreach ($m in [regex]::Matches((Read-Text $viewsZip 'content.xml'), $viewRegex, 'Singleline')) {
+                    if ($exported.ContainsKey($m.Groups[1].Value)) { $duplicates++ }
+                    $exported[$m.Groups[1].Value] = Get-Normalised $m.Value
+                }
+                # A view can be shipped in more than one file. It matches when the instance has any of its copies.
+                $shippedViews = @{}
+                foreach ($file in Get-ChildItem (Join-Path $PSScriptRoot '..\..\Management Pack\content\reports') -Filter *.xml) {
+                    foreach ($m in [regex]::Matches((Get-Content $file -Raw), $viewRegex, 'Singleline')) {
+                        if (-not $shippedViews.ContainsKey($m.Groups[1].Value)) { $shippedViews[$m.Groups[1].Value] = @() }
+                        $shippedViews[$m.Groups[1].Value] += [pscustomobject]@{ File = $file.BaseName; Block = Get-Normalised $m.Value }
+                    }
+                }
+                $missing = @(); $changed = @(); $conflicting = @()
+                foreach ($id in $shippedViews.Keys) {
+                    $copies = $shippedViews[$id]
+                    if (@($copies.Block | Select-Object -Unique).Count -gt 1) { $conflicting += "$id in $(@($copies.File) -join ' and ')" }
+                    if (-not $exported.ContainsKey($id)) { $missing += $copies[0].File }
+                    elseif ($copies.Block -notcontains $exported[$id]) { $changed += $copies[0].File }
+                }
+                $status = $duplicates -or $missing ? 'FAIL' : ($changed ? 'WARN' : 'PASS')
+                $detail = "$($shippedViews.Count) shipped, $($exported.Count) on the instance, duplicate IDs $duplicates, missing $($missing.Count), changed since install $($changed.Count)"
+                if ($missing -or $changed) { $detail += " -- $(@($missing + $changed | Select-Object -Unique -First 5) -join ', ')" }
+                Add-Result $status 'Content: views' $detail
+                if ($conflicting) {
+                    Add-Result 'WARN' 'Content: views shipped twice' "$($conflicting.Count) view(s) in two files with different content; the last imported wins -- $(@($conflicting | Select-Object -First 3) -join '; ')"
+                }
+
+                $dashboardCount = @{}
+                foreach ($entry in $outer.Entries | Where-Object { $_.FullName -like 'dashboards/*' -and $_.Name }) {
+                    $inner = [IO.Compression.ZipArchive]::new((Read-Entry $outer $entry.FullName))
+                    foreach ($d in (Read-Text $inner 'dashboard/dashboard.json' | ConvertFrom-Json -Depth 100).dashboards) { $dashboardCount[$d.id] = 1 + [int]$dashboardCount[$d.id] }
+                }
+                $missing = @(); $doubled = @(); $shipped = 0
+                foreach ($file in Get-ChildItem (Join-Path $PSScriptRoot '..\..\Management Pack\content\dashboards') -Filter *.json -Recurse) {
+                    foreach ($d in (Get-Content $file -Raw | ConvertFrom-Json -Depth 100).dashboards) {
+                        $shipped++
+                        if (-not $dashboardCount[$d.id]) { $missing += $d.name } elseif ($dashboardCount[$d.id] -gt 1) { $doubled += $d.name }
+                    }
+                }
+                $status = $missing -or $doubled ? 'FAIL' : 'PASS'
+                $detail = "$shipped shipped, missing $($missing.Count), more than once $($doubled.Count)"
+                if ($missing -or $doubled) { $detail += " -- $(@($missing + $doubled | Select-Object -First 5) -join ', ')" }
+                Add-Result $status 'Content: dashboards' $detail
+                $outer.Dispose()
+            } finally {
+                Remove-Item $zipFile -ErrorAction SilentlyContinue
+            }
+        }
+    }
 } catch {
-    $msg = $_.Exception.Message
+    $msg = "$($_.Exception.Message) (line $($_.InvocationInfo.ScriptLineNumber))"
     if ($_.ErrorDetails.Message) { $msg += " | $($_.ErrorDetails.Message)" }
     Add-Result 'FAIL' 'Script error' $msg
 }

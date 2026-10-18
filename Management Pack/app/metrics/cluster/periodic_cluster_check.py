@@ -32,7 +32,7 @@ the check's own metrics, and of the three KPIs, for all its clusters. A cluster 
     - its latest check metric is older than the latest window end: not yet calculated for that window, and
     - a KPI has a sample at or after the start of that window: there is something to calculate.
 The second condition keeps a cluster without any KPI from being due, and read, every cycle.
-At most MAX_CLUSTERS_PER_CYCLE due clusters are calculated per cycle, the rest in the next cycles, so the
+At most MAX_CLUSTERS_PER_CYCLE due clusters are calculated per cycle, taken in turn (this_cycle()), so the
 history is not read all at once. A cluster whose history could not be read stays due, and is tried again.
 
 No state is kept, in the adapter or as properties: the timestamps of the published metrics are the state. A
@@ -48,7 +48,7 @@ from typing import Dict, List, NamedTuple, Optional, Tuple
 from aria.ops.suite_api_client import SuiteApiClient
 from constants.main import VCENTER_ADAPTER_KIND
 from metrics.cluster import cluster_performance_metrics, cluster_risk_metrics, cluster_consumption_metrics
-from utils.ops_stats import query_resources, read_latest_timestamps, read_stat_history
+from utils.ops_stats import COLLECTION_CYCLE_MINUTES, query_resources, read_latest_timestamps, read_stat_history
 
 logger = logging.getLogger(__name__)
 
@@ -162,6 +162,22 @@ def latest_window_end(now: datetime, hour: int, minute: int, period_hours: int =
     anchor = now.replace(hour=hour, minute=minute, second=0, microsecond=0) - timedelta(days=1)
     period = timedelta(hours=period_hours)
     return anchor + period * ((now - anchor) // period)
+
+
+def this_cycle(due: list, now: datetime, window_end: datetime, limit: Optional[int] = None) -> list:
+    """The due clusters to calculate this cycle: at most limit (MAX_CLUSTERS_PER_CYCLE), taken in turn.
+
+    Each cycle after the window end starts limit further along the list, wrapping around. A cluster that stays
+    due without result, such as one whose window has no data after a collection gap, then does not keep the
+    others waiting: every due cluster gets its turn within ceil(due / limit) cycles. No state is needed: the
+    position comes from the time since the window end.
+    """
+    limit = limit or MAX_CLUSTERS_PER_CYCLE
+    if len(due) <= limit:
+        return due
+    cycle = int((now - window_end).total_seconds() // (COLLECTION_CYCLE_MINUTES * 60))
+    start = (cycle * limit) % len(due)
+    return (due[start:] + due[:start])[:limit]
 
 
 def window_end_text(window_end: datetime) -> str:
@@ -279,7 +295,7 @@ def read_periodic_cluster_check(
     due = [cluster for cluster in clusters if is_due(cluster)]
     if not due:
         return {}
-    due = sorted(due, key=lambda cluster: cluster.id)[:MAX_CLUSTERS_PER_CYCLE]
+    due = this_cycle(sorted(due, key=lambda cluster: cluster.id), now, window_end)
     logger.info(f"Periodic Cluster Check: {len(due)} of {len(clusters)} clusters due for the {period_hours} hours "
                 f"to {end_text}, worst {worst_percent} %.")
     failed: List[str] = []

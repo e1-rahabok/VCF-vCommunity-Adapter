@@ -4,7 +4,7 @@
 Run from the "Management Pack" folder:  python -m pytest tests
 """
 import sys
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "app"))
@@ -208,6 +208,18 @@ def test_a_changed_setting_applies_from_the_next_window():
     # A cluster that is due uses the new setting.
     results = pc.read_periodic_cluster_check(api_with({}), "ai-1", "00:00", NOW, worst_percent_setting="10")
     assert results["domain-c1"].worst_percent == 10
+
+
+def test_due_clusters_are_taken_in_turn_when_there_are_more_than_the_limit():
+    # 5 due clusters, 2 per cycle. A cluster that stays due without result does not block the others.
+    due = ["a", "b", "c", "d", "e"]
+    end = datetime(2026, 10, 12, 0, 0, tzinfo=timezone.utc)
+    cycles = [pc.this_cycle(due, end + timedelta(minutes=5 * n + 1), end, limit=2) for n in range(3)]
+    assert cycles == [["a", "b"], ["c", "d"], ["e", "a"]]
+    # Every due cluster had its turn within ceil(5 / 2) = 3 cycles.
+    assert set(sum(cycles, [])) == set(due)
+    # Up to the limit, all of them every cycle.
+    assert pc.this_cycle(["a", "b"], end, end, limit=2) == ["a", "b"]
 
 
 def test_unreadable_timestamps_calculate_nothing():
