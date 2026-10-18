@@ -89,13 +89,20 @@ def get_adapter_definition() -> AdapterDefinition:
         definition.define_string_parameter(
             constants.main.HOST_IDENTIFIER,
             "vCenter Server",
-            description="FQDN or IP address of the vCenter Server instance.",
+            description="The FQDN or IP address of the vCenter Server to collect from. Example: "
+                        "vcenter01.corp.local. Use the same name as the vCenter's own adapter instance in VCF "
+                        "Operations, so the properties land on the right objects.",
         )
 
         definition.define_string_parameter(
             "esxi_adv_settings_config_file",
             label="ESXi Advanced System Settings Config File",
-            description="Enter the configuration file name that contains ESXi Advanced System Settings.",
+            description="The name of the configuration file that lists the ESXi advanced settings to collect as "
+                        "properties. Give the name without .xml. Example: esxi_advanced_system_settings_prod. "
+                        "Find the files under Configurations > Management Pack Configuration. The default file "
+                        "is a reference with every entry commented out, so it collects nothing. Clone it, "
+                        "uncomment the settings you want, and enter the clone's name here. A property stays on "
+                        "the object once it has been collected, so add only the settings you need.",
             default="esxi_advanced_system_settings",
             required=False,
         )
@@ -103,7 +110,11 @@ def get_adapter_definition() -> AdapterDefinition:
         definition.define_string_parameter(
             "esxi_vib_driver_config_file",
             label="ESXi Software Packages Config File",
-            description="Enter the configuration file name that contains ESXi Software Package names.",
+            description="The name of the configuration file that lists the ESXi software packages (VIBs and "
+                        "drivers) whose versions are collected as properties. Give the name without .xml. "
+                        "Example: esxi_packages_prod. The default file is a reference with every entry commented "
+                        "out. Clone it, uncomment the packages you want, such as nmlx5_core or lpfc, and enter "
+                        "the clone's name here.",
             default="esxi_packages",
             required=False,
         )
@@ -111,7 +122,11 @@ def get_adapter_definition() -> AdapterDefinition:
         definition.define_string_parameter(
             "vm_adv_settings_config_file",
             label="VM Advanced Parameters Config File",
-            description="Enter the configuration file name that contains VM Advanced Parameters.",
+            description="The name of the configuration file that lists the VM advanced parameters (.vmx "
+                        "settings) to collect as properties. Give the name without .xml. Example: "
+                        "vm_advanced_parameters_prod. Clone the default reference file, keep only the parameters "
+                        "you need, and enter the clone's name here. Each parameter is collected for every VM, so "
+                        "a long list adds to the collection time.",
             default="vm_advanced_parameters",
             required=False,
         )
@@ -119,21 +134,27 @@ def get_adapter_definition() -> AdapterDefinition:
         definition.define_string_parameter(
             "vm_configuration_config_file",
             label="VM Options Config File",
-            description="Enter the configuration file name that contains VM Options.",
+            description="The name of the configuration file that lists the VM Options settings to collect as "
+                        "properties. Give the name without .xml. Example: vm_options_prod. Clone the default "
+                        "reference file, keep only the options you need, and enter the clone's name here.",
             default="vm_options",
             required=False,
         )
 
         definition.define_int_parameter(
-            constants.main.PORT_IDENTIFIER, "Port", default=443, advanced=True, description="Enter the port number for vCenter Server"
+            constants.main.PORT_IDENTIFIER, "Port", default=443, advanced=True,
+            description="The HTTPS port of the vCenter Server. Example: 443. Leave it at 443 unless your vCenter "
+                        "is reached through a proxy or load balancer on another port.",
         )
 
         definition.define_enum_parameter(
             periodic_cluster_check.PERIOD_SETTING,
             values=periodic_cluster_check.PERIOD_CHOICES,
             label="Cluster Check Period (hours)",
-            description="Length of the Periodic Cluster Check window, and how often it is calculated: "
-                        "1, 2, 4, 6, 8, 12 or 24 hours.",
+            description="How often you run the check on the cluster's Close or Open for Business status. Start "
+                        "with 6 hours, so you can check faster. Once you're comfortable, set it to 24 hours to "
+                        "match your daily capacity reviews each morning. Use a shorter period if you need to "
+                        "react within the day, but expect the result to be more volatile.",
             default=periodic_cluster_check.DEFAULT_PERIOD,
             required=False,
             advanced=True,
@@ -142,9 +163,11 @@ def get_adapter_definition() -> AdapterDefinition:
         definition.define_string_parameter(
             periodic_cluster_check.TIME_SETTING,
             label="Cluster Check Time (UTC)",
-            description="Time of day, as HH:MM in UTC, when a Periodic Cluster Check window ends. With a period "
-                        "shorter than 24 hours, the other windows end every period from it. The clusters are "
-                        "calculated in the collection cycles after each end.",
+            description="The time of day, as HH:MM in UTC, when a window ends. The other windows end every "
+                        "period after that. Example: with 06:00 and a 6-hour period, windows end at 00:00, 06:00, "
+                        "12:00 and 18:00 UTC. With 22:00 and 24 hours, each result covers 22:00 to 22:00 UTC. "
+                        "Pick a time just after your busy day ends, so a day's results cover a whole business "
+                        "day. Results appear within a few collection cycles after the window ends.",
             default=periodic_cluster_check.DEFAULT_TIME,
             required=False,
             advanced=True,
@@ -153,8 +176,10 @@ def get_adapter_definition() -> AdapterDefinition:
         definition.define_int_parameter(
             periodic_cluster_check.WORST_PERCENT_SETTING,
             label="Cluster Check Worst Percent",
-            description="Each window is summarised by its worst samples: the value with only this share of the "
-                        "samples worse than it. 0 is the single worst sample. 0 to 50.",
+            description="How much of each window's worst time is ignored. Example: with a 24-hour window, "
+                        "setting the bottom 5% means ignoring the worst 14 samples (about 70 minutes). Basically, "
+                        "the 15th-worst value is reported. Setting the value to 0 means the single worst 5-minute "
+                        "sample is returned. 0 to 50.",
             default=periodic_cluster_check.DEFAULT_WORST_PERCENT,
             required=False,
             advanced=True,
@@ -164,8 +189,12 @@ def get_adapter_definition() -> AdapterDefinition:
         definition.define_int_parameter(
             cluster_risk_metrics.MONSTER_CPU_SETTING,
             label="Monster VM CPU (% of host cores)",
-            description="A VM is a CPU monster when its vCPUs are more than this share of its host's physical "
-                        "cores (not threads). 1 to 100.",
+            description="When a VM counts as a CPU monster on its host. A VM is one when its vCPUs exceed this "
+                        "share of the host's physical cores. Hyperthreads don't count. Monster VMs raise Cluster "
+                        "Risk, because they're hard to place and to vMotion. Example: at 50 (the default), on a "
+                        "host with 64 cores and 128 threads, a VM with more than 32 vCPUs is a monster. Range 1 "
+                        "to 100. Lower it if large VMs already give you placement or co-stop trouble at smaller "
+                        "sizes.",
             default=cluster_risk_metrics.DEFAULT_MONSTER_CPU_PERCENT,
             required=False,
             advanced=True,
@@ -174,8 +203,11 @@ def get_adapter_definition() -> AdapterDefinition:
         definition.define_int_parameter(
             cluster_risk_metrics.MONSTER_MEMORY_SETTING,
             label="Monster VM Memory (% of host DRAM)",
-            description="A VM is a memory monster when its memory is more than this share of its host's DRAM, "
-                        "or the Monster VM Memory Minimum, whichever is smaller. 1 to 100.",
+            description="When a VM counts as a memory monster on its host. A VM is one when its configured "
+                        "memory exceeds this share of the host's DRAM, or exceeds Monster VM Memory Minimum, "
+                        "whichever is smaller. Memory tiering (NVMe) doesn't count. Example: at 40 (the default), "
+                        "on a host with 512 GB of DRAM, the limit is the smaller of 205 GB and 256 GB, so a VM "
+                        "over 205 GB is a monster. Range 1 to 100.",
             default=cluster_risk_metrics.DEFAULT_MONSTER_MEMORY_PERCENT,
             required=False,
             advanced=True,
@@ -184,8 +216,11 @@ def get_adapter_definition() -> AdapterDefinition:
         definition.define_int_parameter(
             cluster_risk_metrics.MONSTER_MEMORY_MIN_SETTING,
             label="Monster VM Memory Minimum (GB)",
-            description="The memory that qualifies a VM as a memory monster on any host, however large. On a "
-                        "host where the % of host DRAM is smaller, a smaller VM already qualifies.",
+            description="A memory size that makes a VM a memory monster on any host, however large the host is. "
+                        "Example: at 256 (the default), on a host with 2 TB of DRAM (where 40% would be 819 GB), "
+                        "a 300 GB VM is still a monster. On a smaller host the % of host DRAM gives the lower "
+                        "limit, so a smaller VM already counts. Set it to the largest VM your team can "
+                        "comfortably move or restart on any host.",
             default=cluster_risk_metrics.DEFAULT_MONSTER_MEMORY_MIN_GB,
             required=False,
             advanced=True,
@@ -194,7 +229,11 @@ def get_adapter_definition() -> AdapterDefinition:
         definition.define_string_parameter(
             "win_service_config_file",
             label="Windows Service Configuration File",
-            description="Enter the configuration file name that contains Windows Service Names.",
+            description="The name of the configuration file that lists the Windows services to check inside "
+                        "guest VMs. Give the name without .xml. Example: windows_service_list_sql. Used only when "
+                        "Guest OS Service Monitoring Status is Enabled, and it needs the Windows User Name and "
+                        "Password in the credential. Clone the default file and list only the services you care "
+                        "about, because each one is checked in every Windows VM.",
             default="windows_service_list",
             required=False,
             advanced=True
@@ -203,7 +242,10 @@ def get_adapter_definition() -> AdapterDefinition:
         definition.define_string_parameter(
             "win_event_config_file",
             label="Windows Event Log Configuration File",
-            description="Enter the configuration file name that contains Windows Event Log IDs.",
+            description="The name of the configuration file that lists the Windows event logs and event IDs to "
+                        "collect from guest VMs. Give the name without .xml. Example: windows_event_list_prod. "
+                        "Used only when Windows Event Log Monitoring Status is Enabled, and it needs the Windows "
+                        "credential. Clone the default file and keep the list short.",
             default="windows_event_list",
             required=False,
             advanced=True
@@ -212,7 +254,10 @@ def get_adapter_definition() -> AdapterDefinition:
         definition.define_enum_parameter("serviceMonitoring",
             values=["Enabled", "Disabled"],
             label="Guest OS Service Monitoring Status",
-            description="Choose Yes to enable Service Monitoring",
+            description="Enabled checks the services in the Windows Service Configuration File inside each "
+                        "Windows VM, through VMware Tools, and publishes their state. Disabled (the default) skips "
+                        "this. Turn it on only when the Windows User Name and Password are set in the credential, "
+                        "because it runs a command in every Windows guest and adds to the collection time.",
             default="Disabled",
             required=False,
             advanced=True
@@ -221,7 +266,9 @@ def get_adapter_definition() -> AdapterDefinition:
         definition.define_enum_parameter("winEventMonitoring",
             values=["Enabled", "Disabled"],
             label="Windows Event Log Monitoring Status",
-            description="Choose Enable to activate Windows Event Log Monitoring",
+            description="Enabled collects the events in the Windows Event Log Configuration File from each "
+                        "Windows VM, through VMware Tools. Disabled (the default) skips this. It needs the Windows "
+                        "User Name and Password in the credential.",
             default="Disabled",
             required=False,
             advanced=True
