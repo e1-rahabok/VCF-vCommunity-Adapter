@@ -10,6 +10,15 @@ Recorded on 2026-10-18 while installing `vCommunity_0.4.1.pak` on `https://vcf-m
 - **Not recorded:** cookie values, auth header values and the CSRF token value. The CSRF token is the `secureToken` field (shown as `<secureToken>`). It is one value per login session, sent in every POST body and twice in the upload form.
 - Unrelated background requests are left out (`getCollectionNotifications`, `stateManager.action?mainAction=getState`, `problemalerts.action?mainAction=checkForNewSystemAlerts`).
 
+## Repeating this capture
+
+These notes apply when Claude drives the install in the built-in browser of the Claude desktop app.
+
+1. **A person has to pick the PAK.** BROWSE opens the operating system's file dialog. The built-in browser cannot attach files or control that dialog, so after Claude opens **Add**, someone has to click BROWSE and choose the `.pak` file. Claude can do the rest.
+2. **Add the logging hooks after the Add dialog opens and before clicking UPLOAD.** The network log shows URLs, status codes and response bodies, but not request bodies or form fields, which is why the hooks are needed. Hook both the top window and the `ops_iframe` window, because the wizard's requests come from the frame. Hooks live in page memory: any reload or navigation removes them, so add them again before the next step you want recorded.
+3. **Expect an "unsigned pack" confirmation after NEXT** when signature checking is ignored and the PAK is unsigned. Answer YES to reach the EULA page.
+4. **Remove the token before saving.** The hooks capture the real `secureToken` value in every POST body. Replace it with `<secureToken>` before writing anything to the repo.
+
 ## Sequence
 
 | # | Step | Method | URL | Count |
