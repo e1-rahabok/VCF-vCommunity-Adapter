@@ -27,6 +27,9 @@ from aria.ops.suite_api_client import SuiteApiClient
 from aria.ops.timer import Timer
 from pyVim.connect import Disconnect
 from pyVim.connect import SmartConnect
+from utils import guest_args
+from utils import guest_http
+from utils import tls
 from collectors.cluster.collectClusterData import collect_cluster_data
 from collectors.host.collectHostData import collect_host_data
 from collectors.vm.collectVMData import collect_vm_data
@@ -129,6 +132,27 @@ def get_adapter_definition() -> AdapterDefinition:
         )
 
         definition.define_enum_parameter(
+            constants.main.VCENTER_TLS_VALIDATION,
+            values=tls.VCENTER_MODES,
+            label="vCenter TLS Validation",
+            description="Enabled: the vCenter certificate must be trusted by the Cloud Proxy. "
+                        "Pinned: the certificate must match the vCenter Thumbprint below, for a self-signed or "
+                        "internal CA certificate. Disabled: nothing is checked, for a lab only.",
+            default=tls.DEFAULT_VCENTER_MODE,
+            required=False,
+            advanced=True,
+        )
+
+        definition.define_string_parameter(
+            constants.main.VCENTER_THUMBPRINT,
+            label="vCenter Thumbprint (SHA-256)",
+            description="The SHA-256 thumbprint of the vCenter certificate, as AA:BB:CC:... Only used when "
+                        "vCenter TLS Validation is Pinned.",
+            required=False,
+            advanced=True,
+        )
+
+        definition.define_enum_parameter(
             periodic_cluster_check.PERIOD_SETTING,
             values=periodic_cluster_check.PERIOD_CHOICES,
             label="Cluster Check Period (hours)",
@@ -214,6 +238,18 @@ def get_adapter_definition() -> AdapterDefinition:
             label="Guest OS Service Monitoring Status",
             description="Choose Yes to enable Service Monitoring",
             default="Disabled",
+            required=False,
+            advanced=True
+        )
+
+        definition.define_enum_parameter(
+            constants.main.GUEST_TLS_VALIDATION,
+            values=guest_http.GUEST_MODES,
+            label="Guest File Transfer TLS Validation",
+            description="Pinned: the ESXi host certificate must match the thumbprint that vCenter records for the "
+                        "host. Disabled: nothing is checked, for a lab only. Used only when Guest OS Service or "
+                        "Windows Event Log Monitoring is Enabled.",
+            default=guest_http.DEFAULT_GUEST_MODE,
             required=False,
             advanced=True
         )
@@ -665,6 +701,7 @@ def collect(adapter_instance: AdapterInstance) -> CollectResult:
             start_time = time.perf_counter()
             service_instance = _get_service_instance(adapter_instance)
             content = service_instance.RetrieveContent()
+            guest_http.configure(adapter_instance.get_identifier_value(constants.main.GUEST_TLS_VALIDATION))
             ServiceMonitoringStatus = getServiceMonitoringStatus(adapter_instance)
             WindowsEventLogMonitoringStatus = getWindowsEventLogMonitoringStatus(adapter_instance)
             winUser, winPassword = get_winCredential(adapter_instance)
@@ -677,7 +714,7 @@ def collect(adapter_instance: AdapterInstance) -> CollectResult:
             winEventLogConfigFile = getConfigFile.text
 
             windowsServiceConfigFile = get_win_service_configFile(adapter_instance)
-            windowsServices = get_config_file_data(adapter_instance, windowsServiceConfigFile)
+            windowsServices = guest_args.safe_service_names(get_config_file_data(adapter_instance, windowsServiceConfigFile))
 
             esxiAdvSettingsConfigFile = get_esxi_adv_settings_configFile(adapter_instance)
             esxiAdvSettings = get_config_file_data(adapter_instance, esxiAdvSettingsConfigFile)
@@ -819,9 +856,18 @@ def _get_service_instance(
     user = adapter_instance.get_credential_value(constants.main.USER_CREDENTIAL)
     password = adapter_instance.get_credential_value(constants.main.PASSWORD_CREDENTIAL)
 
-    service_instance = SmartConnect(
-        host=host, port=port, user=user, pwd=password, disableSslCertValidation=True
+    tls_args = tls.vcenter_connect_args(
+        adapter_instance.get_identifier_value(constants.main.VCENTER_TLS_VALIDATION),
+        adapter_instance.get_identifier_value(constants.main.VCENTER_THUMBPRINT),
     )
+
+    try:
+        service_instance = SmartConnect(host=host, port=port, user=user, pwd=password, **tls_args)
+    except Exception as exc:
+        explanation = tls.explain_connect_error(exc, host)
+        if explanation:
+            raise ConnectionError(explanation) from exc
+        raise
 
     atexit.register(Disconnect, service_instance)
 

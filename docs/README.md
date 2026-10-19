@@ -22,7 +22,8 @@ It is built with the [VCF Operations Integration SDK](https://github.com/vmware/
 1. [Policy](configuration-guide/policy.md): activate the metrics the pack needs. They are off by default.
 2. [Adapter Instance](configuration-guide/adapter-instance.md): connect to a vCenter, advanced settings.
 3. [Customization](configuration-guide/customization.md): choose what each Adapter Instance collects.
-4. [Bulk Adapter Instance Importer](../tools/importer/importer.md): create many Adapter Instances from a CSV file.
+4. [TLS and Security Settings](configuration-guide/tls-and-security.md): certificate checks, what runs inside Windows VMs, registry, accounts.
+5. [Bulk Adapter Instance Importer](../tools/importer/importer.md): create many Adapter Instances from a CSV file.
 
 **User Guide**
 

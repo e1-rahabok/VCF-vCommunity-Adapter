@@ -4,7 +4,7 @@
 import os
 import time
 import logging
-import requests
+from utils import guest_http
 import csv
 from io import StringIO
 from pyVmomi import vim
@@ -37,7 +37,7 @@ def fileTransfer(vm, creds, content, scriptPath, tempDir, script):
             overwrite=True
         )
 
-        response = requests.put(url, data=data, verify=False)
+        response = guest_http.put(vm, url, data)
         if response.status_code == 200:
             logger.info(f"Successfully transferred the {remotePath} file to {vm.name}")
             return True
@@ -93,7 +93,7 @@ def checkFile(fileManager, vm, creds, tempDir, fileName):
 
 def readOutput(fileManager, vm, creds, filePath):
     readFile = fileManager.InitiateFileTransferFromGuest(vm, creds, filePath)
-    response = requests.request("GET", readFile.url, headers={}, data={}, verify=False)
+    response = guest_http.get(vm, readFile.url)
     if response.status_code == 200:
         logger.info(f"Successfuly downloaded the file: {filePath} from {vm.name}")
         return response.text
@@ -114,7 +114,7 @@ def createTempFile(fileManager, vm, creds, filePath, data):
             overwrite=True
         )
 
-        response = requests.put(url, data=data, verify=False)
+        response = guest_http.put(vm, url, data)
         if response.status_code == 200:
             logger.info(f"XML data successfully written to {tempFile} on {vm.name}")
             return True, tempFile
