@@ -18,7 +18,7 @@ TLS certificates are not checked (`-SkipCertificateCheck`), as in `validate.ps1`
 - The local **`admin`** account. Steps 1 and 6 use the admin API, which accepts only that account.
 - **Allow Unsigned PAK Installation** turned on: `/admin` → Administrator Settings → Security Settings. It is off on a fresh 9.x install.
 - The URL and login in `.secrets/vcf-ops.xml`, created as described in [Live Validation Test Plan](../validate/validate.md#requirements), or passed as parameters.
-- A built pak. `pwsh tools/build/build.ps1` makes one in `Management Pack/build`.
+- A built pak. `pwsh tools/build/build.ps1` makes one in `Management Pack/build`: see [Build Script](../build/build.md).
 
 ## Running it
 

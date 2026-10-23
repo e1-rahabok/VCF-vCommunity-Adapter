@@ -79,6 +79,7 @@ All pages are listed in the [Documentation index](docs/README.md). To start:
 ## Tools
 
 - **[Bulk Adapter Instance Importer](tools/importer/importer.md)** — Onboard many vCenters at once from a CSV file instead of configuring each Adapter Instance manually.
+- **Contributor tools** — build the pack, install it on a test instance, validate it, and check the docs. See [Tools](tools/README.md).
 
 
 ## Community
