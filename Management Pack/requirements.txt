@@ -1,1 +1,3 @@
 vmware-aria-operations-integration-sdk==1.1.0
+# The unit tests start a local HTTPS server with a generated certificate (tests/tls_server.py).
+cryptography>=42

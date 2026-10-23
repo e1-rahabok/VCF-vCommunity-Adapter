@@ -26,7 +26,7 @@ HTTPS access to **ghcr.io** is required for every Cloud Proxy that runs the VCF 
 
 After installing the `.PAK` file for the first time, the Cloud Proxy will pull the related container image from the registry. The Cloud Proxy will also pull a new container image after every `.PAK` file upgrade. Since the vCommunity MP is continuously updated, it's recommended to keep container registry access available — this way, administrators can always easily upgrade the package.
 
-> If your Cloud Proxy does not have internet access, see [Dark Site Installation](dark-site.md) to work with a private registry instead.
+> If your Cloud Proxy does not have internet access, see [Dark Site Installation](dark-site.md) to work with a private registry instead. In a regulated environment, use the private registry even when internet access is possible: see [TLS and Security Settings](../configuration-guide/tls-and-security.md#container-registry).
 
 FYI, an internet proxy setting is available during OVF deployment of the Cloud Proxy.
 
@@ -47,6 +47,7 @@ Only required if **Windows Service Monitoring** and/or **Windows Event Log Monit
 - **Baseline:** any standard, non-admin domain or local Windows account. Service status (`Get-Service`) and OS info (WMI `Win32_OperatingSystem` + `HKLM` registry read) are both readable by a standard authenticated user by default — no extra permission needed for these.
 - **If Windows Event Log Monitoring is enabled:** the account must also be a member of the local **`Event Log Readers`** group. The `Application`, `Setup`, and `System` logs are readable by any standard user, but `Security` is not — `Event Log Readers` is the built-in group that grants read access to all of them, including `Security`, without full admin rights.
 - **Do not use a local Administrator account** for this credential.
+- The account runs PowerShell inside the VMs. What is run, and how the connection is checked: [TLS and Security Settings](../configuration-guide/tls-and-security.md#what-runs-inside-a-windows-vm).
 
 ---
 

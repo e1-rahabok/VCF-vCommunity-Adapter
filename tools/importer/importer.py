@@ -88,6 +88,9 @@ IDENTIFIER_WIN_SERVICE_CONFIG = "win_service_config_file"
 IDENTIFIER_WIN_EVENT_CONFIG = "win_event_config_file"
 IDENTIFIER_SERVICE_MONITORING = "serviceMonitoring"
 IDENTIFIER_WIN_EVENT_MONITORING = "winEventMonitoring"
+IDENTIFIER_VCENTER_TLS_VALIDATION = "vcenter_tls_validation"
+IDENTIFIER_VCENTER_THUMBPRINT = "vcenter_thumbprint"
+IDENTIFIER_GUEST_TLS_VALIDATION = "guest_tls_validation"
 
 CREDENTIAL_FIELD_USER = "user"
 CREDENTIAL_FIELD_PASSWORD = "password"
@@ -105,7 +108,13 @@ DEFAULTS = {
     "win_event_config_file": "windows_event_list",
     "service_monitoring": "Disabled",
     "win_event_monitoring": "Disabled",
+    "vcenter_tls_validation": "Trust on First Use",
+    "guest_tls_validation": "Pinned",
 }
+
+# Same values as the enum parameters in adapter.py (utils/tls.py and utils/guest_http.py).
+VCENTER_TLS_MODES = ("Trust on First Use", "Enabled", "Pinned")
+GUEST_TLS_MODES = ("Pinned", "Strict", "Disabled")
 
 
 @dataclass
@@ -127,6 +136,32 @@ class VCenterRow:
     win_user: str
     win_pass: str
     collector_name: str
+    vcenter_tls_validation: str = "Trust on First Use"
+    vcenter_thumbprint: str = ""
+    guest_tls_validation: str = "Pinned"
+
+
+def _choice(raw: dict, column: str, allowed: tuple, lineno: int) -> str:
+    """The value of a column that must be one of `allowed`, in its canonical spelling. Blank gives the default."""
+    value = (raw.get(column) or "").strip() or DEFAULTS[column]
+    for known in allowed:
+        if value.lower() == known.lower():
+            return known
+    raise ValueError(f"CSV row {lineno}: {column} must be one of {', '.join(allowed)}, not '{value}'.")
+
+
+def _thumbprint(raw: dict, lineno: int) -> str:
+    """The vCenter thumbprint, checked as the adapter checks it: SHA-256 or SHA-512, as hex with or without ':'."""
+    value = (raw.get("vcenter_thumbprint") or "").strip()
+    if not value:
+        return ""
+    hex_only = value.replace(":", "").replace(" ", "")
+    if len(hex_only) not in (64, 128) or any(c not in "0123456789abcdefABCDEF" for c in hex_only):
+        raise ValueError(
+            f"CSV row {lineno}: vcenter_thumbprint must be a SHA-256 (64 hex characters) or SHA-512 (128) value, "
+            f"with or without ':' between the bytes. SHA-1 is not accepted."
+        )
+    return value
 
 
 def read_csv(path: str) -> list[VCenterRow]:
@@ -142,6 +177,16 @@ def read_csv(path: str) -> list[VCenterRow]:
                 raise ValueError(
                     f"CSV row {lineno}: vcenter_host/vcenter_user/vcenter_password are required, "
                     f"a value is missing/empty."
+                )
+
+            tls_validation = _choice(raw, "vcenter_tls_validation", VCENTER_TLS_MODES, lineno)
+            thumbprint = _thumbprint(raw, lineno)
+            if tls_validation == "Pinned" and not thumbprint:
+                raise ValueError(f"CSV row {lineno}: vcenter_tls_validation is Pinned, but vcenter_thumbprint is empty.")
+            if tls_validation != "Pinned" and thumbprint:
+                raise ValueError(
+                    f"CSV row {lineno}: vcenter_thumbprint is set, but vcenter_tls_validation is {tls_validation}. "
+                    f"Set it to Pinned, or empty the thumbprint."
                 )
 
             rows.append(VCenterRow(
@@ -162,6 +207,9 @@ def read_csv(path: str) -> list[VCenterRow]:
                 win_user=(raw.get("win_user") or "").strip(),
                 win_pass=(raw.get("win_pass") or "").strip(),
                 collector_name=(raw.get("collector_name") or "").strip(),
+                vcenter_tls_validation=tls_validation,
+                vcenter_thumbprint=thumbprint,
+                guest_tls_validation=_choice(raw, "guest_tls_validation", GUEST_TLS_MODES, lineno),
             ))
     return rows
 
@@ -321,7 +369,7 @@ class VcfOpsClient:
 
 
 def build_resource_identifiers(row: VCenterRow) -> list[dict]:
-    return [
+    identifiers = [
         {"name": IDENTIFIER_HOST, "value": row.vcenter_host},
         {"name": IDENTIFIER_PORT, "value": row.vcenter_port},
         {"name": IDENTIFIER_ESXI_ADV_SETTINGS, "value": row.esxi_adv_settings_config_file},
@@ -332,7 +380,12 @@ def build_resource_identifiers(row: VCenterRow) -> list[dict]:
         {"name": IDENTIFIER_WIN_EVENT_CONFIG, "value": row.win_event_config_file},
         {"name": IDENTIFIER_SERVICE_MONITORING, "value": row.service_monitoring},
         {"name": IDENTIFIER_WIN_EVENT_MONITORING, "value": row.win_event_monitoring},
+        {"name": IDENTIFIER_VCENTER_TLS_VALIDATION, "value": row.vcenter_tls_validation},
+        {"name": IDENTIFIER_GUEST_TLS_VALIDATION, "value": row.guest_tls_validation},
     ]
+    if row.vcenter_thumbprint:  # an empty value is not sent: the identifier is optional
+        identifiers.append({"name": IDENTIFIER_VCENTER_THUMBPRINT, "value": row.vcenter_thumbprint})
+    return identifiers
 
 
 def build_credential_fields(row: VCenterRow) -> list[dict]:
