@@ -121,6 +121,12 @@ def has_no_usable_capacity(cluster_stats: Dict[str, float]) -> bool:
             or usable_percent(cluster_stats, MEM_USABLE, MEM_TOTAL) == 0.0)
 
 
+def host_is_running(host: HostInfo, stats_by_host: StatsByHost) -> bool:
+    """True when the host can run VMs and reports its CPU: not down, powered off, in maintenance mode or
+    disconnected. A cluster with no running host has no consumption at all."""
+    return not host_is_gone(host, stats_by_host.get(host.id, {}).get(CPU_THREAD_UTIL))
+
+
 def usable_capacity(hosts: List[HostInfo], stats_by_host: StatsByHost, tier_stats_by_host: StatsByHost,
                     cluster_stats: Dict[str, float]) -> UsableCapacity:
     """The Usable Capacity of the cluster, per resource, in the unit its rows need."""
@@ -128,8 +134,7 @@ def usable_capacity(hosts: List[HostInfo], stats_by_host: StatsByHost, tier_stat
     memory_percent = usable_percent(cluster_stats, MEM_USABLE, MEM_TOTAL)
 
     # CPU: the running hosts that report their CPU utilization, counted in threads.
-    cpu_hosts = [host for host in hosts if host.threads
-                 and not host_is_gone(host, stats_by_host.get(host.id, {}).get(CPU_THREAD_UTIL))]
+    cpu_hosts = [host for host in hosts if host.threads and host_is_running(host, stats_by_host)]
     cpu_threads = sum(host.threads for host in cpu_hosts)
 
     # DRAM: the running hosts that report their DRAM and their consumed memory. Never DRAM plus a memory tier.
@@ -278,9 +283,16 @@ def collect_cluster_consumption_metrics(
                             f"{total_key} = {cluster_stats.get(total_key)})")
         values = consumption_values(hosts, stats_by_host, tier_stats_by_host, cluster_stats)
 
+        if not any(host_is_running(host, stats_by_host) for host in hosts):
+            # No host runs (all down, powered off, in maintenance mode or disconnected): no VM runs, so nothing is
+            # consumed. Not full: no data, whatever VCF Operations reports as Usable Capacity.
+            logger.info(f"Cluster Consumption for {cluster_name}: no host runs, so no data")
+            return
+
         if has_no_usable_capacity(cluster_stats):
-            # HA and the Buffer leave nothing to VMs: the cluster is full, whatever the rows say. Publish the rows
-            # that still have a value (metrics=[] scores nothing), then the KPI at 100: fully consumed.
+            # Hosts run, but HA and the Buffer leave nothing to VMs: the VMs that run consume capacity that is not
+            # usable, so the cluster is full, whatever the rows say. Publish the rows that still have a value
+            # (metrics=[] scores nothing), then the KPI at 100: fully consumed.
             publish_kpi(cluster_obj, GROUP, KPI_KEY, [], PUBLISHED_METRICS, values, higher_is_worse=HIGHER_IS_WORSE)
             cluster_obj.with_metric(f"vCommunity|{GROUP}|{KPI_KEY}", FULL)
             logger.info(f"Cluster Consumption for {cluster_name}: no Usable Capacity, so {FULL} (fully consumed)")

@@ -177,6 +177,16 @@ def test_no_usable_capacity_is_fully_consumed():
     assert obj.metrics == {f"vCommunity|{cc.GROUP}|{cc.KPI_KEY}": 100.0}
 
 
+def test_no_host_running_is_no_data_not_full():
+    # All hosts in maintenance mode: no VM runs, so nothing is consumed. Even if VCF Operations reports Usable
+    # Capacity 0, the cluster is not "full": nothing is published.
+    hosts = [host("host-1", 32.0, maintenance_state="inMaintenance"), host("host-2", 16.0, maintenance_state="inMaintenance")]
+    for stats in (cluster(0.0), cluster(0.8)):
+        obj = FakeObject("cluster-1")
+        cc.collect_cluster_consumption_metrics(obj, "Cluster 1", hosts, STATS, {}, stats)
+        assert obj.metrics == {}
+
+
 def test_no_usable_cpu_keeps_the_memory_rows():
     obj = FakeObject("cluster-1")
     cc.collect_cluster_consumption_metrics(obj, "Cluster 1", HOSTS, STATS, {}, {**cluster(1.0), cc.CPU_USABLE: 0.0})
