@@ -33,7 +33,7 @@ It does not fit VMware Cloud Foundation operations. The colors of the source tab
 
 ## Weighted sum by color
 
-**What the operator sees.** A KPI that only grows as sub-metrics get worse, and where every bad sub-metric adds its share. It answers "how much is wrong, in total".
+**What the operator sees.** A KPI that only grows as sub-metrics get worse, and where every bad sub-metric adds its part. It answers "how much is wrong, in total".
 
 **Where it fails.** It runs out of scale. Once two sub-metrics are red, the KPI is at its end, so a cluster with two red leading indicators looks the same as one with six. A sum also needs a fixed scale: someone decides how many reds make 100, and that choice is not in the source tables.
 

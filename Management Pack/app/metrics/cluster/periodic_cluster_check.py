@@ -65,7 +65,7 @@ PERIOD_SETTING = "cluster_check_period_hours"
 PERIOD_HOURS = ["01", "02", "04", "06", "08", "12", "24"]     # each divides 24
 PERIOD_CHOICES = [(hours, f"{hours} hour{'s' if hours != '01' else ''}") for hours in PERIOD_HOURS]
 DEFAULT_PERIOD = "24"
-# Account setting (Advanced Settings): the share of the period's samples, at its worst end, that is ignored.
+# Account setting (Advanced Settings): the % of the period's samples, at its worst end, that is ignored.
 # Above 50 makes no sense: it would summarise the period by its better half.
 WORST_PERCENT_SETTING = "cluster_check_worst_percent"
 DEFAULT_WORST_PERCENT = 5

@@ -156,7 +156,7 @@ def test_sub_metric_names_are_unique_and_published_ones_exist():
 
 def test_no_metric_key_equals_a_group_key():
     # VCF Operations rejects the pack when a metric key equals the key of its group, or of another KPI group
-    # on the same object. The KPIs of one object share the "vCommunity" group, so all their keys are checked
+    # on the same object. The KPIs of one object use the same "vCommunity" group, so all their keys are checked
     # together. mp-build found this; the unit tests did not, until this test.
     from metrics.cluster import cluster_performance_metrics, cluster_risk_metrics
     from metrics.host import esxi_performance_metrics

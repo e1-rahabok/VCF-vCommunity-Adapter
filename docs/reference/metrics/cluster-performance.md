@@ -15,7 +15,7 @@ Source of the sub-metrics and limits: [`formula/cluster-performance.png`](formul
 The sub-metrics answer two questions about the powered-on VMs in the cluster:
 
 - **How deep?** The worst VM. Shows a problem that hits one VM hard.
-- **How broad?** The 90th percentile across the VMs. Shows a problem that many VMs share.
+- **How broad?** The 90th percentile across the VMs. Shows a problem that many VMs have.
 
 Every sub-metric is "lower is better", and 0 is perfect.
 
@@ -89,7 +89,7 @@ The worst-VM rows have higher limits than the 90th-percentile rows, because a si
   - Bad network packets are 0, so they are skipped. The other 7 score 100 with weight 1.
   - KPI = `(7 × 100 + 18.75 × 8) / (7 + 8)` = `850 / 15` ≈ **56.67**.
   - A plain average would give about 89.8. The weighting makes the one bad sub-metric show.
-- **Same as the first example, except a tiny share of bad packets (0.005 %).** It is yellow, scores about 74.4 with weight 2, and now counts. KPI ≈ **94.88**.
+- **Same as the first example, except a tiny % of bad packets (0.005 %).** It is yellow, scores about 74.4 with weight 2, and now counts. KPI ≈ **94.88**.
 - **One VM has 200 ms disk latency, the others 0.** Worst VM Disk Latency is 200 (orange to red). The 90th percentile stays 0, because one VM is not a broad problem.
 
 The same examples are checked by the tests in [`Management Pack/tests/test_cluster_performance_metrics.py`](../../../Management%20Pack/tests/test_cluster_performance_metrics.py).
@@ -112,11 +112,11 @@ Common reasons for no data: the cluster has no powered-on VMs, the vCenter adapt
 
 ## Changing the KPI
 
-The sub-metrics, their units and their limits are one table, `METRICS`, at the top of the code file.
+The code follows the KPI: one section per row, in the order of the source table, with the row's limits, the stats it reads and its formula. The 8 VM contention rows are the same in Cluster Performance and ESXi Performance, so they are defined once, in [`Management Pack/app/metrics/vm_contention.py`](../../../Management%20Pack/app/metrics/vm_contention.py): a limit changed there changes in both KPIs.
 
 The tiers and weights are a second table, `TIERS`, in [`Management Pack/app/metrics/kpi_score.py`](../../../Management%20Pack/app/metrics/kpi_score.py). That file holds the scoring for every KPI, so a change there changes all of them.
 
 - To change a limit, edit the row.
-- To add a VM stat, add a line to `VM_STATS` and its two rows (worst VM and 90th percentile) to `METRICS`.
+- To add a VM stat, add one section to `vm_contention.py` with the stat and its two rows (worst VM and 90th percentile), and add it to `VM_CONTENTION`. Both KPIs then have the two new rows.
 
 The adapter definition reads the same table, so there is nothing else to update.

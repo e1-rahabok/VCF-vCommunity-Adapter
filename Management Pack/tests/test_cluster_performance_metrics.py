@@ -30,7 +30,7 @@ def test_one_red_metric_is_not_hidden_by_seven_good_ones():
 
 
 def test_any_bad_packet_is_yellow_and_counts():
-    # Green is exactly 0. A tiny share of bad packets is already yellow: it scores almost 75, with weight 2.
+    # Green is exactly 0. A tiny % of bad packets is already yellow: it scores almost 75, with weight 2.
     # KPI = (8 x 100 + 74.38 x 2) / (8 + 2) = 94.88
     assert kpi_score(cp.METRICS, {**ALL_ZERO, "Highest ESXi Bad Network Packets": 0.005}) == 94.88
 

@@ -34,7 +34,7 @@ The first decision is whether to overcommit.
 | Workload type | What it means | Planning parameters |
 | :--- | :--- | :--- |
 | **Mono** | One class of service. Every VM in the cluster gets equal treatment. | Buffer, Utilization |
-| **Mix** | Gold, Silver and Bronze VMs share the same physical infrastructure. Mixing Kubernetes and VMs uses the same technique. | Buffer, Utilization, Reservation |
+| **Mix** | Gold, Silver and Bronze VMs run on the same physical infrastructure. Mixing Kubernetes and VMs uses the same technique. | Buffer, Utilization, Reservation |
 
 | Planning parameter | Meaning |
 | :--- | :--- |

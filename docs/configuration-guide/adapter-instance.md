@@ -57,9 +57,9 @@ You can expand the adapter configuration by clicking **Advanced Settings**.
 | **vCenter Thumbprint (SHA-256)** | *(empty)* | The certificate thumbprint to accept. Used only when vCenter TLS Validation is `Pinned`. |
 | **Cluster Check Period (hours)** | `24` | Length of each [Periodic Cluster Check](../reference/metrics/periodic-cluster-check.md#settings) window, and how often it is calculated: 1, 2, 4, 6, 8, 12 or 24 hours. |
 | **Cluster Check Time (UTC)** | `00:00` | Time of day, as HH:MM in UTC, when a Periodic Cluster Check window ends. With a shorter period, the other windows end every period from it. An empty or invalid value uses `00:00`. |
-| **Cluster Check Worst Percent** | `5` | Each [Periodic Cluster Check](../reference/metrics/periodic-cluster-check.md#worst) window is summarised by its worst end: this share of the worst samples is ignored. 0 is the single worst sample. 0 to 50. |
-| **Monster VM CPU (% of host cores)** | `50` | A VM is a CPU monster when its vCPUs are more than this share of its host's physical cores. Used by [Cluster Risk](../reference/metrics/cluster-risk.md#when-a-vm-is-a-monster). 1 to 100. |
-| **Monster VM Memory (% of host DRAM)** | `40` | A VM is a memory monster when its memory is more than this share of its host's DRAM, or the minimum below, whichever is smaller. 1 to 100. |
+| **Cluster Check Worst Percent** | `5` | Each [Periodic Cluster Check](../reference/metrics/periodic-cluster-check.md#worst) window is summarised by its worst end: this % of the worst samples is ignored. 0 is the single worst sample. 0 to 50. |
+| **Monster VM CPU (% of host cores)** | `50` | A VM is a CPU monster when its vCPUs are more than this % of its host's physical cores. Used by [Cluster Risk](../reference/metrics/cluster-risk.md#when-a-vm-is-a-monster). 1 to 100. |
+| **Monster VM Memory (% of host DRAM)** | `40` | A VM is a memory monster when its memory is more than this % of its host's DRAM, or the minimum below, whichever is smaller. 1 to 100. |
 | **Monster VM Memory Minimum (GB)** | `256` | The memory that qualifies a VM as a memory monster on any host, however large. On a host where the % of host DRAM is smaller, a smaller VM already qualifies. |
 | **Windows Service Configuration File** | `windows_service_list.xml` | File used to define which Windows Services to monitor. (Location: System Defined configurations) |
 | **Guest OS Service Monitoring Status** | `Disabled` | Toggles Windows Service monitoring using the `windows_service_list.xml` file. Set to `Enabled` to activate. |

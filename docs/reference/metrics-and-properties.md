@@ -53,26 +53,26 @@ Every property and metric the vCommunity Management Pack pushes to VCF Operation
 | 🟢 Metric | `vCommunity\|Cluster Performance\|90th Percentile VM CPU Co-Stop` | 20-second peak CPU Co-Stop (%) that 90 % of the powered-on VMs in the cluster are at or below. |
 | 🟢 Metric | `vCommunity\|Cluster Performance\|90th Percentile VM Memory Latency` | 20-second peak memory contention (%) that 90 % of the powered-on VMs in the cluster are at or below. |
 | 🟢 Metric | `vCommunity\|Cluster Performance\|90th Percentile VM Disk Latency` | 20-second peak virtual disk latency (ms) that 90 % of the powered-on VMs in the cluster are at or below. |
-| 🟢 Metric | `vCommunity\|Cluster Performance\|Highest ESXi Bad Network Packets` | Errored and dropped packets as a share (%) of all packets in the last 5 minutes, on the worst host in the cluster. Needs Total Packets Received and Transmitted activated in the policy: see [Required Policy Settings](../configuration-guide/policy.md). |
+| 🟢 Metric | `vCommunity\|Cluster Performance\|Highest ESXi Bad Network Packets` | Errored and dropped packets as a % of all packets in the last 5 minutes, on the worst host in the cluster. Needs Total Packets Received and Transmitted activated in the policy: see [Required Policy Settings](../configuration-guide/policy.md). |
 | 🟢 Metric | `vCommunity\|Cluster Risk\|Cluster Risk Score` | Key Performance Indicator (0-100 %) of the cluster's risk, combining the 12 sub-metrics below. Higher is worse: 0 is no risk, 100 is maximum risk, red is 75–100 (the other KPIs are red at 0–25). See [Bands](metrics/cluster-risk.md#bands-red-is-high). See [Cluster Risk KPI](metrics/cluster-risk.md) for the formula. |
 | 🟢 Metric | `vCommunity\|Cluster Risk\|Highest ESXi CPU Thread Utilization` | CPU thread utilization (%, `cpu.utilization`) of the busiest host in the cluster. |
 | 🟢 Metric | `vCommunity\|Cluster Risk\|Worst ESXi CPU Imbalance` | Running CPU threads divided by running CPU cores, on the worst host. 1 is one thread per busy core, 2 is both hyper-threads on every busy core. |
-| 🟢 Metric | `vCommunity\|Cluster Risk\|Highest ESXi Memory Consumed` | Consumed memory as a share (%) of host DRAM, on the fullest host. |
-| 🟢 Metric | `vCommunity\|Cluster Risk\|Worst ESXi Memory Ballooned` | Ballooned memory as a share (%) of host DRAM, on the worst host. |
-| 🟢 Metric | `vCommunity\|Cluster Risk\|Worst ESXi Memory Zip Swap` | Compressed plus swapped memory as a share (%) of host DRAM, on the worst host. |
+| 🟢 Metric | `vCommunity\|Cluster Risk\|Highest ESXi Memory Consumed` | Consumed memory as a % of host DRAM, on the fullest host. |
+| 🟢 Metric | `vCommunity\|Cluster Risk\|Worst ESXi Memory Ballooned` | Ballooned memory as a % of host DRAM, on the worst host. |
+| 🟢 Metric | `vCommunity\|Cluster Risk\|Worst ESXi Memory Zip Swap` | Compressed plus swapped memory as a % of host DRAM, on the worst host. |
 | 🟢 Metric | `vCommunity\|Cluster Risk\|Worst ESXi Memory Tiering Latency` | Read latency (µs) of the NVMe memory tier, on the worst host. Published only when a host in the cluster has memory tiering. |
-| 🟢 Metric | `vCommunity\|Cluster Risk\|Highest ESXi CPU Reservation` | Reserved CPU as a share (%) of host CPU capacity, on the highest host. |
-| 🟢 Metric | `vCommunity\|Cluster Risk\|Highest ESXi Memory Reservation` | Reserved memory as a share (%) of host DRAM, on the highest host. |
+| 🟢 Metric | `vCommunity\|Cluster Risk\|Highest ESXi CPU Reservation` | Reserved CPU as a % of host CPU capacity, on the highest host. |
+| 🟢 Metric | `vCommunity\|Cluster Risk\|Highest ESXi Memory Reservation` | Reserved memory as a % of host DRAM, on the highest host. |
 | 🟢 Metric | `vCommunity\|Cluster Risk\|Highest ESXi CPU Overcommit Ratio` | vCPUs allocated to the powered-on VMs per physical core, on the highest host. |
 | 🟢 Metric | `vCommunity\|Cluster Risk\|Highest ESXi Memory Overcommit Ratio` | Memory allocated to the powered-on VMs per unit of host DRAM, on the highest host. |
 | 🟢 Metric | `vCommunity\|Cluster Risk\|Highest CPU Monster VM to Host Ratio` | vCPUs of the largest powered-on VM against half the physical cores of its host (by default, see [When a VM is a monster](metrics/cluster-risk.md#when-a-vm-is-a-monster)). Above 1 the VM is a monster. |
 | 🟢 Metric | `vCommunity\|Cluster Risk\|Highest Memory Monster VM to Host Ratio` | Memory of the largest powered-on VM against 40 % of its host's DRAM (not DRAM + NVMe) or 256 GB, whichever is smaller (by default). Above 1 the VM is a monster. |
 | 🟢 Metric | `vCommunity\|Cluster Consumption\|Cluster Consumption Score` | Key Performance Indicator (0-100 %) of how much of the cluster's usable capacity (Total − HA − Buffer) is consumed, combining the 5 sub-metrics below. Higher is worse, like Cluster Risk: red is 75–100. See [Cluster Consumption KPI](metrics/cluster-consumption.md) for the formula. |
-| 🟢 Metric | `vCommunity\|Cluster Consumption\|Cluster-wide ESXi CPU Thread Utilization` | CPU threads in use on all running hosts, as a share (%) of their usable threads. |
-| 🟢 Metric | `vCommunity\|Cluster Consumption\|Cluster-wide ESXi Memory Consumed` | Consumed memory of all running hosts, as a share (%) of their usable DRAM. |
-| 🟢 Metric | `vCommunity\|Cluster Consumption\|Cluster Memory Tiering Consumption` | NVMe memory tier in use on all running hosts, as a share (%) of their usable NVMe tier. Published only when the cluster has memory tiering. |
-| 🟢 Metric | `vCommunity\|Cluster Consumption\|Cluster-wide ESXi Memory Ballooned` | Ballooned memory of all running hosts, as a share (%) of their usable DRAM. |
-| 🟢 Metric | `vCommunity\|Cluster Consumption\|Cluster-wide ESXi Memory Zip Swap` | Compressed plus swapped memory of all running hosts, as a share (%) of their usable DRAM. |
+| 🟢 Metric | `vCommunity\|Cluster Consumption\|Cluster-wide ESXi CPU Thread Utilization` | CPU threads in use on all running hosts, as a % of their usable threads. |
+| 🟢 Metric | `vCommunity\|Cluster Consumption\|Cluster-wide ESXi Memory Consumed` | Consumed memory of all running hosts, as a % of their usable DRAM. |
+| 🟢 Metric | `vCommunity\|Cluster Consumption\|Cluster Memory Tiering Consumption` | NVMe memory tier in use on all running hosts, as a % of their usable NVMe tier. Published only when the cluster has memory tiering. |
+| 🟢 Metric | `vCommunity\|Cluster Consumption\|Cluster-wide ESXi Memory Ballooned` | Ballooned memory of all running hosts, as a % of their usable DRAM. |
+| 🟢 Metric | `vCommunity\|Cluster Consumption\|Cluster-wide ESXi Memory Zip Swap` | Compressed plus swapped memory of all running hosts, as a % of their usable DRAM. |
 | 🟢 Metric | `vCommunity\|Capacity\|CPU Utilization` | Sum of the running hosts' CPU Utilization (%) ÷ (N − max(k, gone hosts)), k = HA host failures tolerated. Can be above 100 %. Assumes hosts of equal size. See [Capacity Utilization](metrics/capacity-utilization.md#known-limitations). |
 | 🟢 Metric | `vCommunity\|Capacity\|Memory Utilization` | Sum of the running hosts' Memory Consumed (% of DRAM) ÷ (N − max(k, gone hosts)). Same limitations. |
 | 🟢 Metric | `vCommunity\|Periodic Cluster Check\|Worst Cluster Performance` | The low end (%) of Cluster Performance Score over the last window (24 hours by default), with the account's Cluster Check Worst Percent of the worst samples ignored. Set once per window. See [Worst](metrics/periodic-cluster-check.md#worst). |
@@ -88,7 +88,7 @@ Every property and metric the vCommunity Management Pack pushes to VCF Operation
 
 | Type | Path | Description |
 | :--- | :--- | :--- |
-| 🟢 Metric | `vCommunity\|Network\|Network Speed Degradation` | Actual NIC speed as a share (%) of the configured speed, over the physical NICs that can be compared. 100 % means no degradation. See [Network Speed Degradation](metrics/network-speed-degradation.md#known-limitations). |
+| 🟢 Metric | `vCommunity\|Network\|Network Speed Degradation` | Actual NIC speed as a % of the configured speed, over the physical NICs that can be compared. 100 % means no degradation. See [Network Speed Degradation](metrics/network-speed-degradation.md#known-limitations). |
 | 🟢 Metric | `vCommunity\|Availability\|ESXi Host Operational Availability` | 25 % each for powered on, connected, not in maintenance and not in quarantine. A host with no data is 0 %. See [Operational Availability](metrics/operational-availability.md#known-limitations). |
 | 🟢 Metric | `vCommunity\|ESXi Performance\|ESXi Performance Score` | Key Performance Indicator (0-100 %) of the host, combining the 9 sub-metrics below. 100 is perfect. See [ESXi Performance KPI](metrics/esxi-performance.md) for the formula. |
 | 🟢 Metric | `vCommunity\|ESXi Performance\|Worst VM CPU Ready` | Highest 20-second peak CPU Ready (%) of any powered-on VM on the host. |
@@ -99,7 +99,7 @@ Every property and metric the vCommunity Management Pack pushes to VCF Operation
 | 🟢 Metric | `vCommunity\|ESXi Performance\|90th Percentile VM CPU Co-Stop` | 20-second peak CPU Co-Stop (%) that 90 % of the powered-on VMs on the host are at or below. |
 | 🟢 Metric | `vCommunity\|ESXi Performance\|90th Percentile VM Memory Latency` | 20-second peak memory contention (%) that 90 % of the powered-on VMs on the host are at or below. |
 | 🟢 Metric | `vCommunity\|ESXi Performance\|90th Percentile VM Disk Latency` | 20-second peak virtual disk latency (ms) that 90 % of the powered-on VMs on the host are at or below. |
-| 🟢 Metric | `vCommunity\|ESXi Performance\|ESXi Bad Network Packets` | Errored and dropped packets as a share (%) of all packets of the host in the last 5 minutes. Needs Total Packets Received and Transmitted activated in the policy: see [Required Policy Settings](../configuration-guide/policy.md). |
+| 🟢 Metric | `vCommunity\|ESXi Performance\|ESXi Bad Network Packets` | Errored and dropped packets as a % of all packets of the host in the last 5 minutes. Needs Total Packets Received and Transmitted activated in the policy: see [Required Policy Settings](../configuration-guide/policy.md). |
 | ⚪ Property | `vCommunity\|Configuration\|Advanced System Settings\|`<setting_name>`` | The value of an ESXi advanced system setting (e.g. Disk.DiskRetryPeriod) tracked via the esxi_advanced_system_settings config file. One property per tracked setting. |
 | ⚪ Property | `vCommunity\|Storage Adapter:`<hba_device>`\|Device` | Device name of the Host Bus Adapter (HBA), e.g. vmhba0. One instance per HBA. |
 | ⚪ Property | `vCommunity\|Storage Adapter:`<hba_device>`\|Bus` | PCI bus number the HBA is attached to. |
@@ -174,7 +174,7 @@ Every property and metric the vCommunity Management Pack pushes to VCF Operation
 | Type | Path | Description |
 | :--- | :--- | :--- |
 | 🟢 Metric | `vCommunity\|VM Performance\|VM Performance Score` | Key Performance Indicator (0-100 %) of a powered-on VM as a virtual motherboard, combining 9 sub-metrics. 100 is perfect. See [VM Performance KPI](metrics/vm-performance.md) for the formula. |
-| 🟢 Metric | `vCommunity\|VM Performance\|Memory Zip Swap` | Compressed plus swapped memory of the VM, as a share (%) of the memory the guest uses. |
+| 🟢 Metric | `vCommunity\|VM Performance\|Memory Zip Swap` | Compressed plus swapped memory of the VM, as a % of the memory the guest uses. |
 | ⚪ Property | `vCommunity\|Configuration\|Share per vCPU` | CPU shares ÷ vCPUs, on every VM. Normal = 1000. See [VM Shares](metrics/vm-shares.md). |
 | ⚪ Property | `vCommunity\|Configuration\|Share per MB of Memory` | Memory shares ÷ configured MB, on every VM. Normal = 10. Replaces "Share per GB of Memory", which was in fact per MB. See [VM Shares](metrics/vm-shares.md#known-limitations). |
 | 🟢 Metric | `vCommunity\|VM Guest OS KPI` | Average (0-100 %) of VM Performance Score and Guest OS Performance Score. A VM without VMware Tools has no Guest OS Performance; its VM Guest OS KPI is then its VM Performance Score alone. Replaces the "vSphere VM Performance" super metric. |

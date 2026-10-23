@@ -114,7 +114,7 @@ The rule is in `decide()` and `band()`, in the code.
 
 ## Design considerations
 
-- **Three KPIs on the same 0-100 scale.** Performance, Risk and Consumption share the same bands, so the rule reads the same colours for all three.
+- **Three KPIs on the same 0-100 scale.** Performance, Risk and Consumption use the same bands, so the rule reads the same colours for all three.
 - **The worst end, not the average.** A cluster that is bad for an hour a day is not fine for new VMs. The worst percent ignores short spikes, but not a sustained problem.
 - **The percentile is calculated in code.** VCF Operations roll-ups have AVG, MAX, MIN and SUM, but no percentile. An estimate from Max and Avg is driven by the Max: one spike in a quiet day decides it. With a 0/1 result that is a wrong answer, not a small error.
 - **A window ends at a fixed time, not when the calculation runs.** Every cluster has the same window, even when it is calculated a few cycles later.

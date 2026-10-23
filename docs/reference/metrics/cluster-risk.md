@@ -7,7 +7,7 @@
 
 Every sub-metric takes the highest or worst ESXi host in the cluster. One full host can hurt its VMs while the cluster average still looks fine.
 
-**Host memory is DRAM only.** Every memory share and ratio is measured against the host's DRAM (the DIMMs), called `MEM_DRAM_CAPACITY`. A memory tier such as NVMe is never added. There is no use case, in Risk or Performance, for comparing against the expanded capacity (DRAM + NVMe). See [Host memory capacity](#host-memory-capacity-mem_dram_capacity).
+**Host memory is DRAM only.** Every memory % and ratio is measured against the host's DRAM (the DIMMs), called `MEM_DRAM_CAPACITY`. A memory tier such as NVMe is never added. There is no use case, in Risk or Performance, for comparing against the expanded capacity (DRAM + NVMe). See [Host memory capacity](#host-memory-capacity-mem_dram_capacity).
 
 All 13 metrics are published on the cluster object under `vCommunity|Cluster Risk`. The KPI itself is `vCommunity|Cluster Risk|Cluster Risk Score`.
 
@@ -44,14 +44,14 @@ Each sub-metric is calculated per host, then the highest (worst) host is kept.
 
 | Sub-metric | Per host | Source |
 | :--- | :--- | :--- |
-| CPU Thread Utilization | `cpu.utilization`: the share of the host's CPU threads in use, hyper-threading aware | VCF Operations: `cpu\|utilization_average` |
+| CPU Thread Utilization | `cpu.utilization`: the % of the host's CPU threads in use, hyper-threading aware | VCF Operations: `cpu\|utilization_average` |
 | CPU Imbalance | Count of running CPU threads ÷ count of running CPU cores. Running threads = `cpu.utilization` % × threads. Running cores = `cpu.coreUtilization` % × cores. | VCF Operations: `cpu\|utilization_average`, `cpu\|coreUtilization_average`, `hardware\|cpuInfo\|numCpuCores`. Threads: see below. |
-| Memory Consumed | Consumed memory, as a share of host DRAM | VCF Operations: `mem\|consumed_average` / `MEM_DRAM_CAPACITY` |
-| Memory Ballooned | Ballooned memory, as a share of host DRAM | VCF Operations: `mem\|vmmemctl_average` / `MEM_DRAM_CAPACITY` |
-| Memory Zip Swap | Compressed plus swapped memory, as a share of host DRAM | VCF Operations: (`mem\|compressed_average` + `mem\|swapout_average`) / `MEM_DRAM_CAPACITY` |
+| Memory Consumed | Consumed memory, as a % of host DRAM | VCF Operations: `mem\|consumed_average` / `MEM_DRAM_CAPACITY` |
+| Memory Ballooned | Ballooned memory, as a % of host DRAM | VCF Operations: `mem\|vmmemctl_average` / `MEM_DRAM_CAPACITY` |
+| Memory Zip Swap | Compressed plus swapped memory, as a % of host DRAM | VCF Operations: (`mem\|compressed_average` + `mem\|swapout_average`) / `MEM_DRAM_CAPACITY` |
 | Memory Tiering Latency | Read latency of the NVMe memory tier. Only hosts with memory tiering have it; for the others it is left out. | VCF Operations: `mem:NVMe\|latency.read_latest` (µs) |
-| CPU Reservation | Reserved CPU, as a share of host CPU capacity | VCF Operations: `cpu\|reservedCapacity_average` / `cpu\|totalCapacity_average` |
-| Memory Reservation | Reserved memory, as a share of host DRAM | VCF Operations: `mem\|reservedCapacity_average` / `MEM_DRAM_CAPACITY` |
+| CPU Reservation | Reserved CPU, as a % of host CPU capacity | VCF Operations: `cpu\|reservedCapacity_average` / `cpu\|totalCapacity_average` |
+| Memory Reservation | Reserved memory, as a % of host DRAM | VCF Operations: `mem\|reservedCapacity_average` / `MEM_DRAM_CAPACITY` |
 | CPU Overcommit Ratio | vCPUs allocated to the powered-on VMs, per physical core | VCF Operations: `cpu\|vcpus_allocated_on_all_powered_on_vms`, `hardware\|cpuInfo\|numCpuCores` |
 | Memory Overcommit Ratio | Memory allocated to the powered-on VMs, divided by host DRAM. Both are in KB, so they divide directly. | VCF Operations: `mem\|memory_allocated_on_all_powered_on_vms` / `MEM_DRAM_CAPACITY` |
 | CPU Monster VM to Host Ratio | vCPUs of the largest powered-on VM, against the monster size of its host (see below) | VCF Operations: VM `config\|hardware\|numCpu`, host `hardware\|cpuInfo\|numCpuCores` |
@@ -82,7 +82,7 @@ Placement is by name, because `summary|parentCluster` and `summary|parentHost` h
 | 2 | `mem\|host_provisioned` | The first returns nothing, or 0. Also in KB. |
 
 - If both return nothing, the memory rows of that host are left out. They are never scored against a guess.
-- The expanded capacity (DRAM + NVMe) is never used. VMs run in DRAM; NVMe only holds cold pages. A share of DRAM + NVMe would look smaller than the real pressure.
+- The expanded capacity (DRAM + NVMe) is never used. VMs run in DRAM; NVMe only holds cold pages. A % of DRAM + NVMe would look smaller than the real pressure.
 
 ### When a VM is a monster
 
@@ -198,7 +198,7 @@ From 1.125 to 2.5, the overcommit ratio rises but Cluster Risk stays below 65.41
 
 - **Close for Business.** The [Periodic Cluster Check](periodic-cluster-check.md) reads Cluster Risk in orange, from 50. A cluster just above 50 can drop into yellow after VMs are deployed, and open again.
 - **Trends.** A falling Cluster Risk does not always mean less risk. Check the sub-metrics.
-- **Every KPI.** All KPIs share this scoring. [Cluster Consumption](cluster-consumption.md) has the tier case only, because it has no Excluded sub-metrics. In the Performance KPIs, such as [Cluster Performance](cluster-performance.md), the effect is the other way round: a worse sub-metric can raise the score.
+- **Every KPI.** All KPIs use this scoring. [Cluster Consumption](cluster-consumption.md) has the tier case only, because it has no Excluded sub-metrics. In the Performance KPIs, such as [Cluster Performance](cluster-performance.md), the effect is the other way round: a worse sub-metric can raise the score.
 
 ## Missing data
 

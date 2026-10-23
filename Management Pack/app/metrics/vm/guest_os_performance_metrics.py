@@ -3,39 +3,31 @@
 
 What it is
 ----------
-One 0-100 % score per powered-on VM. 100 is perfect. It answers one question:
-is the guest OS (Windows or Linux) getting the CPU, disk and memory it needs?
-VM Performance scores the virtual motherboard. This KPI scores what runs on it.
-It is built from the 4 sub-metrics in METRICS below.
+One 0-100 % score per powered-on VM. 100 is perfect. It answers one question: is the guest OS (Windows or Linux)
+getting the CPU, disk and memory it needs? VM Performance scores the virtual motherboard. This KPI scores what runs
+on it. All 4 rows come from VMware Tools: a VM without Tools has none of them, so it gets no Guest OS Performance KPI.
 
-All 4 come from VMware Tools. A VM without Tools has none of them, so it gets
-no Guest OS Performance KPI.
+How this file is laid out
+-------------------------
+  Part 1  The 4 rows, one section each, in the order of the source table. Each section has the row's limits, the
+          VM stat it comes from, and its formula. To add, change or remove a row, change only its section and its
+          line in ROWS.
+  Part 2  The KPI, once per VM: take the rows, score them and publish the KPI. The scoring is the same for every KPI:
+          metrics/kpi_score.py.
+
+The stats are read together with those of VM Performance, in one request for all VMs, by
+vm_performance_metrics.read_vm_performance_stats().
 
 Published on the VM as:
-    vCommunity|Guest OS Performance|Guest OS Performance        the KPI
-
-The sub-metrics are stats the VM already has, or a simple conversion of one, so
-they are not published again.
-
-How it is calculated
---------------------
-1. The stats are read together with those of VM Performance, in one bulk
-   request for all VMs, by vm_performance_metrics.read_vm_performance_stats().
-2. For each VM, take the 4 sub-metric values from its stats.
-3. Score each value and combine the scores into the KPI. This step is the same
-   for every KPI and is explained in metrics/kpi_score.py.
-
-Where the limits come from
---------------------------
-docs/reference/metrics/formula/guest-os-performance.png. Free Memory is "higher is
-better", so its limits go down.
+    vCommunity|Guest OS Performance|Guest OS Performance Score    the KPI
+The rows are stats the VM already has, or a simple conversion of one, so they are not published again.
 
 Called from: collectors/vm/collectVMData.py, once per powered-on VM.
-Overall approach for all KPIs: metrics/README.md
+Where the limits come from: docs/reference/metrics/formula/guest-os-performance.png.
 Description for people who do not read code: docs/reference/metrics/guest-os-performance.md
 """
 import logging
-from typing import Dict, Optional
+from typing import Callable, Dict, NamedTuple, Optional
 from aria.ops.object import Object
 from metrics.kpi_score import Metric, publish_kpi
 
@@ -48,76 +40,82 @@ KPI_NAME = "Guest OS Performance"
 # the key of its group. The metric is still shown as KPI_NAME.
 KPI_KEY = "Guest OS Performance Score"
 
-# One row per sub-metric. The five numbers are the values where its score is 100, 75, 50, 25 and 0.
-METRICS = [
-    #       name                            unit    best    green   yellow  orange  zero-at
-
-    # --- Guest OS contention ---
-    # Threads waiting for a vCPU, per vCPU. The stat is already per vCPU, so it is used as it is.
-    Metric("Guest CPU Run Queue per vCPU",  None,   0.0,    2.0,    4.0,    8.0,    16.0),
-    # Disk IOs inside the guest OS that wait to be sent.
-    Metric("Guest Disk Queue",              None,   0.0,    20.0,   40.0,   80.0,   160.0),
-
-    # --- Guest OS utilization ---
-    # Free memory inside the guest OS. Higher is better, so the limits go down. 1 GB or more scores 100.
-    Metric("Guest Free Memory",             "MB",   1024.0, 512.0,  256.0,  128.0,  0.0),
-    # How fast the guest OS moves memory pages out to its own page file, in pages per second.
-    Metric("Guest Page-Out Rate",           None,   0.0,    1000.0, 2000.0, 4000.0, 8000.0),
-]
-
-# Every sub-metric is a stat the VM already has, or a simple conversion of one. Only the KPI is published.
-PUBLISHED_METRICS = []
+VmStats = Dict[str, float]
 
 
-# ---------------------------------------------------------------------------
-# The VCF Operations stats that the sub-metrics are built from.
-# ---------------------------------------------------------------------------
+class Row(NamedTuple):
+    """One row of the KPI: its limits, and its value from the VM's stats."""
+    metric: Metric
+    value: Callable[[VmStats], Optional[float]]
 
-GUEST_CPU_QUEUE = "guest|20_sec_peak_cpu_queue"           # already per vCPU
+
+# =================================================================================================================
+# Part 1. The 4 rows
+# =================================================================================================================
+#
+# The five numbers of each Metric are the values where its score is 100, 75, 50, 25 and 0.
+#       name                            unit    best    green   yellow  orange  zero-at
+
+# --- Row 1. Guest CPU Run Queue per vCPU (Guest OS contention) ---------------------------------------------------
+# Threads waiting for a vCPU, per vCPU. The stat is already per vCPU, so it is used as it is.
+GUEST_CPU_QUEUE = "guest|20_sec_peak_cpu_queue"
+CPU_QUEUE = Row(Metric("Guest CPU Run Queue per vCPU",  None,   0.0,    2.0,    4.0,    8.0,    16.0),
+                lambda vm_stats: vm_stats.get(GUEST_CPU_QUEUE))
+
+# --- Row 2. Guest Disk Queue (Guest OS contention) ---------------------------------------------------------------
+# Disk IOs inside the guest OS that wait to be sent.
 GUEST_DISK_QUEUE = "guest|20_sec_peak_disk_queue"
+DISK_QUEUE = Row(Metric("Guest Disk Queue",             None,   0.0,    20.0,   40.0,   80.0,   160.0),
+                 lambda vm_stats: vm_stats.get(GUEST_DISK_QUEUE))
+
+# --- Row 3. Guest Free Memory (Guest OS utilization) -------------------------------------------------------------
+# Free memory inside the guest OS. Higher is better, so the limits go down: 1 GB or more scores 100.
 GUEST_FREE_MEMORY_KB = "guest|mem.free_latest"
-GUEST_PAGE_OUT_RATE = "guest|page.outRate_latest"
-
-# Every stat that is asked from VCF Operations, for each VM. Read by vm_performance_metrics.
-VM_STATS = [GUEST_CPU_QUEUE, GUEST_DISK_QUEUE, GUEST_FREE_MEMORY_KB, GUEST_PAGE_OUT_RATE]
 
 
-# ---------------------------------------------------------------------------
-# Sub-metric formulas. Each returns None when it has no data to work with.
-# ---------------------------------------------------------------------------
-
-def guest_free_memory_mb(vm_stats: Dict[str, float]) -> Optional[float]:
-    """Free memory inside the guest OS, in MB. The stat is in KB, and the limits in METRICS are in MB."""
+def guest_free_memory_mb(vm_stats: VmStats) -> Optional[float]:
+    """Free memory inside the guest OS, in MB. The stat is in KB, and the limits are in MB."""
     if GUEST_FREE_MEMORY_KB not in vm_stats:
         return None
     return vm_stats[GUEST_FREE_MEMORY_KB] / 1024.0
 
 
-def guest_os_performance_values(vm_stats: Dict[str, float]) -> Dict[str, Optional[float]]:
-    """Value of every sub-metric in METRICS for one VM. None means "no data"."""
-    return {
-        "Guest CPU Run Queue per vCPU": vm_stats.get(GUEST_CPU_QUEUE),
-        "Guest Disk Queue": vm_stats.get(GUEST_DISK_QUEUE),
-        "Guest Free Memory": guest_free_memory_mb(vm_stats),
-        "Guest Page-Out Rate": vm_stats.get(GUEST_PAGE_OUT_RATE),
-    }
+FREE_MEMORY = Row(Metric("Guest Free Memory",           "MB",   1024.0, 512.0,  256.0,  128.0,  0.0),
+                  guest_free_memory_mb)
+
+# --- Row 4. Guest Page-Out Rate (Guest OS utilization) -----------------------------------------------------------
+# How fast the guest OS moves memory pages out to its own page file, in pages per second.
+GUEST_PAGE_OUT_RATE = "guest|page.outRate_latest"
+PAGE_OUT_RATE = Row(Metric("Guest Page-Out Rate",       None,   0.0,    1000.0, 2000.0, 4000.0, 8000.0),
+                    lambda vm_stats: vm_stats.get(GUEST_PAGE_OUT_RATE))
 
 
-# ---------------------------------------------------------------------------
-# Entry point, called once per powered-on VM.
-# ---------------------------------------------------------------------------
+# The rows, in the order of the source table.
+ROWS = [CPU_QUEUE, DISK_QUEUE, FREE_MEMORY, PAGE_OUT_RATE]
+METRICS = [row.metric for row in ROWS]
+# Every row is a stat the VM already has, or a simple conversion of one. Only the KPI is published.
+PUBLISHED_METRICS = []
+# Every stat that is asked from VCF Operations, for each VM. Read by vm_performance_metrics.
+VM_STATS = [GUEST_CPU_QUEUE, GUEST_DISK_QUEUE, GUEST_FREE_MEMORY_KB, GUEST_PAGE_OUT_RATE]
 
-def collect_guest_os_performance_metrics(vm_obj: Object, vm_name: str, vm_stats: Dict[str, float]) -> Optional[float]:
+
+# =================================================================================================================
+# Part 2. The KPI, once per VM
+# =================================================================================================================
+
+def guest_os_performance_values(vm_stats: VmStats) -> Dict[str, Optional[float]]:
+    """The value of every row for one VM. None means "no data"."""
+    return {row.metric.name: row.value(vm_stats) for row in ROWS}
+
+
+def collect_guest_os_performance_metrics(vm_obj: Object, vm_name: str, vm_stats: VmStats) -> Optional[float]:
     """Publishes the Guest OS Performance KPI. Returns it, or None.
 
     vm_stats is the entry of this VM in the result of vm_performance_metrics.read_vm_performance_stats().
     """
     try:
-        # Step 1 (reading the stats) was done once for all VMs, by vm_performance_metrics.read_vm_performance_stats().
-        # Step 2: calculate the sub-metric values. None means "no data".
         values = guest_os_performance_values(vm_stats)
 
-        # Step 3: score them and publish the KPI. The sub-metrics are not published, see PUBLISHED_METRICS.
         published = publish_kpi(vm_obj, GROUP, KPI_KEY, METRICS, PUBLISHED_METRICS, values)
         # Logged at debug level only: there can be thousands of VMs, and no Tools is a normal case.
         if published.no_data:
