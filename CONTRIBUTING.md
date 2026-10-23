@@ -10,7 +10,7 @@ For example, to add the vSphere Cluster HA property called ___
 
 ## Testing
 
-Run the unit tests (`python -m pytest tests`, from `Management Pack`) and the live validation after any change to the adapter code. The test plan, and what each check means, is in [Live Validation Test Plan](tools/validate/validate.md).
+Run the unit tests (`python -m pytest tests`, from `Management Pack`) and the live validation after any change to the adapter code. The test plan, and what each check means, is in [Live Validation Test Plan](tools/validate/validate.md). When KPI code is restructured and its values must not change, also run the [KPI Equivalence Test](tools/equivalence/equivalence.md).
 
 The live validation tests the build installed on the test instance. To build a pak and install it there, run `pwsh tools/build/build.ps1`, then `pwsh tools/install/install.ps1`. What the install script does, step by step, is in [Install Script](tools/install/install.md). All the scripts in `tools/` are listed in [Tools](tools/README.md).
 
