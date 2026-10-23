@@ -6,6 +6,22 @@ A Python adapter (`Management Pack/app`) that collects extra properties and metr
 
 Pages go in `docs/` by the rules in [CONTRIBUTING.md](CONTRIBUTING.md#documentation). Add every new page to the contents in `docs/README.md`.
 
+## Building
+
+```
+pwsh tools/build/build.ps1
+```
+
+Builds the `.pak` into `Management Pack/build` and pushes the adapter image to `ghcr.io/e1-rahabok/vcf-operations-vcommunity`. Don't call `mp-build` directly from a non-interactive shell: it crashes without a Windows console, and it waits on a prompt if `config.json` (gitignored) has no registry. The script handles both.
+
+## Installing on the test instance
+
+```
+pwsh tools/install/install.ps1
+```
+
+Uploads and installs the newest pak for the `manifest.txt` version (unsigned, signature checking ignored). Auto mode blocks this script, so ask the user to run it in their terminal, then run the live validation. Details: [tools/install/install.md](tools/install/install.md).
+
 ## Testing
 
 Run both layers after any change under `Management Pack/app`, and report the results of each.

@@ -4,6 +4,7 @@
 
 - [Enable Unsigned PAK Installation](#enable-unsigned-pak-installation)
 - [Install the Management Pack](#install-the-management-pack)
+- [After an Upgrade: Restart Collection](#after-an-upgrade-restart-collection)
 
 ---
 
@@ -29,6 +30,23 @@ After enabling this, the **"Ignore the PAK file signature checking"** checkbox w
 4. Once installation completes, click **Finish**.
 
 You can review the VCF Operations vCommunity Management Pack under the **Repository** tab.
+
+---
+
+## After an Upgrade: Restart Collection
+
+When you install a new version over an existing one, the existing Adapter Instances can stop collecting. The install itself reports success, but under **Administration** → **Integrations** → **Accounts**, the instance under **VCF vCommunity Adapter** shows **Warning**. Its state is `Failed`, and it does not collect again by itself.
+
+To fix it, for each Adapter Instance of the pack:
+
+1. Under **Administration** → **Integrations** → **Accounts**, expand **VCF vCommunity Adapter**.
+2. Click the **⋮** menu next to the Adapter Instance and choose **Stop Collecting**.
+3. Open the same menu again and choose **Start Collecting**.
+4. Wait for the next collection cycle, about 5 minutes. The status turns to **Collecting**, and the tooltip shows **Status: Data receiving**.
+
+Data collected before the upgrade is kept. The time between the install and the restart is a gap in the metrics.
+
+This has happened on several upgrades of this pack, among them 0.4.1 to 0.4.2 on VCF Operations 9.1.1. It is not listed as a known issue in Broadcom's documentation, and the cause is not known yet.
 
 ---
 

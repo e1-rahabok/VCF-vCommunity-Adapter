@@ -297,7 +297,8 @@ try {
         $request = @{ scope = 'ALL'; contentTypes = @('VIEW_DEFINITIONS', 'DASHBOARDS') } | ConvertTo-Json
         Invoke-RestMethod -Method Post -Uri "$base/content/operations/export" -Body $request -ContentType 'application/json' -Headers $headers @web | Out-Null
         $deadline = (Get-Date).AddMinutes(10)
-        do { Start-Sleep -Seconds 5; $export = Get-Api 'content/operations/export' } while ($export.state -eq 'RUNNING' -and (Get-Date) -lt $deadline)
+        # The job can still be NOT_INITIALIZED at the first poll: it has not started yet, so keep waiting.
+        do { Start-Sleep -Seconds 5; $export = Get-Api 'content/operations/export' } while ($export.state -in 'RUNNING', 'NOT_INITIALIZED' -and (Get-Date) -lt $deadline)
         if ($export.state -ne 'FINISHED') {
             Add-Result 'FAIL' 'Content export' "Export ended as $($export.state) $($export.errorMessages -join ' ')"
         } else {
