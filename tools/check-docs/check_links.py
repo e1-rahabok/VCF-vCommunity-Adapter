@@ -24,7 +24,7 @@ def repo_root():
 
 
 def markdown_files(root):
-    out = subprocess.check_output(["git", "-c", "core.quotePath=false", "ls-files", "*.md"], cwd=root, text=True)
+    out = subprocess.check_output(["git", "-c", "core.quotePath=false", "ls-files", "*.md"], cwd=root, encoding="utf-8")
     return [line for line in out.splitlines() if line]
 
 

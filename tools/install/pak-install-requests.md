@@ -1,5 +1,7 @@
 # PAK install: requests made by the UI
 
+[`install.ps1`](install.ps1) sends these requests to install a pak without a browser: see [Install Script](install.md).
+
 Recorded on 2026-10-18 while installing `vCommunity_0.4.1.pak` on `https://vcf-m02-ops01.acepod.com` through **Administration → Integrations → Repository → Add**, with both **Install the PAK file even if it is already installed** and **Ignore the PAK file signature checking** ticked. The install finished with `Applied and Cleaned (Completed)`, and the Repository tab then listed VCF vCommunity Adapter 0.4.1.
 
 ## How this was captured

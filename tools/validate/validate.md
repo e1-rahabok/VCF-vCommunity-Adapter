@@ -120,7 +120,7 @@ Before publishing a release:
 3. `pwsh tools/validate/validate.ps1 -ExpectedVersion <version> -Release` exits `0`.
 4. Any WARN lines are explained in the release notes or fixed.
 
-If an Adapter Instance is `FAILED` and has never collected right after the install, stop and start collecting on it (Integrations → Accounts), wait one collection cycle, and run the script again.
+If an Adapter Instance is `FAILED` right after the install, restart its collection as described in [After an Upgrade: Restart Collection](../../docs/installation-guide/installation.md#after-an-upgrade-restart-collection), wait one collection cycle, and run the script again.
 
 ## Not covered
 
