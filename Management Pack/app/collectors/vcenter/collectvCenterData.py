@@ -2,13 +2,14 @@
 #  Author: Onur Yuzseven onur.yuzseven@broadcom.com
 
 import logging
-from typing import Any, List
+from typing import Any, List, Optional
 from aria.ops.object import Object
 from aria.ops.result import CollectResult
 from aria.ops.suite_api_client import SuiteApiClient
 from constants.main import VCENTER_ADAPTER_KIND
 from pyVmomi import vim
 from properties.vcenter.collect_vcenter_properties import collect_vcenter_properties
+from properties.vcenter import certificate
 from metrics.availability.operational_availability import OperationalAvailability, NO_DATA, WORST_CLUSTER_METRIC, publish
 
 logger = logging.getLogger(__name__)
@@ -19,7 +20,11 @@ def collect_vcenter_data(
     result: CollectResult,
     content: Any,
     availability: OperationalAvailability = NO_DATA,
+    presented_certificate: Optional[str] = None,
+    vcenter_host: str = "",
 ) -> None:
+    """presented_certificate: the SHA-256 thumbprint vCenter presented this collection (utils/tls.py), compared
+    with the recorded one by properties/vcenter/certificate.py. None when it could not be read."""
     try:
         about_info = getattr(content, "about", None)
         
@@ -99,6 +104,10 @@ def collect_vcenter_data(
 
         # Operational Availability: the worst cluster of this vCenter, from this cycle's values.
         publish(vcenter_obj, WORST_CLUSTER_METRIC, availability.worst_cluster())
+
+        # Trust on First Use: report a changed vCenter certificate. Never stops the collection.
+        certificate.check_and_publish(suite_api_client, adapter_instance_id, vcenter_obj,
+                                      vcenter_host or vc_name, presented_certificate)
 
         result.add_object(vcenter_obj)
 

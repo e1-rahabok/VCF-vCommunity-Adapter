@@ -90,9 +90,9 @@ One row = one vCenter / one Adapter Instance. The header row is required; column
 | `win_event_config_file` | No | `windows_event_list` | Name of the config file listing Windows Event Log IDs (Guest OS monitoring). |
 | `service_monitoring` | No | `Disabled` | `Enabled` or `Disabled` — Guest OS service monitoring. |
 | `win_event_monitoring` | No | `Disabled` | `Enabled` or `Disabled` — Windows Event Log monitoring. |
-| `vcenter_tls_validation` | No | `Enabled` | How the vCenter certificate is checked: `Enabled`, `Pinned` or `Disabled`. See [TLS and Security Settings](../../docs/configuration-guide/tls-and-security.md#vcenter-tls-validation). |
+| `vcenter_tls_validation` | No | `Trust on First Use` | How the vCenter certificate is treated: `Trust on First Use`, `Enabled` or `Pinned`. See [TLS and Security Settings](../../docs/configuration-guide/tls-and-security.md#vcenter-tls-validation). |
 | `vcenter_thumbprint` | Only for `Pinned` | *(blank)* | SHA-256 (or SHA-512) thumbprint of the vCenter certificate, with or without `:`. Required when `vcenter_tls_validation` is `Pinned`, and refused otherwise. |
-| `guest_tls_validation` | No | `Pinned` | `Pinned` or `Disabled`: how the ESXi host certificate is checked for Guest OS monitoring. |
+| `guest_tls_validation` | No | `Pinned` | `Pinned`, `Strict` or `Disabled`: how the ESXi host certificate is checked for Guest OS monitoring. See [TLS and Security Settings](../../docs/configuration-guide/tls-and-security.md#guest-file-transfer-tls-validation). |
 | `win_user` | No | *(blank)* | Windows username, only needed if Guest OS monitoring is enabled. |
 | `win_pass` | No | *(blank)* | Windows password, only needed if Guest OS monitoring is enabled. |
 | `collector_name` | No | *(automatic)* | Name of a **Collector** (Cloud Proxy) or **Collector Group** to pin this instance to. See [Collector Assignment](#collector-assignment). Leave blank to let VCF Operations choose automatically. |
@@ -108,7 +108,7 @@ vc03.example.com,,svc-vcfops-vc03,AnotherPass2!,,,esxi_packages,esxi_packages,,,
 
 - **Row 1 (VC01):** pinned to a specific Collector by name, shares a credential with VC02.
 - **Row 2 (VC02):** pinned to a Collector *Group* by name — same `collector_name` column handles both cases automatically.
-- **Self-signed vCenter:** add `Pinned` to `vcenter_tls_validation` and the thumbprint to `vcenter_thumbprint`. Without them the instance uses `Enabled`, and a vCenter whose certificate the Cloud Proxy does not trust fails **Validate Connection**.
+- **Refuse an unknown vCenter certificate:** by default an instance uses `Trust on First Use`, which connects to any vCenter and reports a changed certificate. To refuse instead, put `Pinned` in `vcenter_tls_validation` and the thumbprint in `vcenter_thumbprint`, or put `Enabled` for a vCenter whose certificate the Cloud Proxy trusts.
 - **Row 3 (VC03):** minimal row — uses defaults for almost everything, no collector pinning (VCF Operations chooses automatically), Guest OS service monitoring enabled.
 
 ---

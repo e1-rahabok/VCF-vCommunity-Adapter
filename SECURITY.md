@@ -18,7 +18,7 @@ If the **Report a vulnerability** button is not shown, private reporting is not 
 
 ## What to expect
 
-This is a volunteer project, so there is no guaranteed response time. A fix is released in a new version, and the [CHANGELOG](CHANGELOG.md) names the issue once it is fixed.
+This is a volunteer project, so there is no guaranteed response time. A fix is released in a new version.
 
 ## What is in scope
 

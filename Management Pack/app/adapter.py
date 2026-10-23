@@ -154,9 +154,11 @@ def get_adapter_definition() -> AdapterDefinition:
             constants.main.VCENTER_TLS_VALIDATION,
             values=tls.VCENTER_MODES,
             label="vCenter TLS Validation",
-            description="Enabled: the vCenter certificate must be trusted by the Cloud Proxy. "
-                        "Pinned: the certificate must match the vCenter Thumbprint below, for a self-signed or "
-                        "internal CA certificate. Disabled: nothing is checked, for a lab only.",
+            description="Trust on First Use (the default) connects whatever the certificate, records its "
+                        "thumbprint on the vCenter object, and reports when it changes, without stopping. "
+                        "Enabled: the certificate must be trusted by the Cloud Proxy, or the adapter does not "
+                        "connect. Pinned: the certificate must match the vCenter Thumbprint below, or the adapter "
+                        "does not connect.",
             default=tls.DEFAULT_VCENTER_MODE,
             required=False,
             advanced=True,
@@ -291,9 +293,10 @@ def get_adapter_definition() -> AdapterDefinition:
             constants.main.GUEST_TLS_VALIDATION,
             values=guest_http.GUEST_MODES,
             label="Guest File Transfer TLS Validation",
-            description="Pinned: the ESXi host certificate must match the thumbprint that vCenter records for the "
-                        "host. Disabled: nothing is checked, for a lab only. Used only when Guest OS Service or "
-                        "Windows Event Log Monitoring is Enabled.",
+            description="Pinned (the default): the ESXi host certificate must match the thumbprint that vCenter "
+                        "records for the host; when vCenter has none, the transfer goes ahead unchecked and the log "
+                        "says so. Strict: as Pinned, but a host with no thumbprint is skipped. Disabled: nothing is "
+                        "checked. Used only when Guest OS Service or Windows Event Log Monitoring is Enabled.",
             default=guest_http.DEFAULT_GUEST_MODE,
             required=False,
             advanced=True
@@ -605,6 +608,13 @@ def get_adapter_definition() -> AdapterDefinition:
         vCenterConfiguration = vCommunity.define_group("Configuration", "Configuration")
         define_availability(vCommunity, operational_availability.WORST_CLUSTER_METRIC)
 
+        # Trust on First Use of the vCenter certificate: see properties/vcenter/certificate.py.
+        vCenterCertificate = vCommunity.define_group("Certificate", "Certificate")
+        vCenterCertificate.define_string_property("SHA-256 Thumbprint", "SHA-256 Thumbprint")
+        vCenterCertificate.define_string_property("Status", "Status")
+        vCenterCertificate.define_string_property("Previous SHA-256 Thumbprint", "Previous SHA-256 Thumbprint")
+        vCenterCertificate.define_string_property("Last Changed", "Last Changed")
+
         vCenterConfiguration.define_string_property("Patch Level", "Patch Level")
         vCenterConfiguration.define_string_property("User Directory Timeout", "User Directory Timeout")
         vCenterConfiguration.define_string_property("Enable MOB", "Enable MOB")
@@ -748,6 +758,12 @@ def collect(adapter_instance: AdapterInstance) -> CollectResult:
             start_time = time.perf_counter()
             service_instance = _get_service_instance(adapter_instance)
             content = service_instance.RetrieveContent()
+            # The certificate vCenter presents now, for the Trust on First Use comparison on the vCenter object
+            # (properties/vcenter/certificate.py). Read in every mode, so the thumbprint is always visible.
+            vcenter_certificate = tls.presented_thumbprint(
+                adapter_instance.get_identifier_value(constants.main.HOST_IDENTIFIER),
+                int(adapter_instance.get_identifier_value(constants.main.PORT_IDENTIFIER, 443)),
+            )
             guest_http.configure(adapter_instance.get_identifier_value(constants.main.GUEST_TLS_VALIDATION))
             ServiceMonitoringStatus = getServiceMonitoringStatus(adapter_instance)
             WindowsEventLogMonitoringStatus = getWindowsEventLogMonitoringStatus(adapter_instance)
@@ -836,7 +852,9 @@ def collect(adapter_instance: AdapterInstance) -> CollectResult:
                     # 5. vCenter feature definition
                     start_times["collect_vcenter_data"] = time.perf_counter()
                     future_vc = data_executor.submit(
-                        collect_vcenter_data, client, adapter_instance_id, result, content, availability
+                        collect_vcenter_data, client, adapter_instance_id, result, content, availability,
+                        vcenter_certificate,
+                        adapter_instance.get_identifier_value(constants.main.HOST_IDENTIFIER),
                     )
 
                     # 6. vSphere World: cluster summary metrics, over the clusters of all vCenters

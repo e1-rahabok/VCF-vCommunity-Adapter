@@ -28,11 +28,11 @@ def identifiers(row):
     return {i["name"]: i["value"] for i in importer.build_resource_identifiers(row)}
 
 
-def test_a_row_with_no_tls_columns_gets_the_secure_defaults(tmp_path):
+def test_a_row_with_no_tls_columns_gets_the_defaults(tmp_path):
     path = tmp_path / "vcenters.csv"
     path.write_text("vcenter_host,vcenter_user,vcenter_password\nvc01,svc,pw\n", encoding="utf-8")
     ids = identifiers(importer.read_csv(str(path))[0])
-    assert ids["vcenter_tls_validation"] == "Enabled"
+    assert ids["vcenter_tls_validation"] == "Trust on First Use"
     assert ids["guest_tls_validation"] == "Pinned"
     assert "vcenter_thumbprint" not in ids
 
@@ -45,8 +45,8 @@ def test_a_pinned_row_carries_its_thumbprint(tmp_path):
 
 
 def test_the_mode_is_written_in_its_canonical_spelling(tmp_path):
-    ids = identifiers(rows(tmp_path, "vc01,svc,pw,disabled,,disabled")[0])
-    assert ids["vcenter_tls_validation"] == "Disabled" and ids["guest_tls_validation"] == "Disabled"
+    ids = identifiers(rows(tmp_path, "vc01,svc,pw,trust on first use,,strict")[0])
+    assert ids["vcenter_tls_validation"] == "Trust on First Use" and ids["guest_tls_validation"] == "Strict"
 
 
 def test_pinned_without_a_thumbprint_is_refused(tmp_path):

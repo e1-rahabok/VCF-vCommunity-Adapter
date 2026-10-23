@@ -10,7 +10,7 @@ Every property and metric the vCommunity Management Pack pushes to VCF Operation
 - [Host](#host) (58 items)
 - [Datastore](#datastore) (9 items)
 - [Virtual Machine](#virtual-machine) (57 items)
-- [vCenter](#vcenter) (12 items)
+- [vCenter](#vcenter) (16 items)
 - [vSphere World](#vsphere-world) (7 items)
 - [Datacenter](#datacenter) (1 item)
 - [Super metrics replaced by built-in metrics](#super-metrics-replaced-by-built-in-metrics)
@@ -240,6 +240,10 @@ Every property and metric the vCommunity Management Pack pushes to VCF Operation
 | Type | Path | Description |
 | :--- | :--- | :--- |
 | 🟢 Metric | `vCommunity\|Availability\|Worst Cluster Operational Availability` | The lowest Cluster Operational Availability of the clusters of this vCenter, from the same collection cycle. See [Operational Availability](metrics/operational-availability.md#known-limitations). |
+| ⚪ Property | `vCommunity\|Certificate\|SHA-256 Thumbprint` | SHA-256 thumbprint of the certificate the vCenter presents now. See [Trust on First Use](../configuration-guide/tls-and-security.md#trust-on-first-use). |
+| ⚪ Property | `vCommunity\|Certificate\|Status` | `Recorded`, `Unchanged`, `Changed` (a different certificate within the last 24 hours) or `Unknown` (could not be read). |
+| ⚪ Property | `vCommunity\|Certificate\|Previous SHA-256 Thumbprint` | The thumbprint before the last change. |
+| ⚪ Property | `vCommunity\|Certificate\|Last Changed` | When the last certificate change was seen, in UTC. |
 | ⚪ Property | `vCommunity\|Configuration\|Patch Level` | The applied patch level of the vCenter Server software. |
 | ⚪ Property | `vCommunity\|Configuration\|User Directory Timeout` | Timeout (seconds) for user directory (AD/LDAP) queries. |
 | ⚪ Property | `vCommunity\|Configuration\|Enable MOB` | Whether the vCenter Managed Object Browser (MOB) debug interface is enabled. |

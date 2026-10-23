@@ -53,7 +53,7 @@ You can expand the adapter configuration by clicking **Advanced Settings**.
 | Advanced Setting | Default Value | Description |
 | :--- | :--- | :--- |
 | **Port** | `443` | The port used to connect to vCenter Server. |
-| **vCenter TLS Validation** | `Enabled` | How the vCenter certificate is checked: `Enabled` (the container must trust it), `Pinned` (it must match the thumbprint below) or `Disabled` (not checked, for a lab only). See [TLS and Security Settings](tls-and-security.md#vcenter-tls-validation). |
+| **vCenter TLS Validation** | `Trust on First Use` | `Trust on First Use` connects whatever the certificate, and reports on the vCenter object when it changes. `Enabled` (the Cloud Proxy must trust it) and `Pinned` (it must match the thumbprint below) refuse the connection when the check fails. See [TLS and Security Settings](tls-and-security.md#vcenter-tls-validation). |
 | **vCenter Thumbprint (SHA-256)** | *(empty)* | The certificate thumbprint to accept. Used only when vCenter TLS Validation is `Pinned`. |
 | **Cluster Check Period (hours)** | `24` | Length of each [Periodic Cluster Check](../reference/metrics/periodic-cluster-check.md#settings) window, and how often it is calculated: 1, 2, 4, 6, 8, 12 or 24 hours. |
 | **Cluster Check Time (UTC)** | `00:00` | Time of day, as HH:MM in UTC, when a Periodic Cluster Check window ends. With a shorter period, the other windows end every period from it. An empty or invalid value uses `00:00`. |
@@ -65,10 +65,7 @@ You can expand the adapter configuration by clicking **Advanced Settings**.
 | **Guest OS Service Monitoring Status** | `Disabled` | Toggles Windows Service monitoring using the `windows_service_list.xml` file. Set to `Enabled` to activate. |
 | **Windows Event Log Configuration File** | `windows_event_list.xml` | File used to define which Windows Event Log IDs to monitor. (Location: System Defined configurations) |
 | **Windows Event Log Monitoring Status** | `Disabled` | Toggles Windows Event Log monitoring using the `windows_event_list.xml` file. Set to `Enabled` to activate. |
-| **Guest File Transfer TLS Validation** | `Pinned` | How the ESXi host certificate is checked when a script is sent to a Windows VM: `Pinned` (it must match the thumbprint that vCenter records for the host) or `Disabled` (not checked, for a lab only). See [TLS and Security Settings](tls-and-security.md#guest-file-transfer-tls-validation). |
-
-> #### A note on TLS
-> Earlier versions did not check the vCenter certificate. An Adapter Instance now uses `Enabled` unless you set otherwise, so a vCenter with a self-signed or internal CA certificate needs `Pinned` and its thumbprint. See [TLS and Security Settings](tls-and-security.md#upgrading-from-an-earlier-version).
+| **Guest File Transfer TLS Validation** | `Pinned` | How the ESXi host certificate is checked when a script is sent to a Windows VM: `Pinned` (it must match the thumbprint that vCenter records for the host; when vCenter has none, the transfer goes ahead and the log says so), `Strict` (a host with no thumbprint is skipped) or `Disabled` (not checked). See [TLS and Security Settings](tls-and-security.md#guest-file-transfer-tls-validation). |
 
 > #### A note on Guest OS monitoring
 > Both Guest OS features are **agentless**, using GuestAPI with the credentials you provide — but they still add load to both VCF Operations and the target Windows guest, proportional to how many VMs you enable this for. Before enabling either of these across hundreds of Windows machines, evaluate the additional load in your environment and consider a targeted `vm_advanced_parameters`-style scoped rollout (see [Customization](customization.md)) rather than enabling it globally on day one.

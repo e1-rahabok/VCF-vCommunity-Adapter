@@ -108,13 +108,13 @@ DEFAULTS = {
     "win_event_config_file": "windows_event_list",
     "service_monitoring": "Disabled",
     "win_event_monitoring": "Disabled",
-    "vcenter_tls_validation": "Enabled",
+    "vcenter_tls_validation": "Trust on First Use",
     "guest_tls_validation": "Pinned",
 }
 
 # Same values as the enum parameters in adapter.py (utils/tls.py and utils/guest_http.py).
-VCENTER_TLS_MODES = ("Enabled", "Pinned", "Disabled")
-GUEST_TLS_MODES = ("Pinned", "Disabled")
+VCENTER_TLS_MODES = ("Trust on First Use", "Enabled", "Pinned")
+GUEST_TLS_MODES = ("Pinned", "Strict", "Disabled")
 
 
 @dataclass
@@ -136,7 +136,7 @@ class VCenterRow:
     win_user: str
     win_pass: str
     collector_name: str
-    vcenter_tls_validation: str = "Enabled"
+    vcenter_tls_validation: str = "Trust on First Use"
     vcenter_thumbprint: str = ""
     guest_tls_validation: str = "Pinned"
 

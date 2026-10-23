@@ -1,5 +1,5 @@
 #  Copyright 2026 VCF Operations vCommunity Management Pack
-"""How the adapter checks the vCenter Server certificate.
+"""How the adapter treats the vCenter Server certificate.
 
 Run from the "Management Pack" folder:  python -m pytest tests
 
@@ -54,27 +54,31 @@ def test_bad_thumbprint_is_refused(value, reason):
 
 
 @pytest.mark.parametrize("value, expected", [
-    (None, "Enabled"), ("", "Enabled"), ("  ", "Enabled"),
+    (None, "Trust on First Use"), ("", "Trust on First Use"), ("  ", "Trust on First Use"),
+    ("Trust on First Use", "Trust on First Use"), ("trust on first use", "Trust on First Use"),
     ("Enabled", "Enabled"), ("enabled", "Enabled"), ("Pinned", "Pinned"), ("PINNED", "Pinned"),
-    ("Disabled", "Disabled"),
 ])
-def test_mode_default_is_enabled(value, expected):
+def test_mode_default_is_trust_on_first_use(value, expected):
+    """An Adapter Instance without the setting, such as one created before it existed, gets the default."""
     assert tls.vcenter_mode(value) == expected
 
 
-def test_unknown_mode_is_refused_not_treated_as_off():
+@pytest.mark.parametrize("value", ["Off", "Disabled", "None"])
+def test_unknown_mode_is_refused(value):
     with pytest.raises(tls.TlsConfigError, match="Unknown"):
-        tls.vcenter_mode("Off")
+        tls.vcenter_mode(value)
 
 
-def test_default_mode_is_the_secure_one():
-    assert tls.DEFAULT_VCENTER_MODE == tls.ENABLED
+def test_default_mode_never_refuses_the_connection():
+    """The customer secures their certificates. The default must keep the adapter connecting."""
+    assert tls.DEFAULT_VCENTER_MODE == tls.TRUST_ON_FIRST_USE
+    assert tls.VCENTER_MODES[0] == tls.DEFAULT_VCENTER_MODE
 
 
 # ---- the arguments for SmartConnect -------------------------------------------------------------------------
 
 def test_enabled_verifies_the_chain_and_the_host_name():
-    args = tls.vcenter_connect_args(None, None)
+    args = tls.vcenter_connect_args("Enabled", None)
     assert "disableSslCertValidation" not in args and "thumbprint" not in args
     context = args["sslContext"]
     assert context.verify_mode == ssl.CERT_REQUIRED
@@ -102,11 +106,10 @@ def test_pinned_with_a_bad_thumbprint_fails_closed():
         tls.vcenter_connect_args("Pinned", "ab" * 20)
 
 
-def test_disabled_says_so_in_the_log(caplog):
-    with caplog.at_level(logging.WARNING, logger=tls.logger.name):
-        args = tls.vcenter_connect_args("Disabled", None)
-    assert args == {"disableSslCertValidation": True}
-    assert "Disabled" in caplog.text and "credentials" in caplog.text
+@pytest.mark.parametrize("thumbprint", [None, "", SHA256])
+def test_trust_on_first_use_connects_whatever_the_certificate(thumbprint):
+    """A thumbprint typed in by mistake is ignored, not turned into a pin."""
+    assert tls.vcenter_connect_args(None, thumbprint) == {"disableSslCertValidation": True}
 
 
 # ---- the error messages -------------------------------------------------------------------------------------
@@ -129,13 +132,19 @@ def test_other_errors_are_not_explained_as_certificate_errors():
     assert tls.explain_connect_error(ConnectionRefusedError("refused"), "vc.example.com") is None
 
 
+def test_the_messages_name_trust_on_first_use_as_the_way_to_keep_connecting():
+    exc = ssl.SSLCertVerificationError("certificate verify failed: self-signed certificate")
+    assert "Trust on First Use" in tls.explain_connect_error(exc, "vc.example.com")
+
+
 # ---- nothing in the code turns the check off ----------------------------------------------------------------
 
 def test_no_hardcoded_tls_bypass_in_the_code():
-    """The two spellings that switched TLS validation off for good must not come back.
+    """No code path may switch TLS validation off outside the two modules that decide it, by setting.
 
-    utils/guest_http.py is the one place that passes verify=False. Every call in it is pinned to the thumbprint that
-    vCenter records, or is in the explicit Disabled mode: test_guest_http.py covers both.
+    utils/tls.py returns the SmartConnect arguments as a dictionary, per mode. utils/guest_http.py is the one place
+    that passes verify=False: every call in it is pinned, or unchecked by its mode, and test_guest_http.py covers
+    both.
     """
     offenders = []
     for path in APP.rglob("*.py"):
@@ -202,7 +211,30 @@ def test_enabled_refuses_a_self_signed_certificate_before_any_request(server):
     assert server.requests == []
 
 
-def test_disabled_connects_to_a_self_signed_certificate(server):
+def test_trust_on_first_use_connects_to_a_self_signed_certificate(server):
     with pytest.raises(Exception):  # reaches the fake server, which is not a vCenter
-        _connect(server, "Disabled", None)
+        _connect(server, "Trust on First Use", None)
     assert _posts(server) == ["/sdk"]
+
+
+# ---- reading the certificate for Trust on First Use ---------------------------------------------------------
+
+def test_presented_thumbprint_is_the_sha256_of_the_certificate(server):
+    from tls_server import thumbprint
+    assert tls.presented_thumbprint("127.0.0.1", server.port) == thumbprint(server.der, "sha256")
+
+
+def test_reading_the_certificate_sends_nothing(server):
+    """Only the TLS handshake: no request, so no user name or password, reaches the server."""
+    tls.presented_thumbprint("127.0.0.1", server.port)
+    assert server.requests == []
+
+
+def test_an_unreadable_certificate_gives_none_and_never_raises(caplog):
+    import socket
+    with socket.socket() as unused:
+        unused.bind(("127.0.0.1", 0))
+        closed_port = unused.getsockname()[1]
+    with caplog.at_level(logging.WARNING, logger=tls.logger.name):
+        assert tls.presented_thumbprint("127.0.0.1", closed_port) is None
+    assert "not compared" in caplog.text

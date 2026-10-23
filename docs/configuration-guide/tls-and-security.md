@@ -1,83 +1,112 @@
 # TLS and Security Settings
 
-The pack connects to vCenter with a service account. With Windows monitoring on, it also runs a PowerShell script inside Windows VMs. This page lists what the pack checks on those connections, what it runs, and what to set in a regulated environment.
+The pack connects to vCenter with a service account. With Windows monitoring on, it also runs a PowerShell script inside Windows VMs. This page explains how the pack treats the certificates on those connections, what it runs, and what to set when a customer wants stricter checks.
 
 **On this page:**
 
+- [The approach](#the-approach)
 - [Settings](#settings)
 - [vCenter TLS Validation](#vcenter-tls-validation)
 - [Guest File Transfer TLS Validation](#guest-file-transfer-tls-validation)
 - [What runs inside a Windows VM](#what-runs-inside-a-windows-vm)
 - [Container registry](#container-registry)
 - [Accounts](#accounts)
-- [Upgrading from an earlier version](#upgrading-from-an-earlier-version)
+- [Design considerations](#design-considerations)
 - [Reporting a vulnerability](#reporting-a-vulnerability)
+
+---
+
+## The approach
+
+**By default, the pack never stops collecting because of a certificate.** Many vCenter and ESXi certificates in the field are signed by the VMCA, or self-signed, and the Cloud Proxy does not trust them. Securing them is the customer's responsibility, not the adapter's. So the defaults watch the certificates instead of refusing them:
+
+- **vCenter:** the pack records the vCenter certificate the first time, and reports on the vCenter object when it changes. Collection goes on.
+- **ESXi, for Windows monitoring:** the pack checks each host's certificate against the thumbprint that vCenter already records for it. When vCenter has none, the transfer goes ahead and the adapter log says so.
+
+A customer who wants a failed check to **stop** the connection can choose a stricter mode per Adapter Instance. Nothing changes until they do.
 
 ---
 
 ## Settings
 
-All three are under **Advanced Settings** of the [Adapter Instance](adapter-instance.md#2-advanced-settings-optional).
+All three are under **Advanced Settings** of the [Adapter Instance](adapter-instance.md#2-advanced-settings-optional): **Administration → Integrations → Accounts → VCF vCommunity Adapter →** your instance **→ ⋮ → Edit → Advanced Settings**.
 
-| Setting | Default | What it does |
+| Setting | Default | Modes |
 | :--- | :--- | :--- |
-| **vCenter TLS Validation** | `Enabled` | How the vCenter certificate is checked: `Enabled`, `Pinned` or `Disabled`. |
-| **vCenter Thumbprint (SHA-256)** | *(empty)* | The certificate thumbprint to accept. Used only when vCenter TLS Validation is `Pinned`. |
-| **Guest File Transfer TLS Validation** | `Pinned` | How the ESXi host certificate is checked when a script is sent to a Windows VM: `Pinned` or `Disabled`. Used only when Windows monitoring is enabled. |
+| **vCenter TLS Validation** | `Trust on First Use` | `Trust on First Use`, `Enabled`, `Pinned` |
+| **vCenter Thumbprint (SHA-256)** | *(empty)* | Used only by `Pinned`. |
+| **Guest File Transfer TLS Validation** | `Pinned` | `Pinned`, `Strict`, `Disabled`. Used only when Windows monitoring is enabled. |
 
-`Disabled` exists for labs. It writes a warning to the adapter log on every collection.
+An Adapter Instance created before these settings existed has them empty, which means the default: it keeps connecting as before.
 
 ---
 
 ## vCenter TLS Validation
 
-The adapter sends the vCenter service account name and password to vCenter. The check on the vCenter certificate decides whether anything else on the network path can read them.
-
-| Mode | The adapter accepts the vCenter when... | Use it for |
+| Mode | What the adapter does | When the check fails |
 | :--- | :--- | :--- |
-| `Enabled` | The certificate chain and the host name are valid for the trust store of the adapter container. | A vCenter with a certificate from a CA that the container trusts. |
-| `Pinned` | The certificate matches the thumbprint in **vCenter Thumbprint (SHA-256)**. The chain is not checked: the thumbprint is the identity. | A vCenter with a self-signed certificate, or one from an internal CA that the container does not trust. |
-| `Disabled` | Always. Nothing is checked. | A lab. Never production. |
+| `Trust on First Use` (default) | Connects whatever the certificate. Every collection, it compares the certificate's SHA-256 thumbprint with the one it recorded on the vCenter object. | It **reports** a change and keeps collecting. |
+| `Enabled` | Checks the certificate chain and the host name against the trust store of the Cloud Proxy. | It **does not connect**. |
+| `Pinned` | Compares the certificate with **vCenter Thumbprint (SHA-256)**, before the user name and password are sent. | It **does not connect**. |
 
-A wrong or incomplete setting is refused, never treated as `Disabled`: `Pinned` without a thumbprint, a thumbprint that is not a SHA-256 or SHA-512 value, and an unknown mode all stop the connection. A SHA-1 thumbprint is not accepted.
+### Trust on First Use
 
-When the thumbprint does not match, the connection stops before the vCenter user name and password are sent. **Validate Connection** and the adapter log show the thumbprint that the vCenter presented. Compare it with the certificate in vCenter before you change the setting. A thumbprint copied from the failing connection proves nothing about who answered.
+This is how the VCF Operations vCenter account itself works: you accept the certificate when you add the vCenter. The pack does the same, and then keeps watching it.
+
+The result is on the **vCenter** object in VCF Operations, under **vCommunity → Certificate**:
+
+| Property | Meaning |
+| :--- | :--- |
+| **SHA-256 Thumbprint** | The thumbprint of the certificate vCenter presents now. The same value as `openssl x509 -noout -fingerprint -sha256`, in lower case and without colons. |
+| **Status** | `Recorded`: the first collection, the certificate is now recorded. `Unchanged`: the same certificate as before. `Changed`: a different certificate, within the last 24 hours. `Unknown`: the certificate could not be read this collection, so nothing was compared. |
+| **Previous SHA-256 Thumbprint** | The thumbprint before the last change. |
+| **Last Changed** | When the last change was seen, in UTC. |
+
+**When Status is `Changed`:**
+
+- After a planned certificate replacement, it is expected. It returns to `Unchanged` after 24 hours.
+- If nobody replaced the certificate, compare the new thumbprint with the certificate in vCenter. If they differ, another server answered as the vCenter and received the service account password: change the password, and find out why.
+
+To be alerted, create a symptom on the vCenter property **vCommunity|Certificate|Status** equal to `Changed`. The adapter log also has a warning that names both thumbprints.
+
+**What it does not do:** it reports a change after the login, so it cannot prevent one. The very first certificate is trusted as it is, because there is nothing to compare it with. To refuse an unknown certificate instead, use `Enabled` or `Pinned`.
+
+### Enabled and Pinned
+
+Use `Enabled` for a vCenter whose certificate comes from a CA that the Cloud Proxy trusts. Use `Pinned` for a self-signed or VMCA-signed certificate, when the customer wants the connection refused rather than reported.
+
+A wrong setting is refused, never treated as "no check": `Pinned` without a thumbprint, a thumbprint that is not SHA-256 or SHA-512, and an unknown mode all stop the connection. **Validate Connection** and the adapter log say what to change.
+
+With `Pinned`, a thumbprint mismatch stops the connection before the user name and password are sent. The message shows the thumbprint the vCenter presented. Compare it with the certificate in vCenter before you change the setting: a thumbprint copied from a failing connection proves nothing about who answered.
+
+When the vCenter certificate is replaced, `Pinned` needs the new thumbprint. `Enabled` and `Trust on First Use` do not.
 
 ### Get the thumbprint
 
-From a machine you trust, with OpenSSL:
+The **SHA-256 Thumbprint** property of the vCenter object already has it, once the pack has collected with `Trust on First Use`. Or, from a machine you trust, with OpenSSL:
 
 ```bash
 openssl s_client -connect vcenter.example.com:443 -servername vcenter.example.com </dev/null 2>/dev/null \
   | openssl x509 -noout -fingerprint -sha256
 ```
 
-The output is `sha256 Fingerprint=AB:CD:...`. Paste the part after `=`. Capitals, small letters and `:` between the bytes are all accepted.
-
-This reads the certificate over the network, so check the value against a second source before you rely on it: your certificate inventory, or the certificate details in the management interface of the vCenter itself.
-
-When the vCenter certificate is replaced, the thumbprint changes, and the Adapter Instance has to be updated. With `Enabled` it does not.
+The output is `sha256 Fingerprint=AB:CD:...`. Paste the part after `=`. Capitals, small letters and `:` between the bytes are all accepted. Check the value against a second source before you rely on it, such as the certificate details in vCenter.
 
 ---
 
 ## Guest File Transfer TLS Validation
 
-To read Windows Services, OS information and Event Logs, the pack sends a script to the VM and reads its output back. vCenter returns the address of the ESXi host that runs the VM for this transfer. An ESXi certificate is usually signed by a CA that the adapter container does not trust, so the chain cannot be checked.
+To read Windows Services, OS information and Event Logs, the pack sends a script to the VM and reads its output back. These files do not go through vCenter: vCenter returns a URL on the ESXi host that runs the VM, and the pack transfers the file there over HTTPS.
 
-| Mode | The transfer is made when... |
-| :--- | :--- |
-| `Pinned` | The ESXi host certificate matches the SSL thumbprint that vCenter records for that host. Nothing to enter: vCenter was already checked by the setting above. |
-| `Disabled` | Always. Nothing is checked. |
+vCenter records each host's certificate thumbprint when the host is added or reconnected (`host.summary.config.sslThumbprint` in the vSphere API). The pack pins the transfer to it, with no setup.
 
-In `Pinned` mode the transfer is refused when:
+| Mode | Host certificate matches vCenter's thumbprint | Host certificate differs | vCenter has no thumbprint, or the host is not found |
+| :--- | :--- | :--- | :--- |
+| `Pinned` (default) | Transferred | **Refused**, the VM is skipped | Transferred unchecked, one warning per host |
+| `Strict` | Transferred | **Refused**, the VM is skipped | **Refused**, the VM is skipped |
+| `Disabled` | Transferred | Transferred | Transferred |
 
-- the host presents a different certificate, or
-- vCenter has no thumbprint for the host, or
-- the host of the VM cannot be found.
-
-The certificate is compared before anything is sent, so the script and its output are not exposed to a host that cannot prove it is the right one. The VM is skipped, and the reason is in the adapter log. The thumbprint of each host is read from vCenter once per collection.
-
-This also means that after you replace an ESXi certificate, vCenter must have the new thumbprint (for a host that is connected normally it does) before Windows monitoring of its VMs continues.
+The certificate is compared during the TLS handshake, so a refused host receives nothing: not the script, and not its output. The reason is in the adapter log. Thumbprints are read from vCenter once per collection, so a replaced ESXi certificate is picked up at the next collection after vCenter has it.
 
 ---
 
@@ -96,7 +125,7 @@ For every Windows VM whose VMware Tools are running, through the vSphere GuestAP
 What this means for a review:
 
 - It is a remote execution path: one credential, held in VCF Operations, can run PowerShell in every VM that the pack monitors. The scripts are fixed. They are not taken from a configuration file.
-- The Windows Service names in the configuration file are put in the PowerShell command line. A name is accepted only if it contains letters, digits, space and `_ . $ # @ ( ) + -`, and starts with a letter, digit or `_`. Names with quotes, `;`, `|`, `&`, wildcards or new lines are left out, and one warning in the adapter log names them. So a user who can edit the configuration file cannot make the pack run their own commands in the VMs.
+- The Windows Service names in the configuration file are put in the PowerShell command line. A name is accepted only if it contains letters, digits, space and `_ . $ # @ ( ) + -`, and starts with a letter, digit or `_`. Names with quotes, `;`, `|`, `&`, wildcards or new lines are left out, and one warning in the adapter log names them. So a user who can edit the configuration file cannot make the pack run their own commands in the VMs. This check has no setting: it protects the VMs from the pack's own configuration file, whatever the customer's environment.
 - Event IDs are sent as an XML file and read as data. They are not part of a command line.
 - The account needs no administrator rights. See [User Account Requirements](../installation-guide/system-requirements.md#user-account-requirements). Do not use a local Administrator account.
 
@@ -118,14 +147,19 @@ The Cloud Proxy pulls the adapter image from `ghcr.io`. In a regulated environme
 
 ---
 
-## Upgrading from an earlier version
+## Design considerations
 
-Earlier versions did not check the vCenter certificate at all and had no setting for it. Now an Adapter Instance without the setting uses `Enabled`.
+**Who secures the certificates.** The customer does. A management pack that stops collecting because a vCenter uses its VMCA certificate punishes the customer for a choice that is theirs, and leaves them blind. So no default refuses a connection because of a certificate. Stricter modes exist for customers whose policy requires them.
 
-- A vCenter with a certificate that the container trusts keeps working.
-- A vCenter with a self-signed or internal CA certificate stops connecting after the upgrade. **Validate Connection** says the certificate is not trusted. Set **vCenter TLS Validation** to `Pinned` and enter the thumbprint. Use `Disabled` only in a lab.
-- Guest file transfers use `Pinned` without any change, because the thumbprints come from vCenter. If a VM is skipped, the adapter log says why.
-- For many Adapter Instances, the [Bulk Adapter Instance Importer](../../tools/importer/importer.md) has columns for these settings.
+**Why Trust on First Use, rather than no check.** No check and Trust on First Use connect in exactly the same cases. But Trust on First Use also tells the customer when the certificate changes, which is the one event that matters: a planned replacement, or another server answering as the vCenter. It costs one TLS handshake per collection, which sends nothing, and it needs no setup. The thumbprint is kept in VCF Operations itself, as a property of the vCenter object, so it survives a Cloud Proxy restart and an upgrade of the pack, and nothing is stored in the container.
+
+**Why not Enabled by default.** The Cloud Proxy does not trust the VMCA, so `Enabled` would stop most installations until someone imports a CA or pins a thumbprint. That is a customer decision, not a default.
+
+**Why a changed vCenter certificate is reported, not refused.** Certificates are replaced on schedule. Refusing would stop collection on every planned replacement, until someone updates the Adapter Instance. Reporting keeps the data flowing and gives the customer the evidence to act on.
+
+**Why a different ESXi certificate is refused, even by default.** Here the pack has a trusted reference with no setup: vCenter's own record of the host's certificate. A host that presents a different certificate is not an insecure environment, it is a server that vCenter does not know, and the pack is about to send it a script that runs with a Windows credential. Skipping that VM for one collection is the safe choice, and it does not stop anything else. When vCenter has no record, there is no reference, so `Pinned` goes ahead and says so.
+
+**Why the service-name check has no setting.** It does not depend on the customer's environment. It closes a hole in the pack itself: without it, a name in the pack's own configuration file could run commands in every monitored VM.
 
 ---
 

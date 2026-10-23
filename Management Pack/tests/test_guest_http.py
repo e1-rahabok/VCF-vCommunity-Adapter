@@ -87,6 +87,7 @@ def test_default_mode_is_pinned():
 
 def test_mode_is_not_case_sensitive():
     assert guest_http.configure("disabled") == guest_http.DISABLED
+    assert guest_http.configure("strict") == guest_http.STRICT
     assert guest_http.configure("pinned") == guest_http.PINNED
 
 
@@ -97,7 +98,7 @@ def test_unknown_mode_is_refused_not_treated_as_off():
 
 
 def test_disabled_says_so_in_the_log(caplog):
-    with caplog.at_level(logging.WARNING, logger=guest_http.logger.name):
+    with caplog.at_level(logging.INFO, logger=guest_http.logger.name):
         guest_http.configure("Disabled")
     assert "Disabled" in caplog.text and "not checked" in caplog.text
 
@@ -163,18 +164,51 @@ def test_the_wrong_thumbprint_reads_nothing(server):
     assert server.requests == []
 
 
+# ---- no thumbprint in vCenter: Pinned goes ahead and says so, Strict refuses ----------------------------------
+
 @pytest.mark.parametrize("recorded", [None, "", "garbage"])
-def test_no_recorded_thumbprint_fails_closed_without_connecting(server, recorded):
+def test_pinned_without_a_recorded_thumbprint_transfers_and_warns_once(server, recorded, caplog):
+    """The environment lacks a thumbprint: monitoring must not stop because of it."""
+    host = FakeHost(recorded)
+    with caplog.at_level(logging.WARNING, logger=guest_http.logger.name):
+        with warnings.catch_warnings():
+            warnings.simplefilter("error")  # one log line per host, not an InsecureRequestWarning per call
+            assert guest_http.put(FakeVm(host, "vm-1"), url(server), b"x").status_code == 200
+            assert guest_http.get(FakeVm(host, "vm-2"), url(server)).status_code == 200
+    warnings_logged = [r for r in caplog.records if "without checking its certificate" in r.getMessage()]
+    assert len(warnings_logged) == 1
+    assert "Strict" in warnings_logged[0].getMessage()
+
+
+def test_pinned_with_a_vm_without_a_host_transfers(server):
+    assert guest_http.put(FakeVm(host=None), url(server), b"x").status_code == 200
+
+
+@pytest.mark.parametrize("recorded", [None, "", "garbage"])
+def test_strict_without_a_recorded_thumbprint_fails_closed_without_connecting(server, recorded):
+    guest_http.configure("Strict")
     vm = FakeVm(FakeHost(recorded))
     with pytest.raises(guest_http.GuestTlsError, match="no .*thumbprint"):
         guest_http.put(vm, url(server), b"x")
     assert server.requests == []
 
 
-def test_a_vm_without_a_host_fails_closed(server):
-    vm = FakeVm(host=None)
+def test_strict_with_a_vm_without_a_host_fails_closed(server):
+    guest_http.configure("Strict")
     with pytest.raises(guest_http.GuestTlsError, match="Cannot find the ESXi host"):
-        guest_http.put(vm, url(server), b"x")
+        guest_http.put(FakeVm(host=None), url(server), b"x")
+    assert server.requests == []
+
+
+def test_strict_with_the_recorded_thumbprint_transfers(server):
+    guest_http.configure("Strict")
+    assert guest_http.put(FakeVm(FakeHost(vcenter_thumbprint(server))), url(server), b"x").status_code == 200
+
+
+def test_a_wrong_thumbprint_is_refused_in_strict_too(server):
+    guest_http.configure("Strict")
+    with pytest.raises(guest_http.GuestTlsError, match="does not match the thumbprint"):
+        guest_http.put(FakeVm(FakeHost("AA:" * 19 + "AA")), url(server), b"x")
     assert server.requests == []
 
 
@@ -205,7 +239,7 @@ def test_configure_forgets_the_thumbprints_of_the_last_collection(server):
     assert len(host.reads) == 2
 
 
-# ---- disabled: the old behaviour, on request ----------------------------------------------------------------
+# ---- disabled: nothing checked, on request ------------------------------------------------------------------
 
 def test_disabled_transfers_without_checking_the_certificate(server):
     guest_http.configure("Disabled")
