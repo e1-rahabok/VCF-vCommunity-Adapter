@@ -5,7 +5,7 @@
 It answers two questions about the powered-on VMs on the host:
 
 - **How deep?** The worst VM. Shows a problem that hits one VM hard.
-- **How broad?** The 90th percentile across the VMs. Shows a problem that many VMs share. 90 % of the VMs are at or below this value.
+- **How broad?** The 90th percentile across the VMs. Shows a problem that many VMs have. 90 % of the VMs are at or below this value.
 
 All 10 metrics are published on the host object under `vCommunity|ESXi Performance`. The KPI itself is `vCommunity|ESXi Performance|ESXi Performance Score`.
 

@@ -167,7 +167,7 @@ def test_the_monster_vm_setting_reaches_the_kpi():
     assert published["Highest CPU Monster VM to Host Ratio"] == 0.5
 
 
-def test_memory_shares_are_of_the_host_capacity():
+def test_memory_percentages_are_of_the_host_dram():
     stats = {cr.MEM_BALLOONED: 5.12 * GB_IN_KB, cr.MEM_DRAM_CAPACITY: 512.0 * GB_IN_KB}
     assert cr.memory_ballooned_pct(stats) == 1.0
     assert cr.memory_ballooned_pct({cr.MEM_BALLOONED: 1.0}) is None      # capacity missing
@@ -235,7 +235,7 @@ def test_dram_capacity_falls_back_to_host_provisioned_memory():
     assert cr.dram_capacity_kb({cr.MEM_DRAM_CAPACITY_FALLBACK: 512.0}) == 512.0     # DRAM stat missing
     assert cr.dram_capacity_kb({cr.MEM_DRAM_CAPACITY: 0.0, cr.MEM_DRAM_CAPACITY_FALLBACK: 512.0}) == 512.0
     assert cr.dram_capacity_kb({}) is None
-    # The memory shares use the fallback too: 5.12 GB ballooned of 512 GB is 1 %.
+    # The memory percentages use the fallback too: 5.12 GB ballooned of 512 GB is 1 %.
     assert cr.memory_ballooned_pct({cr.MEM_BALLOONED: 5.12 * GB_IN_KB, cr.MEM_DRAM_CAPACITY_FALLBACK: 512.0 * GB_IN_KB}) == 1.0
 
 

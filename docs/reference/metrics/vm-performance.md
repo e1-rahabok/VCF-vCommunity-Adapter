@@ -16,7 +16,7 @@ Source of the sub-metrics and limits: [`formula/vm-performance.png`](formula/vm-
 
 Eight sub-metrics are stats the VM already has. They are read as they are, and are not published a second time. Memory Zip Swap is calculated.
 
-**Why Memory Zip Swap is divided by Guest OS Used Memory.** It is divided by the memory the guest OS uses, not by the VM's configured memory, to better reflect the risk. Configured memory includes memory the guest OS does not use, so the share would come out smaller and under-report the problem. This is the same formula as the former "vSphere VM Memory Zip Swap" super metric, which this metric replaces.
+**Why Memory Zip Swap is divided by Guest OS Used Memory.** It is divided by the memory the guest OS uses, not by the VM's configured memory, to better reflect the risk. Configured memory includes memory the guest OS does not use, so the % would come out smaller and under-report the problem. This is the same formula as the former "vSphere VM Memory Zip Swap" super metric, which this metric replaces.
 
 | Group | Sub-metric | Source |
 | :--- | :--- | :--- |
@@ -85,10 +85,10 @@ A stat whose latest value is more than 10 minutes old counts as no data. A last 
 
 ## Changing the KPI
 
-The sub-metrics, their units and their limits are one table, `METRICS`, at the top of the code file.
+The code follows the KPI: one section per row, in the order of the source table, with the row's limits and where its value comes from, a VM stat as it is or a formula.
 
-- To change a limit, edit the row.
-- To add a sub-metric that is a VM stat as it is, add a row to `METRICS` and a line to `SOURCE_STATS`.
+- To change a limit, edit the row's section.
+- To add a sub-metric, add a section with its limits and its VM stat (or formula), and add it to `ROWS`.
 - To exclude a green range, set the last value of the row to `True`. For a green that is exactly 0, also set the green limit to 0.
 
 The adapter definition reads the same table, so there is nothing else to update.

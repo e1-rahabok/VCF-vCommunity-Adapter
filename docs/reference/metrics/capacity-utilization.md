@@ -61,8 +61,8 @@ A 4-host cluster, N+1. On paper the maximum is 4 × 100 ÷ 3 = 133 %.
 
 **Inputs**, from VCF Operations, the same per-host values as [Cluster Risk](cluster-risk.md), plus the host state:
 
-- ESXi CPU Utilization: `cpu|utilization_average`, the share of the host's CPU threads in use.
-- ESXi Memory Consumed: `mem|consumed_average` as a share of the host's DRAM (`mem:DRAM|memory_tier_total_capacity`, or `mem|host_provisioned` when that has no value). A memory tier such as NVMe is not added.
+- ESXi CPU Utilization: `cpu|utilization_average`, the % of the host's CPU threads in use.
+- ESXi Memory Consumed: `mem|consumed_average` as a % of the host's DRAM (`mem:DRAM|memory_tier_total_capacity`, or `mem|host_provisioned` when that has no value). A memory tier such as NVMe is not added.
 - Host state, as properties: `runtime|connectionState`, `runtime|powerState`, `runtime|maintenanceState`.
 
 ## Design considerations

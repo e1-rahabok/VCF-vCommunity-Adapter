@@ -3,53 +3,36 @@
 
 What it is
 ----------
-One 0-100 % score per powered-on VM. 100 is perfect. It answers one question:
-is the VM, as a virtual motherboard, getting the CPU, memory, disk and network
-it asks for from ESXi? It is built from the 9 sub-metrics in METRICS below.
-What happens inside the guest OS is scored separately, by the Guest OS
-Performance KPI in guest_os_performance_metrics.py.
+One 0-100 % score per powered-on VM. 100 is perfect. It answers one question: is the VM, as a virtual motherboard,
+getting the CPU, memory, disk and network it asks for from ESXi? What happens inside the guest OS is scored
+separately, by the Guest OS Performance KPI in guest_os_performance_metrics.py.
+
+How this file is laid out
+-------------------------
+  Part 1  The 9 rows, one section each, in the order of the source table. Each section has the row's limits and
+          where its value comes from: a VM stat as it is (8 rows), or a formula (Memory Zip Swap). To add, change or
+          remove a row, change only its section and its line in ROWS.
+  Part 2  Reading the stats, once per collection cycle for all VMs. The same request also reads the stats of the
+          Guest OS Performance KPI.
+  Part 3  The KPI, once per VM: take the rows, score them and publish. The scoring is the same for every KPI:
+          metrics/kpi_score.py.
 
 Published on the VM as:
-    vCommunity|VM Performance|VM Performance        the KPI
-    vCommunity|VM Performance|Memory Zip Swap       the one calculated sub-metric
+    vCommunity|VM Performance|VM Performance Score    the KPI
+    vCommunity|VM Performance|Memory Zip Swap         the one calculated row
+The other rows are stats the VM already has, so publishing them again would only store every number twice, for
+every VM.
 
-The other sub-metrics are stats the VM already has, so publishing them again
-would only store every number twice, for every VM.
+Missing data: a row with no data is left out of the KPI. A powered-off VM gets no KPI at all, because its stats are
+old.
 
-How it is calculated
---------------------
-1. Read the stats of all VMs from VCF Operations, in bulk. The vCenter adapter
-   has already collected them. The same request also reads the stats of the
-   Guest OS Performance KPI.
-2. For each VM, take the 9 sub-metric values from its stats. Eight are stats as
-   they are. Memory Zip Swap is calculated.
-3. Score each value and combine the scores into the KPI. This step is the same
-   for every KPI and is explained in metrics/kpi_score.py.
-
-Where the limits come from
---------------------------
-docs/reference/metrics/formula/vm-performance.png. CPU Overlap,
-Network Dropped Tx and CPU Run have their green range marked "Excluded": while
-green they are left out of the KPI rather than scored 100, see "Skip when green"
-in metrics/kpi_score.py.
-
-Missing data
-------------
-A sub-metric with no data is left out of the KPI. A powered-off VM gets no KPI
-at all, because its stats are old.
-
-How to change it
-----------------
-To re-tune a sub-metric, edit its row in METRICS. To add one that is read from
-a VM stat as it is, add a row to METRICS and a line to SOURCE_STATS.
-
-Called from: collectors/vm/collectVMData.py. Stats are read once for all VMs,
-then the entry point runs once per powered-on VM.
-Overall approach for all KPIs: metrics/README.md
+Called from: collectors/vm/collectVMData.py. Stats are read once for all VMs, then the entry point runs once per
+powered-on VM.
+Where the limits come from: docs/reference/metrics/formula/vm-performance.png.
 Description for people who do not read code: docs/reference/metrics/vm-performance.md
 """
 import logging
-from typing import Dict, List, Optional
+from typing import Callable, Dict, List, NamedTuple, Optional
 from aria.ops.object import Object
 from aria.ops.suite_api_client import SuiteApiClient
 from metrics.kpi_score import Metric, percent, has_all, publish_kpi
@@ -65,100 +48,114 @@ KPI_NAME = "VM Performance"
 # the key of its group. The metric is still shown as KPI_NAME.
 KPI_KEY = "VM Performance Score"
 
-# One row per sub-metric. The five numbers are the values where its score is 100, 75, 50, 25 and 0.
-# A last value True means "skip when green": the source table marks the green range "Excluded",
-# so the row counts in the KPI only when it is outside green.
-METRICS = [
-    #       name                    unit    best    green   yellow  orange  zero-at  skip-when-green
-
-    # --- VM contention ---
-    # Time the VM was held back so that its vCPUs stay in step. Only multi-vCPU VMs have it.
-    Metric("CPU Co-Stop",           "%",    0.0,    1.0,    2.0,    4.0,    8.0),
-    # Time the VM was ready to run but had to wait for a physical CPU.
-    Metric("CPU Ready",             "%",    0.0,    2.0,    4.0,    8.0,    16.0),
-    # Time the VM was interrupted so that ESXi could do work for something else.
-    # Green (below 0.5 %) is "Excluded": some overlap is normal and says nothing about performance.
-    Metric("CPU Overlap",           "%",    0.0,    0.5,    1.0,    2.0,    4.0,     True),
-    # Time the VM waited for memory that the host had swapped out or compressed.
-    Metric("Memory Contention",     "%",    0.0,    0.5,    1.0,    2.0,    4.0),
-    # Read and write latency of the VM's virtual disks.
-    Metric("Disk Latency",          "ms",   0.0,    10.0,   20.0,   40.0,   80.0),
-    # Packets the VM sent that were dropped, as a share of the packets it sent.
-    # Green (exactly 0) is "Excluded": dropped packets are rare. Any dropped packet is yellow.
-    Metric("Network Dropped Tx",    "%",    0.0,    0.0,    0.5,    1.0,    2.0,     True),
-
-    # --- VM utilization ---
-    # Time the VM really ran on a physical CPU. Near 100 % the VM itself is too small.
-    # Green (below 95 %) is "Excluded": a VM that is not busy says nothing about its performance.
-    Metric("CPU Run",               "%",    0.0,    95.0,   97.0,   99.0,   100.0,   True),
-
-    # --- IaaS high utilization: the host is taking memory back from the VM ---
-    # VM memory that the host took back through the balloon driver.
-    Metric("Memory Ballooned",      "%",    0.0,    2.0,    4.0,    8.0,    16.0),
-    # VM memory that the host compressed or swapped out. Calculated, see memory_zip_swap_pct().
-    Metric("Memory Zip Swap",       "%",    0.0,    0.25,   0.5,    1.0,    2.0),
-]
-
-# Only the sub-metrics that the VM does not already have as a stat.
-PUBLISHED_METRICS = [metric for metric in METRICS if metric.name == "Memory Zip Swap"]
+VmStats = Dict[str, float]
 
 
-# ---------------------------------------------------------------------------
-# The VCF Operations stats that the sub-metrics are built from.
-# ---------------------------------------------------------------------------
+class Row(NamedTuple):
+    """One row of the KPI: its limits, and where its value comes from: a VM stat as it is, or a formula."""
+    metric: Metric
+    stat: Optional[str] = None
+    formula: Optional[Callable[[VmStats], Optional[float]]] = None
 
-# Sub-metric -> the VM stat it is read from, as it is.
-# The 20-second peak stats are used instead of the 5-minute averages so the KPI is a leading indicator.
-SOURCE_STATS = {
-    "CPU Co-Stop":          "cpu|20_sec_peak_costopPct",
-    "CPU Ready":            "cpu|20_sec_peak_readyPct",
-    "CPU Overlap":          "cpu|20_sec_peak_overlap",
-    "Memory Contention":    "mem|20_sec_peak_host_contentionPct",
-    "Disk Latency":         "virtualDisk|20_sec_peak_totalLatency_average",
-    "Network Dropped Tx":   "net|droppedTxPct_max",
-    "CPU Run":              "cpu|net_run",
-    "Memory Ballooned":     "mem|balloonPct",
-}
+    def value(self, vm_stats: VmStats) -> Optional[float]:
+        return vm_stats.get(self.stat) if self.stat else self.formula(vm_stats)
 
-# Stats Memory Zip Swap is built from. The formula is the one of the former "vSphere VM Memory Zip Swap" super
-# metric, which this metric replaces. See memory_zip_swap_pct().
+
+# =================================================================================================================
+# Part 1. The 9 rows
+# =================================================================================================================
+#
+# The five numbers of each Metric are the values where its score is 100, 75, 50, 25 and 0. A last value True means
+# "skip when green": the source table marks the green range "Excluded", so the row counts in the KPI only when it is
+# outside green. The CPU, memory and disk stats are the 20-second peaks, not the 5-minute averages, so the KPI is a
+# leading indicator.
+#       name                    unit    best    green   yellow  orange  zero-at  skip-when-green
+
+# --- Row 1. CPU Co-Stop (VM contention) --------------------------------------------------------------------------
+# Time the VM was held back so that its vCPUs stay in step. Only multi-vCPU VMs have it.
+CO_STOP = Row(Metric("CPU Co-Stop",           "%",    0.0,    1.0,    2.0,    4.0,    8.0),
+              stat="cpu|20_sec_peak_costopPct")
+
+# --- Row 2. CPU Ready (VM contention) ----------------------------------------------------------------------------
+# Time the VM was ready to run but had to wait for a physical CPU.
+READY = Row(Metric("CPU Ready",               "%",    0.0,    2.0,    4.0,    8.0,    16.0),
+            stat="cpu|20_sec_peak_readyPct")
+
+# --- Row 3. CPU Overlap (VM contention) --------------------------------------------------------------------------
+# Time the VM was interrupted so that ESXi could do work for something else.
+# Green (below 0.5 %) is "Excluded": some overlap is normal and says nothing about performance.
+OVERLAP = Row(Metric("CPU Overlap",           "%",    0.0,    0.5,    1.0,    2.0,    4.0,     True),
+              stat="cpu|20_sec_peak_overlap")
+
+# --- Row 4. Memory Contention (VM contention) --------------------------------------------------------------------
+# Time the VM waited for memory that the host had swapped out or compressed.
+MEMORY_CONTENTION = Row(Metric("Memory Contention", "%", 0.0,  0.5,    1.0,    2.0,    4.0),
+                        stat="mem|20_sec_peak_host_contentionPct")
+
+# --- Row 5. Disk Latency (VM contention) -------------------------------------------------------------------------
+# Read and write latency of the VM's virtual disks.
+DISK_LATENCY = Row(Metric("Disk Latency",     "ms",   0.0,    10.0,   20.0,   40.0,   80.0),
+                   stat="virtualDisk|20_sec_peak_totalLatency_average")
+
+# --- Row 6. Network Dropped Tx (VM contention) -------------------------------------------------------------------
+# Packets the VM sent that were dropped, as a % of the packets it sent.
+# Green (exactly 0) is "Excluded": dropped packets are rare. Any dropped packet is yellow.
+DROPPED_TX = Row(Metric("Network Dropped Tx", "%",    0.0,    0.0,    0.5,    1.0,    2.0,     True),
+                 stat="net|droppedTxPct_max")
+
+# --- Row 7. CPU Run (VM utilization) -----------------------------------------------------------------------------
+# Time the VM really ran on a physical CPU. Near 100 % the VM itself is too small.
+# Green (below 95 %) is "Excluded": a VM that is not busy says nothing about its performance.
+CPU_RUN = Row(Metric("CPU Run",               "%",    0.0,    95.0,   97.0,   99.0,   100.0,   True),
+              stat="cpu|net_run")
+
+# --- Row 8. Memory Ballooned (IaaS high utilization: the host is taking memory back from the VM) ----------------
+# VM memory that the host took back through the balloon driver.
+BALLOONED = Row(Metric("Memory Ballooned",    "%",    0.0,    2.0,    4.0,    8.0,    16.0),
+                stat="mem|balloonPct")
+
+# --- Row 9. Memory Zip Swap (IaaS high utilization: the host is taking memory back from the VM) -----------------
+# VM memory that the host compressed or swapped out, as a % of the memory the guest OS uses. The formula is the one
+# of the former "vSphere VM Memory Zip Swap" super metric, which this row replaces.
 MEM_COMPRESSED = "mem|compressed_average"
 MEM_SWAPPED = "mem|swapped_average"
 GUEST_USED_MEMORY = "guest|used_memory"
 
-# Every stat that is asked from VCF Operations, for each VM.
-VM_STATS = list(SOURCE_STATS.values()) + [MEM_COMPRESSED, MEM_SWAPPED, GUEST_USED_MEMORY]
 
+def memory_zip_swap_pct(vm_stats: VmStats) -> Optional[float]:
+    """Compressed plus swapped memory, as a % of the memory the guest OS uses.
 
-# ---------------------------------------------------------------------------
-# Sub-metric formulas. Each returns None when it has no data to work with.
-# ---------------------------------------------------------------------------
-
-def memory_zip_swap_pct(vm_stats: Dict[str, float]) -> Optional[float]:
-    """Compressed plus swapped memory, as a share of the memory the guest uses."""
-    # Divided by Guest OS Used Memory, not by VM Configured Memory, to better reflect the risk.
-    # Configured memory includes memory the guest OS does not use, so the share would come out smaller
-    # and under-report the problem. This is the same formula as the former "vSphere VM Memory Zip Swap" super metric.
-    # guest|used_memory comes from VMware Tools, so a VM without Tools has no Memory Zip Swap.
+    Divided by Guest OS Used Memory, not by VM Configured Memory, to better reflect the risk. Configured memory
+    includes memory the guest OS does not use, so the % would come out smaller and under-report the problem.
+    guest|used_memory comes from VMware Tools, so a VM without Tools has no Memory Zip Swap.
+    """
     if not has_all(vm_stats, [MEM_COMPRESSED, MEM_SWAPPED, GUEST_USED_MEMORY]):
         return None
     return percent(vm_stats[MEM_COMPRESSED] + vm_stats[MEM_SWAPPED], vm_stats[GUEST_USED_MEMORY])
 
 
-def vm_performance_values(vm_stats: Dict[str, float]) -> Dict[str, Optional[float]]:
-    """Value of every sub-metric in METRICS for one VM. None means "no data"."""
-    # The eight sub-metrics that are a stat as it is. A stat the VM does not have gives None.
-    values = {name: vm_stats.get(stat_key) for name, stat_key in SOURCE_STATS.items()}
-    # The calculated one.
-    values["Memory Zip Swap"] = memory_zip_swap_pct(vm_stats)
-    return values
+ZIP_SWAP = Row(Metric("Memory Zip Swap",      "%",    0.0,    0.25,   0.5,    1.0,    2.0),
+               formula=memory_zip_swap_pct)
 
 
-# ---------------------------------------------------------------------------
-# Reading stats from VCF Operations.
-# ---------------------------------------------------------------------------
+# The rows, in the order of the source table.
+ROWS = [CO_STOP, READY, OVERLAP, MEMORY_CONTENTION, DISK_LATENCY, DROPPED_TX, CPU_RUN, BALLOONED, ZIP_SWAP]
+METRICS = [row.metric for row in ROWS]
+# Only the rows the VM does not already have as a stat: the calculated one.
+PUBLISHED_METRICS = [row.metric for row in ROWS if row.formula]
+# Row -> the VM stat it is read from, as it is.
+SOURCE_STATS = {row.metric.name: row.stat for row in ROWS if row.stat}
 
-def read_vm_performance_stats(suite_api_client: SuiteApiClient, vm_ids: List[str]) -> Dict[str, Dict[str, float]]:
+
+# =================================================================================================================
+# Part 2. Reading the stats, once for all VMs
+# =================================================================================================================
+
+# Every stat that is asked from VCF Operations, for each VM.
+VM_STATS = list(SOURCE_STATS.values()) + [MEM_COMPRESSED, MEM_SWAPPED, GUEST_USED_MEMORY]
+
+
+def read_vm_performance_stats(suite_api_client: SuiteApiClient, vm_ids: List[str]) -> Dict[str, VmStats]:
     """Returns {VM resource id: {stat key: latest value}} for all VMs, read in bulk instead of one call per VM.
 
     Reads the stats of both per-VM KPIs, VM Performance and Guest OS Performance, in the same request.
@@ -172,21 +169,23 @@ def read_vm_performance_stats(suite_api_client: SuiteApiClient, vm_ids: List[str
         return {}
 
 
-# ---------------------------------------------------------------------------
-# Entry point, called once per powered-on VM.
-# ---------------------------------------------------------------------------
+# =================================================================================================================
+# Part 3. The KPI, once per VM
+# =================================================================================================================
 
-def collect_vm_performance_metrics(vm_obj: Object, vm_name: str, vm_stats: Dict[str, float]) -> Optional[float]:
-    """Publishes the sub-metrics in PUBLISHED_METRICS, then the VM Performance KPI. Returns the KPI, or None.
+def vm_performance_values(vm_stats: VmStats) -> Dict[str, Optional[float]]:
+    """The value of every row for one VM. None means "no data"."""
+    return {row.metric.name: row.value(vm_stats) for row in ROWS}
+
+
+def collect_vm_performance_metrics(vm_obj: Object, vm_name: str, vm_stats: VmStats) -> Optional[float]:
+    """Publishes the calculated row, then the VM Performance KPI. Returns the KPI, or None.
 
     vm_stats is the entry of this VM in the result of read_vm_performance_stats().
     """
     try:
-        # Step 1 (reading the stats) was done once for all VMs, by read_vm_performance_stats().
-        # Step 2: calculate the sub-metric values. None means "no data".
         values = vm_performance_values(vm_stats)
 
-        # Step 3: publish the calculated sub-metric, then score all of them and publish the KPI.
         published = publish_kpi(vm_obj, GROUP, KPI_KEY, METRICS, PUBLISHED_METRICS, values)
         # Logged at debug level only: there can be thousands of VMs, and no Tools is a normal case.
         if published.no_data:

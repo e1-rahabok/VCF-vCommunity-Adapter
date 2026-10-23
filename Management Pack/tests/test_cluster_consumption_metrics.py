@@ -34,10 +34,10 @@ def host_stats(cpu_util, dram_gb, consumed_gb, ballooned_gb=0.0, compressed_gb=0
     }
 
 
-def cluster(usable_fraction):
-    """The usable capacity of the cluster as VCF Operations reports it: Total - HA - Buffer."""
-    return {cc.CPU_TOTAL: 100000.0, cc.CPU_USABLE: 100000.0 * usable_fraction,
-            cc.MEM_TOTAL: 1000.0 * GB_IN_KB, cc.MEM_USABLE: 1000.0 * GB_IN_KB * usable_fraction}
+def cluster(usable_of_total):
+    """Usable Capacity of the cluster as VCF Operations reports it (Total - HA - Buffer), given as a ratio of Total."""
+    return {cc.CPU_TOTAL: 100000.0, cc.CPU_USABLE: 100000.0 * usable_of_total,
+            cc.MEM_TOTAL: 1000.0 * GB_IN_KB, cc.MEM_USABLE: 1000.0 * GB_IN_KB * usable_of_total}
 
 
 # A big host (32 cores, 64 threads, 512 GB) and a small one (16 cores, 32 threads, 256 GB).
@@ -77,14 +77,14 @@ def test_cluster_wide_means_the_hosts_added_up_not_averaged():
 
 
 def test_consumption_is_against_usable_capacity():
-    # HA and the buffer take 20 %: usable is 80 % of the total, so the same load is a larger share.
+    # HA and the buffer take 20 %: Usable Capacity is 80 % of Total Capacity, so the same load is a larger %.
     values = cc.consumption_values(HOSTS, STATS, {}, HA_AND_BUFFER)
     assert round(values[cc.CPU], 2) == 62.5             # 48 of 96 x 0.8 = 76.8 threads
     assert round(values[cc.MEMORY], 2) == 79.17         # 486.4 GB of 768 x 0.8 = 614.4 GB
     assert round(values[cc.BALLOONED], 2) == 0.83       # 5.12 GB of 614.4 GB
 
 
-def test_cpu_and_memory_have_their_own_usable_fraction():
+def test_cpu_and_memory_have_their_own_usable_capacity():
     stats = {**cluster(1.0), cc.CPU_USABLE: 50000.0}     # CPU half usable, memory fully
     values = cc.consumption_values(HOSTS, STATS, {}, stats)
     assert values[cc.CPU] == 100.0
@@ -108,7 +108,7 @@ def test_memory_tiering_is_against_the_usable_nvme_tier_only():
         cc.consumption_values(HOSTS, STATS, {}, HA_AND_BUFFER)[cc.MEMORY]
 
 
-def test_rows_have_no_value_without_a_usable_share():
+def test_rows_have_no_value_without_usable_capacity():
     # Usable missing, usable 0, or no total: there is no meaningful %, so the rows have no value.
     for stats in ({}, cluster(0.0), {**cluster(1.0), cc.MEM_TOTAL: 0.0}):
         values = cc.consumption_values(HOSTS, STATS, {}, stats)
@@ -128,6 +128,15 @@ def test_a_host_in_maintenance_mode_is_left_out():
     hosts = HOSTS + [host("host-3", 32.0, maintenance_state="inMaintenance")]
     stats = {**STATS, "host-3": host_stats(cpu_util=0.0, dram_gb=512.0, consumed_gb=0.0)}
     assert cc.consumption_values(hosts, stats, {}, HA_AND_BUFFER) == cc.consumption_values(HOSTS, STATS, {}, HA_AND_BUFFER)
+
+
+def test_a_row_is_never_a_partial_sum():
+    # host-2 counts in Memory Usable Capacity (it reports DRAM and consumed), but not its ballooned memory.
+    # Adding up only host-1 against the DRAM of both would understate Ballooned, so that row has no data.
+    stats = {**STATS, "host-2": {k: v for k, v in STATS["host-2"].items() if k != cr.MEM_BALLOONED}}
+    values = cc.consumption_values(HOSTS, stats, {}, NO_HA_NO_BUFFER)
+    assert values[cc.BALLOONED] is None
+    assert round(values[cc.MEMORY], 2) == 63.33          # the other DRAM rows are not affected
 
 
 def test_a_host_without_data_is_left_out():
@@ -166,6 +175,16 @@ def test_no_usable_capacity_is_fully_consumed():
     obj = FakeObject("cluster-1")
     cc.collect_cluster_consumption_metrics(obj, "Cluster 1", HOSTS, STATS, {}, cluster(0.0))
     assert obj.metrics == {f"vCommunity|{cc.GROUP}|{cc.KPI_KEY}": 100.0}
+
+
+def test_no_host_running_is_no_data_not_full():
+    # All hosts in maintenance mode: no VM runs, so nothing is consumed. Even if VCF Operations reports Usable
+    # Capacity 0, the cluster is not "full": nothing is published.
+    hosts = [host("host-1", 32.0, maintenance_state="inMaintenance"), host("host-2", 16.0, maintenance_state="inMaintenance")]
+    for stats in (cluster(0.0), cluster(0.8)):
+        obj = FakeObject("cluster-1")
+        cc.collect_cluster_consumption_metrics(obj, "Cluster 1", hosts, STATS, {}, stats)
+        assert obj.metrics == {}
 
 
 def test_no_usable_cpu_keeps_the_memory_rows():

@@ -4,7 +4,7 @@
 What it is
 ----------
 Network Speed Degradation (%, per host)
-    The speed the physical NICs run at, as a share of the speed they are configured for:
+    The speed the physical NICs run at, as a % of the speed they are configured for:
     sum of the actual speeds / sum of the configured speeds x 100, over the NICs that can be compared.
     100 % means no degradation. Below 100 %, a NIC negotiated a lower speed than configured.
 

@@ -19,10 +19,15 @@ Source of the limits: [`formula/cluster-consumption.png`](formula/cluster-consum
 > **Read this before using the metrics.**
 
 - **Memory Tiering Consumption is not yet confirmed on a live system.** The lab has a host with an NVMe tier but no value for its usage, so the stat and its unit (MB) are taken from the VCF Operations definition.
-- **No usable capacity means full.** When HA and the buffer leave nothing to VMs, VCF Operations reports usable capacity 0. Seen on a live system: HA tolerating one host failure, with one of two hosts running. Cluster Consumption is then 100, and the rows of that resource are not published: there is no meaningful % of nothing.
+- **Usable Capacity 0 has two situations, with different results:**
+  - **Hosts run, but HA and the Buffer leave nothing to VMs.** VCF Operations reports Usable Capacity 0. Seen on a live system: HA tolerating one host failure, with one of two hosts running. The VMs on that host still consume, so Cluster Consumption is 100 (fully consumed). The rows of that resource are not published: there is no meaningful % of 0.
+  - **No host runs:** all are down, powered off, in maintenance mode or disconnected. No VM runs, so nothing is consumed, and Cluster Consumption is not 100. The rows and the KPI have no data.
 - **Usable capacity not reported is no data.** Then CPU and memory have no value for that cycle, and are left out of the KPI. They are never scored against the total instead.
 - **A worse sub-metric can lower Cluster Consumption.** When a sub-metric crosses into the next tier, its weight doubles. If it is still less consumed than the sub-metrics already driving Cluster Consumption, the KPI goes down. See [A worse sub-metric can lower Cluster Risk](cluster-risk.md#known-limitation-a-worse-sub-metric-can-lower-cluster-risk), which uses the same scoring.
-- **The HA and buffer share applies to the hosts that run.** VCF Operations reports usable capacity for the whole cluster. Its share of the total is applied to the hosts that run, so a host in maintenance mode lowers the usable capacity by its own size, not more.
+- **CPU Usable Capacity in threads comes from a ratio in MHz.** VCF Operations reports CPU Usable Capacity in MHz, not in threads. The pack divides it by the CPU Total Capacity, also in MHz, and applies that percentage to the threads of the running hosts. No step converts MHz to threads. This is exact only when every host has the same clock speed and the same hyper-threading setting. Example: host A has 32 cores with hyper-threading (64 threads), host B the same 32 cores without it (32 threads), so each is half of the cluster's MHz. If HA and the buffer remove 50 % of the MHz, the pack counts 96 × 50 % = 48 usable threads. But the threads actually left are 32 if host A fails, or 64 if host B fails.
+- **The memory percentage is applied to the NVMe memory tier too.** Memory Usable Capacity is reported for DRAM. The same percentage is applied to the NVMe tier, which assumes HA and the buffer remove the same part of each.
+- **Total Capacity and Usable Capacity.** Total Capacity is every host in the cluster, whatever its state: it changes only when a host is added or removed. Usable Capacity counts only the hosts that can run VMs: a host in maintenance mode, disconnected, powered off or in standby stays in Total Capacity but adds nothing to Usable Capacity. So Usable Capacity changes with the state of the hosts, and can be 0 if all hosts are down, powered off, in maintenance mode or disconnected.
+- **To be validated: does VCF Operations count a host that is down in its Total Capacity?** The pack takes VCF Operations' Usable Capacity as a percentage of its Total Capacity (`cpu|capacity_provisioned`, `mem|host_provisioned`), then applies that percentage to the hosts that can run VMs. If VCF Operations keeps a host in maintenance mode in its Total but not in its Usable Capacity, that host lowers the percentage **and** is left out of the hosts it is applied to, so it reduces Usable Capacity twice. Not yet checked on a live system.
 
 ## The 5 sub-metrics and their limits
 
@@ -40,16 +45,23 @@ The score is 100 at 0 for every row. No green range is excluded: every row with 
 
 ## How each sub-metric is calculated
 
-### Usable capacity
+### Usable Capacity
 
-VCF Operations calculates the usable capacity of each cluster, from its HA admission control and from the **Capacity Buffer (Demand)** set in the policy (**Capacity Settings** of Cluster Compute Resource). The pack reads it, and takes its share of the total:
+**Usable Capacity = Total Capacity − HA − Buffer.** VCF Operations calculates it for each cluster, from its HA admission control and the **Capacity Buffer (Demand)** set in the policy (**Capacity Settings** of Cluster Compute Resource). It reports it in MHz for CPU and in KB for memory. The sub-metrics need it in threads, in GB of DRAM and in GB of NVMe tier, so the pack takes Usable Capacity as a percentage of Total Capacity, and applies that percentage to what the running hosts have:
 
-| | Usable (Total − HA − Buffer) | Total | Usable fraction |
-| :--- | :--- | :--- | :--- |
-| CPU | `cpu\|demand\|usableCapacity` (MHz) | `cpu\|capacity_provisioned` (MHz) | usable ÷ total |
-| Memory | `mem\|demand\|usableCapacity` (KB) | `mem\|host_provisioned` (KB) | usable ÷ total |
+| Usable Capacity | Percentage, read from VCF Operations | Applied to |
+| :--- | :--- | :--- |
+| CPU, in threads | `cpu\|demand\|usableCapacity` ÷ `cpu\|capacity_provisioned`, both in MHz | The threads of the running hosts |
+| Memory, in DRAM | `mem\|demand\|usableCapacity` ÷ `mem\|host_provisioned`, both in KB | The DRAM of the running hosts |
+| Memory, in NVMe tier | The memory percentage above | The NVMe tier of the running hosts |
 
-The usable fraction is applied to what the hosts have. So with HA and a buffer taking 20 % of a cluster, a host with 512 GB of DRAM counts as 409.6 GB of usable DRAM. DRAM and the NVMe memory tier are kept apart: each memory row uses only one of them.
+The MHz values are used only for the percentage: no step converts MHz to threads. That is exact only when all hosts are the same. See [Known limitations](#known-limitations).
+
+**CPU Usable Capacity is in threads, not MHz.** This differs from VCF Operations on purpose. Capacity is about quantity, not quality: how many VMs fit (space), not how fast they run (speed). MHz measures speed, so a cluster's CPU capacity is counted in threads.
+
+Each Usable Capacity is calculated once per cluster, and every row of that resource divides by the same one. The hosts it counts are the running hosts that report the resource: CPU utilization for CPU, DRAM and consumed memory for DRAM, and a tier for the NVMe tier. A row adds up its own stat over those same hosts. If one of them does not report it, the row has no data that cycle, rather than a sum that misses a host.
+
+Example: HA and the buffer take 20 % of a cluster, so Usable Capacity is 80 % of Total Capacity, and a host with 512 GB of DRAM counts as 409.6 GB of usable DRAM. DRAM and the NVMe memory tier are kept apart: each memory row uses only one of them.
 
 ### The sub-metrics
 
@@ -57,11 +69,11 @@ The hosts that count are the running hosts with data, as in [Capacity Utilizatio
 
 | Sub-metric | Cluster-wide | Source |
 | :--- | :--- | :--- |
-| CPU Thread Utilization | CPU threads in use on all hosts ÷ (all their threads × CPU usable fraction). Threads in use = `cpu.utilization` % × threads, per host. | Host stat `cpu\|utilization_average`. Threads: see [Cluster Risk](cluster-risk.md#where-each-hosts-data-comes-from). |
-| Memory Consumed | Consumed memory of all hosts ÷ usable DRAM | Host stats `mem\|consumed_average` / (`MEM_DRAM_CAPACITY` × memory usable fraction) |
-| Memory Tiering Consumption | NVMe tier in use on all hosts ÷ usable NVMe tier. Hosts without a tier are left out; a cluster without any has no value. | Host stats `mem:NVMe\|tier.usage` (MB) / (`mem:NVMe\|memory_tier_size` (KB) × memory usable fraction) |
-| Memory Ballooned | Ballooned memory of all hosts ÷ usable DRAM | Host stats `mem\|vmmemctl_average` / usable DRAM |
-| Memory Zip Swap | Compressed plus swapped memory of all hosts ÷ usable DRAM | Host stats (`mem\|compressed_average` + `mem\|swapout_average`) / usable DRAM |
+| CPU Thread Utilization | CPU threads in use on all hosts ÷ CPU Usable Capacity in threads. Threads in use = `cpu.utilization` % × threads, per host. | Host stat `cpu\|utilization_average`. Threads: see [Cluster Risk](cluster-risk.md#where-each-hosts-data-comes-from). |
+| Memory Consumed | Consumed memory of all hosts ÷ Memory Usable Capacity in DRAM | Host stats `mem\|consumed_average`, `MEM_DRAM_CAPACITY` |
+| Memory Tiering Consumption | NVMe tier in use on all hosts ÷ Memory Usable Capacity in NVMe tier. Hosts without a tier are left out; a cluster without any has no value. | Host stats `mem:NVMe\|tier.usage` (MB), `mem:NVMe\|memory_tier_size` (KB) |
+| Memory Ballooned | Ballooned memory of all hosts ÷ Memory Usable Capacity in DRAM | Host stat `mem\|vmmemctl_average` |
+| Memory Zip Swap | Compressed plus swapped memory of all hosts ÷ Memory Usable Capacity in DRAM | Host stats `mem\|compressed_average`, `mem\|swapout_average` |
 
 `MEM_DRAM_CAPACITY` is the host's DRAM only, never DRAM plus a memory tier. See [Host memory capacity](cluster-risk.md#host-memory-capacity-mem_dram_capacity).
 
@@ -79,7 +91,7 @@ Its bands are therefore those of Cluster Risk: green 0–25, yellow 25–50, ora
 
 ## Worked example
 
-Two hosts: a big one with 32 cores (64 threads) and 512 GB of DRAM, and a small one with 16 cores (32 threads) and 256 GB. HA and the buffer take 20 % of the cluster, so the usable fraction is 0.8 for CPU and memory.
+Two hosts: a big one with 32 cores (64 threads) and 512 GB of DRAM, and a small one with 16 cores (32 threads) and 256 GB. HA and the buffer take 20 % of the cluster, so Usable Capacity is 80 % of Total Capacity, for CPU and for memory.
 
 | | CPU Thread Utilization | Consumed | Ballooned |
 | :--- | :--- | :--- | :--- |

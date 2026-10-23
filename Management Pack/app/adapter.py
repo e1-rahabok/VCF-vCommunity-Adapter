@@ -216,7 +216,7 @@ def get_adapter_definition() -> AdapterDefinition:
             cluster_risk_metrics.MONSTER_CPU_SETTING,
             label="Monster VM CPU (% of host cores)",
             description="When a VM counts as a CPU monster on its host. A VM is one when its vCPUs exceed this "
-                        "share of the host's physical cores. Hyperthreads don't count. Monster VMs raise Cluster "
+                        "% of the host's physical cores. Hyperthreads don't count. Monster VMs raise Cluster "
                         "Risk, because they're hard to place and to vMotion. Example: at 50 (the default), on a "
                         "host with 64 cores and 128 threads, a VM with more than 32 vCPUs is a monster. Range 1 "
                         "to 100. Lower it if large VMs already give you placement or co-stop trouble at smaller "
@@ -230,7 +230,7 @@ def get_adapter_definition() -> AdapterDefinition:
             cluster_risk_metrics.MONSTER_MEMORY_SETTING,
             label="Monster VM Memory (% of host DRAM)",
             description="When a VM counts as a memory monster on its host. A VM is one when its configured "
-                        "memory exceeds this share of the host's DRAM, or exceeds Monster VM Memory Minimum, "
+                        "memory exceeds this % of the host's DRAM, or exceeds Monster VM Memory Minimum, "
                         "whichever is smaller. Memory tiering (NVMe) doesn't count. Example: at 40 (the default), "
                         "on a host with 512 GB of DRAM, the limit is the smaller of 205 GB and 256 GB, so a VM "
                         "over 205 GB is a monster. Range 1 to 100.",
