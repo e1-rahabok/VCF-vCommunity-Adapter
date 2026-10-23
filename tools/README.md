@@ -16,12 +16,13 @@ There are two kinds:
 | `install/install.ps1` | Contributors | Uploads a `.pak` file to VCF Operations and installs it | Yes: replaces the installed version of the pack | [Install Script](install/install.md) |
 | `validate/validate.ps1` | Contributors | Checks that the installed pack collects, and that its data lands on the vCenter objects | No. With `-Release`, it starts a content export job, which changes no content. | [Live Validation Test Plan](validate/validate.md) |
 | `check-docs/check_links.py` | Contributors | Checks every relative link and image in the repo's Markdown files | No, it does not connect to anything | [Below](#check-docs) |
+| `equivalence/planned_cases.py`, `equivalence/compare.py` | Contributors | Runs about 3,400 planned cases through two copies of the KPI code, before and after a restructure, and lists every difference in what they publish | No, it does not connect to anything | [KPI Equivalence Test](equivalence/equivalence.md) |
 
 ## From a code change to a tested build
 
 The contributor tools are used in this order:
 
-1. Change the adapter code in `Management Pack/app`, and run the unit tests: `python -m pytest tests`, from `Management Pack`.
+1. Change the adapter code in `Management Pack/app`, and run the unit tests: `python -m pytest tests`, from `Management Pack`. When KPI code is restructured and its values must not change, also run the [KPI Equivalence Test](equivalence/equivalence.md).
 2. `pwsh tools/build/build.ps1`: build the `.pak` file.
 3. `pwsh tools/install/install.ps1`: install it on the test instance.
 4. After an upgrade, restart collection on the Adapter Instance: see [After an Upgrade: Restart Collection](../docs/installation-guide/installation.md#after-an-upgrade-restart-collection).
@@ -40,6 +41,7 @@ Run `python tools/check-docs/check_links.py` before a commit that changes docume
 | `install.ps1` | PowerShell 7, and the local `admin` account of the test instance |
 | `validate.ps1` | PowerShell 7, and an account that can read adapters, solutions and resources |
 | `check_links.py` | Python 3 and git |
+| `planned_cases.py`, `compare.py` | The Python that runs the unit tests, and a second copy of the code (for example a `git worktree`) |
 
 `install.ps1` and `validate.ps1` read the instance's URL and login from `.secrets/vcf-ops.xml`. The file is gitignored, and encrypted for the Windows user who creates it. [Live Validation Test Plan](validate/validate.md#requirements) shows how to create it.
 
