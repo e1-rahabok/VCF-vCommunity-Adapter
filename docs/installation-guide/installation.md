@@ -46,6 +46,8 @@ To fix it, for each Adapter Instance of the pack:
 
 Data collected before the upgrade is kept. The time between the install and the restart is a gap in the metrics.
 
+Contributors can run these steps for every Adapter Instance of the pack with one script: see [Restart Script](../../tools/restart/restart.md).
+
 This has happened on several upgrades of this pack, among them 0.4.1 to 0.4.2 on VCF Operations 9.1.1. It is not listed as a known issue in Broadcom's documentation, and the cause is not known yet.
 
 ---
