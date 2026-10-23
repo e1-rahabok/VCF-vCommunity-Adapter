@@ -60,6 +60,7 @@ KPI = Σ(score × weight) / Σ(weight)
 - This is a weighted average. The weight of each sub-metric depends on the tier it is in.
 - A sub-metric in the red tier counts 8× more than one in the green tier.
 - This is deliberate. One bad sub-metric is not hidden by eight good ones.
+- **Known limitation.** Because the weight grows with the tier, a sub-metric that gets worse can raise the KPI. This happens when the sub-metric moves into a heavier tier while it is still better than the sub-metrics already pulling the KPI down. See [A worse sub-metric can lower Cluster Risk](cluster-risk.md#known-limitation-a-worse-sub-metric-can-lower-cluster-risk): it is the same scoring, mirrored.
 
 ## Limits per sub-metric
 
