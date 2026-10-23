@@ -27,7 +27,7 @@ The documentation is in `docs/`. `docs/README.md` is the overview and lists ever
 
 Rules:
 
-- Docs describe what is built. Planned work goes in a GitHub Issue, not in `docs/`. When it is built, its user-facing text goes into the right guide.
+- Docs describe what is built, and the design considerations behind every major design decision: the alternatives weighed, and why one was chosen. Planned work goes in a GitHub Issue, not in `docs/`. When it is built, its user-facing text goes into the right guide.
 - One task or one topic per page. No step written in two places: link to it.
 - File and folder names: lowercase, words joined by `-`, no spaces. Do not repeat the folder in the name: `metrics/cluster-risk.md`, not `metrics/cluster-risk-kpi.md`.
 - Images go next to the pages that use them, in an `images/` subfolder of that guide. KPI formula images go in `docs/reference/metrics/formula/`.

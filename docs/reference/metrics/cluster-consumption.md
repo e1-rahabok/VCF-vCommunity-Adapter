@@ -21,6 +21,7 @@ Source of the limits: [`formula/cluster-consumption.png`](formula/cluster-consum
 - **Memory Tiering Consumption is not yet confirmed on a live system.** The lab has a host with an NVMe tier but no value for its usage, so the stat and its unit (MB) are taken from the VCF Operations definition.
 - **No usable capacity means full.** When HA and the buffer leave nothing to VMs, VCF Operations reports usable capacity 0. Seen on a live system: HA tolerating one host failure, with one of two hosts running. Cluster Consumption is then 100, and the rows of that resource are not published: there is no meaningful % of nothing.
 - **Usable capacity not reported is no data.** Then CPU and memory have no value for that cycle, and are left out of the KPI. They are never scored against the total instead.
+- **A worse sub-metric can lower Cluster Consumption.** When a sub-metric crosses into the next tier, its weight doubles. If it is still less consumed than the sub-metrics already driving Cluster Consumption, the KPI goes down. See [A worse sub-metric can lower Cluster Risk](cluster-risk.md#known-limitation-a-worse-sub-metric-can-lower-cluster-risk), which uses the same scoring.
 - **The HA and buffer share applies to the hosts that run.** VCF Operations reports usable capacity for the whole cluster. Its share of the total is applied to the hosts that run, so a host in maintenance mode lowers the usable capacity by its own size, not more.
 
 ## The 5 sub-metrics and their limits
@@ -71,8 +72,8 @@ The hosts that count are the running hosts with data, as in [Capacity Utilizatio
 The same way as every KPI, then flipped like Cluster Risk:
 
 1. Each sub-metric value gets a score from 100 to 0, depending on the tier it is in.
-2. The weighted average of the scores is a health score, where 100 is best. A sub-metric in the red tier weighs 8×, orange 4×, yellow 2×, green 1×.
-3. **Cluster Consumption = 100 − that health score**, so that higher means more consumed.
+2. The scores are combined in a weighted average, where 100 is best. A sub-metric in the red tier weighs 8×, orange 4×, yellow 2×, green 1×.
+3. **Cluster Consumption = 100 − that weighted average**, so that higher means more consumed.
 
 Its bands are therefore those of Cluster Risk: green 0–25, yellow 25–50, orange 50–75, **red 75–100**. See [Bands: red is high](cluster-risk.md#bands-red-is-high).
 
@@ -91,7 +92,7 @@ The average of 40 % and 70 % would be 55 %. Cluster-wide is 50 % of the total, b
 
 - No memory tiering, so Memory Tiering Consumption is left out. Zip Swap is 0.
 - Scores: CPU yellow `75 − (62.5 − 55) / 15 × 25` = 62.5, weight 2. Memory yellow `75 − (79.17 − 70) / 10 × 25` = 52.08, weight 2. Ballooned green `100 − 0.83 × 25` = 79.25, weight 1. Zip Swap 100, weight 1.
-- Health = `(62.5 × 2 + 52.08 × 2 + 79.25 + 100) / 6` = 68.07. Cluster Consumption = `100 − 68.07` = **31.93**.
+- Weighted average = `(62.5 × 2 + 52.08 × 2 + 79.25 + 100) / 6` = 68.07. Cluster Consumption = `100 − 68.07` = **31.93**.
 
 The same example is checked by the tests in [`Management Pack/tests/test_cluster_consumption_metrics.py`](../../../Management%20Pack/tests/test_cluster_consumption_metrics.py).
 

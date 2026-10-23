@@ -9,6 +9,7 @@ It is built with the [VCF Operations Integration SDK](https://github.com/vmware/
 **Concepts**
 
 - [Capacity Management Model](concepts/capacity-management.md): how consumption, contention and risk decide, automatically, whether a cluster can take more VMs.
+- [KPI Scoring Models](concepts/kpi-scoring-models.md): three ways to combine colored sub-metrics into one KPI, and which fits performance, capacity and availability.
 
 **Installation Guide**
 
