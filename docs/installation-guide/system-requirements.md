@@ -14,6 +14,8 @@
 - A VCF Operations Cloud Proxy
 - Container Registry access, to allow the Cloud Proxy to install adapter requirements. If this isn't available in your environment, see [Dark Site Installation](dark-site.md) for a workaround.
 
+> **Known limitation: the adapter uses the vSphere 8.0 Update 3 API, also with vCenter 9.x.** It calls vCenter through pyVmomi 8.0.3.0.1, the Python SDK for vSphere 8.0 Update 3 (pinned in `Management Pack/adapter_requirements.txt`). The vSphere API is backward compatible: the adapter asks for the newest API version it knows, 8.0 Update 3, and vCenter 9.x answers in that version. So everything the adapter collects works with VCF 9.x. What is new in the vSphere 9 API, such as new properties and object types, is not visible to the adapter until it moves to pyVmomi 9.x.
+
 The Cloud Proxy will try to pull the container image from the following example registry to set up the adapter. This is by design of the VCF Operations Integration SDK:
 
 ```

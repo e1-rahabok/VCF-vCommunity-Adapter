@@ -5,3 +5,6 @@ connections.json
 venv-VCF Operations vCommunity
 __pycache__/
 *.pyc
+
+# Local test environment (python -m pytest tests)
+.venv-test/
