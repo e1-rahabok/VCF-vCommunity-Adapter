@@ -14,6 +14,7 @@ There are two kinds:
 | `importer/importer.py` | Administrators | Creates an Adapter Instance, with its credential, for each vCenter in a CSV file | Yes: adds Adapter Instances and credentials | [Bulk Adapter Instance Importer](importer/importer.md) |
 | `build/build.ps1` | Contributors | Builds the `.pak` file and pushes the adapter's container image | No | [Build Script](build/build.md) |
 | `install/install.ps1` | Contributors | Uploads a `.pak` file to VCF Operations and installs it | Yes: replaces the installed version of the pack | [Install Script](install/install.md) |
+| `restart/restart.ps1` | Contributors | Stops and starts collection on every Adapter Instance of this pack, and waits until each one collects again | Yes: collection of this pack stops for a moment | [Restart Script](restart/restart.md) |
 | `validate/validate.ps1` | Contributors | Checks that the installed pack collects, and that its data lands on the vCenter objects | No. With `-Release`, it starts a content export job, which changes no content. | [Live Validation Test Plan](validate/validate.md) |
 | `check-docs/check_links.py` | Contributors | Checks every relative link and image in the repo's Markdown files | No, it does not connect to anything | [Below](#check-docs) |
 | `equivalence/planned_cases.py`, `equivalence/compare.py` | Contributors | Runs about 3,400 planned cases through two copies of the KPI code, before and after a restructure, and lists every difference in what they publish | No, it does not connect to anything | [KPI Equivalence Test](equivalence/equivalence.md) |
@@ -25,8 +26,8 @@ The contributor tools are used in this order:
 1. Change the adapter code in `Management Pack/app`, and run the unit tests: `python -m pytest tests`, from `Management Pack`. When KPI code is restructured and its values must not change, also run the [KPI Equivalence Test](equivalence/equivalence.md).
 2. `pwsh tools/build/build.ps1`: build the `.pak` file.
 3. `pwsh tools/install/install.ps1`: install it on the test instance.
-4. After an upgrade, restart collection on the Adapter Instance: see [After an Upgrade: Restart Collection](../docs/installation-guide/installation.md#after-an-upgrade-restart-collection).
-5. `pwsh tools/validate/validate.ps1`: check the installed build.
+4. `pwsh tools/restart/restart.ps1`: restart collection on the Adapter Instances, which often stop collecting after an upgrade. See [After an Upgrade: Restart Collection](../docs/installation-guide/installation.md#after-an-upgrade-restart-collection).
+5. Wait one collection cycle, then `pwsh tools/validate/validate.ps1`: check the installed build.
 
 Run `python tools/check-docs/check_links.py` before a commit that changes documentation.
 
@@ -39,11 +40,12 @@ Run `python tools/check-docs/check_links.py` before a commit that changes docume
 | `importer.py` | Python 3.9 or later, the `requests` library, and a VCF Operations account that can create Adapter Instances |
 | `build.ps1` | PowerShell 7, Python with the [VCF Operations Integration SDK](https://github.com/vmware/vmware-aria-operations-integration-sdk), Docker Desktop, and push access to the container registry |
 | `install.ps1` | PowerShell 7, and the local `admin` account of the test instance |
+| `restart.ps1` | PowerShell 7, and an account that can stop and start collection on Adapter Instances |
 | `validate.ps1` | PowerShell 7, and an account that can read adapters, solutions and resources |
 | `check_links.py` | Python 3 and git |
 | `planned_cases.py`, `compare.py` | The Python that runs the unit tests, and a second copy of the code (for example a `git worktree`) |
 
-`install.ps1` and `validate.ps1` read the instance's URL and login from `.secrets/vcf-ops.xml`. The file is gitignored, and encrypted for the Windows user who creates it. [Live Validation Test Plan](validate/validate.md#requirements) shows how to create it.
+`install.ps1`, `restart.ps1` and `validate.ps1` read the instance's URL and login from `.secrets/vcf-ops.xml`. The file is gitignored, and encrypted for the Windows user who creates it. [Live Validation Test Plan](validate/validate.md#requirements) shows how to create it.
 
 ## Other files
 
