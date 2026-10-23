@@ -12,7 +12,7 @@ Pages go in `docs/` by the rules in [CONTRIBUTING.md](CONTRIBUTING.md#documentat
 pwsh tools/build/build.ps1
 ```
 
-Builds the `.pak` into `Management Pack/build` and pushes the adapter image to `ghcr.io/e1-rahabok/vcf-operations-vcommunity`. Don't call `mp-build` directly from a non-interactive shell: it crashes without a Windows console, and it waits on a prompt if `config.json` (gitignored) has no registry. The script handles both.
+Builds the `.pak` into `Management Pack/build` and pushes the adapter image to `ghcr.io/e1-rahabok/vcf-operations-vcommunity`. Don't call `mp-build` directly from a non-interactive shell: it crashes without a Windows console, and it waits on a prompt if `config.json` (gitignored) has no registry. The script handles both. Details: [tools/build/build.md](tools/build/build.md). All tools: [tools/README.md](tools/README.md).
 
 ## Installing on the test instance
 
