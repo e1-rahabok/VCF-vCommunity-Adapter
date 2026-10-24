@@ -20,6 +20,11 @@
   Updates two screenshots. Separate the names with commas, without spaces.
 
 .EXAMPLE
+  pwsh tools/screenshot/screenshot.ps1 -Inspect "Management pack Configs" -Name management-pack-details-content
+  For a new shot: describes the elements that show the text, after the steps of that shot: frame, element,
+  row, expanders, and a suggested step.
+
+.EXAMPLE
   pwsh tools/screenshot/screenshot.ps1 -Name adapter-instance-advanced-settings -SaveSteps $env:TEMP\shots
   Updates one screenshot, and saves a full-window screenshot after every step, to see what each step did.
 #>
@@ -29,6 +34,10 @@ param(
     [string[]]$Name,
     [switch]$List,
     [string]$SaveSteps,
+    # Describe the elements that show this text, instead of taking screenshots. With -Page, or -Name and one shot.
+    [string]$Inspect,
+    # With -Inspect: the page to open, from the instance's root.
+    [string]$Page,
     [string]$Url,
     [pscredential]$Credential,
     [string]$SecretFile = (Join-Path $PSScriptRoot '..\..\.secrets\vcf-ops.xml')
@@ -40,6 +49,8 @@ $pyArgs = @()
 # "a,b" in one argument, as pwsh -File passes a list, counts as two names.
 foreach ($n in $Name -split ',' | ForEach-Object { $_.Trim() } | Where-Object { $_ }) { $pyArgs += '--name', $n }
 if ($SaveSteps) { $pyArgs += '--save-steps', $SaveSteps }
+if ($Inspect) { $pyArgs += '--inspect', $Inspect }
+if ($Page) { $pyArgs += '--page', $Page }
 
 if ($List) {
     python $script --list
