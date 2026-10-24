@@ -150,14 +150,15 @@ def test_the_kpi():
     cc.collect_cluster_consumption_metrics(obj, "Cluster 1", HOSTS, STATS, {}, HA_AND_BUFFER)
     published = {key.split("|")[-1]: value for key, value in obj.metrics.items()}
     # Against usable capacity (80 % of the total):
-    #   CPU 62.5        yellow  75 - (62.5 - 55) / 15 x 25    = 62.5    weight 2
-    #   Memory 79.17    yellow  75 - (79.17 - 70) / 10 x 25   = 52.08   weight 2
-    #   Ballooned 0.83  green   100 - 0.83 x 25               = 79.25   weight 1
+    #   CPU 62.5        yellow  75 - (62.5 - 55) / 15 x 25    = 62.5    weight 2.83
+    #   Memory 79.17    yellow  75 - (79.17 - 70) / 10 x 25   = 52.08   weight 3.78
+    #   Ballooned 0.83  green   100 - 0.83 x 25               = 79.25   weight 1.78
     #   Zip Swap 0      green   100                                     weight 1
-    # Score = (62.5 x 2 + 52.08 x 2 + 79.25 + 100) / 6 = 68.07. Consumption is higher-is-worse: 100 - 68.07 = 31.93.
+    # Score = (62.5 x 2.83 + 52.08 x 3.78 + 79.25 x 1.78 + 100) / (2.83 + 3.78 + 1.78 + 1) = 65.47.
+    # Consumption is higher-is-worse: 100 - 65.47 = 34.53.
     assert published[cc.CPU] == 62.5
     assert cc.TIERING not in published
-    assert published[cc.KPI_KEY] == 31.93
+    assert published[cc.KPI_KEY] == 34.53
     assert cc.HIGHER_IS_WORSE
 
 

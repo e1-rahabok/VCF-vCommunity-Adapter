@@ -6,6 +6,8 @@ Run from the "Management Pack" folder:  python -m pytest tests
 import sys
 from pathlib import Path
 
+import pytest
+
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "app"))
 
 from metrics.kpi_score import Metric, score_metric, kpi_score
@@ -37,8 +39,8 @@ def test_score_at_each_tier_boundary():
 
 
 def test_score_drops_in_a_straight_line_inside_a_tier():
-    assert score_metric(CPU_READY, 0.5) == (87.5, 1.0)     # halfway through green
-    assert score_metric(CPU_READY, 3.0) == (37.5, 4.0)     # halfway through orange
+    assert score_metric(CPU_READY, 0.5) == pytest.approx((87.5, 2 ** 0.5))     # halfway through green: weight 1.41
+    assert score_metric(CPU_READY, 3.0) == pytest.approx((37.5, 2 ** 2.5))     # halfway through orange: weight 5.66
     assert score_metric(CPU_READY, 5.0) == (18.75, 8.0)    # a quarter of the way through red
 
 
@@ -58,8 +60,8 @@ def test_higher_is_better_at_each_tier_boundary():
 
 
 def test_higher_is_better_inside_a_tier_and_beyond_the_ends():
-    assert score_metric(FREE_MEMORY, 768.0) == (87.5, 1.0)     # halfway through green
-    assert score_metric(FREE_MEMORY, 192.0) == (37.5, 4.0)     # halfway through orange
+    assert score_metric(FREE_MEMORY, 768.0) == pytest.approx((87.5, 2 ** 0.5))     # halfway through green
+    assert score_metric(FREE_MEMORY, 192.0) == pytest.approx((37.5, 2 ** 2.5))     # halfway through orange
     assert score_metric(FREE_MEMORY, 64.0) == (12.5, 8.0)      # halfway through red
     assert score_metric(FREE_MEMORY, 8192.0) == (100.0, 1.0)   # more than "best" is still 100
 
@@ -72,10 +74,10 @@ def test_everything_up_to_best_scores_100():
 
 
 def test_tiers_of_different_widths():
-    assert score_metric(CPU_RUN, 70.0) == (87.5, 1.0)      # green is 20 wide
-    assert score_metric(CPU_RUN, 80.0) == (75.0, 2.0)
-    assert score_metric(CPU_RUN, 85.0) == (62.5, 2.0)      # yellow is 10 wide
-    assert score_metric(CPU_RUN, 92.5) == (37.5, 4.0)      # orange is 5 wide
+    assert score_metric(CPU_RUN, 70.0) == pytest.approx((87.5, 2 ** 0.5))     # green is 20 wide
+    assert score_metric(CPU_RUN, 80.0) == pytest.approx((75.0, 2.0))
+    assert score_metric(CPU_RUN, 85.0) == pytest.approx((62.5, 2 ** 1.5))      # yellow is 10 wide
+    assert score_metric(CPU_RUN, 92.5) == pytest.approx((37.5, 2 ** 2.5))      # orange is 5 wide
     assert score_metric(CPU_RUN, 97.5) == (12.5, 8.0)      # red is 5 wide
     assert score_metric(CPU_RUN, 100.0) == (0.0, 8.0)
 
@@ -107,7 +109,7 @@ BAD_PACKETS = Metric("Bad Packets", "%",  0.0,  0.0,   0.2,    0.4,    0.8)
 
 def test_green_as_a_single_value():
     assert score_metric(BAD_PACKETS, 0.0) == (100.0, 1.0)      # only exactly 0 is green
-    assert score_metric(BAD_PACKETS, 0.1) == (62.5, 2.0)       # halfway through yellow (0 to 0.2)
+    assert score_metric(BAD_PACKETS, 0.1) == pytest.approx((62.5, 2 ** 1.5))  # halfway through yellow (0 to 0.2)
     assert score_metric(BAD_PACKETS, 0.2) == (50.0, 4.0)
     assert score_metric(BAD_PACKETS, 0.8) == (0.0, 8.0)
 
@@ -125,9 +127,9 @@ def test_skipped_while_green_so_no_free_pass():
 
 
 def test_counts_once_it_leaves_green():
-    # Ballooning at 3 is halfway through orange: 37.5 with weight 4. CPU Ready at 0: 100 with weight 1.
-    # KPI = (37.5 x 4 + 100 x 1) / 5 = 50.0
-    assert kpi_score([CPU_READY, RARE_BALLOON], {"CPU Ready": 0.0, "Memory Ballooned": 3.0}) == 50.0
+    # Ballooning at 3 is halfway through orange: 37.5 with weight 2^2.5 = 5.66. CPU Ready at 0: 100 with weight 1.
+    # KPI = (37.5 x 5.66 + 100 x 1) / (5.66 + 1) = 46.89
+    assert kpi_score([CPU_READY, RARE_BALLOON], {"CPU Ready": 0.0, "Memory Ballooned": 3.0}) == 46.89
 
 
 def test_only_skipped_green_metrics_means_nothing_is_wrong():
@@ -220,3 +222,16 @@ def test_nothing_to_ask_means_no_request():
     api = FakeSuiteApi({})
     assert ops_stats.read_latest_stats(api, [], ["cpu|usage_average"]) == {}
     assert api.requests == 0
+
+
+# --- Smooth weight (issue #18) ----------------------------------------------
+
+def test_the_kpi_does_not_jump_at_a_colour_boundary():
+    # Yellow ends at 2 for CPU Ready, where the score is 50 on both sides. Just either side the KPI must match.
+    just_below = kpi_score([CPU_READY, FREE_MEMORY], {"CPU Ready": 2.0 - 1e-6, "Guest Free Memory": 1024.0})
+    just_above = kpi_score([CPU_READY, FREE_MEMORY], {"CPU Ready": 2.0 + 1e-6, "Guest Free Memory": 1024.0})
+    assert abs(just_below - just_above) < 0.01
+
+
+def test_the_weight_is_the_tier_weight_at_each_tier_start():
+    assert [round(score_metric(CPU_READY, v)[1], 6) for v in (0.0, 1.0, 2.0, 4.0)] == [1.0, 2.0, 4.0, 8.0]
