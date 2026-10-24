@@ -193,11 +193,12 @@ def test_healthy_cluster():
     # Counted: imbalance 1 (100), ballooned 0 (100), zip swap 0 (100),
     # CPU monster 4 vCPU / (half of 32 cores) = 0.25 (93.75),
     # memory monster 16 GB / (40 % of 512 GB) = 0.08 after rounding (98.0).
-    # Health = (100 + 100 + 100 + 93.75 + 98) / 5 = 98.35. Risk is published higher-is-worse: 100 - 98.35 = 1.65
+    # Weights: 93.75 is 1.19, 98 is 1.06. Health = (300 + 93.75 x 1.19 + 98 x 1.06) / (3 + 1.19 + 1.06) = 98.18.
+    # Risk is published higher-is-worse: 100 - 98.18 = 1.82
     assert published["Worst ESXi CPU Imbalance"] == 1.0
     assert published["Highest CPU Monster VM to Host Ratio"] == 0.25
     assert "Worst ESXi Memory Tiering Latency" not in published
-    assert published[cr.KPI_KEY] == 1.65
+    assert published[cr.KPI_KEY] == 1.82
 
 
 def test_the_worst_host_is_taken():
@@ -210,11 +211,11 @@ def test_a_busy_host_leaves_its_excluded_green_and_counts():
     published = collect(samples)
     assert published["Highest ESXi CPU Thread Utilization"] == 90.0      # start of red: 25 with weight 8
     # host-1: 57.6 running threads on 32 running cores = 1.8. host-2: 19.2 on 19.2 = 1.0. The worst is kept.
-    assert published["Worst ESXi CPU Imbalance"] == 1.8                  # halfway through red: 12.5 with weight 8
+    assert published["Worst ESXi CPU Imbalance"] == 1.8                  # halfway through red: 12.5 with weight 11.31
     # The other counted rows: ballooned and zip swap (100), CPU monster (93.75), memory monster (98.0).
-    # Health = (25 x 8 + 12.5 x 8 + 100 + 100 + 93.75 + 98) / (8 + 8 + 4) = 691.75 / 20 = 34.59
-    # Risk = 100 - 34.59 = 65.41
-    assert published[cr.KPI_KEY] == 65.41
+    # Health = (25 x 8 + 12.5 x 11.31 + 100 + 100 + 93.75 x 1.19 + 98 x 1.06) / (8 + 11.31 + 1 + 1 + 1.19 + 1.06) = 32.11
+    # Risk = 100 - 32.11 = 67.89
+    assert published[cr.KPI_KEY] == 67.89
 
 
 def test_failed_stats_call_still_scores_what_the_properties_give():

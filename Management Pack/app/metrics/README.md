@@ -98,12 +98,12 @@ The five limits are the values where the score of that sub-metric is 100, 75, 50
 
 The five limits split the values into four tiers. Inside a tier the score drops in a straight line.
 
-| Tier | Value range | Score goes from → to | Weight |
-| :--- | :--- | :--- | :--- |
-| Green | best up to the green limit | 100 → 75 | 1 |
-| Yellow | green limit up to the yellow limit | 75 → 50 | 2 |
-| Orange | yellow limit up to the orange limit | 50 → 25 | 4 |
-| Red | orange limit up to the zero-at limit | 25 → 0 | 8 |
+| Tier | Value range | Score goes from → to |
+| :--- | :--- | :--- |
+| Green | best up to the green limit | 100 → 75 |
+| Yellow | green limit up to the yellow limit | 75 → 50 |
+| Orange | yellow limit up to the orange limit | 50 → 25 |
+| Red | orange limit up to the zero-at limit | 25 → 0 |
 
 Beyond the zero-at limit the score stays at 0. Before the best limit it stays at 100.
 
@@ -111,14 +111,17 @@ Beyond the zero-at limit the score stays at 0. Before the best limit it stays at
 
 ```
 KPI = Σ(score × weight) / Σ(weight)
+weight = 2^((100 − score) / 25)
 ```
 
-The weight of a sub-metric depends on the tier it is in, and doubles with each tier. This is deliberate. With a plain average, one sub-metric in the red tier would be hidden by nine healthy ones. With the weights it shows.
+The weight depends on the score, not on the tier. It is 1 at score 100, 2 at 75, 4 at 50, 8 at 25 and 16 at 0, and changes smoothly in between. So the KPI does not jump when a value crosses a limit (issue #18). See [docs/concepts/kpi-weights.svg](../../../docs/concepts/kpi-weights.svg).
+
+This is deliberate. With a plain average, one sub-metric in the red tier would be hidden by nine healthy ones. With the weights it shows.
 
 Example with 10 sub-metrics, nine at 100 and one at 18.75 (red):
 
 - Plain average: about 91.9. The problem is hidden.
-- Weighted: `(9 × 100 + 18.75 × 8) / (9 + 8)` ≈ 61.76. The problem shows.
+- Weighted: `(9 × 100 + 18.75 × 9.51) / (9 + 9.51)` ≈ 58.25. The problem shows.
 
 ### Green as a single value
 
@@ -140,7 +143,7 @@ The source tables mark some green ranges "Excluded". Being green there says noth
 Metric("Highest ESXi CPU Thread Utilization", "%",  0.0,  60.0,  80.0,   90.0,   95.0,    True),
 ```
 
-- While the sub-metric is green, it is left out of the KPI, the same as missing data.
+- While the value is green, the sub-metric is left out of the KPI, the same as missing data. Green means at or below best, or below the green limit. The check uses the value, not the weight, because the weight changes smoothly.
 - Once it leaves green, it counts like any other sub-metric.
 - If every sub-metric with data was skipped this way, nothing is wrong, and the KPI is 100.
 
@@ -197,7 +200,7 @@ Every KPI module has the same parts, in the same order. Keep to this when you ad
 - **Change a limit:** edit the row in `METRICS`. Nothing else.
 - **Remove a sub-metric:** delete its row, and the line that supplies its value.
 - **Add a sub-metric:** add a row, and supply its value. In `vm_performance_metrics.py` that is one line in `SOURCE_STATS` when the value is a VM stat as it is.
-- **Change tiers or weights:** edit `TIERS` in `kpi_score.py`. This changes every KPI.
+- **Change tiers or the weight:** edit `TIERS` and `weight_for_score()` in `kpi_score.py`. This changes every KPI.
 
 The adapter definition reads the same tables, so there is nothing to update in `adapter.py`.
 

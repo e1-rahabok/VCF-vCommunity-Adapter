@@ -26,13 +26,13 @@ All four come from VMware Tools. They are stats the VM already has, or a simple 
 
 ## How the score is calculated
 
-The same way as every KPI: each sub-metric gets a score from 100 to 0 by tier, and the KPI is the weighted average, with weights 1, 2, 4 and 8 for green, yellow, orange and red. See [Cluster Performance KPI](cluster-performance.md#step-2-score-each-sub-metric).
+The same way as every KPI: each sub-metric gets a score from 100 to 0 by tier, and the KPI is the weighted average, with a weight that depends on the score: `2^((100 − score) / 25)`, which is 1 at 100 and doubles for every 25 points lost. See [Cluster Performance KPI](cluster-performance.md#step-2-score-each-sub-metric).
 
 ## Worked examples
 
 - **Nothing wrong.** All 4 score 100. KPI = **100**.
-- **CPU run queue of 3 per vCPU.** Halfway through yellow (2 to 4): 62.5 with weight 2. KPI = `(3 × 100 + 62.5 × 2) / (3 + 2)` = **85.0**.
-- **192 MB free memory.** Halfway through orange (256 down to 128): 37.5 with weight 4. KPI = `(3 × 100 + 37.5 × 4) / (3 + 4)` ≈ **64.29**.
+- **CPU run queue of 3 per vCPU.** Halfway through yellow (2 to 4): 62.5 with weight 2.83. KPI = `(3 × 100 + 62.5 × 2.83) / (3 + 2.83)` = **81.8**.
+- **192 MB free memory.** Halfway through orange (256 down to 128): 37.5 with weight 5.66. KPI = `(3 × 100 + 37.5 × 5.66) / (3 + 5.66)` ≈ **59.16**.
 
 The same examples are checked by the tests in [`Management Pack/tests/test_guest_os_performance_metrics.py`](../../../Management%20Pack/tests/test_guest_os_performance_metrics.py).
 

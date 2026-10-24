@@ -50,15 +50,15 @@ def test_healthy_guest_scores_100_and_publishes_only_the_kpi():
 
 
 def test_cpu_queue_lowers_the_score():
-    # A queue of 3 per vCPU is halfway through yellow (2 to 4): 62.5 with weight 2.
-    # KPI = (3 x 100 + 62.5 x 2) / (3 + 2) = 425 / 5 = 85.0
-    assert collect({**HEALTHY, go.GUEST_CPU_QUEUE: 3.0})[go.KPI_KEY] == 85.0
+    # A queue of 3 per vCPU is halfway through yellow (2 to 4): 62.5 with weight 2.83.
+    # KPI = (3 x 100 + 62.5 x 2.83) / (3 + 2.83) = 81.80
+    assert collect({**HEALTHY, go.GUEST_CPU_QUEUE: 3.0})[go.KPI_KEY] == 81.8
 
 
 def test_low_free_memory_lowers_the_score():
-    # 192 MB free is halfway through orange (256 down to 128): it scores 37.5 with weight 4.
-    # KPI = (3 x 100 + 37.5 x 4) / (3 + 4) = 450 / 7 = 64.29
-    assert collect({**HEALTHY, go.GUEST_FREE_MEMORY_KB: 192.0 * 1024.0})[go.KPI_KEY] == 64.29
+    # 192 MB free is halfway through orange (256 down to 128): it scores 37.5 with weight 5.66.
+    # KPI = (3 x 100 + 37.5 x 5.66) / (3 + 5.66) = 59.16
+    assert collect({**HEALTHY, go.GUEST_FREE_MEMORY_KB: 192.0 * 1024.0})[go.KPI_KEY] == 59.16
 
 
 def test_vm_without_tools_gets_no_guest_os_kpi():

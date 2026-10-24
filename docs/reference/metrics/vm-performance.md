@@ -34,7 +34,7 @@ The 20-second peaks are used where they exist, not the 5-minute averages. This m
 
 ## Step 2 and 3: Score each sub-metric, then combine
 
-The scoring is the same for every KPI. It is described in [Cluster Performance KPI](cluster-performance.md#step-2-score-each-sub-metric): four tiers, 25 points per tier, and a weight that doubles with each tier.
+The scoring is the same for every KPI. It is described in [Cluster Performance KPI](cluster-performance.md#step-2-score-each-sub-metric): four tiers, 25 points per tier, and a weight that doubles for every 25 points the score falls.
 
 ## Limits per sub-metric
 
@@ -62,14 +62,14 @@ Every sub-metric is "lower is better", and 0 is perfect.
 
 - **Nothing wrong.** CPU Overlap, Network Dropped Tx and CPU Run are in their excluded green, so they are left out. The other 6 score 100 with weight 1. KPI = **100**.
 - **Same, except CPU Ready = 10** (red tier):
-  - CPU Ready is a quarter of the way through red (from 8 to 16), so it scores `25 − (¼ × 25) = 18.75`, with weight 8.
-  - KPI = `(5 × 100 + 18.75 × 8) / (5 + 8)` = `650 / 13` = **50.0**.
+  - CPU Ready is a quarter of the way through red (from 8 to 16), so it scores `25 − (¼ × 25) = 18.75`, with weight `2^(81.25 / 25)` ≈ 9.51.
+  - KPI = `(5 × 100 + 18.75 × 9.51) / (5 + 9.51)` ≈ **46.74**.
 - **Same as the first, except CPU Run = 98 %** (orange tier):
-  - It is halfway through orange (from 97 to 99), so it scores `37.5`, with weight 4.
-  - KPI = `(6 × 100 + 37.5 × 4) / (6 + 4)` = `750 / 10` = **75.0**.
+  - It is halfway through orange (from 97 to 99), so it scores `37.5`, with weight 5.66.
+  - KPI = `(6 × 100 + 37.5 × 5.66) / (6 + 5.66)` ≈ **69.67**.
 - **Same as the first, except 0.25 % dropped packets** (yellow tier):
-  - It is halfway through yellow (from 0 to 0.5), so it scores `62.5`, with weight 2.
-  - KPI = `(6 × 100 + 62.5 × 2) / (6 + 2)` = `725 / 8` ≈ **90.62**.
+  - It is halfway through yellow (from 0 to 0.5), so it scores `62.5`, with weight 2.83.
+  - KPI = `(6 × 100 + 62.5 × 2.83) / (6 + 2.83)` ≈ **87.99**.
 
 The same examples are checked by the tests in [`Management Pack/tests/test_vm_performance_metrics.py`](../../../Management%20Pack/tests/test_vm_performance_metrics.py).
 

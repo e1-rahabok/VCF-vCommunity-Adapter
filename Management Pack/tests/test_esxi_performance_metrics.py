@@ -65,14 +65,14 @@ def test_only_the_vms_of_this_host_count():
 
 
 def test_one_bad_vm_is_deep_but_not_broad():
-    # One VM has 200 ms disk latency: a quarter of the way through red (160 to 320), 18.75 with weight 8.
+    # One VM has 200 ms disk latency: a quarter of the way through red (160 to 320), 18.75 with weight 9.51.
     # The 90th percentile stays 0. Bad packets are 0, in their excluded green, so they are left out.
-    # KPI = (7 x 100 + 18.75 x 8) / (7 + 8) = 850 / 15 = 56.67
+    # KPI = (7 x 100 + 18.75 x 9.51) / (7 + 9.51) = 53.19
     samples = {**HEALTHY, "vm-1": {**HEALTHY["vm-1"], "virtualDisk|20_sec_peak_totalLatency_average": [200.0]}}
     published = collect(samples)
     assert published["Worst VM Disk Latency"] == 200.0
     assert published["90th Percentile VM Disk Latency"] == 0.0
-    assert published[ep.KPI_KEY] == 56.67
+    assert published[ep.KPI_KEY] == 53.19
 
 
 def test_bad_packets_are_this_hosts_own():
