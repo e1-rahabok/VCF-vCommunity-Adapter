@@ -50,6 +50,10 @@ The Management Pack uses customizable XML configuration files to define what dat
 
 You can expand the adapter configuration by clicking **Advanced Settings**.
 
+![The Advanced Settings of an Adapter Instance](images/adapter-instance-advanced-settings.png)
+
+*The settings of a lab's Adapter Instance. Some differ from the defaults: the table gives the defaults.*
+
 | Advanced Setting | Default Value | Description |
 | :--- | :--- | :--- |
 | **Port** | `443` | The port used to connect to vCenter Server. |
@@ -77,6 +81,10 @@ You can expand the adapter configuration by clicking **Advanced Settings**.
 1. Click **Validate Connection** to validate the Adapter Instance connection.
 
 Once completed, your Management Pack will now be configured and will begin collecting data.
+
+After the first collection cycle, under **Administration** → **Integrations** → **Accounts**, the Adapter Instance shows **Collecting** under **VCF vCommunity Adapter**:
+
+![The Adapter Instance under Integrations, Accounts](images/integrations-accounts.png)
 
 ---
 

@@ -1,0 +1,89 @@
+{
+  "shots": [
+    {
+      "name": "adapter-instance-advanced-settings",
+      "description": "The Advanced Settings of the pack's Adapter Instance, all settings",
+      "output": "docs/configuration-guide/images/adapter-instance-advanced-settings.png",
+      "page": "/vcf-operations/ui/operate/administration/integrations;tab=accounts",
+      "viewport": { "width": 1600, "height": 1800 },
+      "steps": [
+        { "frame": "ops_iframe", "click": ".account-header:has-text('VCF vCommunity Adapter') .chevron-medium-right" },
+        { "frame": "ops_iframe", "click": "text=\"vcenter\"", "settle_ms": 5000 },
+        { "frame": "ops_iframe", "click": "text=\"Advanced Settings\"", "settle_ms": 3000 }
+      ],
+      "capture": {
+        "frame": "ops_iframe",
+        "from": "text=\"Advanced Settings\"",
+        "to": "text=\"Windows Event Log Monitoring Status\"",
+        "width": 720,
+        "padding": 16
+      }
+    },
+    {
+      "name": "integrations-accounts",
+      "description": "Integrations > Accounts, with the pack's Adapter Instances listed",
+      "output": "docs/configuration-guide/images/integrations-accounts.png",
+      "page": "/vcf-operations/ui/operate/administration/integrations;tab=accounts",
+      "viewport": { "width": 1600, "height": 900 },
+      "steps": [
+        { "frame": "ops_iframe", "click": ".account-header:has-text('VCF vCommunity Adapter') .chevron-medium-right" },
+        { "frame": "ops_iframe", "wait_for": "text=\"vcenter\"" },
+        { "hide": "div.alerts-wrapper" }
+      ]
+    },
+    {
+      "name": "management-pack-details-overview",
+      "description": "Integrations > Repository > VCF vCommunity Adapter: Overview",
+      "output": "docs/installation-guide/images/management-pack-details-overview.png",
+      "page": "/vcf-operations/ui/operate/administration/integrations;page1=repository;page2=pack-detail;packId=iSDK_vCommunity",
+      "viewport": { "width": 1600, "height": 900 },
+      "steps": [
+        { "frame": "ops_iframe", "wait_for": "text=Provided by" },
+        { "hide": "div.alerts-wrapper" }
+      ]
+    },
+    {
+      "name": "management-pack-details-metrics",
+      "description": "Integrations > Repository > VCF vCommunity Adapter: Metrics of Cluster Compute Resource",
+      "output": "docs/installation-guide/images/management-pack-details-metrics.png",
+      "page": "/vcf-operations/ui/operate/administration/integrations;page1=repository;page2=pack-detail;packId=iSDK_vCommunity",
+      "viewport": { "width": 1600, "height": 1200 },
+      "steps": [
+        { "frame": "ops_iframe", "wait_for": "text=Provided by" },
+        { "frame": "ops_iframe", "click": "a.x-tab:has-text('Metrics')", "settle_ms": 4000 },
+        { "frame": "ops_iframe", "click": "tr.x-grid-row:not(.x-grid-tree-node-expanded):has(:text-is('vCommunity')) .x-tree-expander", "settle_ms": 2000 },
+        { "frame": "ops_iframe", "click": "tr.x-grid-row:not(.x-grid-tree-node-expanded):has(:text-is('Properties')) .x-tree-expander", "settle_ms": 2000 },
+        { "frame": "ops_iframe", "click": "tr.x-grid-row:not(.x-grid-tree-node-expanded):has(:text-is('vCommunity')) .x-tree-expander", "settle_ms": 2000 },
+        { "hide": "div.alerts-wrapper" }
+      ],
+      "capture": {
+        "frame": "ops_iframe",
+        "from": "a.x-tab:has-text('Overview')",
+        "to": ["text=\"vSphere World\"", ".x-tree-view tr.x-grid-row >> nth=-1"],
+        "width": 900,
+        "padding": 12
+      }
+    },
+    {
+      "name": "management-pack-details-content",
+      "description": "Integrations > Repository > VCF vCommunity Adapter: Content, Configuration Files",
+      "output": "docs/installation-guide/images/management-pack-details-content.png",
+      "page": "/vcf-operations/ui/operate/administration/integrations;page1=repository;page2=pack-detail;packId=iSDK_vCommunity",
+      "viewport": { "width": 1600, "height": 1200 },
+      "steps": [
+        { "frame": "ops_iframe", "wait_for": "text=Provided by" },
+        { "frame": "ops_iframe", "click": "a.x-tab:has-text('Content')", "settle_ms": 4000 },
+        { "frame": "ops_iframe", "click": "text=\"Configuration Files\"", "settle_ms": 3000 },
+        { "frame": "ops_iframe", "click": "tr.x-grid-row:has-text('Management pack Configs') .x-tree-expander", "settle_ms": 2000 },
+        { "hide": "div.alerts-wrapper" }
+      ],
+      "capture": {
+        "frame": "ops_iframe",
+        "from": "a.x-tab:has-text('Overview')",
+        "to": "text=\"Configuration Files\"",
+        "width": 1000,
+        "padding": 12
+      }
+    }
+  ]
+}

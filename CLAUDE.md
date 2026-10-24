@@ -22,6 +22,14 @@ pwsh tools/install/install.ps1
 
 Uploads and installs the newest pak for the `manifest.txt` version (unsigned, signature checking ignored). Auto mode blocks this script, so ask the user to run it in their terminal, then run `pwsh tools/restart/restart.ps1` (the pack's Adapter Instances often stop collecting after an upgrade), wait one collection cycle, and run the live validation. Details: [tools/install/install.md](tools/install/install.md), [tools/restart/restart.md](tools/restart/restart.md).
 
+## Screenshots
+
+```
+pwsh tools/screenshot/screenshot.ps1
+```
+
+Takes the docs' screenshots of the VCF Operations UI from the instance, as defined in `tools/screenshot/screenshots.json`, logging in like `install.ps1`. Use it to take or update screenshots, never Claude in Chrome. To add one, ask the user for an example of the part of the screen once, add an entry, and run it with `-Name` and `-SaveSteps` until it matches. Details: [tools/screenshot/screenshot.md](tools/screenshot/screenshot.md).
+
 ## Testing
 
 Run both layers after any change under `Management Pack/app`, and report the results of each.
