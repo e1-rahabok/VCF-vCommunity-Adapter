@@ -6,7 +6,7 @@ Every property and metric the vCommunity Management Pack pushes to VCF Operation
 
 **On this page:**
 
-- [Cluster](#cluster) (54 items)
+- [Cluster](#cluster) (52 items)
 - [Host](#host) (58 items)
 - [Datastore](#datastore) (9 items)
 - [Virtual Machine](#virtual-machine) (57 items)
@@ -73,8 +73,6 @@ Every property and metric the vCommunity Management Pack pushes to VCF Operation
 | 🟢 Metric | `vCommunity\|Cluster Consumption\|Cluster Memory Tiering Consumption` | NVMe memory tier in use on all running hosts, as a % of their usable NVMe tier. Published only when the cluster has memory tiering. |
 | 🟢 Metric | `vCommunity\|Cluster Consumption\|Cluster-wide ESXi Memory Ballooned` | Ballooned memory of all running hosts, as a % of their usable DRAM. |
 | 🟢 Metric | `vCommunity\|Cluster Consumption\|Cluster-wide ESXi Memory Zip Swap` | Compressed plus swapped memory of all running hosts, as a % of their usable DRAM. |
-| 🟢 Metric | `vCommunity\|Capacity\|CPU Utilization` | Sum of the running hosts' CPU Utilization (%) ÷ (N − max(k, gone hosts)), k = HA host failures tolerated. Can be above 100 %. Assumes hosts of equal size. See [Capacity Utilization](metrics/capacity-utilization.md#known-limitations). |
-| 🟢 Metric | `vCommunity\|Capacity\|Memory Utilization` | Sum of the running hosts' Memory Consumed (% of DRAM) ÷ (N − max(k, gone hosts)). Same limitations. |
 | 🟢 Metric | `vCommunity\|Periodic Cluster Check\|Worst Cluster Performance` | The low end (%) of Cluster Performance Score over the last window (24 hours by default), with the account's Cluster Check Worst Percent of the worst samples ignored. Set once per window. See [Worst](metrics/periodic-cluster-check.md#worst). |
 | 🟢 Metric | `vCommunity\|Periodic Cluster Check\|Worst Cluster Risk` | The high end (%) of Cluster Risk Score over the same window, the same way. |
 | 🟢 Metric | `vCommunity\|Periodic Cluster Check\|Worst Cluster Consumption` | The high end (%) of Cluster Consumption Score over the same window, the same way. |

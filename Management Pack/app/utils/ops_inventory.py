@@ -28,7 +28,7 @@ HOST_PARENT_CLUSTER = "summary|parentCluster"   # name of the cluster the host i
 HOST_CORES = "hardware|cpuInfo|numCpuCores"     # physical cores, not threads
 HOST_HYPERTHREAD_ACTIVE = "config|hyperThread|active"
 HOST_HYPERTHREAD_AVAILABLE = "config|hyperThread|available"
-# Host state, for Capacity Utilization. Properties keep their last known value, which is what is wanted here.
+# Host state, for Cluster Consumption (which hosts can run VMs). Properties keep their last known value, which is what is wanted here.
 HOST_CONNECTION_STATE = "runtime|connectionState"      # "connected" when vCenter can reach the host
 HOST_MAINTENANCE_STATE = "runtime|maintenanceState"    # "inMaintenance" once fully in maintenance mode
 HOST_POWER_STATE = "runtime|powerState"

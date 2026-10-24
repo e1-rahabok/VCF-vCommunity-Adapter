@@ -17,7 +17,6 @@ Content:
 - **Blank, not stale.** A metric whose latest value is more than 10 minutes old is left blank. The Periodic Cluster Check columns are metrics produced once per period, so they show the last window. See [How It Works](../reference/metrics/README.md#no-stale-values).
 - **"Worst 10%" equals "worst" with 10 clusters or fewer.** The 10th (or 90th) percentile takes the lowest (or highest) cluster when there are 10 clusters or fewer. See [vSphere World Cluster Metrics](../reference/metrics/vsphere-world-metrics.md).
 - **Risk is red when high.** The Risk widgets are red from 75. The Performance widgets are red below 25. See [Cluster Risk KPI](../reference/metrics/cluster-risk.md#bands-red-is-high).
-- **Capacity Utilization can be above 100 %.** That means the cluster cannot hold its load if a host fails. See [Capacity Utilization](../reference/metrics/capacity-utilization.md).
 - **Capacity Remaining and Time Remaining are not from this pack.** They come from the VCF Operations capacity engine (`OnlineCapacityAnalytics`).
 - **The third section has no name.** It is titled "Section 3".
 
@@ -66,7 +65,7 @@ Selecting a cluster fills the widgets below.
 | Utilization | `vCommunity\|Capacity\|CPU Utilization` and `Memory Utilization` | CPU: 70 / 80 / 90. Memory: 80 / 85 / 90. |
 | High Memory Utilization | Ballooned (`mem\|vmmemctl_average`), Zipped (`mem\|compressed_average`), Swapped (`mem\|swapout_average`) | Ballooned: 5 / 25 / 100 GB. Zipped and Swapped: 1 / 2.5 / 10. |
 
-See [Cluster Performance KPI](../reference/metrics/cluster-performance.md), [Cluster Risk KPI](../reference/metrics/cluster-risk.md), [Cluster Consumption KPI](../reference/metrics/cluster-consumption.md) and [Capacity Utilization](../reference/metrics/capacity-utilization.md).
+See [Cluster Performance KPI](../reference/metrics/cluster-performance.md), [Cluster Risk KPI](../reference/metrics/cluster-risk.md) and [Cluster Consumption KPI](../reference/metrics/cluster-consumption.md).
 
 ## Hosts and VMs
 

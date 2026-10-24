@@ -407,8 +407,8 @@ def collect_cluster_risk_metrics(
 
     hosts holds one HostInventory per ESXi host of the cluster that VCF Operations knows about.
     monster is the Monster VM size from the account settings, see monster_vm_size().
-    Returns the host stats it read, {host id: {stat key: value}}, so that Capacity Utilization and Cluster
-    Consumption use the same values without reading them again. Empty when the read failed.
+    Returns the host stats it read, {host id: {stat key: value}}, so that Cluster Consumption uses the same
+    values without reading them again. Empty when the read failed.
     """
     stats_by_host = {}
     try:

@@ -20,10 +20,10 @@ from metrics.cluster.cluster_performance_metrics import collect_cluster_performa
 from metrics.cluster.cluster_risk_metrics import (
     collect_cluster_risk_metrics, HostInventory, MonsterVmSize, DEFAULT_MONSTER_VM,
 )
-from utils.ops_inventory import read_hosts, read_vms, powered_on_vms_by_host, hosts_by_cluster, read_cluster_ha, ClusterHa
+from utils.ops_inventory import read_hosts, read_vms, powered_on_vms_by_host, hosts_by_cluster
 from utils.ops_stats import query_resources, read_latest_stats
 from metrics.availability.operational_availability import OperationalAvailability, NO_DATA, CLUSTER_METRIC, publish
-from metrics.cluster import periodic_cluster_check, capacity_utilization, cluster_consumption_metrics
+from metrics.cluster import periodic_cluster_check, cluster_consumption_metrics
 from pyVmomi import vim
 
 logger = logging.getLogger(__name__)
@@ -84,14 +84,12 @@ def collect_cluster_data(
     all_hosts = read_hosts(suite_api_client, adapter_instance_id)
     hosts_in_cluster = hosts_by_cluster(all_hosts)
     vms_on_host = powered_on_vms_by_host(read_vms(suite_api_client, adapter_instance_id))
-    # Host count and HA failover level of every cluster, for Capacity Utilization.
+    # The VCF Operations ids of the clusters, for the cluster stats of Cluster Consumption.
     try:
         ops_clusters = query_resources(suite_api_client, VCENTER_ADAPTER_KIND, "ClusterComputeResource", adapter_instance_id)
-        ha_by_cluster = read_cluster_ha(suite_api_client, ops_clusters)
     except Exception as e:
-        logger.warning(f"Failed to read the cluster HA failover levels, so no Capacity Utilization - {repr(e)}")
+        logger.warning(f"Failed to read the clusters from VCF Operations, so no Cluster Consumption - {repr(e)}")
         ops_clusters = []
-        ha_by_cluster = None
 
     # The stats of Cluster Consumption that Cluster Risk does not read, one request each for all clusters and all
     # hosts: usable capacity per cluster {cluster name: {stat key: value}}, NVMe memory tier per host {host id: ...}.
@@ -156,14 +154,6 @@ def collect_cluster_data(
             cluster_consumption_metrics.collect_cluster_consumption_metrics(
                 cluster_obj, cluster_name, cluster_hosts, stats_by_host, tier_stats_by_host,
                 consumption_stats_by_cluster.get(cluster_obj.get_key().name, {}))
-
-            # Capacity Utilization, from the same host stats. See metrics/cluster/capacity_utilization.py.
-            if ha_by_cluster is not None and not stats_by_host:
-                logger.info(f"Capacity of {cluster_name}: no value - no host stats were read this cycle")
-            if ha_by_cluster is not None and stats_by_host:
-                ha = ha_by_cluster.get(cluster_obj.get_key().name, ClusterHa(None, None))
-                capacity_utilization.publish(cluster_obj, capacity_utilization.utilization_values(
-                    cluster_hosts, stats_by_host, ha, cluster_name))
 
             # Operational Availability, read once per cycle for the whole vCenter by the adapter.
             publish(cluster_obj, CLUSTER_METRIC, availability.by_cluster.get(cluster_obj.get_key().name))

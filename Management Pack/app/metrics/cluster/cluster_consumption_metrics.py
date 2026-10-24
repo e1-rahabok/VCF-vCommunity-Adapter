@@ -35,7 +35,6 @@ import logging
 from typing import Dict, List, NamedTuple, Optional
 from aria.ops.object import Object
 from metrics.kpi_score import Metric, percent, publish_kpi
-from metrics.cluster.capacity_utilization import host_is_gone
 from metrics.cluster.cluster_risk_metrics import (
     CPU_THREAD_UTIL, MEM_CONSUMED, MEM_BALLOONED, MEM_COMPRESSED, MEM_SWAPPED, dram_capacity_kb,
 )
@@ -71,8 +70,9 @@ StatsByHost = Dict[str, Dict[str, float]]
 # only when every host has the same clock speed and the same hyper-threading setting. Memory is done the same way,
 # and the memory percentage is applied to the NVMe tier too. Both are known limitations, in the doc.
 #
-# The hosts that count are the running hosts with data (capacity_utilization.host_is_gone): a host in maintenance
-# mode, disconnected, powered off or in standby adds no capacity, because no VM can use it.
+# The hosts that count are the running hosts with data (host_is_gone below): a host in maintenance mode,
+# disconnected, powered off or in standby stays in Total Capacity, but adds nothing to Usable Capacity, because no
+# VM can use it.
 
 # Cluster stats of VCF Operations, read once per cycle for all clusters by the cluster collector.
 CPU_USABLE = "cpu|demand|usableCapacity"            # MHz, Total - HA - Buffer
@@ -86,6 +86,34 @@ CLUSTER_STATS = [CPU_USABLE, CPU_TOTAL, MEM_USABLE, MEM_TOTAL]
 NVME_TIER_USAGE = "mem:NVMe|tier.usage"             # MB in use
 NVME_TIER_SIZE = "mem:NVMe|memory_tier_size"        # KB
 HOST_STATS = [NVME_TIER_USAGE, NVME_TIER_SIZE]
+
+
+# Which hosts can run VMs. Host states are compared without case and spaces: VCF Operations may store "Powered Off"
+# or "poweredOff".
+NOT_RUNNING_POWER_STATES = {"poweredoff", "standby"}
+IN_MAINTENANCE = "inmaintenance"
+CONNECTED = "connected"
+
+
+def _state(value: Optional[str]) -> Optional[str]:
+    return value.replace(" ", "").lower() if value else None
+
+
+def host_is_gone(host: HostInfo, value: Optional[float]) -> bool:
+    """True when the host cannot run VMs, or when value, its current stat, is None (nothing current is known).
+
+    Gone: not connected (disconnected, or not responding: dead or cut off from vCenter), powered off or in standby
+    (DPM), or fully in maintenance mode (vSphere allows no running VM on it). A host still entering maintenance mode
+    is not gone: its VMs are still on it. An unknown state counts as running.
+    """
+    if value is None:
+        return True
+    connection = _state(host.connection_state)
+    if connection is not None and connection != CONNECTED:
+        return True
+    if _state(host.power_state) in NOT_RUNNING_POWER_STATES:
+        return True
+    return _state(host.maintenance_state) == IN_MAINTENANCE
 
 
 class UsableCapacity(NamedTuple):
