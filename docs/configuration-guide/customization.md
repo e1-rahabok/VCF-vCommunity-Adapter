@@ -2,6 +2,10 @@
 
 You can **tailor the monitoring scope** for different vCenter servers or environments (e.g., Production vs. Non-Production) by creating your own configuration files instead of using the system-defined defaults.
 
+The pack installs 6 system-defined configuration files. They are listed in its **Management Pack Details** (Administration → Integrations → Repository → VCF vCommunity Adapter), under **Content** → **Configuration Files**:
+
+![The pack's configuration files in Management Pack Details](../installation-guide/images/management-pack-details-content.png)
+
 ## Create a Custom Configuration File
 
 1. **Duplicate the default file:** Navigate to **Infrastructure Operations** → **Configurations** → **Management Pack Configuration** → **System Defined**.

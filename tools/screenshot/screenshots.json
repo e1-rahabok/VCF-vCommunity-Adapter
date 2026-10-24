@@ -34,7 +34,7 @@
     {
       "name": "management-pack-details-overview",
       "description": "Integrations > Repository > VCF vCommunity Adapter: Overview",
-      "output": "docs/configuration-guide/images/management-pack-details-overview.png",
+      "output": "docs/installation-guide/images/management-pack-details-overview.png",
       "page": "/vcf-operations/ui/operate/administration/integrations;page1=repository;page2=pack-detail;packId=iSDK_vCommunity",
       "viewport": { "width": 1600, "height": 900 },
       "steps": [
@@ -45,7 +45,7 @@
     {
       "name": "management-pack-details-metrics",
       "description": "Integrations > Repository > VCF vCommunity Adapter: Metrics of Cluster Compute Resource",
-      "output": "docs/configuration-guide/images/management-pack-details-metrics.png",
+      "output": "docs/installation-guide/images/management-pack-details-metrics.png",
       "page": "/vcf-operations/ui/operate/administration/integrations;page1=repository;page2=pack-detail;packId=iSDK_vCommunity",
       "viewport": { "width": 1600, "height": 1200 },
       "steps": [
@@ -67,7 +67,7 @@
     {
       "name": "management-pack-details-content",
       "description": "Integrations > Repository > VCF vCommunity Adapter: Content, Configuration Files",
-      "output": "docs/configuration-guide/images/management-pack-details-content.png",
+      "output": "docs/installation-guide/images/management-pack-details-content.png",
       "page": "/vcf-operations/ui/operate/administration/integrations;page1=repository;page2=pack-detail;packId=iSDK_vCommunity",
       "viewport": { "width": 1600, "height": 1200 },
       "steps": [

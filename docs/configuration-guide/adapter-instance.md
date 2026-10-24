@@ -82,6 +82,10 @@ You can expand the adapter configuration by clicking **Advanced Settings**.
 
 Once completed, your Management Pack will now be configured and will begin collecting data.
 
+After the first collection cycle, under **Administration** → **Integrations** → **Accounts**, the Adapter Instance shows **Collecting** under **VCF vCommunity Adapter**:
+
+![The Adapter Instance under Integrations, Accounts](images/integrations-accounts.png)
+
 ---
 
 **Next:** [Customization](customization.md): choose what each Adapter Instance collects.

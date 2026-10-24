@@ -29,7 +29,17 @@ After enabling this, the **"Ignore the PAK file signature checking"** checkbox w
 3. Accept the End User License Agreement, then click **Next**.
 4. Once installation completes, click **Finish**.
 
-You can review the VCF Operations vCommunity Management Pack under the **Repository** tab.
+You can review the VCF Operations vCommunity Management Pack under the **Repository** tab. Click **VCF vCommunity Adapter** to open its **Management Pack Details**:
+
+![Management Pack Details of VCF vCommunity Adapter: Overview](images/management-pack-details-overview.png)
+
+- **Metrics** lists, for each object type, the metrics and properties the pack adds, under **vCommunity**:
+
+  ![Management Pack Details: Metrics of Cluster Compute Resource](images/management-pack-details-metrics.png)
+
+- **Content** lists what the pack installs: dashboards, views, reports, alerts, super metrics and its configuration files:
+
+  ![Management Pack Details: Content, Configuration Files](images/management-pack-details-content.png)
 
 ---
 
