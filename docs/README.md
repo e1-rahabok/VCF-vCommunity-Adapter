@@ -83,7 +83,7 @@ All of it is set by configuration files:
 - **Windows Services and Event Logs**: optional, agentless through GuestAPI.
 - **VM snapshot count**, and other properties missing from the default inventory.
 
-It also calculates metrics and KPIs, such as Cluster Performance, Cluster Risk, Cluster Consumption and Capacity Utilization. Every key is listed in [Metrics and Properties](reference/metrics-and-properties.md).
+It also calculates metrics and KPIs, such as Cluster Performance, Cluster Risk and Cluster Consumption. Every key is listed in [Metrics and Properties](reference/metrics-and-properties.md).
 
 ### Security hardening areas it can track
 

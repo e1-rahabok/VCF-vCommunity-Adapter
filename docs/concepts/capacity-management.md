@@ -51,7 +51,7 @@ In operation, each planning parameter becomes a live metric: the planned Utiliza
 
 | Live measure | What it answers | In the pack |
 | :--- | :--- | :--- |
-| **Buffer (%)** | Is the HA and DR capacity still free? Cluster-wide. | The HA failover level, subtracted in [Capacity Utilization](../reference/metrics/capacity-utilization.md) |
+| **Buffer (%)** | Is the HA and DR capacity still free? Cluster-wide. | HA and the Capacity Buffer, subtracted from Total Capacity to give the Usable Capacity of [Cluster Consumption](../reference/metrics/cluster-consumption.md#usable-capacity) |
 | **Consumption (%)** | How much of the usable capacity is consumed? The average over the cluster. | [Cluster Consumption](../reference/metrics/cluster-consumption.md) |
 | **Contention (%)** | Do the VMs already suffer? The performance SLA. | [Cluster Performance](../reference/metrics/cluster-performance.md) |
 | **Risk (%)** | How close is the cluster to contention? | [Cluster Risk](../reference/metrics/cluster-risk.md) |

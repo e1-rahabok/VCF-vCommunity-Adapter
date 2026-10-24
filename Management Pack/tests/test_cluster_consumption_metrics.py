@@ -200,3 +200,28 @@ def test_usable_capacity_not_reported_publishes_no_kpi():
     obj = FakeObject("cluster-1")
     cc.collect_cluster_consumption_metrics(obj, "Cluster 1", HOSTS, STATS, {}, {})
     assert obj.metrics == {}
+
+
+# ---- Which hosts can run VMs ------------------------------------------------------------------------------------
+
+import pytest
+
+
+@pytest.mark.parametrize("connection, maintenance, power, gone", [
+    ("connected", "notInMaintenance", "Powered On", False),
+    ("connected", "enteringMaintenance", "Powered On", False),   # its VMs are still on it
+    ("connected", "inMaintenance", "Powered On", True),          # vSphere allows no running VM on it
+    ("disconnected", "notInMaintenance", "Powered On", True),    # nothing current is known about it
+    ("notResponding", "notInMaintenance", "Powered On", True),   # dead, or cut off from vCenter
+    ("connected", "notInMaintenance", "Powered Off", True),
+    ("connected", "notInMaintenance", "poweredOff", True),       # VCF Operations may store either spelling
+    ("connected", "notInMaintenance", "Standby", True),          # DPM
+    (None, None, None, False),                                   # an unknown state counts as running
+])
+def test_which_hosts_are_gone(connection, maintenance, power, gone):
+    host_info = HostInfo("h1", "h1", "h1", "cluster-1", 32.0, 64.0, connection, maintenance, power)
+    assert cc.host_is_gone(host_info, 40.0) is gone
+
+
+def test_a_host_with_no_current_value_is_gone():
+    assert cc.host_is_gone(host("h1", 32.0), None)

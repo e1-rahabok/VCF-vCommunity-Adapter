@@ -39,7 +39,6 @@ from collectors.world.collectWorldData import collect_world_data
 from collectors.datacenter.collectDatacenterData import collect_datacenter_data
 from metrics.cluster import (
     cluster_performance_metrics, cluster_risk_metrics, cluster_consumption_metrics, periodic_cluster_check,
-    capacity_utilization,
 )
 from metrics.host import esxi_performance_metrics
 from metrics.vm import vm_performance_metrics, guest_os_performance_metrics, vm_guest_os_kpi, vm_shares
@@ -337,11 +336,6 @@ def get_adapter_definition() -> AdapterDefinition:
         define_kpi(vCommunity, cluster_risk_metrics)
         define_kpi(vCommunity, cluster_consumption_metrics)
         define_availability(vCommunity, operational_availability.CLUSTER_METRIC)
-
-        # Capacity Utilization: CPU and memory, against N - k hosts. See metrics/cluster/capacity_utilization.py.
-        capacity = vCommunity.define_group(capacity_utilization.GROUP, capacity_utilization.GROUP)
-        for name in capacity_utilization.METRICS:
-            capacity.define_metric(name, name, unit=Units.RATIO.PERCENT)
 
         # Periodic Cluster Check: set once per period. See metrics/cluster/periodic_cluster_check.py.
         periodicCheck = vCommunity.define_group(periodic_cluster_check.GROUP, periodic_cluster_check.GROUP)

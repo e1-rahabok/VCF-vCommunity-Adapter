@@ -36,10 +36,10 @@ The one exception is `-Release`: it starts a content export job (a `POST`), to c
 pwsh tools/validate/validate.ps1
 
 # Release sign-off: the installed version must match
-pwsh tools/validate/validate.ps1 -ExpectedVersion 0.5.0
+pwsh tools/validate/validate.ps1 -ExpectedVersion 0.5.1
 
 # Release sign-off, with the content checks (starts a content export job)
-pwsh tools/validate/validate.ps1 -ExpectedVersion 0.5.0 -Release
+pwsh tools/validate/validate.ps1 -ExpectedVersion 0.5.1 -Release
 
 # Every object instead of a sample of 5 per type
 pwsh tools/validate/validate.ps1 -SampleSize 0

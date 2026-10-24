@@ -32,7 +32,6 @@ All six are called by a collector and declared in `adapter.py`. The VCF Operatio
 | `cluster/cluster_risk_metrics.py` | Cluster Risk KPI. One score per cluster, from 12 sub-metrics. |
 | `cluster/cluster_consumption_metrics.py` | Cluster Consumption KPI. One score per cluster, from 5 cluster-wide sub-metrics, using the host stats Cluster Risk read. |
 | `cluster/drs_metrics.py` | DRS Score. A plain metric, not a KPI. |
-| `cluster/capacity_utilization.py` | Capacity CPU and Memory Utilization per cluster: sum of the running hosts' % ÷ (N − max(k, gone hosts)). Not a KPI. See `docs/reference/metrics/capacity-utilization.md`, including its known limitations. |
 | `cluster/periodic_cluster_check.py` | Periodic Cluster Check: once per period (1 to 24 hours, default 24), Close for Business per cluster from the worst end of the window of Cluster Performance, Risk and Consumption. See `docs/reference/metrics/periodic-cluster-check.md`. |
 | `vm/vm_performance_metrics.py` | VM Performance KPI. One score per powered-on VM, from 9 sub-metrics. Also reads the stats of Guest OS Performance. |
 | `vm/guest_os_performance_metrics.py` | Guest OS Performance KPI. One score per powered-on VM with VMware Tools, from 4 sub-metrics. |
@@ -226,7 +225,6 @@ python -m pytest tests
 | `test_vm_shares.py` | Share per vCPU and per MB: normal values, the super metric's values, and no division by zero. |
 | `test_cluster_summary_metrics.py` | vSphere World: Bottom 10 Percent and worst cluster scores, over the clusters of all vCenters. |
 | `test_cluster_risk_metrics.py` | Cluster Risk formulas and worked examples. |
-| `test_capacity_utilization.py` | Capacity Utilization formulas: N − k, above 100 %, missing hosts. |
 | `test_cluster_consumption_metrics.py` | Cluster Consumption formulas and a worked example. |
 | `test_periodic_cluster_check.py` | Periodic Cluster Check: schedule, worst percent, Close for Business rule. |
 | `test_esxi_performance_metrics.py` | ESXi Performance formulas and worked examples. |

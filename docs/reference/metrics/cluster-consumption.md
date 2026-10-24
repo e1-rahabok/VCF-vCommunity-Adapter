@@ -65,7 +65,17 @@ Example: HA and the buffer take 20 % of a cluster, so Usable Capacity is 80 % of
 
 ### The sub-metrics
 
-The hosts that count are the running hosts with data, as in [Capacity Utilization](capacity-utilization.md#gone-hosts): a host that is disconnected, powered off, in standby or in maintenance mode is left out, so its idle capacity does not make the cluster look emptier than it is.
+The hosts that count are the running hosts with data. A host is left out when it cannot run VMs, or when nothing current is known about it, so its idle capacity does not make the cluster look emptier than it is:
+
+| Host state | Why it is left out |
+| :--- | :--- |
+| Not responding | Dead, or cut off from vCenter. vSphere HA restarts its VMs elsewhere. |
+| Disconnected | Nothing current is known about it or its VMs. |
+| Powered off, or in standby (DPM) | Runs no VM. |
+| In maintenance mode | vSphere allows no running VM on a host in maintenance mode. A host still *entering* maintenance mode counts as running, because its VMs are still on it. |
+| No current value | No value for the stat in the last 10 minutes. See [No stale values](README.md#no-stale-values). |
+
+A host that is left out stays in Total Capacity, but adds nothing to Usable Capacity.
 
 | Sub-metric | Cluster-wide | Source |
 | :--- | :--- | :--- |
