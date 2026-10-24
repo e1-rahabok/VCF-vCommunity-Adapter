@@ -50,6 +50,10 @@ The Management Pack uses customizable XML configuration files to define what dat
 
 You can expand the adapter configuration by clicking **Advanced Settings**.
 
+![The Advanced Settings of an Adapter Instance](images/adapter-instance-advanced-settings.png)
+
+*The settings of a lab's Adapter Instance. Some differ from the defaults: the table gives the defaults.*
+
 | Advanced Setting | Default Value | Description |
 | :--- | :--- | :--- |
 | **Port** | `443` | The port used to connect to vCenter Server. |
