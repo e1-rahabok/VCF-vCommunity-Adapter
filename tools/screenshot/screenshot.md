@@ -40,6 +40,8 @@ pwsh tools/screenshot/screenshot.ps1 -Name adapter-instance-advanced-settings -S
 | `-Name` | all | Only these screenshots, separated by commas. |
 | `-List` | off | List the screenshots and where each is saved, then stop. |
 | `-SaveSteps` | off | A folder for a full-window screenshot after every step, and of the window when a step fails. |
+| `-Inspect` | off | Describes the elements that show this text, instead of taking screenshots. See [Inspecting a page](#inspecting-a-page). |
+| `-Page` | none | With `-Inspect`: the page to open, from the instance's root. Without it, `-Inspect` uses the page of the one shot named by `-Name`, after that shot's steps. |
 | `-Url`, `-Credential`, `-SecretFile` | `.secrets/vcf-ops.xml` | Where to connect. |
 
 Each screenshot prints its steps, then `saved <path>` or `FAILED` with the reason. Exit code `0` means every screenshot was saved, `1` that at least one failed. A failed screenshot leaves the file from the last run as it was.
@@ -55,11 +57,14 @@ For each screenshot, in a new browser session:
 
 Then it closes the session.
 
+When a screenshot fails because the connection dropped or was refused (`ECONNRESET`, `ECONNREFUSED`, `net::ERR_…`), it is taken once more, from the start, after 10 s. A screenshot that fails for another reason, such as an element that is not on the page, is not retried: it would fail again.
+
 ## Adding a screenshot
 
 1. Show where it is and which part you want: a screenshot of the page with that part marked, or cropped.
-2. Add an entry to `screenshots.json`.
-3. Run it with `-Name` and `-SaveSteps`, and compare the result with the example. Adjust until they match.
+2. Find out how the page is built with `-Inspect`: which frame, what to click, how a tree expands. See [Inspecting a page](#inspecting-a-page).
+3. Add an entry to `screenshots.json`.
+4. Run it with `-Name` and `-SaveSteps`, and compare the result with the example. Adjust until they match.
 
 After that, the screenshot is updated by every run, with no more examples needed.
 
@@ -101,6 +106,40 @@ The capture is one of:
 | nothing | The whole window. |
 
 Selectors are [Playwright selectors](https://playwright.dev/python/docs/locators). Prefer what a person reads on the screen, such as `text="Advanced Settings"` (quoted: the exact text), over generated IDs such as `ext-element-48`, which change from one session to the next. A class such as `.chevron-medium-right` is fine when there is no text to click.
+
+## Inspecting a page
+
+`-Inspect "<text>"` opens a page and describes every element that shows the text, in every frame: what a new entry needs to know. Nothing is captured or saved, except the window with `-SaveSteps`.
+
+```powershell
+# A page as it opens
+pwsh tools/screenshot/screenshot.ps1 -Inspect "VCF vCommunity Adapter" -Page "/vcf-operations/ui/operate/administration/integrations;tab=accounts"
+
+# A shot's page, after its steps: to see what the next step should be
+pwsh tools/screenshot/screenshot.ps1 -Inspect "vCommunity" -Name management-pack-details-metrics
+```
+
+Elements that show exactly the text are listed; when there are none, elements that contain it. For each:
+
+| Line | Tells |
+| :--- | :--- |
+| `Match n: frame …, visible …, at x,y,w,h …` | The frame to name in the step, and whether the element is on screen. |
+| `text` | The text as it is on the page. A warning shows when an exact match fails, for example a label ending in a non-breaking space: then use `text=…` without quotes. |
+| `ancestors` | The elements around it, for a selector such as `.account-header:has-text(…)`. |
+| `row` | The row or container that holds it, and whether that row is expanded. |
+| `expanders in the row` | The chevrons or tree expanders to click to expand it. |
+| `suggested` | A step to click it, as JSON to paste into `screenshots.json`. |
+| `to expand` | For a tree node: the step that expands it, and only while it is collapsed. |
+
+An example, for a tree node on the Metrics tab:
+
+```
+Match 1: frame 'ops_iframe', visible True, at x,y,w,h [427, 406, 80, 19]
+  text:      'vCommunity'
+  row:       tr.x-grid-tree-node-expanded.x-grid-row (expanded: true): 'vCommunity'
+  suggested: {"frame": "ops_iframe", "click": "text=\"vCommunity\""}
+  to expand: {"frame": "ops_iframe", "click": "tr.x-grid-row:not(.x-grid-tree-node-expanded):has(:text-is('vCommunity')) .x-tree-expander"}
+```
 
 ## Design decisions
 

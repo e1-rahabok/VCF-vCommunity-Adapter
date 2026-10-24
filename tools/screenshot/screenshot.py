@@ -8,6 +8,7 @@ Each shot opens a page, follows its steps (clicks to expand or open something), 
 Shots only look: a step must never save, delete or change anything on the instance.
 
 Usage: python screenshot.py [--name NAME ...] [--list] [--save-steps DIR]
+       python screenshot.py --inspect TEXT (--page PATH | --name NAME)
 """
 import argparse
 import json
@@ -122,21 +123,27 @@ def capture(page, shot: dict, out: Path) -> None:
         page.screenshot(path=str(out))
 
 
+def open_shot_page(context, root: str, shot: dict, save_steps: Path = None):
+    """Log in, open the shot's page and run its steps. Returns the page, ready to capture or inspect."""
+    login(context, root)
+    page = context.new_page()
+    page.goto(root + shot["page"], wait_until="domcontentloaded")
+    for number, step in enumerate(shot.get("steps", []), start=1):
+        try:
+            print(f"  step {number}: {run_step(page, root, step)}")
+        except Exception:
+            if save_steps:
+                page.screenshot(path=str(save_steps / f"{shot['name']}-failed-step{number}.png"))
+            raise
+        if save_steps:
+            page.screenshot(path=str(save_steps / f"{shot['name']}-step{number}.png"))
+    return page
+
+
 def run_shot(browser, root: str, shot: dict, save_steps: Path = None) -> Path:
     context = browser.new_context(ignore_https_errors=True, viewport=shot.get("viewport", DEFAULT_VIEWPORT))
     try:
-        login(context, root)
-        page = context.new_page()
-        page.goto(root + shot["page"], wait_until="domcontentloaded")
-        for number, step in enumerate(shot.get("steps", []), start=1):
-            try:
-                print(f"  step {number}: {run_step(page, root, step)}")
-            except Exception:
-                if save_steps:
-                    page.screenshot(path=str(save_steps / f"{shot['name']}-failed-step{number}.png"))
-                raise
-            if save_steps:
-                page.screenshot(path=str(save_steps / f"{shot['name']}-step{number}.png"))
+        page = open_shot_page(context, root, shot, save_steps)
         out = REPO / shot["output"]
         out.parent.mkdir(parents=True, exist_ok=True)
         capture(page, shot, out)
@@ -145,11 +152,87 @@ def run_shot(browser, root: str, shot: dict, save_steps: Path = None) -> Path:
         context.close()
 
 
+# Messages of a dropped or refused connection. A shot that fails with one of these is tried once more; a
+# shot that fails for another reason, such as an element that is not there, would fail again.
+NETWORK_ERRORS = ("ECONNRESET", "ECONNREFUSED", "ECONNABORTED", "ETIMEDOUT", "EPIPE", "socket hang up", "net::ERR_")
+RETRY_WAIT_S = 10
+
+
+def is_network_error(error: Exception) -> bool:
+    return any(marker in str(error) for marker in NETWORK_ERRORS)
+
+
+# --- Inspect --------------------------------------------------------------------------------------------------
+# What a new shot needs to know about an element: where it is, how it is built, and what to click.
+DESCRIBE = """e => {
+  const cls = n => (n.className && n.className.baseVal === undefined ? n.className : '').toString().trim().replace(/\\s+/g, '.');
+  const tag = n => n.tagName.toLowerCase() + (cls(n) ? '.' + cls(n).slice(0, 80) : '');
+  const ancestors = [];
+  for (let n = e.parentElement; n && ancestors.length < 6; n = n.parentElement) ancestors.push(tag(n));
+  const isExpander = x => /expander|chevron|caret|toggle|collapse/i.test(cls(x));
+  // The row that holds it; without one, the nearest container (up to 8 levels) that has an expander.
+  let row = e.closest('tr, [role=row], .x-grid-item, clr-dg-row, li');
+  for (let n = e.parentElement, i = 0; !row && n && i < 8; n = n.parentElement, i++)
+    if (Array.from(n.querySelectorAll('*')).some(isExpander)) row = n;
+  const clickable = row ? Array.from(row.querySelectorAll('*')).filter(isExpander).map(tag).slice(0, 4) : [];
+  const box = e.getBoundingClientRect();
+  const style = getComputedStyle(e);
+  return {
+    visible: box.width > 0 && box.height > 0 && box.bottom > 0 && style.visibility !== 'hidden',
+    element: tag(e), text: e.textContent, ancestors,
+    row: row ? tag(row) + ' (expanded: ' + /tree-node-expanded|expanded/.test(cls(row)) + ')' : null,
+    rowText: row ? row.innerText.replace(/\\s+/g, ' ').trim().slice(0, 80) : null,
+    clickable, box: [Math.round(box.x), Math.round(box.y), Math.round(box.width), Math.round(box.height)],
+  };
+}"""
+
+
+def inspect(page, text: str, timeout_s: int = 60) -> int:
+    """Print what a shot needs to know about every element that shows text, in every frame of the page."""
+    end = time.time() + timeout_s
+    while time.time() < end and not any(f.get_by_text(text).count() for f in page.frames):
+        page.wait_for_timeout(1000)
+    # Elements that show exactly the text come first; elements that only contain it, when there are none.
+    exact = any(f.get_by_text(text, exact=True).count() for f in page.frames)
+    print(f"Showing {'exact' if exact else 'partial'} matches.")
+    found = 0
+    for frame in page.frames:
+        # All matches described in one call: the older pages redraw parts of a tree, so an element counted
+        # first can be gone a moment later.
+        descriptions = frame.get_by_text(text, exact=exact).evaluate_all(f"els => els.slice(0, 8).map({DESCRIBE})")
+        for d in descriptions:
+            found += 1
+            raw = d["text"]
+            exact_ok = raw.strip() == text and " " not in raw
+            frame_name = frame.name or "(the page itself)"
+            print(f"\nMatch {found}: frame {frame_name!r}, visible {d['visible']}, at x,y,w,h {d['box']}")
+            print(f"  element:   {d['element']}")
+            print(f"  text:      {raw!r}" + ("" if exact_ok else "  <- not an exact match: use text=..., unquoted"))
+            print(f"  ancestors: {' < '.join(d['ancestors'])}")
+            if d["row"]:
+                print(f"  row:       {d['row']}: {d['rowText']!r}")
+            if d["clickable"]:
+                print(f"  expanders in the row: {', '.join(d['clickable'])}")
+            # Printed as JSON, ready to paste into screenshots.json.
+            step = {"frame": frame.name} if frame.name else {}
+            print(f"  suggested: {json.dumps({**step, 'click': f'text={json.dumps(text)}' if exact_ok else f'text={text}'})}")
+            row = d["row"] or ""
+            if "x-grid-row" in row and any("x-tree-expander" in c for c in d["clickable"]):
+                has = f":has(:text-is('{text}'))" if exact_ok else f":has-text('{text}')"
+                expand = f"tr.x-grid-row:not(.x-grid-tree-node-expanded){has} .x-tree-expander"
+                print(f"  to expand: {json.dumps({**step, 'click': expand})}")
+    if not found:
+        print(f"\n'{text}' was not found in any frame within {timeout_s} s.")
+    return found
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--name", action="append", help="only this shot (repeatable)")
     parser.add_argument("--list", action="store_true", help="list the shots and exit")
     parser.add_argument("--save-steps", type=Path, help="also save a full-window screenshot after every step here")
+    parser.add_argument("--inspect", help="describe the elements that show this text, instead of taking screenshots")
+    parser.add_argument("--page", help="with --inspect: the page to open, from the instance's root")
     args = parser.parse_args()
 
     shots = json.loads(DEFINITIONS.read_text(encoding="utf-8"))["shots"]
@@ -167,21 +250,60 @@ def main() -> int:
         args.save_steps.mkdir(parents=True, exist_ok=True)
 
     root = os.environ["OPS_URL"].rstrip("/")
-    failed = 0
     with sync_playwright() as p:
         # The installed Chrome: no separate browser download is needed.
         browser = p.chromium.launch(channel="chrome", headless=True)
         try:
-            for shot in shots:
-                print(f"[{shot['name']}]")
-                try:
-                    out = run_shot(browser, root, shot, args.save_steps)
-                    print(f"  saved {out.relative_to(REPO)} ({out.stat().st_size // 1024} KB)")
-                except Exception as e:
-                    failed += 1
-                    print(f"  FAILED: {type(e).__name__}: {str(e).splitlines()[0][:300]}")
+            if args.inspect:
+                return run_inspect(browser, root, args, shots)
+            return run_shots(browser, root, shots, args.save_steps)
         finally:
             browser.close()
+
+
+def run_inspect(browser, root: str, args, shots) -> int:
+    """--inspect: on --page as it opens, or on a shot's page after its steps (--name, one shot)."""
+    if args.page:
+        shot = {"name": "inspect", "page": args.page}
+    elif args.name and len(shots) == 1:
+        shot = shots[0]
+    else:
+        print("--inspect needs --page, or --name with one shot.")
+        return 1
+    context = browser.new_context(ignore_https_errors=True, viewport=shot.get("viewport", DEFAULT_VIEWPORT))
+    try:
+        print(f"[inspect '{args.inspect}' on {shot['page']}" + (f" after the steps of {shot['name']}]" if not args.page else "]"))
+        try:
+            page = open_shot_page(context, root, shot, args.save_steps)
+        except Exception as e:
+            print(f"  FAILED before inspecting: {type(e).__name__}: {str(e).splitlines()[0][:300]}")
+            return 1
+        found = inspect(page, args.inspect)
+        if args.save_steps:
+            page.screenshot(path=str(args.save_steps / "inspect.png"))
+        return 0 if found else 1
+    finally:
+        context.close()
+
+
+def run_shots(browser, root: str, shots, save_steps: Path) -> int:
+    failed = 0
+    for shot in shots:
+        print(f"[{shot['name']}]")
+        for attempt in (1, 2):
+            try:
+                out = run_shot(browser, root, shot, save_steps)
+                print(f"  saved {out.relative_to(REPO)} ({out.stat().st_size // 1024} KB)")
+                break
+            except Exception as e:
+                message = f"{type(e).__name__}: {str(e).splitlines()[0][:300]}"
+                if attempt == 1 and is_network_error(e):
+                    print(f"  network error ({message}), trying the shot once more in {RETRY_WAIT_S} s")
+                    time.sleep(RETRY_WAIT_S)
+                    continue
+                failed += 1
+                print(f"  FAILED: {message}")
+                break
     print(f"RESULT: {'FAILED' if failed else 'PASSED'}  {len(shots) - failed} of {len(shots)} saved")
     return 1 if failed else 0
 
