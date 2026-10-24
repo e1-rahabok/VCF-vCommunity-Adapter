@@ -19,13 +19,13 @@ How the score works
        red      orange  up to zero-at    25 ->  0   (stays 0 beyond zero-at)
 
 2. Its weight depends on its score. It doubles for every 25 points the score
-   falls, and stops at 8:
+   falls:
 
-       weight = min(8, 2 ^ ((100 - score) / 25))
+       weight = 2 ^ ((100 - score) / 25)
 
-   That is 1 at score 100, 2 at 75, 4 at 50 and 8 at 25. Between those points
-   the weight changes smoothly, so the KPI does not jump when a value crosses a
-   limit (issue #18).
+   That is 1 at score 100, 2 at 75, 4 at 50, 8 at 25 and 16 at 0. Between those
+   points the weight changes smoothly, so the KPI does not jump when a value
+   crosses a limit (issue #18). See docs/concepts/kpi-weights.svg.
 
 3. The KPI is the weighted average of the sub-metric scores:
 
@@ -83,12 +83,11 @@ TIERS = [
     ("red",     25.0),
 ]
 SCORE_DROP_PER_TIER = 25.0
-MAX_WEIGHT = 8.0
 
 
 def weight_for_score(score: float) -> float:
-    """The weight of a sub-metric with this score: doubles per 25 points lost, capped at MAX_WEIGHT."""
-    return min(MAX_WEIGHT, 2 ** ((100.0 - score) / SCORE_DROP_PER_TIER))
+    """The weight of a sub-metric with this score: doubles for every 25 points lost."""
+    return 2 ** ((100.0 - score) / SCORE_DROP_PER_TIER)
 
 
 def score_metric(metric: Metric, value: float) -> Tuple[float, float]:

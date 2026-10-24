@@ -25,7 +25,7 @@ It does not fit VMware Cloud Foundation operations. The colors of the source tab
 
 ## Weighted average by color
 
-**What the operator sees.** A KPI that blends depth and breadth. A cluster with one bad sub-metric and many good ones reads better than a cluster where several are bad. The number moves smoothly, and it rarely reaches 0 or 100, so many clusters can be ranked, as [vSphere World](../reference/metrics/vsphere-world-metrics.md) does with the highest and the 90th percentile.
+**What the operator sees.** A KPI that blends depth and breadth. A cluster with one bad sub-metric and many good ones reads better than a cluster where several are bad. A sub-metric's weight rises smoothly as its score falls, from 1 at its best to 16 at its worst ([infographic](kpi-weights.svg)). The number moves smoothly, and it rarely reaches 0 or 100, so many clusters can be ranked, as [vSphere World](../reference/metrics/vsphere-world-metrics.md) does with the highest and the 90th percentile.
 
 **Where it fails.** When the KPI is already bad, a sub-metric that gets worse can make it look better: in Risk, a newly yellow or orange leading indicator lowers Cluster Risk if other indicators are worse. This happens where the decisions are made. The Close for Business rule reads Risk at orange, and a cluster just inside orange can drop to yellow after VMs are deployed, and open again.
 

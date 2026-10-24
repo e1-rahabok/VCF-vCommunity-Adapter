@@ -23,7 +23,7 @@ Source of the limits: [`formula/cluster-consumption.png`](formula/cluster-consum
   - **Hosts run, but HA and the Buffer leave nothing to VMs.** VCF Operations reports Usable Capacity 0. Seen on a live system: HA tolerating one host failure, with one of two hosts running. The VMs on that host still consume, so Cluster Consumption is 100 (fully consumed). The rows of that resource are not published: there is no meaningful % of 0.
   - **No host runs:** all are down, powered off, in maintenance mode or disconnected. No VM runs, so nothing is consumed, and Cluster Consumption is not 100. The rows and the KPI have no data.
 - **Usable capacity not reported is no data.** Then CPU and memory have no value for that cycle, and are left out of the KPI. They are never scored against the total instead.
-- **A worse sub-metric can lower Cluster Consumption.** When a sub-metric crosses into the next tier, its weight doubles. If it is still less consumed than the sub-metrics already driving Cluster Consumption, the KPI goes down. See [A worse sub-metric can lower Cluster Risk](cluster-risk.md#known-limitation-a-worse-sub-metric-can-lower-cluster-risk), which uses the same scoring.
+- **A worse sub-metric can lower Cluster Consumption.** As a sub-metric gets worse, its weight rises: it doubles for every 25 points lost. If it is still less consumed than the sub-metrics already driving Cluster Consumption, the KPI goes down. See [A worse sub-metric can lower Cluster Risk](cluster-risk.md#known-limitation-a-worse-sub-metric-can-lower-cluster-risk), which uses the same scoring.
 - **CPU Usable Capacity in threads comes from a ratio in MHz.** VCF Operations reports CPU Usable Capacity in MHz, not in threads. The pack divides it by the CPU Total Capacity, also in MHz, and applies that percentage to the threads of the running hosts. No step converts MHz to threads. This is exact only when every host has the same clock speed and the same hyper-threading setting. Example: host A has 32 cores with hyper-threading (64 threads), host B the same 32 cores without it (32 threads), so each is half of the cluster's MHz. If HA and the buffer remove 50 % of the MHz, the pack counts 96 × 50 % = 48 usable threads. But the threads actually left are 32 if host A fails, or 64 if host B fails.
 - **The memory percentage is applied to the NVMe memory tier too.** Memory Usable Capacity is reported for DRAM. The same percentage is applied to the NVMe tier, which assumes HA and the buffer remove the same part of each.
 - **Total Capacity and Usable Capacity.** Total Capacity is every host in the cluster, whatever its state: it changes only when a host is added or removed. Usable Capacity counts only the hosts that can run VMs: a host in maintenance mode, disconnected, powered off or in standby stays in Total Capacity but adds nothing to Usable Capacity. So Usable Capacity changes with the state of the hosts, and can be 0 if all hosts are down, powered off, in maintenance mode or disconnected.
@@ -94,7 +94,7 @@ A host that is left out stays in Total Capacity, but adds nothing to Usable Capa
 The same way as every KPI, then flipped like Cluster Risk:
 
 1. Each sub-metric value gets a score from 100 to 0, depending on the tier it is in.
-2. The scores are combined in a weighted average, where 100 is best. A sub-metric in the red tier weighs 8×, orange 4×, yellow 2×, green 1×.
+2. The scores are combined in a weighted average, where 100 is best. A sub-metric's weight depends on its score: `2^((100 − score) / 25)`. It is 1 at 100, 2 at 75, 4 at 50, 8 at 25 and 16 at 0.
 3. **Cluster Consumption = 100 − that weighted average**, so that higher means more consumed.
 
 Its bands are therefore those of Cluster Risk: green 0–25, yellow 25–50, orange 50–75, **red 75–100**. See [Bands: red is high](cluster-risk.md#bands-red-is-high).
@@ -113,8 +113,8 @@ Two hosts: a big one with 32 cores (64 threads) and 512 GB of DRAM, and a small 
 The average of 40 % and 70 % would be 55 %. Cluster-wide is 50 % of the total, because the big host has twice the threads, and 62.5 % of what VMs may use.
 
 - No memory tiering, so Memory Tiering Consumption is left out. Zip Swap is 0.
-- Scores: CPU yellow `75 − (62.5 − 55) / 15 × 25` = 62.5, weight 2. Memory yellow `75 − (79.17 − 70) / 10 × 25` = 52.08, weight 2. Ballooned green `100 − 0.83 × 25` = 79.25, weight 1. Zip Swap 100, weight 1.
-- Weighted average = `(62.5 × 2 + 52.08 × 2 + 79.25 + 100) / 6` = 68.07. Cluster Consumption = `100 − 68.07` = **31.93**.
+- Scores: CPU yellow `75 − (62.5 − 55) / 15 × 25` = 62.5, weight 2.83. Memory yellow `75 − (79.17 − 70) / 10 × 25` = 52.08, weight 3.78. Ballooned green `100 − 0.83 × 25` = 79.25, weight 1.78. Zip Swap 100, weight 1.
+- Weighted average = `(62.5 × 2.83 + 52.08 × 3.78 + 79.25 × 1.78 + 100) / (2.83 + 3.78 + 1.78 + 1)` = 65.47. Cluster Consumption = `100 − 65.47` = **34.53**.
 
 The same example is checked by the tests in [`Management Pack/tests/test_cluster_consumption_metrics.py`](../../../Management%20Pack/tests/test_cluster_consumption_metrics.py).
 

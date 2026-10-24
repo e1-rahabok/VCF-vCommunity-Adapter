@@ -35,17 +35,17 @@ def test_score_at_each_tier_boundary():
     assert score_metric(CPU_READY, 1.0) == (75.0, 2.0)
     assert score_metric(CPU_READY, 2.0) == (50.0, 4.0)
     assert score_metric(CPU_READY, 4.0) == (25.0, 8.0)
-    assert score_metric(CPU_READY, 8.0) == (0.0, 8.0)
+    assert score_metric(CPU_READY, 8.0) == (0.0, 16.0)
 
 
 def test_score_drops_in_a_straight_line_inside_a_tier():
     assert score_metric(CPU_READY, 0.5) == pytest.approx((87.5, 2 ** 0.5))     # halfway through green: weight 1.41
     assert score_metric(CPU_READY, 3.0) == pytest.approx((37.5, 2 ** 2.5))     # halfway through orange: weight 5.66
-    assert score_metric(CPU_READY, 5.0) == (18.75, 8.0)    # a quarter of the way through red
+    assert score_metric(CPU_READY, 5.0) == pytest.approx((18.75, 2 ** 3.25))    # a quarter of the way through red: 9.51
 
 
 def test_score_never_goes_below_zero_or_above_100():
-    assert score_metric(CPU_READY, 500.0) == (0.0, 8.0)
+    assert score_metric(CPU_READY, 500.0) == (0.0, 16.0)
     assert score_metric(CPU_READY, -1.0) == (100.0, 1.0)
 
 
@@ -56,13 +56,13 @@ def test_higher_is_better_at_each_tier_boundary():
     assert score_metric(FREE_MEMORY, 512.0) == (75.0, 2.0)
     assert score_metric(FREE_MEMORY, 256.0) == (50.0, 4.0)
     assert score_metric(FREE_MEMORY, 128.0) == (25.0, 8.0)
-    assert score_metric(FREE_MEMORY, 0.0) == (0.0, 8.0)
+    assert score_metric(FREE_MEMORY, 0.0) == (0.0, 16.0)
 
 
 def test_higher_is_better_inside_a_tier_and_beyond_the_ends():
     assert score_metric(FREE_MEMORY, 768.0) == pytest.approx((87.5, 2 ** 0.5))     # halfway through green
     assert score_metric(FREE_MEMORY, 192.0) == pytest.approx((37.5, 2 ** 2.5))     # halfway through orange
-    assert score_metric(FREE_MEMORY, 64.0) == (12.5, 8.0)      # halfway through red
+    assert score_metric(FREE_MEMORY, 64.0) == pytest.approx((12.5, 2 ** 3.5))      # halfway through red: 11.31
     assert score_metric(FREE_MEMORY, 8192.0) == (100.0, 1.0)   # more than "best" is still 100
 
 
@@ -78,17 +78,17 @@ def test_tiers_of_different_widths():
     assert score_metric(CPU_RUN, 80.0) == pytest.approx((75.0, 2.0))
     assert score_metric(CPU_RUN, 85.0) == pytest.approx((62.5, 2 ** 1.5))      # yellow is 10 wide
     assert score_metric(CPU_RUN, 92.5) == pytest.approx((37.5, 2 ** 2.5))      # orange is 5 wide
-    assert score_metric(CPU_RUN, 97.5) == (12.5, 8.0)      # red is 5 wide
-    assert score_metric(CPU_RUN, 100.0) == (0.0, 8.0)
+    assert score_metric(CPU_RUN, 97.5) == pytest.approx((12.5, 2 ** 3.5))      # red is 5 wide
+    assert score_metric(CPU_RUN, 100.0) == (0.0, 16.0)
 
 
 # --- The KPI ----------------------------------------------------------------
 
 def test_kpi_is_the_weighted_average():
-    # CPU Ready = 5 scores 18.75 with weight 8. Free memory of 2 GB scores 100 with weight 1.
-    # KPI = (18.75 x 8 + 100 x 1) / (8 + 1) = 250 / 9 = 27.78
+    # CPU Ready = 5 scores 18.75 with weight 9.51. Free memory of 2 GB scores 100 with weight 1.
+    # KPI = (18.75 x 9.51 + 100 x 1) / (9.51 + 1) = 26.48
     metrics = [CPU_READY, FREE_MEMORY]
-    assert kpi_score(metrics, {"CPU Ready": 5.0, "Guest Free Memory": 2048.0}) == 27.78
+    assert kpi_score(metrics, {"CPU Ready": 5.0, "Guest Free Memory": 2048.0}) == 26.48
 
 
 def test_missing_metric_is_left_out():
@@ -111,7 +111,7 @@ def test_green_as_a_single_value():
     assert score_metric(BAD_PACKETS, 0.0) == (100.0, 1.0)      # only exactly 0 is green
     assert score_metric(BAD_PACKETS, 0.1) == pytest.approx((62.5, 2 ** 1.5))  # halfway through yellow (0 to 0.2)
     assert score_metric(BAD_PACKETS, 0.2) == (50.0, 4.0)
-    assert score_metric(BAD_PACKETS, 0.8) == (0.0, 8.0)
+    assert score_metric(BAD_PACKETS, 0.8) == (0.0, 16.0)
 
 
 # --- Skip when green --------------------------------------------------------

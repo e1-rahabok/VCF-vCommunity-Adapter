@@ -111,17 +111,17 @@ Beyond the zero-at limit the score stays at 0. Before the best limit it stays at
 
 ```
 KPI = Σ(score × weight) / Σ(weight)
-weight = min(8, 2^((100 − score) / 25))
+weight = 2^((100 − score) / 25)
 ```
 
-The weight depends on the score, not on the tier. It is 1 at score 100, 2 at 75, 4 at 50 and 8 at 25, and changes smoothly in between. So the KPI does not jump when a value crosses a limit (issue #18). The weight is capped at 8, which is the red tier's weight.
+The weight depends on the score, not on the tier. It is 1 at score 100, 2 at 75, 4 at 50, 8 at 25 and 16 at 0, and changes smoothly in between. So the KPI does not jump when a value crosses a limit (issue #18). See [docs/concepts/kpi-weights.svg](../../../docs/concepts/kpi-weights.svg).
 
 This is deliberate. With a plain average, one sub-metric in the red tier would be hidden by nine healthy ones. With the weights it shows.
 
 Example with 10 sub-metrics, nine at 100 and one at 18.75 (red):
 
 - Plain average: about 91.9. The problem is hidden.
-- Weighted: `(9 × 100 + 18.75 × 8) / (9 + 8)` ≈ 61.76. The problem shows.
+- Weighted: `(9 × 100 + 18.75 × 9.51) / (9 + 9.51)` ≈ 58.25. The problem shows.
 
 ### Green as a single value
 
@@ -200,7 +200,7 @@ Every KPI module has the same parts, in the same order. Keep to this when you ad
 - **Change a limit:** edit the row in `METRICS`. Nothing else.
 - **Remove a sub-metric:** delete its row, and the line that supplies its value.
 - **Add a sub-metric:** add a row, and supply its value. In `vm_performance_metrics.py` that is one line in `SOURCE_STATS` when the value is a VM stat as it is.
-- **Change tiers or the weight:** edit `TIERS`, `weight_for_score()` and `MAX_WEIGHT` in `kpi_score.py`. This changes every KPI.
+- **Change tiers or the weight:** edit `TIERS` and `weight_for_score()` in `kpi_score.py`. This changes every KPI.
 
 The adapter definition reads the same tables, so there is nothing to update in `adapter.py`.
 

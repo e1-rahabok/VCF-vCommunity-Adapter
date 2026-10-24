@@ -27,8 +27,8 @@ def test_all_zeros_is_100():
 def test_one_red_metric_is_not_hidden_by_seven_good_ones():
     # 90th Percentile VM CPU Ready = 5 is a quarter into red (4 to 8): it scores 18.75 with weight 8.
     # Bad network packets are 0, so they are skipped (no free 100). The other seven score 100 with weight 1.
-    # KPI = (7 x 100 + 18.75 x 8) / (7 + 8) = 850 / 15 = 56.67. A plain average would give 89.8.
-    assert kpi_score(cp.METRICS, {**ALL_ZERO, "90th Percentile VM CPU Ready": 5.0}) == 56.67
+    # KPI = (7 x 100 + 18.75 x 9.51) / (7 + 9.51) = 53.19. A plain average would give 89.8.
+    assert kpi_score(cp.METRICS, {**ALL_ZERO, "90th Percentile VM CPU Ready": 5.0}) == 53.19
 
 
 def test_any_bad_packet_is_yellow_and_counts():

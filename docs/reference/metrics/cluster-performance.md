@@ -42,12 +42,12 @@ Notes:
 
 Each sub-metric has four limits. They split its values into four tiers. Inside a tier, the score drops in a straight line by 25 points.
 
-| Tier | Value range | Score goes from → to | Weight |
-| :--- | :--- | :--- | :--- |
-| Green | 0 up to the green limit | 100 → 75 | 1 |
-| Yellow | green limit up to the yellow limit | 75 → 50 | 2 |
-| Orange | yellow limit up to the orange limit | 50 → 25 | 4 |
-| Red | orange limit up to the zero-at limit | 25 → 0 | 8 |
+| Tier | Value range | Score goes from → to |
+| :--- | :--- | :--- |
+| Green | 0 up to the green limit | 100 → 75 |
+| Yellow | green limit up to the yellow limit | 75 → 50 |
+| Orange | yellow limit up to the orange limit | 50 → 25 |
+| Red | orange limit up to the zero-at limit | 25 → 0 |
 
 Above the zero-at limit the score stays at 0.
 
@@ -55,12 +55,16 @@ Above the zero-at limit the score stays at 0.
 
 ```
 KPI = Σ(score × weight) / Σ(weight)
+weight = 2^((100 − score) / 25)
 ```
 
-- This is a weighted average. The weight of each sub-metric depends on the tier it is in.
-- A sub-metric in the red tier counts 8× more than one in the green tier.
+![How much each sub-metric counts](../../concepts/kpi-weights.svg)
+
+- This is a weighted average. The weight of each sub-metric depends on its score, not on the tier. It is 1 at score 100 and doubles for every 25 points the score falls: 2 at 75, 4 at 50, 8 at 25 and 16 at 0.
+- A sub-metric at score 0 counts 16× more than one at score 100.
+- The weight changes smoothly, so the KPI does not jump when a value crosses a limit ([issue #18](https://github.com/e1-rahabok/VCF-vCommunity-Adapter/issues/18)).
 - This is deliberate. One bad sub-metric is not hidden by eight good ones.
-- **Known limitation.** Because the weight grows with the tier, a sub-metric that gets worse can raise the KPI. This happens when the sub-metric moves into a heavier tier while it is still better than the sub-metrics already pulling the KPI down. See [A worse sub-metric can lower Cluster Risk](cluster-risk.md#known-limitation-a-worse-sub-metric-can-lower-cluster-risk): it is the same scoring, mirrored.
+- **Known limitation.** Because the weight grows as the score falls, a sub-metric that gets worse can raise the KPI. This happens when the sub-metric moves into a heavier tier while it is still better than the sub-metrics already pulling the KPI down. See [A worse sub-metric can lower Cluster Risk](cluster-risk.md#known-limitation-a-worse-sub-metric-can-lower-cluster-risk): it is the same scoring, mirrored.
 
 ## Limits per sub-metric
 
@@ -85,11 +89,11 @@ The worst-VM rows have higher limits than the 90th-percentile rows, because a si
 
 - **All 9 sub-metrics are 0.** Bad network packets are skipped. The other 8 score 100 with weight 1. KPI = **100**.
 - **Same, except 90th Percentile VM CPU Ready = 5** (red tier):
-  - It is a quarter of the way through red (from 4 to 8), so it scores `25 − (¼ × 25) = 18.75`, with weight 8.
+  - It is a quarter of the way through red (from 4 to 8), so it scores `25 − (¼ × 25) = 18.75`, with weight `2^(81.25 / 25)` ≈ 9.51.
   - Bad network packets are 0, so they are skipped. The other 7 score 100 with weight 1.
-  - KPI = `(7 × 100 + 18.75 × 8) / (7 + 8)` = `850 / 15` ≈ **56.67**.
+  - KPI = `(7 × 100 + 18.75 × 9.51) / (7 + 9.51)` ≈ **53.19**.
   - A plain average would give about 89.8. The weighting makes the one bad sub-metric show.
-- **Same as the first example, except a tiny % of bad packets (0.005 %).** It is yellow, scores about 74.4 with weight 2, and now counts. KPI ≈ **94.88**.
+- **Same as the first example, except a tiny % of bad packets (0.005 %).** It is yellow, scores about 74.4 with weight 2.03, and now counts. KPI ≈ **94.80**.
 - **One VM has 200 ms disk latency, the others 0.** Worst VM Disk Latency is 200 (orange to red). The 90th percentile stays 0, because one VM is not a broad problem.
 
 The same examples are checked by the tests in [`Management Pack/tests/test_cluster_performance_metrics.py`](../../../Management%20Pack/tests/test_cluster_performance_metrics.py).
@@ -114,7 +118,7 @@ Common reasons for no data: the cluster has no powered-on VMs, the vCenter adapt
 
 The code follows the KPI: one section per row, in the order of the source table, with the row's limits, the stats it reads and its formula. The 8 VM contention rows are the same in Cluster Performance and ESXi Performance, so they are defined once, in [`Management Pack/app/metrics/vm/contention_by_vms.py`](../../../Management%20Pack/app/metrics/vm/contention_by_vms.py): a limit changed there changes in both KPIs.
 
-The tiers and weights are a second table, `TIERS`, in [`Management Pack/app/metrics/kpi_score.py`](../../../Management%20Pack/app/metrics/kpi_score.py). That file holds the scoring for every KPI, so a change there changes all of them.
+The tiers and the weight formula are in `TIERS` and `weight_for_score()`, in [`Management Pack/app/metrics/kpi_score.py`](../../../Management%20Pack/app/metrics/kpi_score.py). That file holds the scoring for every KPI, so a change there changes all of them.
 
 - To change a limit, edit the row.
 - To add a VM stat, add one section to `contention_by_vms.py` with the stat and its two rows (worst VM and 90th percentile), and add it to `VM_CONTENTION`. Both KPIs then have the two new rows.

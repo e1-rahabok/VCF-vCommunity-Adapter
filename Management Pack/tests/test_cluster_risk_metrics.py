@@ -211,11 +211,11 @@ def test_a_busy_host_leaves_its_excluded_green_and_counts():
     published = collect(samples)
     assert published["Highest ESXi CPU Thread Utilization"] == 90.0      # start of red: 25 with weight 8
     # host-1: 57.6 running threads on 32 running cores = 1.8. host-2: 19.2 on 19.2 = 1.0. The worst is kept.
-    assert published["Worst ESXi CPU Imbalance"] == 1.8                  # halfway through red: 12.5 with weight 8
+    assert published["Worst ESXi CPU Imbalance"] == 1.8                  # halfway through red: 12.5 with weight 11.31
     # The other counted rows: ballooned and zip swap (100), CPU monster (93.75), memory monster (98.0).
-    # Health = (25 x 8 + 12.5 x 8 + 100 + 100 + 93.75 x 1.19 + 98 x 1.06) / (8 + 8 + 1 + 1 + 1.19 + 1.06) = 35.32
-    # Risk = 100 - 35.32 = 64.68
-    assert published[cr.KPI_KEY] == 64.68
+    # Health = (25 x 8 + 12.5 x 11.31 + 100 + 100 + 93.75 x 1.19 + 98 x 1.06) / (8 + 11.31 + 1 + 1 + 1.19 + 1.06) = 32.11
+    # Risk = 100 - 32.11 = 67.89
+    assert published[cr.KPI_KEY] == 67.89
 
 
 def test_failed_stats_call_still_scores_what_the_properties_give():

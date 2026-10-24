@@ -66,10 +66,10 @@ def test_healthy_vm_scores_100_and_publishes_only_what_the_vm_does_not_have():
 # In HEALTHY, CPU Overlap, Network Dropped Tx and CPU Run are 0, in their excluded green, so they are left out.
 
 def test_one_red_metric_is_not_hidden_by_five_good_ones():
-    # CPU Ready = 10 is a quarter of the way through red (8 to 16): it scores 18.75 with weight 8.
+    # CPU Ready = 10 is a quarter of the way through red (8 to 16): it scores 18.75 with weight 9.51.
     # The other five that count score 100 with weight 1.
-    # KPI = (5 x 100 + 18.75 x 8) / (5 + 8) = 650 / 13 = 50.0. A plain average would give 86.5.
-    assert collect({**HEALTHY, "cpu|20_sec_peak_readyPct": 10.0})[vp.KPI_KEY] == 50.0
+    # KPI = (5 x 100 + 18.75 x 9.51) / (5 + 9.51) = 46.74. A plain average would give 86.5.
+    assert collect({**HEALTHY, "cpu|20_sec_peak_readyPct": 10.0})[vp.KPI_KEY] == 46.74
 
 
 def test_cpu_run_counts_only_above_95_percent():
@@ -98,9 +98,9 @@ def test_vm_without_tools_is_scored_on_the_stats_it_has():
     no_tools = {key: value for key, value in HEALTHY.items() if key != vp.GUEST_USED_MEMORY}
     published = collect({**no_tools, "cpu|20_sec_peak_readyPct": 10.0})
     # Memory Zip Swap needs a Tools stat, so it has no data. Three more are in their excluded green.
-    # That leaves four at 100 and CPU Ready at 18.75 with weight 8.
-    # KPI = (4 x 100 + 18.75 x 8) / (4 + 8) = 550 / 12 = 45.83
-    assert published == {vp.KPI_KEY: 45.83}
+    # That leaves four at 100 and CPU Ready at 18.75 with weight 9.51.
+    # KPI = (4 x 100 + 18.75 x 9.51) / (4 + 9.51) = 42.80
+    assert published == {vp.KPI_KEY: 42.8}
 
 
 def test_vm_with_no_stats_publishes_nothing():

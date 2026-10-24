@@ -108,7 +108,7 @@ An empty or invalid value uses the default and logs a warning. A change applies 
 The same way as every KPI:
 
 1. Each sub-metric value gets a score from 100 to 0, depending on the tier it is in.
-2. The scores are combined in a weighted average, where 100 is best. A sub-metric in the red tier weighs 8×, orange 4×, yellow 2×, green 1×.
+2. The scores are combined in a weighted average, where 100 is best. A sub-metric's weight depends on its score: `2^((100 − score) / 25)`. It is 1 at 100, 2 at 75, 4 at 50, 8 at 25 and 16 at 0 ([infographic](../../concepts/kpi-weights.svg)).
 3. **Cluster Risk = 100 − that weighted average**, so that higher means more risk.
 
 The full explanation, with a worked example, is in [Cluster Performance KPI](cluster-performance.md#step-2-score-each-sub-metric). The code is [`kpi_score.py`](../../../Management%20Pack/app/metrics/kpi_score.py).
@@ -124,7 +124,7 @@ Because Cluster Risk is published as `100 − weighted average`, its bands are t
 | Orange | 25 – 50 | 50 – 75 |
 | Red | 0 – 25 | **75 – 100** |
 
-- **Only the published number is flipped.** The sub-metrics, their limits from the source table, the tier weights (1, 2, 4, 8), "Excluded" and missing data are calculated exactly as for every KPI, in the same shared code. The flip is the last step, in `publish_kpi(..., higher_is_worse=True)`.
+- **Only the published number is flipped.** The sub-metrics, their limits from the source table, the weight formula, "Excluded" and missing data are calculated exactly as for every KPI, in the same shared code. The flip is the last step, in `publish_kpi(..., higher_is_worse=True)`.
 - **The order and the distances are kept.** A cluster whose weighted average is 10 points higher than another's has a Cluster Risk 10 points lower.
 - **Set thresholds the other way round.** Any symptom, alert, or widget color range on `Cluster Risk Score` must treat high as bad: red from 75, not below 25. The pack's Extreme Capacity dashboard uses the score, with red from 75. The pack's other dashboards and reports use only the Risk sub-metrics.
 - **"Worst" means highest.** That is why vSphere World uses the 90th percentile and the highest Cluster Risk, and the Periodic Cluster Check takes the high end of Cluster Risk and counts it red above 75.
@@ -136,11 +136,11 @@ Two hosts, each with 32 cores (64 threads) and 512 GB of DRAM. Each runs four VM
 - **Low risk.** Both hosts at 40 % thread and 80 % core utilization (one running thread per running core), 50 % memory consumed, nothing ballooned, swapped or reserved.
   - Left out: the six rows in their excluded green, and Memory Tiering Latency (these hosts have no memory tiering).
   - Counted: CPU Imbalance 1 (100), Ballooned 0 (100), Zip Swap 0 (100), CPU Monster VM `4 / 16` = 0.25 (93.75), Memory Monster VM `16 / 204.8` = 0.08 (98).
-  - Weighted average = `(100 + 100 + 100 + 93.75 + 98) / 5` = 98.35. Cluster Risk = `100 − 98.35` = **1.65**.
+  - Weights: 93.75 weighs 1.19 and 98 weighs 1.06. Weighted average = `(300 + 93.75 × 1.19 + 98 × 1.06) / (3 + 1.19 + 1.06)` = 98.18. Cluster Risk = `100 − 98.18` = **1.82**.
 - **One busy host.** Host 1 at 90 % thread and 100 % core utilization. Host 2 at 30 % and 60 %.
   - CPU Thread Utilization 90 leaves its excluded green. It is at the start of red: 25 with weight 8.
-  - CPU Imbalance of host 1 is `57.6 running threads / 32 running cores` = 1.8. Host 2 is 1.0. The worst, 1.8, is halfway through red: 12.5 with weight 8.
-  - Weighted average = `(25 × 8 + 12.5 × 8 + 100 + 100 + 93.75 + 98) / (8 + 8 + 4)` = 34.59. Cluster Risk = `100 − 34.59` = **65.41**.
+  - CPU Imbalance of host 1 is `57.6 running threads / 32 running cores` = 1.8. Host 2 is 1.0. The worst, 1.8, is halfway through red: 12.5 with weight 11.31.
+  - Weighted average = `(25 × 8 + 12.5 × 11.31 + 100 + 100 + 93.75 × 1.19 + 98 × 1.06) / (8 + 11.31 + 1 + 1 + 1.19 + 1.06)` = 32.11. Cluster Risk = `100 − 32.11` = **67.89**.
 
 The same examples are checked by the tests in [`Management Pack/tests/test_cluster_risk_metrics.py`](../../../Management%20Pack/tests/test_cluster_risk_metrics.py).
 
@@ -148,51 +148,51 @@ The same examples are checked by the tests in [`Management Pack/tests/test_clust
 
 > **Read this before using a change in Cluster Risk as a decision.**
 
-A sub-metric that gets worse can make Cluster Risk go **down**. This happens when the sub-metric moves into a tier with a higher weight while it is still less bad than the sub-metrics already driving Cluster Risk.
+A sub-metric that gets worse can make Cluster Risk go **down**. This happens when its score is still less bad than the weighted average of the sub-metrics already driving Cluster Risk, because its weight grows as it gets worse.
 
 ### Why
 
-Cluster Risk is 100 minus a weighted average, and the weight of a sub-metric depends on its tier. When a sub-metric moves into a tier with a higher weight, it counts more, and the weighted average moves toward that sub-metric's score. If that score is higher than the current weighted average, the average goes up, and Cluster Risk goes down.
+Cluster Risk is 100 minus a weighted average. When a sub-metric gets worse, its weight rises (`2^((100 − score) / 25)`), so it counts more, and the weighted average moves toward that sub-metric's score. If that score is higher than the current weighted average, the average goes up, and Cluster Risk goes down.
 
-The weight goes up in two cases:
+Two things drive the weight up:
 
 | Case | Weight | Example |
 | :--- | :--- | :--- |
-| One of the six "Excluded" sub-metrics leaves green, so it is included for the first time | 0 → 2 | CPU Overcommit Ratio passes 1 after new VMs are deployed |
-| Any sub-metric crosses into the next tier | doubles | Ballooned passes 1 % (green → yellow) |
+| Any sub-metric gets worse | rises smoothly with its score: 1.32 at 90, 1.74 at 80, 2.30 at 70 | Ballooned rises from 90 to 80 |
+| One of the "Excluded" sub-metrics leaves green, so it is included for the first time | 0 → 2 (the one step left: the source table gives no value between "excluded" and yellow) | CPU Overcommit Ratio passes 1 after new VMs are deployed |
 
 The rule: Cluster Risk goes down when that sub-metric's own level, `100 − its score`, is below the current Cluster Risk. So it happens only when Cluster Risk is already high, driven by worse sub-metrics. When the other sub-metrics are green, a sub-metric that gets worse always raises Cluster Risk.
 
 ### Example with 5 sub-metrics
 
-Sub-metric A is red. B moves just across its green limit into yellow. C, D and E stay green. All five are counted.
+Sub-metric A is red. B, one of the green sub-metrics, gets worse from 90 to 80. C, D and E stay at 90. All five are counted.
 
 | Sub-metric | Before: score × weight | After: score × weight |
 | :--- | :--- | :--- |
-| A, red | 10 × 8 = 80 | 10 × 8 = 80 |
-| **B, green → yellow** | **76 × 1 = 76** | **74 × 2 = 148** |
-| C, D, E, green | 90 × 3 = 270 | 90 × 3 = 270 |
-| Weighted average | 426 / 12 = 35.50 | 498 / 13 = 38.31 |
-| **Cluster Risk** | **64.50** | **61.69** |
+| A, red | 10 × 12.13 = 121.3 | 10 × 12.13 = 121.3 |
+| **B, green** | **90 × 1.32 = 118.8** | **80 × 1.74 = 139.2** |
+| C, D, E, green | 90 × 1.32 = 118.8 each | 90 × 1.32 = 118.8 each |
+| Weighted average | 596.5 / 17.41 = 34.26 | 616.9 / 17.83 = 34.60 |
+| **Cluster Risk** | **65.74** | **65.40** |
 
-B got worse: its score fell from 76 to 74. In yellow its weight doubled, so its 74 now counts twice. That 74 is far above the average of 35.50, which A holds down. Counting it twice pulls the average up, and Cluster Risk falls by 2.81.
+B got worse, but its 80 is still above the average of 34.26, which A holds down. Its weight rises from 1.32 to 1.74, so it pulls the average up, and Cluster Risk falls by 0.34.
 
-In this example B keeps lowering Cluster Risk until its score drops below 55.75, about three quarters of the way through yellow.
+The effect stops when B's score drops below about 56. Below that, the weighted average falls, and Cluster Risk rises again.
 
 ### Example: deploying VMs
 
-The cluster of [One busy host](#worked-examples), at Cluster Risk 65.41. New idle VMs raise CPU Overcommit Ratio on the hosts. Every other sub-metric stays the same.
+The cluster of [One busy host](#worked-examples), at Cluster Risk 67.89. New idle VMs raise CPU Overcommit Ratio on the hosts. Every other sub-metric stays the same.
 
 | CPU Overcommit Ratio | Tier | Score × weight | Cluster Risk |
 | :--- | :--- | :--- | :--- |
-| 0.5 | Excluded green | left out | 65.41 |
-| 1.125 (ten 4 vCPU VMs, five per host) | yellow | 71.88 × 2 | **62.02** |
-| 1.5 | yellow | 62.50 × 2 | **62.87** |
-| 2.5 | orange | 37.50 × 4 | **64.93** |
-| 2.8 | orange | 30.00 × 4 | 66.18 |
-| 3.5 | red | 12.50 × 8 | 71.72 |
+| 0.5 | Excluded green | left out | 67.89 |
+| 1.125 (ten 4 vCPU VMs, five per host) | yellow | 71.88 × 2.18 | **64.52** |
+| 1.5 | yellow | 62.50 × 2.83 | **64.63** |
+| 2.5 | orange | 37.50 × 5.66 | **66.85** |
+| 2.8 | orange | 30.00 × 6.96 | 68.37 |
+| 3.5 | red | 12.50 × 11.31 | 74.25 |
 
-From 1.125 to 2.5, the overcommit ratio rises but Cluster Risk stays below 65.41. Only from about 2.6 is the sub-metric bad enough to raise Cluster Risk.
+From 1.125 to 2.5, the overcommit ratio rises but Cluster Risk stays below 67.89. Only from about 2.7 is the sub-metric bad enough to raise Cluster Risk above it.
 
 ### What it affects
 

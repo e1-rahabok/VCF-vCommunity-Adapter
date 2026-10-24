@@ -36,7 +36,7 @@ Every sub-metric is "lower is better", and 0 is perfect. The VM stats are the 20
 The same way as every KPI:
 
 1. Each sub-metric value gets a score from 100 to 0, depending on the tier it is in.
-2. The KPI is the weighted average of the scores. A sub-metric in the red tier weighs 8×, orange 4×, yellow 2×, green 1×.
+2. The KPI is the weighted average of the scores. A sub-metric's weight depends on its score: `2^((100 − score) / 25)`. It is 1 at 100, 2 at 75, 4 at 50, 8 at 25 and 16 at 0.
 
 The full explanation, with a worked example, is in [Cluster Performance KPI](cluster-performance.md#step-2-score-each-sub-metric). The code is [`kpi_score.py`](../../../Management%20Pack/app/metrics/kpi_score.py).
 
@@ -52,7 +52,7 @@ The stats of all VMs and all hosts are read in bulk, once per collection cycle, 
 ## Worked examples
 
 - **Nothing wrong.** Bad packets are 0, in their excluded green, so they are left out. The other 8 score 100. KPI = **100**.
-- **One VM with 200 ms disk latency.** Worst VM Disk Latency is a quarter of the way through red (160 to 320): 18.75 with weight 8. The 90th percentile stays 0, because one VM is not a broad problem. KPI = `(7 × 100 + 18.75 × 8) / (7 + 8)` ≈ **56.67**.
+- **One VM with 200 ms disk latency.** Worst VM Disk Latency is a quarter of the way through red (160 to 320): 18.75 with weight 9.51. The 90th percentile stays 0, because one VM is not a broad problem. KPI = `(7 × 100 + 18.75 × 9.51) / (7 + 9.51)` ≈ **53.19**.
 - **A host with no powered-on VMs.** No VM sub-metric has data. Bad packets are 0 and left out. Nothing is wrong, so the KPI is **100**.
 
 The same examples are checked by the tests in [`Management Pack/tests/test_esxi_performance_metrics.py`](../../../Management%20Pack/tests/test_esxi_performance_metrics.py).
