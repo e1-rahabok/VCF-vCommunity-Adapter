@@ -1,0 +1,23 @@
+{
+  "shots": [
+    {
+      "name": "adapter-instance-advanced-settings",
+      "description": "The Advanced Settings of the pack's Adapter Instance, all settings",
+      "output": "docs/configuration-guide/images/adapter-instance-advanced-settings.png",
+      "page": "/vcf-operations/ui/operate/administration/integrations;tab=accounts",
+      "viewport": { "width": 1600, "height": 1800 },
+      "steps": [
+        { "frame": "ops_iframe", "click": ".account-header:has-text('VCF vCommunity Adapter') .chevron-medium-right" },
+        { "frame": "ops_iframe", "click": "text=\"vcenter\"", "settle_ms": 5000 },
+        { "frame": "ops_iframe", "click": "text=\"Advanced Settings\"", "settle_ms": 3000 }
+      ],
+      "capture": {
+        "frame": "ops_iframe",
+        "from": "text=\"Advanced Settings\"",
+        "to": "text=\"Windows Event Log Monitoring Status\"",
+        "width": 720,
+        "padding": 16
+      }
+    }
+  ]
+}
