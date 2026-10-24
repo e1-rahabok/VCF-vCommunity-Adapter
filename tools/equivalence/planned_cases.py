@@ -23,7 +23,12 @@ from metrics.cluster import cluster_consumption_metrics as cc
 from metrics.host import esxi_performance_metrics as ep
 from metrics.vm import vm_performance_metrics as vp
 from metrics.vm import guest_os_performance_metrics as go
-from metrics import vm_contention as vc
+try:
+    from metrics.host import host_bad_network_packets as hb
+    from metrics.vm import contention_by_vms as vc
+except ImportError:  # the code before the metrics were split by object type
+    from metrics import vm_contention as vc
+    hb = vc
 from utils.ops_inventory import VmInfo, HostInfo
 
 GB_KB = 1024.0 * 1024.0
@@ -211,9 +216,9 @@ def run_perf(label, vm_stats, vm_ids, packets_by_host):
 
 def packets(bad_pct=0.0, total=10000.0, drop=None):
     bad = bad_pct / 100.0 * total
-    p = {vc.HOST_BAD_PACKET_STATS[0]: bad / 4, vc.HOST_BAD_PACKET_STATS[1]: bad / 4,
-         vc.HOST_BAD_PACKET_STATS[2]: bad / 4, vc.HOST_BAD_PACKET_STATS[3]: bad / 4,
-         vc.HOST_PACKET_STATS[0]: total / 2, vc.HOST_PACKET_STATS[1]: total / 2}
+    p = {hb.HOST_BAD_PACKET_STATS[0]: bad / 4, hb.HOST_BAD_PACKET_STATS[1]: bad / 4,
+         hb.HOST_BAD_PACKET_STATS[2]: bad / 4, hb.HOST_BAD_PACKET_STATS[3]: bad / 4,
+         hb.HOST_PACKET_STATS[0]: total / 2, hb.HOST_PACKET_STATS[1]: total / 2}
     if drop:
         p.pop(drop)
     return p
@@ -248,10 +253,10 @@ for stat in STAT_KEYS:
 PACKET_METRIC = cp.METRICS[-1]
 for v in points(PACKET_METRIC):
     run_perf(f"packets|value={v!r}", {}, [], {"h1": packets(v)})
-for key in vc.HOST_BAD_PACKET_STATS + vc.HOST_PACKET_STATS:
+for key in hb.HOST_BAD_PACKET_STATS + hb.HOST_PACKET_STATS:
     run_perf(f"packets|missing={key}", {}, [], {"h1": packets(0.3, drop=key)})
 run_perf("packets|no-packets-at-all", {}, [], {"h1": packets(0.0, total=0.0)})
-run_perf("packets|several-hosts", {}, [], {"h1": packets(0.1), "h2": packets(0.5), "h3": packets(0.3, drop=vc.HOST_PACKET_STATS[0])})
+run_perf("packets|several-hosts", {}, [], {"h1": packets(0.1), "h2": packets(0.5), "h3": packets(0.3, drop=hb.HOST_PACKET_STATS[0])})
 run_perf("packets|no-host-data", {}, [], {"h1": {}})
 
 # Every row at once.

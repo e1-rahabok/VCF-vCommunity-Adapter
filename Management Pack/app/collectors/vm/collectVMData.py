@@ -19,7 +19,7 @@ from events.vm.collect_windows_event_logs import collect_windows_events
 from metrics.vm.vm_performance_metrics import read_vm_performance_stats, collect_vm_performance_metrics
 from metrics.vm.guest_os_performance_metrics import collect_guest_os_performance_metrics
 from metrics.vm.vm_guest_os_kpi import collect_vm_guest_os_kpi
-from metrics.vm.vm_shares import read_vm_shares, collect_vm_shares
+from properties.vm.vm_shares import read_vm_shares, collect_vm_shares
 from utils.vi_property_collector import retrieve_properties
 from utils.ops_inventory import read_vms
 from pyVmomi import vim
@@ -107,7 +107,7 @@ def collect_vm_data(
     vm_performance_stats = read_vm_performance_stats(
         suite_api_client, [vm.id for vm in ops_vms_by_moid.values() if vm.powered_on]
     )
-    # Shares of every VM, powered on or off, in bulk. See metrics/vm/vm_shares.py.
+    # Shares of every VM, powered on or off, in bulk. See properties/vm/vm_shares.py.
     vm_shares = read_vm_shares(suite_api_client, [vm.id for vm in ops_vms_by_moid.values()])
 
     for vm_data in vm_props:

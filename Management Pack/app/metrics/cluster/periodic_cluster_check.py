@@ -191,7 +191,7 @@ def window_end_text(window_end: datetime) -> str:
 def percentile(samples: List[float], percent: float) -> Optional[float]:
     """The value that percent % of the samples are at or below. None when there are none.
 
-    Nearest-rank method, as percentile_90() in metrics/vm_contention.py: sort the samples and take the one at
+    Nearest-rank method, as percentile_90() in metrics/kpi_score.py: sort the samples and take the one at
     position percent % of the count, rounded up. With 288 samples, the 95th percentile is the 274th lowest (the
     14 highest are ignored), and the 99th is the 286th lowest (the 2 highest are ignored).
     """

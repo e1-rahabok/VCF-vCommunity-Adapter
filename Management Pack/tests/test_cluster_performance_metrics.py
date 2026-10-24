@@ -10,7 +10,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "app"))
 
 from metrics.kpi_score import kpi_score
 from metrics.cluster import cluster_performance_metrics as cp
-from metrics import vm_contention as vc
+from metrics.kpi_score import percentile_90
+from metrics.host import host_bad_network_packets as hb
+from metrics.vm import contention_by_vms as vc
 from fakes import FakeSuiteApi, FakeObject
 
 ALL_ZERO = {metric.name: 0.0 for metric in cp.METRICS}
@@ -56,12 +58,12 @@ def test_limits_match_the_source_table():
 # --- Sub-metric formulas ----------------------------------------------------
 
 def test_percentile_90():
-    assert vc.percentile_90([]) is None
-    assert vc.percentile_90([3.0]) == 3.0
+    assert percentile_90([]) is None
+    assert percentile_90([3.0]) == 3.0
     # Fewer than 10 VMs: the highest.
-    assert vc.percentile_90([5.0, 1.0, 2.0]) == 5.0
+    assert percentile_90([5.0, 1.0, 2.0]) == 5.0
     # 20 VMs, 1 to 20: the 18th lowest. 18 of the 20 are at or below it.
-    assert vc.percentile_90([float(n) for n in range(20, 0, -1)]) == 18.0
+    assert percentile_90([float(n) for n in range(20, 0, -1)]) == 18.0
 
 
 # --- End to end, with a fake VCF Operations ---------------------------------
@@ -79,7 +81,7 @@ def collect(samples, status_code=200):
 
 def host_samples(bad_packets, packets):
     """The packet counters of one host in the last collection cycle: bad_packets dropped of all packets."""
-    samples = {key: [0.0] for key in vc.HOST_BAD_PACKET_STATS + vc.HOST_PACKET_STATS}
+    samples = {key: [0.0] for key in hb.HOST_BAD_PACKET_STATS + hb.HOST_PACKET_STATS}
     samples["net|droppedRx_summation_sum"] = [bad_packets]
     samples["net|packetsRx_summation_sum"] = [packets]
     return samples

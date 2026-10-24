@@ -1,35 +1,15 @@
 #  Copyright 2026 VCF Operations vCommunity Management Pack
-"""VM Performance KPI.
+"""VM Performance KPI: one 0-100 % score per powered-on VM, 100 is perfect.
 
-What it is
-----------
-One 0-100 % score per powered-on VM. 100 is perfect. It answers one question: is the VM, as a virtual motherboard,
-getting the CPU, memory, disk and network it asks for from ESXi? What happens inside the guest OS is scored
-separately, by the Guest OS Performance KPI in guest_os_performance_metrics.py.
+It answers whether the VM, as a virtual motherboard, gets the CPU, memory, disk and network it asks for from ESXi.
+What happens inside the guest OS is scored by the Guest OS Performance KPI.
 
-How this file is laid out
--------------------------
-  Part 1  The 9 rows, one section each, in the order of the source table. Each section has the row's limits and
-          where its value comes from: a VM stat as it is (8 rows), or a formula (Memory Zip Swap). To add, change or
-          remove a row, change only its section and its line in ROWS.
-  Part 2  Reading the stats, once per collection cycle for all VMs. The same request also reads the stats of the
-          Guest OS Performance KPI.
-  Part 3  The KPI, once per VM: take the rows, score them and publish. The scoring is the same for every KPI:
-          metrics/kpi_score.py.
+Published on the VM as vCommunity|VM Performance|VM Performance Score (the KPI) and the one calculated row,
+Memory Zip Swap. The other rows are stats the VM already has, so they are not published again.
+A row with no data is left out of the KPI. A powered-off VM gets no KPI, because its stats are old.
 
-Published on the VM as:
-    vCommunity|VM Performance|VM Performance Score    the KPI
-    vCommunity|VM Performance|Memory Zip Swap         the one calculated row
-The other rows are stats the VM already has, so publishing them again would only store every number twice, for
-every VM.
-
-Missing data: a row with no data is left out of the KPI. A powered-off VM gets no KPI at all, because its stats are
-old.
-
-Called from: collectors/vm/collectVMData.py. Stats are read once for all VMs, then the entry point runs once per
-powered-on VM.
-Where the limits come from: docs/reference/metrics/formula/vm-performance.png.
-Description for people who do not read code: docs/reference/metrics/vm-performance.md
+Called from: collectors/vm/collectVMData.py, once per powered-on VM.
+Limits: docs/reference/metrics/formula/vm-performance.png. Description: docs/reference/metrics/vm-performance.md
 """
 import logging
 from typing import Callable, Dict, List, NamedTuple, Optional

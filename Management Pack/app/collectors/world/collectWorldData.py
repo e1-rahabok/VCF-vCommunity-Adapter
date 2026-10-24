@@ -8,7 +8,7 @@ from aria.ops.suite_api_client import SuiteApiClient
 from constants.main import VCENTER_ADAPTER_KIND
 from metrics.world.cluster_summary_metrics import collect_cluster_summary_metrics
 from metrics.world.availability_summary_metrics import collect_availability_summary_metrics
-from metrics.network.network_speed_degradation import collect_world_network_speed
+from metrics.world.vsphere_network_degradation import collect_world_network_speed
 
 logger = logging.getLogger(__name__)
 
