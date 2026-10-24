@@ -8,7 +8,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "app"))
 
-from metrics.vm import vm_shares as vs
+from properties.vm import vm_shares as vs
 from utils.ops_inventory import VmInfo
 from fakes import FakeObject, FakeSuiteApi
 

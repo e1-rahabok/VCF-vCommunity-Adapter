@@ -37,11 +37,16 @@ All six are called by a collector and declared in `adapter.py`. The VCF Operatio
 | `vm/guest_os_performance_metrics.py` | Guest OS Performance KPI. One score per powered-on VM with VMware Tools, from 4 sub-metrics. |
 | `host/esxi_performance_metrics.py` | ESXi Performance KPI. One score per connected ESXi host, from 9 sub-metrics. |
 | `world/cluster_summary_metrics.py` | Bottom 10 Percent and worst Cluster Performance, Bottom 10 Percent and worst Cluster Risk, over all clusters of all vCenters, on vSphere World. Not a KPI. See `docs/reference/metrics/vsphere-world-metrics.md`, including its known limitations. |
-| `availability/operational_availability.py` | ESXi Host and Cluster Operational Availability, and the worst cluster per vCenter. Not a KPI. See `docs/reference/metrics/operational-availability.md`, including its known limitations. |
+| `host/host_availability.py` | ESXi Host Operational Availability. Not a KPI. See `docs/reference/metrics/operational-availability.md`, including its known limitations. |
+| `cluster/cluster_availability.py` | Cluster Operational Availability. Not a KPI. See `docs/reference/metrics/operational-availability.md`. |
+| `vcenter/vcenter_availability.py` | Reads the availability of one vCenter's hosts and clusters, and publishes its Worst Cluster Operational Availability. Not a KPI. |
 | `world/availability_summary_metrics.py` | Worst Cluster and average ESXi Host Operational Availability, over all vCenters, on vSphere World. |
-| `network/network_speed_degradation.py` | Network Speed Degradation per host, and the count of degraded hosts per Datacenter and on vSphere World. Not a KPI. See `docs/reference/metrics/network-speed-degradation.md`, including its known limitations. |
-| `vm/vm_shares.py` | Share per vCPU and Share per MB of Memory, as properties, on every VM. Not a KPI. See `docs/reference/metrics/vm-shares.md`. |
-| `vm_contention.py` | The worst-VM, 90th-percentile and bad-packet formulas, shared by Cluster Performance and ESXi Performance. |
+| `host/host_network_speed.py` | Network Speed Degradation per host, and the degraded-host count used by the Datacenter and vSphere World counts. Not a KPI. See `docs/reference/metrics/network-speed-degradation.md`, including its known limitations. |
+| `datacenter/datacenter_network_degradation.py` | Total Network Speed Degradation per Datacenter: the number of its hosts below 100 %. |
+| `vcenter/vcenter_network_speed.py` | Reads the network speeds of one vCenter's hosts, and their count per Datacenter. |
+| `world/vsphere_network_degradation.py` | Total Network Speed Degradation on vSphere World, over all vCenters. |
+| `host/host_bad_network_packets.py` | Bad network packets of one ESXi host, as a % of its packets: a row of Cluster Performance and ESXi Performance. |
+| `vm/contention_by_vms.py` | The worst-VM and 90th-percentile rows of VM contention, shared by Cluster Performance and ESXi Performance. |
 
 Two files outside this folder belong to the same design:
 

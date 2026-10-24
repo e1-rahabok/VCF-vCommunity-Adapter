@@ -40,13 +40,15 @@ from collectors.datacenter.collectDatacenterData import collect_datacenter_data
 from metrics.cluster import (
     cluster_performance_metrics, cluster_risk_metrics, cluster_consumption_metrics, periodic_cluster_check,
 )
-from metrics.host import esxi_performance_metrics
-from metrics.vm import vm_performance_metrics, guest_os_performance_metrics, vm_guest_os_kpi, vm_shares
+from metrics.host import esxi_performance_metrics, host_availability, host_network_speed
+from metrics.vm import vm_performance_metrics, guest_os_performance_metrics, vm_guest_os_kpi
+from properties.vm import vm_shares
 from metrics.world import cluster_summary_metrics, availability_summary_metrics
-from metrics.availability import operational_availability
-from metrics.availability.operational_availability import read_operational_availability
-from metrics.network import network_speed_degradation
-from metrics.network.network_speed_degradation import read_network_speed
+from metrics.cluster import cluster_availability
+from metrics.datacenter import datacenter_network_degradation
+from metrics.vcenter import vcenter_availability
+from metrics.vcenter.vcenter_availability import read_operational_availability
+from metrics.vcenter.vcenter_network_speed import read_network_speed
 from concurrent.futures import ThreadPoolExecutor
 
 logger = logging.getLogger(__name__)
@@ -72,16 +74,16 @@ def define_kpi(vCommunity, kpi) -> None:
 
 
 def define_availability(vCommunity, *metric_names: str) -> None:
-    # Operational Availability metrics, in the "Availability" group. See metrics/availability/operational_availability.py.
-    group = vCommunity.define_group(operational_availability.GROUP, operational_availability.GROUP)
+    # Operational Availability metrics, in the "Availability" group, on the object types that publish them.
+    group = vCommunity.define_group(host_availability.GROUP, host_availability.GROUP)
     for name in metric_names:
         group.define_metric(name, name, unit=Units.RATIO.PERCENT)
 
 
 def define_network_count(vCommunity) -> None:
-    # Total Network Speed Degradation, in the "Network" group. See metrics/network/network_speed_degradation.py.
-    group = vCommunity.define_group(network_speed_degradation.GROUP, network_speed_degradation.GROUP)
-    group.define_metric(network_speed_degradation.COUNT_METRIC, network_speed_degradation.COUNT_METRIC)
+    # Total Network Speed Degradation, in the "Network" group, on the Datacenter and vSphere World.
+    group = vCommunity.define_group(host_network_speed.GROUP, host_network_speed.GROUP)
+    group.define_metric(datacenter_network_degradation.COUNT_METRIC, datacenter_network_degradation.COUNT_METRIC)
 
 
 def get_adapter_definition() -> AdapterDefinition:
@@ -335,7 +337,7 @@ def get_adapter_definition() -> AdapterDefinition:
         define_kpi(vCommunity, cluster_performance_metrics)
         define_kpi(vCommunity, cluster_risk_metrics)
         define_kpi(vCommunity, cluster_consumption_metrics)
-        define_availability(vCommunity, operational_availability.CLUSTER_METRIC)
+        define_availability(vCommunity, cluster_availability.CLUSTER_METRIC)
 
         # Periodic Cluster Check: set once per period. See metrics/cluster/periodic_cluster_check.py.
         periodicCheck = vCommunity.define_group(periodic_cluster_check.GROUP, periodic_cluster_check.GROUP)
@@ -378,7 +380,7 @@ def get_adapter_definition() -> AdapterDefinition:
         hostSystemConfiguration = vCommunity.define_group("Configuration", "Configuration")
 
         define_kpi(vCommunity, esxi_performance_metrics)
-        define_availability(vCommunity, operational_availability.HOST_METRIC)
+        define_availability(vCommunity, host_availability.HOST_METRIC)
 
         hostSystemConfiguration.define_string_property("Config Status", "Config Status")
         hostSystemConfiguration.define_string_property("Max EVC", "Max EVC")
@@ -416,8 +418,7 @@ def get_adapter_definition() -> AdapterDefinition:
 
         hostSystemNetwork = vCommunity.define_group("Network", "Network")
         hostSystemNetwork.define_string_property("DHCP", "DHCP")
-        # See metrics/network/network_speed_degradation.py.
-        hostSystemNetwork.define_metric(network_speed_degradation.HOST_METRIC, network_speed_degradation.HOST_METRIC, unit=Units.RATIO.PERCENT)
+        hostSystemNetwork.define_metric(host_network_speed.HOST_METRIC, host_network_speed.HOST_METRIC, unit=Units.RATIO.PERCENT)
         hostSystemNetwork.define_string_property("Search Domain", "Search Domain")
 
         networkDevice = hostSystemNetwork.define_instanced_group("Host Network Device", "Host Network Device", instance_required=True)
@@ -488,7 +489,7 @@ def get_adapter_definition() -> AdapterDefinition:
         vCommunity.define_metric(vm_guest_os_kpi.KPI_KEY, vm_guest_os_kpi.KPI_KEY, unit=Units.RATIO.PERCENT)
 
         configuration.define_string_property("CPU Allocation Share Level", "CPU Allocation Share Level")
-        # Normalized shares, as properties: they change only with the VM configuration. See metrics/vm/vm_shares.py.
+        # Normalized shares, as properties: they change only with the VM configuration. See properties/vm/vm_shares.py.
         configuration.define_numeric_property(vm_shares.CPU_PROPERTY, vm_shares.CPU_PROPERTY)
         configuration.define_numeric_property(vm_shares.MEMORY_PROPERTY, vm_shares.MEMORY_PROPERTY)
         configuration.define_string_property("VM Change Version", "VM Change Version")
@@ -589,7 +590,7 @@ def get_adapter_definition() -> AdapterDefinition:
         vCommunity = vSphereWorld.define_group("vCommunity", "vCommunity")
         for name in cluster_summary_metrics.METRICS:
             vCommunity.define_metric(name, name, unit=Units.RATIO.PERCENT)
-        define_availability(vCommunity, operational_availability.WORST_CLUSTER_METRIC, availability_summary_metrics.HOSTS_METRIC)
+        define_availability(vCommunity, vcenter_availability.WORST_CLUSTER_METRIC, availability_summary_metrics.HOSTS_METRIC)
         define_network_count(vCommunity)
 
         # Datacenter: the number of hosts with Network Speed Degradation.
@@ -600,7 +601,7 @@ def get_adapter_definition() -> AdapterDefinition:
         vCenter = definition.define_object_type("vCenter", "vCenter")
         vCommunity = vCenter.define_group("vCommunity", "vCommunity")
         vCenterConfiguration = vCommunity.define_group("Configuration", "Configuration")
-        define_availability(vCommunity, operational_availability.WORST_CLUSTER_METRIC)
+        define_availability(vCommunity, vcenter_availability.WORST_CLUSTER_METRIC)
 
         # Trust on First Use of the vCenter certificate: see properties/vcenter/certificate.py.
         vCenterCertificate = vCommunity.define_group("Certificate", "Certificate")

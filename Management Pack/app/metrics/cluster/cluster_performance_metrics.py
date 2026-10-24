@@ -12,7 +12,7 @@ How this file is laid out
             Rows 1-8  VM contention of the cluster's powered-on VMs: for each of CPU Ready, CPU Co-Stop, Memory
                       Latency and Disk Latency, the worst VM (how deep) and the 90th percentile (how broad).
                       They are the same rows as ESXi Performance, so they are defined once, limits included, in
-                      metrics/vm_contention.py.
+                      metrics/vm/contention_by_vms.py.
             Row 9     Bad network packets of the worst ESXi host of the cluster.
   Part 2  The KPI: read the stats, calculate the rows, score them and publish them. The scoring is the same for every
           KPI: metrics/kpi_score.py.
@@ -33,10 +33,8 @@ from typing import Dict, List, Optional
 from aria.ops.object import Object
 from aria.ops.suite_api_client import SuiteApiClient
 from metrics.kpi_score import publish_kpi
-from metrics.vm_contention import (
-    VM_CONTENTION_METRICS, worst_and_percentile, bad_network_packets_metric, bad_packet_pct,
-    read_vm_contention_stats, read_host_packet_stats,
-)
+from metrics.host.host_bad_network_packets import bad_network_packets_metric, bad_packet_pct, read_host_packet_stats
+from metrics.vm.contention_by_vms import VM_CONTENTION_METRICS, worst_and_percentile, read_vm_contention_stats
 
 logger = logging.getLogger(__name__)
 
@@ -53,7 +51,7 @@ KPI_KEY = "Cluster Performance Score"
 # =================================================================================================================
 
 # --- Rows 1-8. VM contention: how deep (the worst VM) and how broad (the 90th percentile) -----------------------
-# Defined in metrics/vm_contention.py, shared with ESXi Performance.
+# Defined in metrics/vm/contention_by_vms.py, shared with ESXi Performance.
 
 # --- Row 9. Bad network packets: the ESXi host of the cluster where they are highest -------------------------------
 BAD_PACKETS = bad_network_packets_metric("Highest ESXi Bad Network Packets")

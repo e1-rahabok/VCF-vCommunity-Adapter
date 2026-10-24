@@ -31,7 +31,7 @@ from aria.ops.object import Object
 from aria.ops.suite_api_client import SuiteApiClient
 from constants.main import VCENTER_ADAPTER_KIND
 from metrics.cluster import cluster_performance_metrics, cluster_risk_metrics
-from metrics.vm_contention import percentile_90
+from metrics.kpi_score import percentile_90
 from utils.ops_stats import query_resources, read_latest_stats
 
 logger = logging.getLogger(__name__)
@@ -52,7 +52,7 @@ METRICS = {
 def percentile_10(numbers: List[float]) -> Optional[float]:
     """The value that 90 % of the numbers are at or above. None when the list is empty.
 
-    Nearest-rank method, the mirror of percentile_90() in metrics/vm_contention.py: sort the numbers and take
+    Nearest-rank method, the mirror of percentile_90() in metrics/kpi_score.py: sort the numbers and take
     the one at position 10 % of the count, rounded up. With 20 clusters that is the 2nd lowest. With 10 or
     fewer clusters it is the lowest.
     """

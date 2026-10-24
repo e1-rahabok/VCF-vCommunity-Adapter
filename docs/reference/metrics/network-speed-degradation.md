@@ -4,7 +4,7 @@
 
 It replaces the "Network Speed Degradation" and "Total Network Speed Degradation" super metrics, and fixes two problems in their formula. See [Changes from the super metrics](#changes-from-the-super-metrics).
 
-Code: [`Management Pack/app/metrics/network/network_speed_degradation.py`](../../../Management%20Pack/app/metrics/network/network_speed_degradation.py)
+Code: one file per object type: [host](../../../Management%20Pack/app/metrics/host/host_network_speed.py), [Datacenter](../../../Management%20Pack/app/metrics/datacenter/datacenter_network_degradation.py), [vSphere World](../../../Management%20Pack/app/metrics/world/vsphere_network_degradation.py), and [vCenter](../../../Management%20Pack/app/metrics/vcenter/vcenter_network_speed.py), which reads the hosts of one vCenter.
 
 ## Known limitations
 

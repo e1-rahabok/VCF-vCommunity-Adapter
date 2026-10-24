@@ -6,7 +6,8 @@ from aria.ops.object import Object
 from aria.ops.result import CollectResult
 from aria.ops.suite_api_client import SuiteApiClient
 from constants.main import VCENTER_ADAPTER_KIND
-from metrics.network.network_speed_degradation import NetworkSpeed, NO_DATA, COUNT_METRIC, publish
+from metrics.vcenter.vcenter_network_speed import NetworkSpeed, NO_DATA
+from metrics.datacenter.datacenter_network_degradation import publish
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +25,7 @@ def collect_datacenter_data(
         for datacenter_obj in datacenters:
             count = network_speed.count_by_datacenter.get(datacenter_obj.get_key().name)
             if count is not None:
-                publish(datacenter_obj, COUNT_METRIC, count)
+                publish(datacenter_obj, count)
                 result.add_object(datacenter_obj)
     except Exception as e:
         logger.warning(f"Failed to collect Datacenter data - {repr(e)}")

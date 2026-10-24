@@ -10,7 +10,8 @@ from constants.main import VCENTER_ADAPTER_KIND
 from pyVmomi import vim
 from properties.vcenter.collect_vcenter_properties import collect_vcenter_properties
 from properties.vcenter import certificate
-from metrics.availability.operational_availability import OperationalAvailability, NO_DATA, WORST_CLUSTER_METRIC, publish
+from metrics.vcenter.vcenter_availability import OperationalAvailability, NO_DATA
+from metrics.vcenter import vcenter_availability
 
 logger = logging.getLogger(__name__)
 
@@ -103,7 +104,7 @@ def collect_vcenter_data(
             collect_vcenter_properties(vcenter_obj, vc_name, settings_dict)
 
         # Operational Availability: the worst cluster of this vCenter, from this cycle's values.
-        publish(vcenter_obj, WORST_CLUSTER_METRIC, availability.worst_cluster())
+        vcenter_availability.publish(vcenter_obj, availability.worst_cluster())
 
         # Trust on First Use: report a changed vCenter certificate. Never stops the collection.
         certificate.check_and_publish(suite_api_client, adapter_instance_id, vcenter_obj,
