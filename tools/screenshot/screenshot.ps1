@@ -16,10 +16,15 @@
   Updates every screenshot.
 
 .EXAMPLE
+  pwsh tools/screenshot/screenshot.ps1 -Name integrations-accounts,management-pack-details-overview
+  Updates two screenshots. Separate the names with commas, without spaces.
+
+.EXAMPLE
   pwsh tools/screenshot/screenshot.ps1 -Name adapter-instance-advanced-settings -SaveSteps $env:TEMP\shots
   Updates one screenshot, and saves a full-window screenshot after every step, to see what each step did.
 #>
-[CmdletBinding()]
+# No positional binding: a stray argument must fail, not land on -Credential and wait at a hidden password prompt.
+[CmdletBinding(PositionalBinding = $false)]
 param(
     [string[]]$Name,
     [switch]$List,
@@ -32,7 +37,8 @@ param(
 $ErrorActionPreference = 'Stop'
 $script = Join-Path $PSScriptRoot 'screenshot.py'
 $pyArgs = @()
-foreach ($n in $Name) { $pyArgs += '--name', $n }
+# "a,b" in one argument, as pwsh -File passes a list, counts as two names.
+foreach ($n in $Name -split ',' | ForEach-Object { $_.Trim() } | Where-Object { $_ }) { $pyArgs += '--name', $n }
 if ($SaveSteps) { $pyArgs += '--save-steps', $SaveSteps }
 
 if ($List) {
@@ -56,7 +62,7 @@ try {
     $env:OPS_URL = $Url
     $env:OPS_USER = $Credential.UserName
     $env:OPS_PASSWORD = $Credential.GetNetworkCredential().Password
-    python $script @pyArgs
+    python -u $script @pyArgs
     $code = $LASTEXITCODE
 } finally {
     Remove-Item Env:OPS_URL, Env:OPS_USER, Env:OPS_PASSWORD -ErrorAction SilentlyContinue

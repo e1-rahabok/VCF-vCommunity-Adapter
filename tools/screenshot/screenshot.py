@@ -82,6 +82,15 @@ def run_step(page, root: str, step: dict) -> str:
     if "wait_for" in step:
         visible(where, step["wait_for"])
         return f"wait_for {step['wait_for']}"
+    if "hide" in step:
+        # Hidden in this browser only, such as a banner the screenshot should not show. Nothing is sent.
+        # Waits a little for it to be drawn; when it never appears, there is nothing to hide.
+        try:
+            where.locator(step["hide"]).first.wait_for(state="attached", timeout=step.get("timeout_ms", 10_000))
+        except PlaywrightError:
+            pass
+        count = where.locator(step["hide"]).evaluate_all("els => els.map(e => e.style.setProperty('display', 'none', 'important')).length")
+        return f"hide {step['hide']} ({count} element(s))"
     if "wait_ms" in step:
         page.wait_for_timeout(step["wait_ms"])
         return f"wait {step['wait_ms']} ms"
@@ -93,10 +102,15 @@ def capture(page, shot: dict, out: Path) -> None:
     spec = shot.get("capture", {})
     where = scope(page, spec.get("frame"))
     pad = spec.get("padding", 0)
+    page.mouse.move(0, 0)               # no hover highlight or tooltip in the capture
+    page.wait_for_timeout(500)
     if "from" in spec:
         top = visible(where, spec["from"]).bounding_box()
-        bottom = visible(where, spec.get("to", spec["from"])).bounding_box()
-        left = min(top["x"], bottom["x"])          # the further left of the two, so neither is cut
+        # "to" can list several elements: the region ends at the lowest of them.
+        ends = spec.get("to", spec["from"])
+        boxes = [visible(where, s).bounding_box() for s in (ends if isinstance(ends, list) else [ends])]
+        bottom = max(boxes, key=lambda b: b["y"] + b["height"])
+        left = min([top["x"]] + [b["x"] for b in boxes])   # the furthest left, so nothing is cut
         x = max(left - pad - spec.get("extend_left", 0), 0)
         y = max(top["y"] - pad, 0)
         width = spec.get("width", top["width"]) + 2 * pad + spec.get("extend_left", 0)

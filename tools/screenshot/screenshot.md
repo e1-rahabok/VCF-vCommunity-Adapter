@@ -28,13 +28,16 @@ pwsh tools/screenshot/screenshot.ps1
 # List the screenshots
 pwsh tools/screenshot/screenshot.ps1 -List
 
+# Update some: names separated by commas, without spaces
+pwsh tools/screenshot/screenshot.ps1 -Name integrations-accounts,management-pack-details-overview
+
 # Update one, and keep a full-window screenshot after every step, to see what each step did
 pwsh tools/screenshot/screenshot.ps1 -Name adapter-instance-advanced-settings -SaveSteps $env:TEMP\shots
 ```
 
 | Parameter | Default | Meaning |
 | :--- | :--- | :--- |
-| `-Name` | all | Only these screenshots. |
+| `-Name` | all | Only these screenshots, separated by commas. |
 | `-List` | off | List the screenshots and where each is saved, then stop. |
 | `-SaveSteps` | off | A folder for a full-window screenshot after every step, and of the window when a step fails. |
 | `-Url`, `-Credential`, `-SecretFile` | `.secrets/vcf-ops.xml` | Where to connect. |
@@ -48,7 +51,7 @@ For each screenshot, in a new browser session:
 1. Logs in over HTTP, as `install.ps1` does, and retries up to 3 times when the connection is reset.
 2. Opens the page, at the window size of the screenshot.
 3. Runs the steps in order. Each step waits up to 60 s for its element to be visible, then clicks it and waits for the UI to finish drawing.
-4. Saves the capture into the repo.
+4. Moves the mouse to the corner of the window, so no hover highlight or tooltip shows, and saves the capture into the repo.
 
 Then it closes the session.
 
@@ -80,14 +83,20 @@ A step is one of:
 | `{"wait_for": "<selector>"}` | Waits for an element to be visible. |
 | `{"wait_ms": 2000}` | Waits a fixed time. |
 | `{"goto": "<path>"}` | Opens another page. |
+| `{"hide": "<selector>"}` | Hides every matching element in this browser only, such as the license banner (`div.alerts-wrapper`). Nothing is sent to the instance, unlike closing the banner with its **×**. Waits up to 10 s for the element; put it after the steps that load the page. |
 
-`frame` on a step or a capture looks in a frame of the page instead of the page itself. The older pages, such as Integrations → Accounts and the Adapter Instance settings, are in the frame `ops_iframe`.
+`frame` on a step or a capture looks in a frame of the page instead of the page itself. The older pages, such as Integrations → Accounts, the Adapter Instance settings and Management Pack Details, are in the frame `ops_iframe`.
+
+Two things to know about the older pages, which are built with ExtJS:
+
+- **A tree node expands from its expander, not its label:** `tr.x-grid-row:has(:text-is('vCommunity')) .x-tree-expander`.
+- **An expanded node keeps the same expander.** The row gets the class `x-grid-tree-node-expanded` instead. To expand the next collapsed node with the same label, select `tr.x-grid-row:not(.x-grid-tree-node-expanded):has(...)`, or the step collapses the one already open.
 
 The capture is one of:
 
 | Capture | Keeps |
 | :--- | :--- |
-| `from`, `to` (and `width`, `padding`, `extend_left`) | The region from the top of `from` to the bottom of `to`, starting at the further left of the two, `width` pixels wide, with `padding` around it. |
+| `from`, `to` (and `width`, `padding`, `extend_left`) | The region from the top of `from` to the bottom of `to`, starting at the furthest left of them, `width` pixels wide, with `padding` around it. `to` can be a list: the region ends at the lowest, for example the end of a list or of a tree beside it, whichever is longer. |
 | `element` | One element, as it is drawn. |
 | nothing | The whole window. |
 
@@ -108,6 +117,8 @@ Selectors are [Playwright selectors](https://playwright.dev/python/docs/locators
 | Message | Cause | Fix |
 | :--- | :--- | :--- |
 | `Playwright is not installed` | Python has no Playwright | `python -m pip install --user playwright` |
+| `A positional parameter cannot be found that accepts argument` | Names given as `-Name a, b` (with spaces) under `pwsh -File` | Write `-Name a,b`, without spaces. |
+| `login attempt 1 failed …, retrying` | The lab was slow or reset the connection | Nothing, if a later attempt succeeds. |
 | `UI login failed` | Wrong login in the secret file | Check `.secrets/vcf-ops.xml`. |
 | `Timeout 60000ms exceeded` on a step | The element is not on the page: the UI changed, the item does not exist, or it is in a frame the step does not name | Run with `-SaveSteps` and look at the failed step's screenshot. |
 | `frame 'ops_iframe' did not appear` | The page did not load the older UI | Check the `page` path. |
