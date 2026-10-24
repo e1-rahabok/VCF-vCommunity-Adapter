@@ -1,35 +1,14 @@
 #  Copyright 2026 VCF Operations vCommunity Management Pack
-"""Cluster Consumption KPI.
+"""Cluster Consumption KPI: one 0-100 % score per vSphere cluster, the share of its Usable Capacity consumed.
 
-What it is
-----------
-One 0-100 % score per vSphere cluster: how much of the cluster's Usable Capacity is consumed. 0 is nothing
-consumed, 100 is fully consumed: higher is worse, like Cluster Risk. Unlike Cluster Risk, it is cluster-wide, not
-the worst ESXi host: the hosts are added up, so a big host counts more than a small one. Saturation (ballooned,
-swapped and zipped memory) is not contention, because nothing is slow yet. It is real consumption, so it has its
-own rows.
+0 is nothing consumed, 100 is fully consumed: higher is worse, like Cluster Risk. It is cluster-wide: the hosts are
+added up, so a big host counts more than a small one. Saturation (ballooned, swapped and zipped memory) is real
+consumption, so it has its own rows.
 
-How this file is laid out
--------------------------
-It follows the model, not the code:
+Published on the cluster as vCommunity|Cluster Consumption|Cluster Consumption Score (the KPI) and its 5 rows.
 
-  Part 1  Usable Capacity. One per resource, calculated once per cluster, and used by every row of that resource:
-            CPU Usable Capacity      in threads       row 1
-            Memory Usable Capacity   in DRAM          rows 2, 4, 5
-                                     in NVMe tier     row 3
-  Part 2  The 5 rows, one section each, in the order of the source table. Each section has the row's limits,
-          what it adds up over the hosts, and the Usable Capacity it divides by. To add, change or remove a row,
-          change only its section and its line in METRICS.
-  Part 3  The KPI: score the rows and publish them.
-
-Published on the cluster as:
-    vCommunity|Cluster Consumption|Cluster Consumption Score    the KPI
-    vCommunity|Cluster Consumption|<row name>                   each of the 5 rows
-
-Called from: collectors/cluster/collectClusterData.py, once per cluster.
-Used by the Periodic Cluster Check (periodic_cluster_check.py).
-Description for people who do not read code: docs/reference/metrics/cluster-consumption.md
-Where the limits come from: docs/reference/metrics/formula/cluster-consumption.png. No green range is "Excluded".
+Called from: collectors/cluster/collectClusterData.py, once per cluster. Also used by periodic_cluster_check.py.
+Limits: docs/reference/metrics/formula/cluster-consumption.png. Description: docs/reference/metrics/cluster-consumption.md
 """
 import logging
 from typing import Dict, List, NamedTuple, Optional

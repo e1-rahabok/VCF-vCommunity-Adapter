@@ -1,32 +1,14 @@
 #  Copyright 2026 VCF Operations vCommunity Management Pack
-"""Cluster Performance KPI.
+"""Cluster Performance KPI: one 0-100 % score per vSphere cluster, 100 is perfect.
 
-What it is
-----------
-One 0-100 % score per vSphere cluster. 100 is perfect. It answers one question: are the VMs in this cluster getting
-the CPU, memory, disk and network they ask for? It measures actual contention, not potential.
+It measures actual contention of the cluster's VMs, not potential: are the VMs in this cluster getting the CPU,
+memory, disk and network they ask for?
 
-How this file is laid out
--------------------------
-  Part 1  The 9 rows, in the order of the source table:
-            Rows 1-8  VM contention of the cluster's powered-on VMs: for each of CPU Ready, CPU Co-Stop, Memory
-                      Latency and Disk Latency, the worst VM (how deep) and the 90th percentile (how broad).
-                      They are the same rows as ESXi Performance, so they are defined once, limits included, in
-                      metrics/vm/contention_by_vms.py.
-            Row 9     Bad network packets of the worst ESXi host of the cluster.
-  Part 2  The KPI: read the stats, calculate the rows, score them and publish them. The scoring is the same for every
-          KPI: metrics/kpi_score.py.
-
-Published on the cluster as:
-    vCommunity|Cluster Performance|Cluster Performance Score    the KPI
-    vCommunity|Cluster Performance|<row name>                   each of the 9 rows
-
-Missing data: a row with no data is not published and is left out of the KPI. It is never treated as 0, because 0
-means "perfect".
+Published on the cluster as vCommunity|Cluster Performance|Cluster Performance Score (the KPI) and its 9 rows.
+A row with no data is left out of the KPI, never treated as 0.
 
 Called from: collectors/cluster/collectClusterData.py, once per cluster.
-Where the limits come from: docs/reference/metrics/formula/cluster-performance.png.
-Description for people who do not read code: docs/reference/metrics/cluster-performance.md
+Limits: docs/reference/metrics/formula/cluster-performance.png. Description: docs/reference/metrics/cluster-performance.md
 """
 import logging
 from typing import Dict, List, Optional

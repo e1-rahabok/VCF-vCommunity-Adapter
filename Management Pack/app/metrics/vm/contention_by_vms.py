@@ -1,19 +1,8 @@
 #  Copyright 2026 VCF Operations vCommunity Management Pack
-"""VM contention of a group of VMs: the rows shared by Cluster Performance and ESXi Performance.
+"""VM contention of a group of VMs, the rows shared by Cluster Performance and ESXi Performance.
 
-Both KPIs ask the same two questions about the VMs of a cluster, or the VMs of one host:
-    How deep?   The worst VM. Shows a problem that hits one VM hard.
-    How broad?  The 90th percentile across the VMs. Shows a problem that many VMs have. 90 % of the VMs are at or
-                below this value.
-
-So the rows are defined here once, limits included, and both KPIs use the same definitions: a limit changed here
-changes in both.
-
-How this file is laid out
--------------------------
-  Part 1  How deep and how broad: the two ways a VM stat becomes a row, common to every VM contention row.
-  Part 2  The 4 VM contention stats, one section each. Each gives two rows: its worst VM and its 90th percentile.
-  Part 3  Reading the stats from VCF Operations, once for many VMs.
+For each of 4 VM stats, two rows: how deep (the worst VM) and how broad (the 90th percentile of the VMs).
+Both KPIs use these rows, so a limit changed here changes in both.
 """
 from typing import Dict, List, NamedTuple, Optional
 from aria.ops.suite_api_client import SuiteApiClient

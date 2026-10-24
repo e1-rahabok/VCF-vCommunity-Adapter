@@ -1,29 +1,12 @@
 #  Copyright 2026 VCF Operations vCommunity Management Pack
 #  Author: Onur Yuzseven onur.yuzseven@broadcom.com
-"""DRS Score.
+"""DRS Score: vCenter's own 0-100 score for a cluster, published as it is read. Not a KPI.
 
-What it is
-----------
-vCenter's own DRS Score for a cluster, from 0 to 100. A high score means the
-VMs in the cluster are getting the resources they need. This is a plain metric:
-it is read from vCenter and published as it is. It is not a KPI and does not
-use metrics/kpi_score.py.
+Read from the "summary" property of the cluster in vCenter (summary.drsScore). Published as 0 when DRS is disabled
+or when vCenter reports a negative score.
 
-Published on the cluster as:
-    vCommunity|Cluster Configuration|Distributed Resource Scheduler|DRS Score
-
-Where the value comes from
---------------------------
-The "summary" property of the cluster in vCenter (summary.drsScore). It is read
-by the cluster collector, together with the other cluster properties.
-
-Special cases
--------------
-The score is published as 0 when DRS is disabled, and when vCenter reports a
-negative score.
-
+Published on the cluster as vCommunity|Cluster Configuration|Distributed Resource Scheduler|DRS Score.
 Called from: collectors/cluster/collectClusterData.py, once per cluster.
-Overall approach for all metrics: metrics/README.md
 """
 
 import logging

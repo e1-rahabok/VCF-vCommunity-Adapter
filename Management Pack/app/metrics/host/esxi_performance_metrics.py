@@ -1,35 +1,14 @@
 #  Copyright 2026 VCF Operations vCommunity Management Pack
-"""ESXi Performance KPI.
+"""ESXi Performance KPI: one 0-100 % score per ESXi host, 100 is perfect.
 
-What it is
-----------
-One 0-100 % score per ESXi host. 100 is perfect. It answers one question: are the VMs on this host getting the CPU,
-memory, disk and network they ask for? It measures actual contention, not potential. It shows how bad the
-contention is, not why it happens. It is Cluster Performance, measured for one host instead of a whole cluster.
+It measures actual contention of the host's VMs, not potential: are the VMs on this host getting the CPU, memory,
+disk and network they ask for? It is Cluster Performance, measured for one host.
 
-How this file is laid out
--------------------------
-  Part 1  The 9 rows, in the order of the source table:
-            Rows 1-8  VM contention of the host's powered-on VMs: for each of CPU Ready, CPU Co-Stop, Memory
-                      Latency and Disk Latency, the worst VM (how deep) and the 90th percentile (how broad).
-                      They are the same rows as Cluster Performance, so they are defined once, limits included, in
-                      metrics/vm/contention_by_vms.py.
-            Row 9     Bad network packets of the host itself.
-  Part 2  Reading the stats, once per collection cycle for all VMs and all hosts.
-  Part 3  The KPI, once per host: calculate the rows, score them and publish them. The scoring is the same for
-          every KPI: metrics/kpi_score.py.
+Published on the host as vCommunity|ESXi Performance|ESXi Performance Score (the KPI) and its 9 rows.
+A row with no data is left out of the KPI, never treated as 0.
 
-Published on the host as:
-    vCommunity|ESXi Performance|ESXi Performance Score    the KPI
-    vCommunity|ESXi Performance|<row name>                each of the 9 rows
-
-Missing data: a row with no data is not published and is left out of the KPI. It is never treated as 0, because 0
-means "perfect".
-
-Called from: collectors/host/collectHostData.py. Stats are read once for all hosts, then the entry point runs once per
-connected host.
-Where the limits come from: docs/reference/metrics/formula/esxi-performance.png.
-Description for people who do not read code: docs/reference/metrics/esxi-performance.md
+Called from: collectors/host/collectHostData.py.
+Limits: docs/reference/metrics/formula/esxi-performance.png. Description: docs/reference/metrics/esxi-performance.md
 """
 import logging
 from typing import Dict, List, Optional

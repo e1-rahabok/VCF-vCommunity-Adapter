@@ -1,19 +1,11 @@
 #  Copyright 2026 VCF Operations vCommunity Management Pack
-"""Normalized CPU and memory shares of a VM.
+"""Share per vCPU and Share per MB of Memory: a VM's CPU and memory shares, normalised by its size.
 
-    Share per vCPU            CPU shares / vCPUs.             Normal = 1000, Low = 500, High = 2000.
-    Share per MB of Memory    memory shares / configured MB.  Normal = 10, Low = 5, High = 20.
+Shares grow with the size of the VM, so raw shares cannot be compared between VMs. Per vCPU and per MB they can.
+Published as properties on every VM, powered on or off. No value when the VM has no vCPU, no memory size or no
+shares, instead of a division by zero.
 
-Shares grow with the size of the VM, so raw shares cannot be compared between VMs. Per vCPU and per MB
-they can: a VM above Normal gets more than its fair part when there is contention, one below gets less.
-
-They replace the "Share per vCPU" and "Share per GB of Memory" super metrics, which had to be enabled by hand.
-The memory super metric was in fact per MB (shares / KB x 1024), so it is now named per MB, with the same values.
-
-Published as properties, not metrics, on every VM, powered on or off: shares apply either way. They change
-only when the VM's configuration changes, and VCF Operations stores a property only when its value changes. No value when the VM has no vCPU or memory
-size, or no shares, instead of a division by zero. All inputs come from VCF Operations.
-See docs/reference/metrics/vm-shares.md.
+Called from: collectors/vm/collectVMData.py. Description: docs/reference/metrics/vm-shares.md
 """
 import logging
 from typing import Dict, List, Optional

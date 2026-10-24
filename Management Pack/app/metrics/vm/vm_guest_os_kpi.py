@@ -2,10 +2,7 @@
 """VM Guest OS KPI.
 
 One 0-100 % score per powered-on VM: the average of its VM Performance and Guest OS Performance.
-It replaces the old "vSphere VM Performance" super metric, which mixed both in one formula.
-
-A VM without VMware Tools has no Guest OS Performance. Its VM Guest OS KPI is then its VM Performance alone.
-The fallback is done in code, where it is simple and tested, so this is a metric, not a super metric.
+A VM without VMware Tools has no Guest OS Performance, so its VM Guest OS KPI is its VM Performance alone.
 
 Published on the VM as vCommunity|VM Guest OS KPI.
 """
