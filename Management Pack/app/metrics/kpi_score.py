@@ -50,6 +50,7 @@ Used by: every KPI module, such as cluster/cluster_performance_metrics.py and
 vm/vm_performance_metrics.py. A change here changes all of them.
 Overall approach for all KPIs: metrics/README.md
 """
+import math
 from typing import Dict, List, NamedTuple, Optional, Tuple
 
 
@@ -143,6 +144,18 @@ def percent(part: float, whole: float) -> Optional[float]:
 def has_all(stats: Dict[str, float], stat_keys: List[str]) -> bool:
     """True when every stat a formula needs has data. A formula with a stat missing must return None."""
     return all(key in stats for key in stat_keys)
+
+
+def percentile_90(numbers: List[float]) -> Optional[float]:
+    """The value that 90 % of the numbers are at or below. None when the list is empty.
+
+    Nearest-rank method: sort the numbers and take the one at position 90 % of the count, rounded up.
+    With 20 VMs that is the 18th lowest. With fewer than 10 VMs it is the highest, the same as the worst VM.
+    """
+    if not numbers:
+        return None
+    position = math.ceil(0.9 * len(numbers))
+    return sorted(numbers)[position - 1]
 
 
 # ---------------------------------------------------------------------------

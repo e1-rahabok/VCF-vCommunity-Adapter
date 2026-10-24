@@ -10,7 +10,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "app"))
 
 from metrics.kpi_score import kpi_score
 from metrics.host import esxi_performance_metrics as ep
-from metrics import vm_contention as vc
+from metrics.host import host_bad_network_packets as hb
+from metrics.vm import contention_by_vms as vc
 from fakes import FakeSuiteApi, FakeObject
 
 HOST_1_VMS = [f"vm-{n}" for n in range(1, 11)]      # 10 VMs: the 90th percentile is the 9th lowest
@@ -19,7 +20,7 @@ HOST_2_VMS = ["vm-11"]
 
 def host_packets(bad_packets, packets):
     """The packet counters of one host in the last collection cycle: bad_packets dropped of all packets."""
-    samples = {key: [0.0] for key in vc.HOST_BAD_PACKET_STATS + vc.HOST_PACKET_STATS}
+    samples = {key: [0.0] for key in hb.HOST_BAD_PACKET_STATS + hb.HOST_PACKET_STATS}
     samples["net|droppedRx_summation_sum"] = [bad_packets]
     samples["net|packetsRx_summation_sum"] = [packets]
     return samples

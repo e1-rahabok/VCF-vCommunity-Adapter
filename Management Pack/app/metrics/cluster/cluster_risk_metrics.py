@@ -1,37 +1,14 @@
 #  Copyright 2026 VCF Operations vCommunity Management Pack
-"""Cluster Risk KPI.
+"""Cluster Risk KPI: one 0-100 % score per vSphere cluster. 0 is no risk, 100 is maximum risk: higher is worse.
 
-What it is
-----------
-One 0-100 % score per vSphere cluster. 0 is no risk, 100 is maximum risk: higher is worse, as the name says. It is a
-leading indicator: it warns before the VMs feel contention, and covers both capacity and performance. Cluster
-Performance shows contention that is happening now. Cluster Risk shows how close the cluster is to it.
+A leading indicator: it warns before the VMs feel contention, covering both capacity and performance. Every row takes
+the worst ESXi host, not the cluster average, because one full host can hurt its VMs while the average looks fine.
 
-Every row takes the highest or worst ESXi host, not the cluster average, because one full host can hurt its VMs
-while the cluster average still looks fine.
-
-How this file is laid out
--------------------------
-  Part 1  What several rows use, defined once: the host and its VMs, the host's DRAM capacity, and the size at which
-          a VM becomes a monster.
-  Part 2  The 12 rows, one section each, in the order of the source table. Each section has the row's limits, the
-          host stats it reads, and its formula for one host. To add, change or remove a row, change only its
-          section and its line in ROWS.
-  Part 3  The KPI: read the stats of the cluster's hosts, calculate each row per host, keep the highest host,
-          score and publish. The scoring is the same for every KPI (metrics/kpi_score.py). The published Cluster
-          Risk is 100 minus the weighted average of the row scores (HIGHER_IS_WORSE).
-
-Published on the cluster as:
-    vCommunity|Cluster Risk|Cluster Risk Score    the KPI
-    vCommunity|Cluster Risk|<row name>            each of the 12 rows
-
-Missing data: a row with no data is not published and is left out of the KPI. It is never treated as 0, because 0
-means "no risk". A host without NVMe memory tiering has no Memory Tiering Latency, so that row is left out for it.
+Published on the cluster as vCommunity|Cluster Risk|Cluster Risk Score (the KPI) and its 12 rows.
+A row with no data is left out of the KPI, never treated as 0.
 
 Called from: collectors/cluster/collectClusterData.py, once per cluster.
-Where the limits come from: docs/reference/metrics/formula/cluster-risk.png. Six green ranges are "Excluded": while
-green, those rows are left out of the KPI rather than scored 100, see "Skip when green" in metrics/kpi_score.py.
-Description for people who do not read code: docs/reference/metrics/cluster-risk.md
+Limits: docs/reference/metrics/formula/cluster-risk.png. Description: docs/reference/metrics/cluster-risk.md
 """
 import logging
 from typing import Callable, Dict, List, NamedTuple, Optional

@@ -112,11 +112,11 @@ Common reasons for no data: the cluster has no powered-on VMs, the vCenter adapt
 
 ## Changing the KPI
 
-The code follows the KPI: one section per row, in the order of the source table, with the row's limits, the stats it reads and its formula. The 8 VM contention rows are the same in Cluster Performance and ESXi Performance, so they are defined once, in [`Management Pack/app/metrics/vm_contention.py`](../../../Management%20Pack/app/metrics/vm_contention.py): a limit changed there changes in both KPIs.
+The code follows the KPI: one section per row, in the order of the source table, with the row's limits, the stats it reads and its formula. The 8 VM contention rows are the same in Cluster Performance and ESXi Performance, so they are defined once, in [`Management Pack/app/metrics/vm/contention_by_vms.py`](../../../Management%20Pack/app/metrics/vm/contention_by_vms.py): a limit changed there changes in both KPIs.
 
 The tiers and weights are a second table, `TIERS`, in [`Management Pack/app/metrics/kpi_score.py`](../../../Management%20Pack/app/metrics/kpi_score.py). That file holds the scoring for every KPI, so a change there changes all of them.
 
 - To change a limit, edit the row.
-- To add a VM stat, add one section to `vm_contention.py` with the stat and its two rows (worst VM and 90th percentile), and add it to `VM_CONTENTION`. Both KPIs then have the two new rows.
+- To add a VM stat, add one section to `contention_by_vms.py` with the stat and its two rows (worst VM and 90th percentile), and add it to `VM_CONTENTION`. Both KPIs then have the two new rows.
 
 The adapter definition reads the same table, so there is nothing else to update.

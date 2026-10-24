@@ -22,8 +22,8 @@ from metrics.cluster.cluster_risk_metrics import (
 )
 from utils.ops_inventory import read_hosts, read_vms, powered_on_vms_by_host, hosts_by_cluster
 from utils.ops_stats import query_resources, read_latest_stats
-from metrics.availability.operational_availability import OperationalAvailability, NO_DATA, CLUSTER_METRIC, publish
-from metrics.cluster import periodic_cluster_check, cluster_consumption_metrics
+from metrics.vcenter.vcenter_availability import OperationalAvailability, NO_DATA
+from metrics.cluster import cluster_availability, periodic_cluster_check, cluster_consumption_metrics
 from pyVmomi import vim
 
 logger = logging.getLogger(__name__)
@@ -156,7 +156,7 @@ def collect_cluster_data(
                 consumption_stats_by_cluster.get(cluster_obj.get_key().name, {}))
 
             # Operational Availability, read once per cycle for the whole vCenter by the adapter.
-            publish(cluster_obj, CLUSTER_METRIC, availability.by_cluster.get(cluster_obj.get_key().name))
+            cluster_availability.publish(cluster_obj, availability.by_cluster.get(cluster_obj.get_key().name))
 
             periodic_cluster_check.publish(cluster_obj, checks.get(cluster_moid))
 

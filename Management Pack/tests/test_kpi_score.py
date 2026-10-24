@@ -161,7 +161,7 @@ def test_no_metric_key_equals_a_group_key():
     from metrics.cluster import cluster_performance_metrics, cluster_risk_metrics
     from metrics.host import esxi_performance_metrics
     from metrics.vm import vm_performance_metrics, guest_os_performance_metrics, vm_guest_os_kpi
-    from metrics.availability import operational_availability
+    from metrics.host import host_availability
     kpis_by_object = [
         [cluster_performance_metrics, cluster_risk_metrics],
         [esxi_performance_metrics],
@@ -172,7 +172,7 @@ def test_no_metric_key_equals_a_group_key():
         if vm_performance_metrics in kpis:
             keys.append(vm_guest_os_kpi.KPI_KEY)    # published directly in the VM's "vCommunity" group
         else:
-            keys.append(operational_availability.GROUP)     # hosts and clusters also have the "Availability" group
+            keys.append(host_availability.GROUP)     # hosts and clusters also have the "Availability" group
         for kpi in kpis:
             keys += [kpi.KPI_KEY] + [metric.name for metric in kpi.PUBLISHED_METRICS]
         assert len(keys) == len(set(keys)), [kpi.GROUP for kpi in kpis]
@@ -198,7 +198,7 @@ def test_every_kpi_gives_a_value_for_exactly_the_sub_metrics_in_its_table():
 
 
 def vm_contention_names():
-    from metrics.vm_contention import worst_and_percentile
+    from metrics.vm.contention_by_vms import worst_and_percentile
     return worst_and_percentile({}, [])
 
 

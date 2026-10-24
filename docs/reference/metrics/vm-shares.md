@@ -4,7 +4,7 @@
 
 They replace the "Share per vCPU" and "Share per GB of Memory" super metrics. Unlike a super metric, they need no manual enablement in the policy.
 
-Code: [`Management Pack/app/metrics/vm/vm_shares.py`](../../../Management%20Pack/app/metrics/vm/vm_shares.py)
+Code: [`Management Pack/app/properties/vm/vm_shares.py`](../../../Management%20Pack/app/properties/vm/vm_shares.py)
 
 ## Known limitations
 

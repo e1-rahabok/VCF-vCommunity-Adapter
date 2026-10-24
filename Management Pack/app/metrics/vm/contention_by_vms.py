@@ -1,44 +1,18 @@
 #  Copyright 2026 VCF Operations vCommunity Management Pack
-"""The rows shared by Cluster Performance and ESXi Performance: VM contention and bad network packets.
+"""VM contention of a group of VMs, the rows shared by Cluster Performance and ESXi Performance.
 
-Both KPIs ask the same two questions about a group of VMs, the VMs of a cluster or the VMs of one host:
-    How deep?   The worst VM. Shows a problem that hits one VM hard.
-    How broad?  The 90th percentile across the VMs. Shows a problem that many VMs have. 90 % of the VMs are at or
-                below this value.
-And both score the bad network packets of an ESXi host.
-
-So the rows are defined here once, limits included, and both KPIs use the same definitions: a limit changed here
-changes in both.
-
-How this file is laid out
--------------------------
-  Part 1  How deep and how broad: the two ways a VM stat becomes a row, common to every VM contention row.
-  Part 2  The 4 VM contention stats, one section each. Each gives two rows: its worst VM and its 90th percentile.
-  Part 3  Bad network packets of an ESXi host. Each KPI names this row its own way.
-  Part 4  Reading the stats from VCF Operations, once for many objects.
+For each of 4 VM stats, two rows: how deep (the worst VM) and how broad (the 90th percentile of the VMs).
+Both KPIs use these rows, so a limit changed here changes in both.
 """
-import math
 from typing import Dict, List, NamedTuple, Optional
 from aria.ops.suite_api_client import SuiteApiClient
-from metrics.kpi_score import Metric, percent, has_all
+from metrics.kpi_score import Metric, percentile_90
 from utils.ops_stats import read_latest_stats
 
 
 # =================================================================================================================
 # Part 1. How deep and how broad
 # =================================================================================================================
-
-def percentile_90(numbers: List[float]) -> Optional[float]:
-    """The value that 90 % of the numbers are at or below. None when the list is empty.
-
-    Nearest-rank method: sort the numbers and take the one at position 90 % of the count, rounded up.
-    With 20 VMs that is the 18th lowest. With fewer than 10 VMs it is the highest, the same as the worst VM.
-    """
-    if not numbers:
-        return None
-    position = math.ceil(0.9 * len(numbers))
-    return sorted(numbers)[position - 1]
-
 
 class VmContentionRows(NamedTuple):
     """One VM stat and the two rows it gives: the worst VM (how deep) and the 90th percentile (how broad)."""
@@ -106,47 +80,9 @@ def worst_and_percentile(stats_by_vm: Dict[str, Dict[str, float]], vm_ids: List[
 
 
 # =================================================================================================================
-# Part 3. Bad network packets of an ESXi host
-# =================================================================================================================
-#
-# Errored and dropped packets, as a % of all packets, in the last collection cycle (5 minutes). Never an average or a
-# total over a longer time, so a spike is not missed. Green (exactly 0) is "Excluded" in the source tables: bad
-# packets are rare, so while it is 0 the row is left out of the KPI instead of scoring a free 100. Any bad packet is
-# yellow.
-
-HOST_BAD_PACKET_STATS = [
-    "net|errorsRx_summation_sum", "net|errorsTx_summation_sum",
-    "net|droppedRx_summation_sum", "net|droppedTx_summation_sum",
-]
-HOST_PACKET_STATS = ["net|packetsRx_summation_sum", "net|packetsTx_summation_sum"]
-
-
-def bad_network_packets_metric(name: str) -> Metric:
-    """The bad network packets row, under the name the KPI gives it. The limits are the same in every KPI."""
-    #             name  unit  best  green  yellow  orange  zero-at  skip-when-green
-    return Metric(name, "%",  0.0,  0.0,   0.2,    0.4,    0.8,     True)
-
-
-def bad_packet_pct(packets: Dict[str, float]) -> Optional[float]:
-    """Errored and dropped packets of one host, as a % of all its packets, in the last collection cycle."""
-    # A host with one of the six counters missing would give a wrong %.
-    if not has_all(packets, HOST_BAD_PACKET_STATS + HOST_PACKET_STATS):
-        return None
-    bad_packets = sum(packets[key] for key in HOST_BAD_PACKET_STATS)
-    all_packets = sum(packets[key] for key in HOST_PACKET_STATS)
-    # None when the host sent and received no packets at all.
-    return percent(bad_packets, all_packets)
-
-
-# =================================================================================================================
-# Part 4. Reading the stats. One request for many objects, never one per object.
+# Part 3. Reading the stats. One request for many VMs, never one per VM.
 # =================================================================================================================
 
 def read_vm_contention_stats(suite_api_client: SuiteApiClient, vm_ids: List[str]) -> Dict[str, Dict[str, float]]:
     """{VM resource id: {stat key: latest value}} for the stats in VM_STATS."""
     return read_latest_stats(suite_api_client, vm_ids, list(VM_STATS))
-
-
-def read_host_packet_stats(suite_api_client: SuiteApiClient, host_ids: List[str]) -> Dict[str, Dict[str, float]]:
-    """{host resource id: {stat key: latest value}} for the packet counters."""
-    return read_latest_stats(suite_api_client, host_ids, HOST_BAD_PACKET_STATS + HOST_PACKET_STATS)

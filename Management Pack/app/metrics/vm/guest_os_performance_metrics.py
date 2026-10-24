@@ -1,30 +1,14 @@
 #  Copyright 2026 VCF Operations vCommunity Management Pack
-"""Guest OS Performance KPI.
+"""Guest OS Performance KPI: one 0-100 % score per powered-on VM, 100 is perfect.
 
-What it is
-----------
-One 0-100 % score per powered-on VM. 100 is perfect. It answers one question: is the guest OS (Windows or Linux)
-getting the CPU, disk and memory it needs? VM Performance scores the virtual motherboard. This KPI scores what runs
-on it. All 4 rows come from VMware Tools: a VM without Tools has none of them, so it gets no Guest OS Performance KPI.
+It answers whether the guest OS (Windows or Linux) gets the CPU, disk and memory it needs. All 4 rows come from
+VMware Tools, so a VM without Tools gets no Guest OS Performance KPI.
 
-How this file is laid out
--------------------------
-  Part 1  The 4 rows, one section each, in the order of the source table. Each section has the row's limits, the
-          VM stat it comes from, and its formula. To add, change or remove a row, change only its section and its
-          line in ROWS.
-  Part 2  The KPI, once per VM: take the rows, score them and publish the KPI. The scoring is the same for every KPI:
-          metrics/kpi_score.py.
-
-The stats are read together with those of VM Performance, in one request for all VMs, by
-vm_performance_metrics.read_vm_performance_stats().
-
-Published on the VM as:
-    vCommunity|Guest OS Performance|Guest OS Performance Score    the KPI
-The rows are stats the VM already has, or a simple conversion of one, so they are not published again.
+Published on the VM as vCommunity|Guest OS Performance|Guest OS Performance Score (the KPI). The stats are read with
+those of VM Performance, by vm_performance_metrics.read_vm_performance_stats().
 
 Called from: collectors/vm/collectVMData.py, once per powered-on VM.
-Where the limits come from: docs/reference/metrics/formula/guest-os-performance.png.
-Description for people who do not read code: docs/reference/metrics/guest-os-performance.md
+Limits: docs/reference/metrics/formula/guest-os-performance.png. Description: docs/reference/metrics/guest-os-performance.md
 """
 import logging
 from typing import Callable, Dict, NamedTuple, Optional

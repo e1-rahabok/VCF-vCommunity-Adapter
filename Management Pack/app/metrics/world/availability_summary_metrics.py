@@ -9,16 +9,16 @@ same known limitations: a value can be up to one collection cycle old, and every
 values. A host or cluster without a stored value is left out: it may belong to a vCenter that has no account
 of this pack. See docs/reference/metrics/operational-availability.md.
 
-The average is not rolled up to the cluster: a cluster has to consider vSphere HA. See operational_availability.py.
+The average is not rolled up to the cluster: a cluster has to consider vSphere HA. See metrics/cluster/cluster_availability.py.
 """
 import logging
 from typing import Dict, Optional
 from aria.ops.object import Object
 from aria.ops.suite_api_client import SuiteApiClient
 from constants.main import VCENTER_ADAPTER_KIND
-from metrics.availability.operational_availability import (
-    GROUP, HOST_METRIC, CLUSTER_METRIC, WORST_CLUSTER_METRIC, publish, worst,
-)
+from metrics.cluster.cluster_availability import CLUSTER_METRIC
+from metrics.host.host_availability import GROUP, HOST_METRIC
+from metrics.vcenter.vcenter_availability import WORST_CLUSTER_METRIC, worst
 from utils.ops_stats import query_resources, read_latest_stats
 
 logger = logging.getLogger(__name__)
@@ -40,6 +40,11 @@ def read_stored_values(suite_api_client: SuiteApiClient, resource_kind: str, sta
     resources = query_resources(suite_api_client, VCENTER_ADAPTER_KIND, resource_kind, None)
     stats = read_latest_stats(suite_api_client, [resource.id for resource in resources], [stat_key])
     return {resource_id: values[stat_key] for resource_id, values in stats.items() if stat_key in values}
+
+
+def publish(world_obj: Object, metric: str, value: Optional[float]) -> None:
+    if value is not None:
+        world_obj.with_metric(f"vCommunity|{GROUP}|{metric}", round(value, 2))
 
 
 def collect_availability_summary_metrics(world_obj: Object, suite_api_client: SuiteApiClient) -> None:

@@ -4,7 +4,7 @@
 
 It replaces the "ESXi Host Operational Availability" and "Cluster Operational Availability" super metrics, and fixes three problems in their formulas. See [Changes from the super metrics](#changes-from-the-super-metrics).
 
-Code: [`Management Pack/app/metrics/availability/operational_availability.py`](../../../Management%20Pack/app/metrics/availability/operational_availability.py)
+Code: one file per object type: [host](../../../Management%20Pack/app/metrics/host/host_availability.py), [cluster](../../../Management%20Pack/app/metrics/cluster/cluster_availability.py), and [vCenter](../../../Management%20Pack/app/metrics/vcenter/vcenter_availability.py), which reads both and publishes the worst cluster. The vSphere World summary is in [availability_summary_metrics.py](../../../Management%20Pack/app/metrics/world/availability_summary_metrics.py).
 
 ## Known limitations
 
