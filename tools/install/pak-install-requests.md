@@ -33,6 +33,25 @@ These notes apply when Claude drives the install in the built-in browser of the 
 | 6 | Accept EULA → NEXT | POST | `solution.action` (`mainAction=install`) | 1 |
 | 7 | Install progress | POST | `solution.action` (`mainAction=getInstallStatus`) | 16, about every 6.7 s |
 
+```mermaid
+sequenceDiagram
+    participant B as Browser (ops_iframe)
+    participant V as VCF Operations
+    B->>V: 1. utility.action (prepareFileUpload)
+    B->>V: 2. upload (multipart PAK, hidden iframe)
+    loop about every 1.05 s, until the POST in 2 returns
+        B->>V: 3. upload?progress=true
+    end
+    V-->>B: upload response (signingStatus NotSigned)
+    B->>V: 4. solution.action (getSolutionVersion)
+    B->>V: 5. solution.action (getLicenseAgreement)
+    Note over B: Unsigned pack: YES, then accept EULA (no request)
+    B->>V: 6. solution.action (install)
+    loop about every 6.7 s, until completed is true
+        B->>V: 7. solution.action (getInstallStatus)
+    end
+```
+
 Ticking the EULA box and the "unsigned pack" confirmation dialog made no requests. EULA acceptance is not sent to the server; `mainAction=install` is the only call after it. The confirmation dialog appears because the upload response reports `"signingStatus":"NotSigned"`.
 
 ## 1. Prepare upload

@@ -59,6 +59,21 @@ The state is the one Administration → Integrations → Accounts shows, as `res
 | `STARTED/NONE` | 0:31 |
 | `STARTED/DATA_RECEIVING` | 0:46 |
 
+```mermaid
+stateDiagram-v2
+    direction LR
+    [*] --> Collecting: before the stop
+    Collecting --> STOPPING: stop (0:00)
+    STOPPING --> STOPPED: 0:15
+    STOPPED --> STARTING: start (0:16)
+    STARTING --> Running: 0:31
+    Running --> Collecting: 0:46
+    STOPPING --> STOPPING: a start sent now is ignored
+    Collecting: STARTED/DATA_RECEIVING
+    STARTING: STARTING/NONE
+    Running: STARTED/NONE
+```
+
 ## Design decisions
 
 **Wait for `STOPPED` before starting.** A start sent while an instance is still `STOPPING` is ignored, and the instance then stays `STOPPED`. The first version of the script started as soon as the state left `STARTED`, and left the lab's instance stopped. The script now waits for `STOPPED`. If an instance has not stopped after `-StopTimeoutMinutes`, it is started anyway, and the script says so.
