@@ -6,17 +6,17 @@
 
 # VCF Operations vCommunity Management Pack
 
-VCF Operations sees your vSphere estate, but out of the box it misses many of the ESXi and VM settings that matter for compliance, and it cannot say whether a cluster is full. This free Management Pack fills both gaps. It collects the settings you choose, calculates capacity scores, and publishes everything on the vCenter objects you already monitor, under the `vCommunity|` prefix.
+VCF Operations sees your VMware Cloud Foundation estate, but out of the box it misses some ESXi and VM settings that matter for compliance, and it cannot say whether a cluster is full. This free Management Pack fills both gaps. It collects the settings you choose, calculates capacity scores, and publishes everything on the vCenter objects you already monitor, under the `vCommunity|` prefix.
 
 Full documentation starts at [docs/README.md](docs/README.md).
 
 ## Why use it
 
-- **Catch configuration drift when it happens.** A changed host setting, VM parameter or cluster setting becomes a property you can alert on, report on and check against a compliance template.
-- **Check your standard continuously.** Turn your hardening guide or config workbook into live data, instead of checking it at the next audit.
 - **Answer capacity questions.** Each cluster gets Cluster Performance, Cluster Risk and Cluster Consumption scores, and a Close for Business value that says whether it can take new VMs.
 - **Explain every score.** Each KPI is built from visible sub-metrics, so you see which one is driving it.
 - **Stay agentless.** Nothing is installed on ESXi hosts or on vCenter. Windows checks use the vSphere Guest API.
+- **Catch configuration drift when it happens.** A changed host setting, VM parameter or cluster setting becomes a property you can alert on, report on and check against a compliance template.
+- **Check your standard continuously.** Turn your hardening guide or config workbook into live data, instead of checking it at the next audit.
 
 ## Features
 
@@ -24,8 +24,8 @@ Full documentation starts at [docs/README.md](docs/README.md).
 - **Metrics and KPIs**: Cluster Performance, Cluster Risk, Cluster Consumption, VM Performance, Guest OS Performance and ESXi Performance, each scored 0 to 100 from visible sub-metrics. See [KPI Scoring Models](docs/concepts/kpi-scoring-models.md).
 - **Periodic Cluster Check**: once per period, a Close for Business value per cluster, with the worst part of the period decided by you. See [Periodic Cluster Check](docs/reference/metrics/periodic-cluster-check.md).
 - **Summaries across all vCenters** on the vSphere World object, such as the bottom 10 percent of clusters.
-- **Optional Windows checks**: services, OS information and event logs, agentless through the Guest API.
-- **Dashboards, reports and super metrics**, ready to use, listed below.
+- **Microsoft Windows checks**: services, OS information and event logs, agentless through the Guest API.
+- **Dashboards, reports and alerts**, ready to use, listed below.
 - **Customizable**: every list of settings is an XML file you clone per environment. See [Customization](docs/configuration-guide/customization.md).
 
 <details>
@@ -37,9 +37,9 @@ Enhanced dashboards, replacing the existing ones: VM Configuration, VM Capacity,
 
 Reports replace all the existing vSphere adapter reports. They were designed as a set, and each one is purpose-built: PDF for reading, CSV for export.
 
-Super metrics are used by the dashboards. They are in [`Management Pack/content/supermetrics`](Management%20Pack/content/supermetrics/). Bulk-enable them in the policy after installation.
+Super metrics are used by the dashboards.Bulk-enable them in the policy after installation.
 
-The Windows services dashboard is [Dale Hassinger's](https://www.vcrocs.info/vcommunity-mp-windows-servers-services/). The pack does not ship one.
+The Microsoft Windows services dashboard is [Dale Hassinger's](https://www.vcrocs.info/vcommunity-mp-windows-servers-services/). The pack does not ship one.
 
 </details>
 
@@ -63,9 +63,9 @@ The pack is built with the [VCF Operations Integration SDK](https://github.com/v
 
 The site is built by three people:
 
-- [Iwan Rahabok](https://www.linkedin.com/in/e1ang/), creator
-- [Samir](https://www.linkedin.com/in/samirroshan/), builder
-- [Vincent](https://www.linkedin.com/in/vincent-han-11298424/), challenger
+- [Iwan Rahabok](https://www.linkedin.com/in/e1ang/)
+- [Samir Roshan](https://www.linkedin.com/in/samirroshan/)
+- [Vincent Han](https://www.linkedin.com/in/vincent-han-11298424/)
 
 ## Community and support
 
