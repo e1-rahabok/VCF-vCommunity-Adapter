@@ -53,6 +53,31 @@ Two counts on the vSphere World object, over all clusters of all vCenters. They 
 - **A blank value is not counted.** A cluster with no Close for Business in one of the two windows, such as a new cluster, has no earlier state to change from, so it is not counted as a change. This avoids a false count when a cluster is added.
 - **A count, not a percentage.** The values are numbers of clusters.
 
+## Port groups and VMware Tools
+
+Three counts on the vSphere World object, over all vCenters.
+
+| Metric | Calculation |
+| :--- | :--- |
+| `vCommunity\|Number of Port Groups` | On vSphere World, the sum of the vCenters' counts. On each vCenter, the port groups of its Datacenters. |
+| `vCommunity\|Number of VM without Tools` | The VMs whose VMware Tools are not installed. |
+| `vCommunity\|Number of VMware Tools down` | The VMs that are powered on, have VMware Tools installed, and whose Tools are not running. |
+
+**Number of Port Groups.** The same metric is published on two object types, the vCenter and the vSphere World.
+
+- **On each vCenter.** A port group's namespace is its Datacenter. Within one Datacenter, a name counts once, whether it is a distributed port group or a standard one (defined on each host). The same name in two Datacenters of one vCenter counts twice. The count is read from the vSphere API, through each Datacenter's host folder and network folder.
+- **On vSphere World.** The sum of the vCenters' values. It is read from the stored vCenter values, not computed directly, because the port groups of a vCenter can only be read from that vCenter.
+- **Staleness: 15 minutes, not 10.** The vSphere World total uses each vCenter's last value for up to 15 minutes. This is the one exception to the 10-minute rule, because a port group count is based on settings and changes rarely. A vCenter whose value is older than 15 minutes is left out. See [the two limits](README.md#two-limits-10-minutes-and-15-minutes-for-settings-based-metrics).
+- **Failed read.** Nothing is published for that vCenter in that cycle, so its last value stays, and no false zero is stored.
+- **NSX.** Only vCenter is checked, not NSX Manager. An NSX segment that vCenter shows as a distributed port group is counted once, as that port group. A segment that vCenter does not show, such as one that is not realised on a distributed switch, is not counted.
+- A vCenter without an account of this pack has no value, and is left out.
+
+**VMware Tools.** Read from the VM properties that the vCenter adapter stores.
+
+- **Without Tools** is the VM's Tools status *Not Installed*. It is counted whatever the power state, because the Tools are not installed.
+- **Tools down** needs three things: the VM is powered on, its Tools are installed, and its Tools are not running. A powered-off VM is never counted: a property keeps its last value, so a powered-off VM keeps the Tools status it had when it was last on.
+- A VM with no stored Tools value, such as a template, is left out of both counts.
+
 ## Example
 
 Three clusters with Cluster Performance scores 86.35, 98 and 50. Worst Cluster Performance is 50. With fewer than 10 clusters, the 10th percentile is also the lowest: 50.

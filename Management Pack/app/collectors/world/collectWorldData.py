@@ -10,6 +10,8 @@ from metrics.world.cluster_summary_metrics import collect_cluster_summary_metric
 from metrics.world.availability_summary_metrics import collect_availability_summary_metrics
 from metrics.world.cluster_close_changes import collect_cluster_close_changes
 from metrics.world.vsphere_network_degradation import collect_world_network_speed
+from metrics.world.port_group_counts import collect_port_group_count
+from metrics.world.vm_tools_counts import collect_vm_tools_counts
 
 logger = logging.getLogger(__name__)
 
@@ -33,6 +35,8 @@ def collect_world_data(suite_api_client: SuiteApiClient, result: CollectResult,
         collect_availability_summary_metrics(world_obj, suite_api_client)
         collect_world_network_speed(world_obj, suite_api_client)
         collect_cluster_close_changes(world_obj, suite_api_client, check_time, check_period)
+        collect_port_group_count(world_obj, suite_api_client)
+        collect_vm_tools_counts(world_obj, suite_api_client)
         result.add_object(world_obj)
 
     except Exception as e:

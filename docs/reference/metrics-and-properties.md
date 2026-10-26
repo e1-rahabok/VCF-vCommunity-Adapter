@@ -253,6 +253,7 @@ Every property and metric the vCommunity Management Pack pushes to VCF Operation
 | ⚪ Property | `vCommunity\|Configuration\|Runtime\|vCenter managed address` | The managed (published) IP address of the vCenter Server. |
 | ⚪ Property | `vCommunity\|Configuration\|Database\|Maximum Connections` | Maximum number of connections allowed to the vCenter database. |
 | ⚪ Property | `vCommunity\|Configuration\|Log Level` | Configured log level of the vCenter Server (e.g. info, debug, warning). |
+| 🟢 Metric | `vCommunity\|Number of Port Groups` | The port groups of this vCenter: distributed and standard, counted per Datacenter. Kept for up to 15 minutes if a read fails, the one exception to the 10-minute rule. See [Port groups and VMware Tools](metrics/vsphere-world-metrics.md#port-groups-and-vmware-tools). |
 
 [⬆ Back to top](#metrics--properties-reference)
 
@@ -271,6 +272,9 @@ Every property and metric the vCommunity Management Pack pushes to VCF Operation
 | 🟢 Metric | `vCommunity\|Worst Cluster Risk` | The highest Cluster Risk of all clusters. Same limitation. |
 | 🟢 Metric | `vCommunity\|Cluster Delta Close Count` | The number of clusters whose Close for Business changed from 0 to 1 since the previous Periodic Cluster Check window. Once per window. See [Close for Business changes](metrics/vsphere-world-metrics.md#close-for-business-changes). |
 | 🟢 Metric | `vCommunity\|Cluster Delta Open Count` | The number of clusters whose Close for Business changed from 1 to 0 since the previous window. Once per window. Same section. |
+| 🟢 Metric | `vCommunity\|Number of Port Groups` | The sum of the vCenters' port group counts. Uses each vCenter's last value for up to 15 minutes. See [Port groups and VMware Tools](metrics/vsphere-world-metrics.md#port-groups-and-vmware-tools). |
+| 🟢 Metric | `vCommunity\|Number of VM without Tools` | The VMs whose VMware Tools are not installed, whatever their power state. See [Port groups and VMware Tools](metrics/vsphere-world-metrics.md#port-groups-and-vmware-tools). |
+| 🟢 Metric | `vCommunity\|Number of VMware Tools down` | The powered-on VMs whose VMware Tools are installed but not running. Same section. |
 
 [⬆ Back to top](#metrics--properties-reference)
 
@@ -302,6 +306,7 @@ These super metrics were removed from `content/supermetrics`. Their dashboards, 
 | vSphere Cluster Memory Contention (average of the VMs) | Cluster | `vCommunity\|Cluster Performance\|90th Percentile VM Memory Latency` |
 | vSphere Cluster Memory Zip Swap (cluster total) | Cluster | `vCommunity\|Cluster Risk\|Worst ESXi Memory Zip Swap` |
 | vSphere Cluster Memory Ballooned (cluster total) | Cluster | `vCommunity\|Cluster Risk\|Worst ESXi Memory Ballooned` |
+| Number of Port Groups | Distributed Switch | `vCommunity\|Number of Port Groups` on vSphere World. It is one value for the whole vSphere World, not one per switch, so the per-switch columns that showed it in the Distributed Switch and Set views were removed. |
 | CPU Reservation (cluster total) | Cluster | `vCommunity\|Cluster Risk\|Highest ESXi CPU Reservation` |
 | Memory Reservation (cluster total) | Cluster | `vCommunity\|Cluster Risk\|Highest ESXi Memory Reservation` |
 | ESXi Bad Network Packets | Host | `vCommunity\|ESXi Performance\|ESXi Bad Network Packets` |

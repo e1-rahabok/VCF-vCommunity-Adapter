@@ -12,6 +12,7 @@ from constants.main import VCENTER_ADAPTER_KIND
 from pyVmomi import vim
 from properties.vcenter.collect_vcenter_properties import collect_vcenter_properties
 from properties.vcenter import certificate
+from metrics.vcenter.vcenter_port_groups import collect_port_group_count
 from metrics.vcenter.vcenter_availability import OperationalAvailability, NO_DATA
 from metrics.vcenter import vcenter_availability
 
@@ -62,6 +63,9 @@ def collect_vcenter_data(
         if not vcenter_obj:
             logger.debug("Can not find the vCenter object in the VCF Operations. Skipping vCenter data collection.")
             return
+
+        # Number of Port Groups of this vCenter, summed on vSphere World. See metrics/vcenter/vcenter_port_groups.py.
+        collect_port_group_count(vcenter_obj, content)
 
         # Problems with the configuration files of this Adapter Instance: shown as events on the vCenter. Each
         # cancels by itself a few cycles after the problem is fixed (auto_cancel).

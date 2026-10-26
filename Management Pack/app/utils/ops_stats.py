@@ -31,14 +31,20 @@ COLLECTION_CYCLE_MINUTES = 5
 # Properties are not filtered: they are stored only when they change, so their last known value is current.
 STALE_AFTER_MINUTES = 2 * COLLECTION_CYCLE_MINUTES
 
+# The one exception to STALE_AFTER_MINUTES: a metric based on settings, such as the number of port groups, changes
+# rarely, so its last known value is kept for longer. Only metrics that name this limit explicitly use it. The
+# reasons and the list are in docs/reference/metrics/README.md#no-stale-values.
+CONFIGURATION_STALE_AFTER_MINUTES = 15
+
 
 def read_latest_stats(
-    suite_api_client: SuiteApiClient, resource_ids: List[str], stat_keys: List[str]
+    suite_api_client: SuiteApiClient, resource_ids: List[str], stat_keys: List[str],
+    max_age_minutes: float = STALE_AFTER_MINUTES,
 ) -> Dict[str, Dict[str, float]]:
-    """Returns {resource id: {stat key: latest value}}. Stats with no data, or older than STALE_AFTER_MINUTES,
-    are absent."""
+    """Returns {resource id: {stat key: latest value}}. Stats with no data, or older than max_age_minutes
+    (STALE_AFTER_MINUTES by default), are absent."""
     query = {"resourceId": resource_ids, "statKey": stat_keys}
-    samples_by_resource = _query_stats(suite_api_client, LATEST_STATS_PATH, query, max_age_minutes=STALE_AFTER_MINUTES)
+    samples_by_resource = _query_stats(suite_api_client, LATEST_STATS_PATH, query, max_age_minutes=max_age_minutes)
     return {
         resource_id: {stat_key: samples[-1] for stat_key, samples in samples_by_key.items()}
         for resource_id, samples_by_key in samples_by_resource.items()
