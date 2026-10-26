@@ -56,7 +56,7 @@ def executeProgram(powershellPath, command, processManager, vm, creds):
     )
     pid = processManager.StartProgram(vm, creds, programSpec)
     if pid <= 0:
-        raise logger.error(f"Command execution failed on {vm.name}")
+        raise RuntimeError(f"Command execution failed on {vm.name}")
     else:   
         logger.info(f"Powershell command has been executed by command: {command} , PID: {pid}")
         while True:
@@ -197,7 +197,7 @@ def collect_windows_events(vm_obj, vm, content, winUser, winPassword, winEventLo
                 logger.error(f"Cannot find the Windows Event Log XML file on {vm.name}")
 
         except Exception as e:
-            logger.error("An error occurred during Windows Event Log collection: {e}")
+            logger.error(f"An error occurred during Windows Event Log collection: {e}")
             
         finally:
             try:

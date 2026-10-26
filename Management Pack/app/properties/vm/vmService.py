@@ -53,7 +53,7 @@ def executeProgram(powershellPath, command, processManager, vm, creds):
     )
     pid = processManager.StartProgram(vm, creds, programSpec)
     if pid <= 0:
-        raise logger.error(f"Command execution failed on {vm.name}")
+        raise RuntimeError(f"Command execution failed on {vm.name}")
     else:   
         logger.info(f"Powershell command has been executed by command: {command} , PID: {pid}")
         while True:

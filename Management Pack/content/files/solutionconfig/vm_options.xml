@@ -14,6 +14,11 @@
 
   LIMITATIONS:
   Once collected, a property stays with the object forever. You cannot delete it, unless the object itself is deleted.
+
+  WHAT HAPPENS IF THIS FILE IS WRONG:
+  If the file is missing, or is not valid XML, nothing is collected from it. The pack then publishes a warning
+  event named 'vCommunity configuration' on the vCenter object, and the event clears when the file is fixed.
+  The Troubleshooting Guide of the pack explains how to check the file.
   -->
 
   <!-- config.alternateGuestName, -->

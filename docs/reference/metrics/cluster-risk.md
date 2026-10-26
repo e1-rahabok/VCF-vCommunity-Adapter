@@ -105,13 +105,11 @@ An empty or invalid value uses the default and logs a warning. A change applies 
 
 ## How the score is calculated
 
-The same way as every KPI:
+The same way as every KPI, see [How the pack scores a KPI](../../concepts/kpi-scoring-models.md#how-the-pack-scores-a-kpi). The scores are combined in a weighted average, where 100 is best, and the published value is then flipped:
 
-1. Each sub-metric value gets a score from 100 to 0, depending on the tier it is in.
-2. The scores are combined in a weighted average, where 100 is best. A sub-metric's weight depends on its score: `2^((100 − score) / 25)`. It is 1 at 100, 2 at 75, 4 at 50, 8 at 25 and 16 at 0 ([infographic](../../concepts/kpi-weights.svg)).
-3. **Cluster Risk = 100 − that weighted average**, so that higher means more risk.
+**Cluster Risk = 100 − that weighted average**, so that higher means more risk.
 
-The full explanation, with a worked example, is in [Cluster Performance KPI](cluster-performance.md#step-2-score-each-sub-metric). The code is [`kpi_score.py`](../../../Management%20Pack/app/metrics/kpi_score.py).
+The worked examples of the scoring are in [Cluster Performance KPI](cluster-performance.md#worked-examples). The code is [`kpi_score.py`](../../../Management%20Pack/app/metrics/kpi_score.py).
 
 ### Bands: red is high
 

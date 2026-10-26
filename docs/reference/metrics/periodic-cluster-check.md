@@ -52,6 +52,8 @@ On every vSphere cluster, under `vCommunity|Periodic Cluster Check`. **Metrics**
 | `Worst Cluster Consumption` (metric) (%) | The worst end of `vCommunity\|Cluster Consumption\|Cluster Consumption Score` over the window: its high end, because higher is worse. |
 | `Close for Business` (metric) | 1: the cluster is full, do not place new VMs. 0: open. From the three values above, see [The rule](#the-rule). Not published when one of them has no data. |
 
+The number of clusters that changed Close for Business since the window before is on the vSphere World object: [Close for Business changes](vsphere-world-metrics.md#close-for-business-changes).
+
 ### Worst
 
 Each KPI is summarised by its worst end: the value with only the **Worst Percent** of the window's samples worse than it. With the default of 5 % and a 24-hour window of 288 five-minute samples, the 14 worst samples (70 minutes) are ignored:

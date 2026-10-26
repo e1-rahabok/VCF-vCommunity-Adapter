@@ -11,7 +11,7 @@ Every property and metric the vCommunity Management Pack pushes to VCF Operation
 - [Datastore](#datastore) (9 items)
 - [Virtual Machine](#virtual-machine) (57 items)
 - [vCenter](#vcenter) (16 items)
-- [vSphere World](#vsphere-world) (7 items)
+- [vSphere World](#vsphere-world) (9 items)
 - [Datacenter](#datacenter) (1 item)
 - [Super metrics replaced by built-in metrics](#super-metrics-replaced-by-built-in-metrics)
 
@@ -269,6 +269,8 @@ Every property and metric the vCommunity Management Pack pushes to VCF Operation
 | 🟢 Metric | `vCommunity\|Availability\|ESXi Hosts Operational Availability` | The average ESXi Host Operational Availability of all hosts, of all vCenters. Same limitation. |
 | 🟢 Metric | `vCommunity\|Network\|Total Network Speed Degradation` | The number of hosts below 100 % Network Speed Degradation, of all vCenters. Can be up to one collection cycle old. See [Network Speed Degradation](metrics/network-speed-degradation.md#known-limitations). |
 | 🟢 Metric | `vCommunity\|Worst Cluster Risk` | The highest Cluster Risk of all clusters. Same limitation. |
+| 🟢 Metric | `vCommunity\|Cluster Delta Close Count` | The number of clusters whose Close for Business changed from 0 to 1 since the previous Periodic Cluster Check window. Once per window. See [Close for Business changes](metrics/vsphere-world-metrics.md#close-for-business-changes). |
+| 🟢 Metric | `vCommunity\|Cluster Delta Open Count` | The number of clusters whose Close for Business changed from 1 to 0 since the previous window. Once per window. Same section. |
 
 [⬆ Back to top](#metrics--properties-reference)
 

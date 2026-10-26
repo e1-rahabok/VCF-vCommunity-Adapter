@@ -2,14 +2,14 @@
 
 The pack collects the ESXi and VM settings that VCF Operations does not collect out of the box, and calculates extra metrics and KPIs. It publishes them onto the existing vCenter objects in VCF Operations, under the `vCommunity|` key prefix.
 
-It is built with the [VCF Operations Integration SDK](https://github.com/vmware/vmware-aria-operations-integration-sdk). The Management Pack Builder is the quickest way to extend VCF Operations. The SDK gives more: parallel collection at scale, custom properties and metrics, and configuration files that set exactly what is collected.
+It is built with the [VCF Operations Integration SDK](https://github.com/vmware/vmware-aria-operations-integration-sdk). The SDK documentation is at [github.com/vmware/vmware-vcf-operations-integration-sdk, docs](https://github.com/vmware/vmware-vcf-operations-integration-sdk/tree/main/docs). It is written for any adapter, so this documentation explains the parts this pack uses, in [The VCF Operations Integration SDK](development-guide/sdk.md). The Management Pack Builder is the quickest way to extend VCF Operations. The SDK gives more: parallel collection at scale, custom properties and metrics, and configuration files that set exactly what is collected.
 
 ## Contents
 
 **Concepts**
 
 - [Capacity Management Model](concepts/capacity-management.md): how consumption, contention and risk decide, automatically, whether a cluster can take more VMs.
-- [KPI Scoring Models](concepts/kpi-scoring-models.md): three ways to combine colored sub-metrics into one KPI, and which fits performance, capacity and availability.
+- [KPI Scoring Models](concepts/kpi-scoring-models.md): three ways to combine colored sub-metrics into one KPI, which fits performance, capacity and availability, and how the pack scores a KPI: its limits, weights, skipped and missing data.
 
 **Installation Guide**
 
@@ -34,6 +34,29 @@ It is built with the [VCF Operations Integration SDK](https://github.com/vmware/
 
 - [Metrics and Properties](reference/metrics-and-properties.md): every key the pack publishes, by object type.
 - [Metrics](reference/metrics/README.md): how each metric and KPI is calculated, and its known limitations.
+
+**Troubleshooting Guide**
+
+For administrators who use the pack: what can go wrong while it runs, and how to find out why.
+
+1. [First Steps](troubleshooting-guide/first-steps.md): five checks, in order, before you ask for help.
+2. [Symptoms](troubleshooting-guide/symptoms.md): what you see, why it happens, and what to do.
+3. [Configuration Files](troubleshooting-guide/configuration-files.md): what a bad configuration file looks like, and how to fix it.
+4. [Log Messages](troubleshooting-guide/log-messages.md): what each message in the adapter log means.
+
+**Development Guide**
+
+For contributors: how the code is organised, what each part does, and how to change it.
+
+1. [Repository Layout](development-guide/repository-layout.md): what every folder and file is, and which ones are not used.
+2. [The VCF Operations Integration SDK](development-guide/sdk.md): the parts of the SDK this pack uses, the packaging, and the links to the SDK documentation.
+3. [App Folder](development-guide/app-folder.md): the entry points of the adapter, one collection cycle, and why it is built this way.
+4. [Collectors](development-guide/collectors.md): one collector per VCF Operations object type.
+5. [Metrics Code](development-guide/metrics-code.md): the metric and KPI modules, and how to add or change one.
+6. [Properties](development-guide/properties.md): how properties are read and published.
+7. [Supporting Code](development-guide/supporting-code.md): reading from VCF Operations, TLS and guest handling, constants and Windows event logs.
+8. [Content Folder](development-guide/content-folder.md): dashboards, reports, super metrics, and the configuration files the code reads.
+9. [Tests](development-guide/tests.md): the three test layers and the test files.
 
 Planned work is tracked in [GitHub Issues](https://github.com/e1-rahabok/VCF-vCommunity-Adapter/issues?q=is%3Aissue+is%3Aopen+label%3Aenhancement), not here.
 
@@ -114,6 +137,4 @@ It replaces nothing. It fills one gap:
 - Built for large environments: parallel collectors, and careful limits on expensive host calls. A full collection cycle stays under 5 minutes at 1,500+ hosts and 15,000+ VMs.
 - Start with a few settings from your hardening guide, and add more over time.
 
-## Community
-
-A free Management Pack developed by [Onur Yuzseven](https://www.linkedin.com/in/oyuzseven/) as a contribution to the vCommunity (VMUG, vExpert, VCP). It is not an official VMware/Broadcom project and has no VMware GSS support: see [Support](../SUPPORT.md) and [License](../LICENSE). Dashboards, reports and super metrics from the community are listed in the main [README](../README.md).
+For what the pack is, its features and how to get started, see the main [README](../README.md). For support and licensing, see [Support](../SUPPORT.md) and [License](../LICENSE).

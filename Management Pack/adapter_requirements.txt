@@ -1,4 +1,6 @@
-vmware-aria-operations-integration-sdk-lib~=1.0.0
+# The libraries the adapter needs when it runs, installed into the container image by the Dockerfile.
+# The VCF Operations Integration SDK itself is not listed here: its version is set once, in requirements.txt,
+# and the container gets the SDK from its base image.
 pyvmomi==8.0.3.0.1
 # 2.25.1 had known vulnerabilities, among them CVE-2024-35195: a first request with verify=False made later
 # requests to the same host skip certificate checks too. The ESXi file transfers rely on urllib3 fingerprint

@@ -26,7 +26,7 @@ All four come from VMware Tools. They are stats the VM already has, or a simple 
 
 ## How the score is calculated
 
-The same way as every KPI: each sub-metric gets a score from 100 to 0 by tier, and the KPI is the weighted average, with a weight that depends on the score: `2^((100 − score) / 25)`, which is 1 at 100 and doubles for every 25 points lost. See [Cluster Performance KPI](cluster-performance.md#step-2-score-each-sub-metric).
+The same way as every KPI, see [How the pack scores a KPI](../../concepts/kpi-scoring-models.md#how-the-pack-scores-a-kpi).
 
 ## Worked examples
 
