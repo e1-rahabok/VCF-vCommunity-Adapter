@@ -34,6 +34,7 @@ They need the Python requirements of the repository (`requirements.txt`). The fa
 | `test_esxi_performance_metrics.py` | ESXi Performance formulas and worked examples. |
 | `test_periodic_cluster_check.py` | Periodic Cluster Check: the schedule, the worst percent, the Close for Business rule, and which clusters are due. |
 | `test_cluster_close_changes.py` | Cluster Delta Close and Open Count: the direction of each change, blank values not counted, and the window. |
+| `test_port_group_and_tools_counts.py` | Port groups per Datacenter (distributed and standard), the vSphere World sum, the 15-minute limit used only by the port group count, and the VMware Tools counts, including powered-off VMs. |
 | `test_cluster_summary_metrics.py` | vSphere World: Bottom 10 Percent and worst cluster scores, over the clusters of all vCenters. |
 | `test_operational_availability.py` | Host and cluster Operational Availability: the super-metric bugs, N+0 to N+2, missing data, and the vSphere World summary. |
 | `test_network_speed_degradation.py` | Network Speed Degradation: NIC by NIC, NICs that are down or have no configured speed, and the counts. |

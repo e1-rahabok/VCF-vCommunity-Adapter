@@ -52,6 +52,9 @@ Each KPI's source limits are shown in its page under [Reference](../reference/me
 | `world/availability_summary_metrics.py` | Worst Cluster and average ESXi Host Operational Availability, over all vCenters. |
 | `world/vsphere_network_degradation.py` | Total Network Speed Degradation, over all vCenters. |
 | `world/cluster_close_changes.py` | Cluster Delta Close and Open Count: clusters whose Close for Business changed between two windows. |
+| `world/port_group_counts.py` | Number of Port Groups on vSphere World: the sum of the vCenters' last values, with the 15-minute configuration limit. |
+| `world/vm_tools_counts.py` | Number of VM without Tools and Number of VMware Tools down on vSphere World, from the VM properties. |
+| `vcenter/vcenter_port_groups.py` | Number of Port Groups on one vCenter: distributed and standard port groups, counted per Datacenter. Reads the vSphere API. |
 
 The files outside this folder that these modules depend on are in [Supporting Code](supporting-code.md).
 

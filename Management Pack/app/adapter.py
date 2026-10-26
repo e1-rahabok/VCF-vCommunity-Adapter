@@ -45,6 +45,8 @@ from metrics.host import esxi_performance_metrics, host_availability, host_netwo
 from metrics.vm import vm_performance_metrics, guest_os_performance_metrics, vm_guest_os_kpi
 from properties.vm import vm_shares
 from metrics.world import cluster_summary_metrics, availability_summary_metrics, cluster_close_changes
+from metrics.world import port_group_counts, vm_tools_counts
+from metrics.vcenter import vcenter_port_groups
 from metrics.cluster import cluster_availability
 from metrics.datacenter import datacenter_network_degradation
 from metrics.vcenter import vcenter_availability
@@ -596,6 +598,10 @@ def get_adapter_definition() -> AdapterDefinition:
         # Close for Business changes between two Periodic Cluster Check windows: counts of clusters.
         vCommunity.define_metric(cluster_close_changes.CLOSE_COUNT, cluster_close_changes.CLOSE_COUNT)
         vCommunity.define_metric(cluster_close_changes.OPEN_COUNT, cluster_close_changes.OPEN_COUNT)
+        # Port groups of every kind, and VMware Tools across all VMs: counts of objects.
+        vCommunity.define_metric(port_group_counts.METRIC, port_group_counts.METRIC)
+        vCommunity.define_metric(vm_tools_counts.WITHOUT_METRIC, vm_tools_counts.WITHOUT_METRIC)
+        vCommunity.define_metric(vm_tools_counts.DOWN_METRIC, vm_tools_counts.DOWN_METRIC)
 
         # Datacenter: the number of hosts with Network Speed Degradation.
         datacenter = definition.define_object_type("Datacenter", "Datacenter")
@@ -606,6 +612,9 @@ def get_adapter_definition() -> AdapterDefinition:
         vCommunity = vCenter.define_group("vCommunity", "vCommunity")
         vCenterConfiguration = vCommunity.define_group("Configuration", "Configuration")
         define_availability(vCommunity, vcenter_availability.WORST_CLUSTER_METRIC)
+
+        # Number of Port Groups of this vCenter, summed on vSphere World: see metrics/vcenter/vcenter_port_groups.py.
+        vCommunity.define_metric(vcenter_port_groups.METRIC, vcenter_port_groups.METRIC)
 
         # Trust on First Use of the vCenter certificate: see properties/vcenter/certificate.py.
         vCenterCertificate = vCommunity.define_group("Certificate", "Certificate")

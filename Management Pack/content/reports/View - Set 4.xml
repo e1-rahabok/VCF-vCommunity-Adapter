@@ -1081,45 +1081,6 @@ Schedule it to run end of the week, such as Sunday 23:59</Description>
                                                             
                             </Item>
                                                         
-                            <Item>
-                                
-                                <Value>
-                                        
-                                    <Property name="objectType" value="RESOURCE"/>
-                                        
-                                    <Property name="attributeKey" value="Super Metric|sm_48a5dd9e-6caf-4590-bca4-95072c5554f1"/>
-                                        
-                                    <Property name="isStringAttribute" value="false"/>
-                                        
-                                    <Property name="adapterKind" value="VMWARE"/>
-                                        
-                                    <Property name="resourceKind" value="VmwareDistributedVirtualSwitch"/>
-                                        
-                                    <Property name="rollUpType" value="NONE"/>
-                                        
-                                    <Property name="rollUpCount" value="0"/>
-                                        
-                                    <Property name="transformations">
-                                                
-                                        <List>
-                                                        
-                                            <Item value="CURRENT"/>
-                                                    
-                                        </List>
-                                            
-                                    </Property>
-                                        
-                                    <Property name="isProperty" value="false"/>
-                                        
-                                    <Property name="displayName" value="Port Groups"/>
-                                        
-                                    <Property name="addTimestampAsColumn" value="false"/>
-                                        
-                                    <Property name="isShowRelativeTimestamp" value="false"/>
-                                    
-                                </Value>
-                                                            
-                            </Item>
                                                         
                             <Item>
                                 
@@ -11759,45 +11720,6 @@ Schedule it to run end of the week, such as Sunday 23:59</Description>
                                                 
                         <List>
                                                         
-                            <Item>
-                                
-                                <Value>
-                                        
-                                    <Property name="objectType" value="RESOURCE"/>
-                                        
-                                    <Property name="attributeKey" value="Super Metric|sm_48a5dd9e-6caf-4590-bca4-95072c5554f1"/>
-                                        
-                                    <Property name="localizedAttributeName" value="Super Metrics|Number of Port Groups"/>
-                                        
-                                    <Property name="isStringAttribute" value="false"/>
-                                        
-                                    <Property name="adapterKind" value="VMWARE"/>
-                                        
-                                    <Property name="resourceKind" value="VmwareDistributedVirtualSwitch"/>
-                                        
-                                    <Property name="rollUpType" value="NONE"/>
-                                        
-                                    <Property name="rollUpCount" value="0"/>
-                                        
-                                    <Property name="transformations">
-                                                
-                                        <List>
-                                                        
-                                            <Item value="CURRENT"/>
-                                                    
-                                        </List>
-                                            
-                                    </Property>
-                                        
-                                    <Property name="isProperty" value="false"/>
-                                        
-                                    <Property name="displayName" value="Port Groups"/>
-                                        
-                                    <Property name="isShowRelativeTimestamp" value="false"/>
-                                    
-                                </Value>
-                                                            
-                            </Item>
                                                         
                             <Item>
                                 

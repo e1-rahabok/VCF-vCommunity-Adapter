@@ -11,7 +11,7 @@ Code: [`Management Pack/app/utils/`](../../Management%20Pack/app/utils/), [`cons
 Reads what VCF Operations already holds: the resources, their stats and their properties. The vCenter adapter of VCF Operations collects these. The pack reads them back through the Suite API, so nothing is collected from vCenter twice.
 
 - `query_resources()` returns the resources of one kind, with the VCF Operations id that the other calls need. The SDK's objects do not carry this id.
-- `read_latest_stats()` returns the last value of each stat. A value older than the stale limit (10 minutes) is no data.
+- `read_latest_stats()` returns the last value of each stat. A value older than the stale limit (10 minutes) is no data. Its optional `max_age_minutes` is used by one metric only: the port group count on vSphere World, with `CONFIGURATION_STALE_AFTER_MINUTES` (15 minutes). See [the two limits](../reference/metrics/README.md#two-limits-10-minutes-and-15-minutes-for-settings-based-metrics).
 - `read_latest_timestamps()` returns when each stat was last written, however old. Used to know what was already calculated.
 - `read_stat_history()` returns the 5-minute samples of a time range, for the Periodic Cluster Check.
 - `read_latest_properties()` returns the last value of each property.
