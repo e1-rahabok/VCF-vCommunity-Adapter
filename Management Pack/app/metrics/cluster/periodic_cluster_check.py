@@ -82,6 +82,7 @@ PERFORMANCE = "Worst Cluster Performance"
 RISK = "Worst Cluster Risk"
 CONSUMPTION = "Worst Cluster Consumption"
 CLOSE_FOR_BUSINESS = "Close for Business"
+CLOSE_FOR_BUSINESS_KEY = f"vCommunity|{GROUP}|{CLOSE_FOR_BUSINESS}"
 PUBLISHED_KEYS = [f"vCommunity|{GROUP}|{name}" for name in (PERFORMANCE, RISK, CONSUMPTION, CLOSE_FOR_BUSINESS)]
 
 # Each input: (published metric, its stat, True when higher is worse).
@@ -162,6 +163,22 @@ def latest_window_end(now: datetime, hour: int, minute: int, period_hours: int =
     anchor = now.replace(hour=hour, minute=minute, second=0, microsecond=0) - timedelta(days=1)
     period = timedelta(hours=period_hours)
     return anchor + period * ((now - anchor) // period)
+
+
+def current_window(now: datetime, time_setting: Optional[str], period_setting: Optional[str]) -> Tuple[datetime, int]:
+    """The latest window end, and the period in hours, from the account settings."""
+    period_hours = parse_period(period_setting)
+    return latest_window_end(now, *parse_time(time_setting), period_hours), period_hours
+
+
+def is_due(timestamps: Dict[str, float], begin_ms: int, end_ms: int) -> bool:
+    """True when the cluster was not calculated for the window ending at end_ms, and has KPI data in the window.
+
+    timestamps: {stat key: time of its latest sample, in epoch ms}, for the PUBLISHED_KEYS and STAT_KEYS.
+    """
+    calculated = max((timestamps.get(key, 0.0) for key in PUBLISHED_KEYS), default=0.0)
+    has_kpi_data = any(timestamps.get(key, 0.0) >= begin_ms for key in STAT_KEYS)
+    return calculated < end_ms and has_kpi_data
 
 
 def this_cycle(due: list, now: datetime, window_end: datetime, limit: Optional[int] = None) -> list:
@@ -271,9 +288,8 @@ def read_periodic_cluster_check(
     Empty when no cluster is due: the metrics already published for the window stay in VCF Operations.
     """
     now = now or datetime.now(timezone.utc)
-    period_hours = parse_period(period_setting)
+    window_end, period_hours = current_window(now, time_setting, period_setting)
     worst_percent = parse_worst_percent(worst_percent_setting)
-    window_end = latest_window_end(now, *parse_time(time_setting), period_hours)
     end_text = window_end_text(window_end)
 
     end_ms = int(window_end.timestamp() * 1000)
@@ -286,13 +302,7 @@ def read_periodic_cluster_check(
         logger.warning("Periodic Cluster Check: could not read which clusters are calculated. Trying next cycle.")
         return {}
 
-    def is_due(cluster) -> bool:
-        timestamps = latest.get(cluster.id, {})
-        calculated = max((timestamps.get(key, 0.0) for key in PUBLISHED_KEYS), default=0.0)
-        has_kpi_data = any(timestamps.get(key, 0.0) >= begin_ms for key in STAT_KEYS)
-        return calculated < end_ms and has_kpi_data
-
-    due = [cluster for cluster in clusters if is_due(cluster)]
+    due = [cluster for cluster in clusters if is_due(latest.get(cluster.id, {}), begin_ms, end_ms)]
     if not due:
         return {}
     due = this_cycle(sorted(due, key=lambda cluster: cluster.id), now, window_end)

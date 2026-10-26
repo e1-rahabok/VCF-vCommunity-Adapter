@@ -27,6 +27,7 @@ from aria.ops.suite_api_client import SuiteApiClient
 from aria.ops.timer import Timer
 from pyVim.connect import Disconnect
 from pyVim.connect import SmartConnect
+from utils import config_files
 from utils import guest_args
 from utils import guest_http
 from utils import tls
@@ -43,7 +44,7 @@ from metrics.cluster import (
 from metrics.host import esxi_performance_metrics, host_availability, host_network_speed
 from metrics.vm import vm_performance_metrics, guest_os_performance_metrics, vm_guest_os_kpi
 from properties.vm import vm_shares
-from metrics.world import cluster_summary_metrics, availability_summary_metrics
+from metrics.world import cluster_summary_metrics, availability_summary_metrics, cluster_close_changes
 from metrics.cluster import cluster_availability
 from metrics.datacenter import datacenter_network_degradation
 from metrics.vcenter import vcenter_availability
@@ -592,6 +593,9 @@ def get_adapter_definition() -> AdapterDefinition:
             vCommunity.define_metric(name, name, unit=Units.RATIO.PERCENT)
         define_availability(vCommunity, vcenter_availability.WORST_CLUSTER_METRIC, availability_summary_metrics.HOSTS_METRIC)
         define_network_count(vCommunity)
+        # Close for Business changes between two Periodic Cluster Check windows: counts of clusters.
+        vCommunity.define_metric(cluster_close_changes.CLOSE_COUNT, cluster_close_changes.CLOSE_COUNT)
+        vCommunity.define_metric(cluster_close_changes.OPEN_COUNT, cluster_close_changes.OPEN_COUNT)
 
         # Datacenter: the number of hosts with Network Speed Degradation.
         datacenter = definition.define_object_type("Datacenter", "Datacenter")
@@ -668,30 +672,25 @@ def getWindowsEventLogMonitoringStatus(adapter_instance: AdapterInstance) -> str
     WindowsEventLogMonitoringStatus = adapter_instance.get_identifier_value("winEventMonitoring")
     return WindowsEventLogMonitoringStatus    
 
-def get_config_file_data(adapter_instance: AdapterInstance, configFile):
+def get_config_file_data(adapter_instance: AdapterInstance, configFile, problems: List[str]) -> List[str]:
+    """The items of one configuration file. A file that cannot be read, or is not valid XML, gives [] for that file
+    only, and its problem is added to problems. See utils/config_files.py."""
     apiPath = f"api/configurations/files?path=SolutionConfig/{configFile}.xml"
 
     with adapter_instance.suite_api_client as suite_api:
         getConfigFile = suite_api.get(url=apiPath)
 
     if not getConfigFile.ok:
+        problems.append(config_files.missing_problem(configFile, getConfigFile.status_code))
+        logger.warning(problems[-1])
         return []
 
-    parsedResponse = ET.fromstring(getConfigFile.text)
-    if not parsedResponse.text:
+    try:
+        return config_files.parse_list(getConfigFile.text)
+    except ET.ParseError as e:
+        problems.append(config_files.invalid_problem(configFile, e.msg))
+        logger.error(problems[-1])
         return []
-
-    lines = parsedResponse.text.strip()
-    if not lines:
-        return []
-
-    formattedLines = [
-        line.strip()
-        for line in lines.split(',')
-        if line.strip()
-    ]
-
-    return formattedLines
 
 
 TIMINGS = defaultdict(list)
@@ -764,27 +763,42 @@ def collect(adapter_instance: AdapterInstance) -> CollectResult:
             WindowsEventLogMonitoringStatus = getWindowsEventLogMonitoringStatus(adapter_instance)
             winUser, winPassword = get_winCredential(adapter_instance)
 
+            # Problems with the configuration files. Each one is published as an event on the vCenter object.
+            config_problems: List[str] = []
+
             windowsEventConfigFile = get_win_event_configFile(adapter_instance)
             apiPath = f"api/configurations/files?path=SolutionConfig/{windowsEventConfigFile}.xml"
             with adapter_instance.suite_api_client as suite_api:
                 getConfigFile = suite_api.get(url = apiPath)
 
-            winEventLogConfigFile = getConfigFile.text
+            # The event list is passed to the Windows guest as it is, so it is checked here, not parsed.
+            winEventLogConfigFile = ""
+            if not getConfigFile.ok:
+                config_problems.append(config_files.missing_problem(windowsEventConfigFile, getConfigFile.status_code))
+                logger.warning(config_problems[-1])
+            else:
+                reason = config_files.check_xml(getConfigFile.text)
+                if reason is None:
+                    winEventLogConfigFile = getConfigFile.text
+                else:
+                    config_problems.append(config_files.invalid_problem(windowsEventConfigFile, reason))
+                    logger.error(config_problems[-1])
 
             windowsServiceConfigFile = get_win_service_configFile(adapter_instance)
-            windowsServices = guest_args.safe_service_names(get_config_file_data(adapter_instance, windowsServiceConfigFile))
+            windowsServices = guest_args.safe_service_names(
+                get_config_file_data(adapter_instance, windowsServiceConfigFile, config_problems))
 
             esxiAdvSettingsConfigFile = get_esxi_adv_settings_configFile(adapter_instance)
-            esxiAdvSettings = get_config_file_data(adapter_instance, esxiAdvSettingsConfigFile)
+            esxiAdvSettings = get_config_file_data(adapter_instance, esxiAdvSettingsConfigFile, config_problems)
 
             esxiVIBDriverConfigFile = get_esxi_vib_driver_configFile(adapter_instance)
-            esxiVIBDrivers = get_config_file_data(adapter_instance, esxiVIBDriverConfigFile)
+            esxiVIBDrivers = get_config_file_data(adapter_instance, esxiVIBDriverConfigFile, config_problems)
 
             vmAdvParametersConfigFile = get_vm_adv_settings_configFile(adapter_instance)
-            vmAdvParameters = get_config_file_data(adapter_instance, vmAdvParametersConfigFile)
+            vmAdvParameters = get_config_file_data(adapter_instance, vmAdvParametersConfigFile, config_problems)
 
             vmConfigurationConfigFile = get_vm_configuration_configFile(adapter_instance)
-            vmConfigs= get_config_file_data(adapter_instance, vmConfigurationConfigFile)
+            vmConfigs = get_config_file_data(adapter_instance, vmConfigurationConfigFile, config_problems)
 
             with adapter_instance.suite_api_client as client:
                 adapter_instance_id = _get_vcenter_adapter_instance_id(
@@ -850,11 +864,16 @@ def collect(adapter_instance: AdapterInstance) -> CollectResult:
                         collect_vcenter_data, client, adapter_instance_id, result, content, availability,
                         vcenter_certificate,
                         adapter_instance.get_identifier_value(constants.main.HOST_IDENTIFIER),
+                        config_problems,
                     )
 
                     # 6. vSphere World: cluster summary metrics, over the clusters of all vCenters
                     start_times["collect_world_data"] = time.perf_counter()
-                    future_world = data_executor.submit(collect_world_data, client, result)
+                    future_world = data_executor.submit(
+                        collect_world_data, client, result,
+                        adapter_instance.get_identifier_value(periodic_cluster_check.TIME_SETTING),
+                        adapter_instance.get_identifier_value(periodic_cluster_check.PERIOD_SETTING),
+                    )
 
                     # 7. Datacenter: Total Network Speed Degradation of this vCenter's Datacenters
                     start_times["collect_datacenter_data"] = time.perf_counter()

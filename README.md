@@ -4,86 +4,83 @@
 [![Blog](https://img.shields.io/github/repo-size/vmbro/vcf-operations-vcommunity-content?style=flat)](https://vmbro.com/)
 [![Blog](https://img.shields.io/github/stars/vmbro/vcf-operations-vcommunity-content?style=flat)](https://github.com/vmbro/VCF-Operations-vCommunity-Content/stargazers)
 
-
 # VCF Operations vCommunity Management Pack
 
-This free Management Pack was built upon the great work of  [Onur Yuzseven](https://www.linkedin.com/in/oyuzseven/) , assisted by [Mark Arbogast ](https://www.linkedin.com/in/mark-arbogast/) and [Robert Mesropyan](
-https://www.linkedin.com/in/robert-mesropyan/)
+VCF Operations sees your vSphere estate, but out of the box it misses many of the ESXi and VM settings that matter for compliance, and it cannot say whether a cluster is full. This free Management Pack fills both gaps. It collects the settings you choose, calculates capacity scores, and publishes everything on the vCenter objects you already monitor, under the `vCommunity|` prefix.
 
-This project is a contribution to the Broadcom VMware vCommunity (VMUG, vExpert, VCP, VCDX). It's not an official VMware project, and there is no support from VMware GSS. Deploy at your own risk, or consult VMware TAM or PSO for a custom solution.
+Full documentation starts at [docs/README.md](docs/README.md).
 
-If your team maintains a config workbook as the source of truth for ESXi and VM settings, this Management Pack is what turns that workbook into continuously monitored, compliance-checkable data in VCF Operations. See the [use cases](docs/README.md#use-cases).
+## Why use it
 
-It was developed originally for the following use cases:
+- **Catch configuration drift when it happens.** A changed host setting, VM parameter or cluster setting becomes a property you can alert on, report on and check against a compliance template.
+- **Check your standard continuously.** Turn your hardening guide or config workbook into live data, instead of checking it at the next audit.
+- **Answer capacity questions.** Each cluster gets Cluster Performance, Cluster Risk and Cluster Consumption scores, and a Close for Business value that says whether it can take new VMs.
+- **Explain every score.** Each KPI is built from visible sub-metrics, so you see which one is driving it.
+- **Stay agentless.** Nothing is installed on ESXi hosts or on vCenter. Windows checks use the vSphere Guest API.
 
-1.  Capture ESXi Host Advanced System Settings (esxi_advanced_system_settings.xml)
-2.  Capture ESXi Host Software Packages (esxi_packages.xml)
-3.  Capture VM Advanced Parameters (vm_advanced_parameters.xml)
-4.  Capture VM Options (vm_options.xml)
+## Features
 
-The user can customize what is being captured above by editing the associated XML files, which are installed with examples by default. For details, see this [blog](https://www.brockpeterson.com/post/vcommunity-management-pack-for-vcf-operations) and this [blog](https://www.brockpeterson.com/post/vcommunity-management-pack-for-vcf-operations-part-3) by [Brock Peterson](https://www.linkedin.com/in/brockpetersonbdcvmw/).
+- **Properties** on ESXi hosts, VMs, clusters, datastores and vCenter: advanced settings, VM options, software packages (VIBs), licensing, HA, DRS, DPM and EVC, certificate tracking. Every key is listed in [Metrics and Properties](docs/reference/metrics-and-properties.md).
+- **Metrics and KPIs**: Cluster Performance, Cluster Risk, Cluster Consumption, VM Performance, Guest OS Performance and ESXi Performance, each scored 0 to 100 from visible sub-metrics. See [KPI Scoring Models](docs/concepts/kpi-scoring-models.md).
+- **Periodic Cluster Check**: once per period, a Close for Business value per cluster, with the worst part of the period decided by you. See [Periodic Cluster Check](docs/reference/metrics/periodic-cluster-check.md).
+- **Summaries across all vCenters** on the vSphere World object, such as the bottom 10 percent of clusters.
+- **Optional Windows checks**: services, OS information and event logs, agentless through the Guest API.
+- **Dashboards, reports and super metrics**, ready to use, listed below.
+- **Customizable**: every list of settings is an XML file you clone per environment. See [Customization](docs/configuration-guide/customization.md).
 
-In addition to the four use cases above, this Management Pack also addresses these two use cases:
+<details>
+<summary>Dashboards, reports and super metrics included</summary>
 
-1.  Captures Microsoft Windows Services (windows_service_list.xml))
-2.  Captures Microsoft Windows Event Log Events (windows_event_list.xml)
+New dashboards: Critical Business Application, vSphere Resource Management, VM Storage Configuration, VCF Management Service.
 
-The above implementation is _agentless_. It uses GuestAPI with the provided Guest OS credentials. For details, see this [blog](https://www.brockpeterson.com/post/vcommunity-management-pack-for-vcf-operations-part-2).
-As it does not come with a dashboard, [Dale Hassinger](https://www.linkedin.com/in/dalehassinger/) has created a cool dashboard [here](https://www.vcrocs.info/vcommunity-mp-windows-servers-services/).
-Before monitoring hundreds of Windows machine, check the additional load in both VCF Operations and the Windows machine.
+Enhanced dashboards, replacing the existing ones: VM Configuration, VM Capacity, VM Performance, vSphere Cluster Performance, vSphere Cluster Capacity, vSphere Cluster Configuration, ESXi Configuration, vSphere Network Configuration.
 
-New Dashboards:
-* Critical Business Application
-* vSphere Resource Management
-* VM Storage Configuration
-* VCF Management Service
+Reports replace all the existing vSphere adapter reports. They were designed as a set, and each one is purpose-built: PDF for reading, CSV for export.
 
-Enhanced Dashboards (replacing existing ones):
-* VM Configuration
-* VM Capacity
-* VM Performance
-* vSphere Cluster Performance
-* vSphere Cluster Capacity
-* vSphere Cluster Configuration
-* ESXi Configuration
-* vSphere Network Configuration
+Super metrics are used by the dashboards. They are in [`Management Pack/content/supermetrics`](Management%20Pack/content/supermetrics/). Bulk-enable them in the policy after installation.
 
-Reports:
-Reports were designed to replace all the existing vSphere adapter reports. They were designed top down, as a set.
-They are also purpose-built. The PDF format and the CSV format is targetted for their specific use cases.
+The Windows services dashboard is [Dale Hassinger's](https://www.vcrocs.info/vcommunity-mp-windows-servers-services/). The pack does not ship one.
 
-Super Metrics:
-They are used in the dashboards. Super Metrics can be found [here](https://github.com/vmbro/VCF-Operations-vCommunity/tree/main/Management%20Pack/content/supermetrics). You can bulk enable them in Policy, after Management Pack installation.
+</details>
 
-The above was provided by [Iwan Rahabok](https://www.linkedin.com/in/e1ang/). They are documented in his books, available for download [here](https://broadcom.box.com/v/OpsYourWorld).
+## Get started
 
-Login to VMware Hands-on Lab, then test drive [this MP](https://labs.hol.vmware.com/HOL/catalog/lab/26848). [Abhijit Timble](https://www.linkedin.com/in/abhijit-timble-75878514/) has installed it so you can evaluate it before deciding in your environment.
+1. Check the [system requirements](docs/installation-guide/system-requirements.md), and the [dark site](docs/installation-guide/dark-site.md) steps if the Cloud Proxy has no internet access.
+2. [Install](docs/installation-guide/installation.md) the PAK file.
+3. [Activate the policy](docs/configuration-guide/policy.md) items the pack needs. Some are off by default.
+4. Create an [Adapter Instance](docs/configuration-guide/adapter-instance.md) for each vCenter, or use the [bulk importer](tools/importer/importer.md) for many.
+5. Choose what to collect: [Customization](docs/configuration-guide/customization.md).
 
-It's built using the [VCF Operations Integration SDK](https://github.com/vmware/vmware-aria-operations-integration-sdk).  It uses the Python programming language and the VCF Operations API.  
+Something not working? Start with the [Troubleshooting Guide](docs/troubleshooting-guide/first-steps.md).
 
+## Built with
 
-## Required Policy Settings
+The pack is built with the [VCF Operations Integration SDK](https://github.com/vmware/vmware-vcf-operations-integration-sdk/tree/main/docs), in Python, on the VCF Operations API. The [documentation](docs/README.md) explains the parts this pack uses, the code, and how to change it.
 
-Some metrics this pack needs are deactivated by default in VCF Operations: the packet counts for Bad Network Packets, and the NIC configured speed for Network Speed Degradation. Without them, those features have no data. See [Activate the Required Metrics in the Policy](docs/configuration-guide/policy.md).
+## Companion site: isvara.io
 
-## Documentation
+[isvara.io](https://isvara.io) complements this adapter. Its content (metrics, dashboards, alerts, properties and more) and this adapter are both documented in the **Private Cloud Management** book, 5th edition. The book is downloadable at [isvara.io/download](https://isvara.io/download).
 
-All pages are listed in the [Documentation index](docs/README.md). To start:
+The site is built by three people:
 
-- [System Requirements](docs/installation-guide/system-requirements.md)
-- [Installation](docs/installation-guide/installation.md)
-- [Policy](docs/configuration-guide/policy.md)
-- [Adapter Instance](docs/configuration-guide/adapter-instance.md)
-- [Metrics and Properties](docs/reference/metrics-and-properties.md)
+- [Iwan Rahabok](https://www.linkedin.com/in/e1ang/), creator
+- [Samir](https://www.linkedin.com/in/samirroshan/), builder
+- [Vincent](https://www.linkedin.com/in/vincent-han-11298424/), challenger
 
-## Tools
+## Community and support
 
-- **[Bulk Adapter Instance Importer](tools/importer/importer.md)** — Onboard many vCenters at once from a CSV file instead of configuring each Adapter Instance manually.
-- **Contributor tools** — build the pack, install it on a test instance, validate it, and check the docs. See [Tools](tools/README.md).
+- [Contributing](CONTRIBUTING.md): how to help, with or without writing code.
+- [Support](SUPPORT.md): what support is, and what is not.
+- [License](LICENSE).
 
+This is a free community project from the vCommunity (VMUG, vExpert, VCP). It is not an official VMware or Broadcom product, and it has no VMware GSS support. Deploy it at your own risk, or ask your VMware TAM or PSO for a custom solution.
 
-## Community
+## Credits
 
-- [Contributing](CONTRIBUTING.md)
-- [Support](SUPPORT.md)
-- [License](LICENSE)
+Built on the work of [Onur Yuzseven](https://www.linkedin.com/in/oyuzseven/), assisted by [Mark Arbogast](https://www.linkedin.com/in/mark-arbogast/) and [Robert Mesropyan](https://www.linkedin.com/in/robert-mesropyan/).
+
+The blog series that explains the pack, and its use cases, is by [Brock Peterson](https://www.linkedin.com/in/brockpetersonbdcvmw/): [part 1](https://www.brockpeterson.com/post/vcommunity-management-pack-for-vcf-operations), [part 2](https://www.brockpeterson.com/post/vcommunity-management-pack-for-vcf-operations-part-2) (Windows checks) and [part 3](https://www.brockpeterson.com/post/vcommunity-management-pack-for-vcf-operations-part-3).
+
+The dashboards, reports, super metrics and the pack's design are by [Iwan Rahabok](https://www.linkedin.com/in/e1ang/). His books are available [here](https://broadcom.box.com/v/OpsYourWorld).
+
+Want to try it first? [Abhijit Timble](https://www.linkedin.com/in/abhijit-timble-75878514/) has installed it on the VMware Hands-on Lab: [test drive this MP](https://labs.hol.vmware.com/HOL/catalog/lab/26848).

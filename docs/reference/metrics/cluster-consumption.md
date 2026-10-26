@@ -91,11 +91,9 @@ A host that is left out stays in Total Capacity, but adds nothing to Usable Capa
 
 ## How the score is calculated
 
-The same way as every KPI, then flipped like Cluster Risk:
+The same way as every KPI, see [How the pack scores a KPI](../../concepts/kpi-scoring-models.md#how-the-pack-scores-a-kpi). The scores are combined in a weighted average, where 100 is best, and the published value is then flipped like Cluster Risk:
 
-1. Each sub-metric value gets a score from 100 to 0, depending on the tier it is in.
-2. The scores are combined in a weighted average, where 100 is best. A sub-metric's weight depends on its score: `2^((100 − score) / 25)`. It is 1 at 100, 2 at 75, 4 at 50, 8 at 25 and 16 at 0.
-3. **Cluster Consumption = 100 − that weighted average**, so that higher means more consumed.
+**Cluster Consumption = 100 − that weighted average**, so that higher means more consumed.
 
 Its bands are therefore those of Cluster Risk: green 0–25, yellow 25–50, orange 50–75, **red 75–100**. See [Bands: red is high](cluster-risk.md#bands-red-is-high).
 

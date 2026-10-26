@@ -34,7 +34,7 @@ The 20-second peaks are used where they exist, not the 5-minute averages. This m
 
 ## Step 2 and 3: Score each sub-metric, then combine
 
-The scoring is the same for every KPI. It is described in [Cluster Performance KPI](cluster-performance.md#step-2-score-each-sub-metric): four tiers, 25 points per tier, and a weight that doubles for every 25 points the score falls.
+The scoring is the same for every KPI. See [How the pack scores a KPI](../../concepts/kpi-scoring-models.md#how-the-pack-scores-a-kpi).
 
 ## Limits per sub-metric
 
@@ -52,7 +52,7 @@ The scoring is the same for every KPI. It is described in [Cluster Performance K
 
 Every sub-metric is "lower is better", and 0 is perfect.
 
-**Excluded.** Three green ranges are marked "Excluded" in the source table. While a sub-metric is in its excluded green, it is left out of the KPI instead of scoring 100. Once it leaves green, it counts like any other sub-metric.
+**Excluded.** Three green ranges are marked "Excluded" in the source table, and are skipped while they are green, as [described for every KPI](../../concepts/kpi-scoring-models.md#skip-when-green).
 
 - **CPU Overlap below 0.5 %.** Some overlap is normal and says nothing about performance.
 - **Network Dropped Tx at exactly 0.** Dropped packets are rare. Any dropped packet is yellow.

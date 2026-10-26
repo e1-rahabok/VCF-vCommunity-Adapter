@@ -152,7 +152,8 @@ def collect_vm_data(
                 collect_vm_os_information_properties(vm_obj, vm_ref, content, winUser, winPassword)
 
             # --- Windows Event Log Monitoring ---
-            if WindowsEventLogMonitoringStatus == "Enabled":
+            # Empty when the event list could not be read: its problem is reported on the vCenter object.
+            if WindowsEventLogMonitoringStatus == "Enabled" and winEventLogConfigFile:
                 collect_windows_events(vm_obj, vm_ref, content, winUser, winPassword, winEventLogConfigFile)
 
             result.add_object(vm_obj)

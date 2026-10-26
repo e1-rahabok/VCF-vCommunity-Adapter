@@ -40,30 +40,12 @@ Notes:
 
 ## Step 2: Score each sub-metric
 
-Each sub-metric has four limits. They split its values into four tiers. Inside a tier, the score drops in a straight line by 25 points.
-
-| Tier | Value range | Score goes from → to |
-| :--- | :--- | :--- |
-| Green | 0 up to the green limit | 100 → 75 |
-| Yellow | green limit up to the yellow limit | 75 → 50 |
-| Orange | yellow limit up to the orange limit | 50 → 25 |
-| Red | orange limit up to the zero-at limit | 25 → 0 |
-
-Above the zero-at limit the score stays at 0.
+Each sub-metric is scored from its limits in the table under [Limits per sub-metric](#limits-per-sub-metric), by the rule shared by every KPI: the score falls in a straight line between the limits, from 100 to 0. The rule, with its tiers, is in [How the pack scores a KPI](../../concepts/kpi-scoring-models.md#five-limits-per-sub-metric).
 
 ## Step 3: Combine
 
-```
-KPI = Σ(score × weight) / Σ(weight)
-weight = 2^((100 − score) / 25)
-```
+The nine scores are combined as a weighted average, where each sub-metric's weight depends on its score. The formula, the weights and the reason for them are in [Combining the sub-metrics](../../concepts/kpi-scoring-models.md#combining-the-sub-metrics).
 
-![How much each sub-metric counts](../../concepts/kpi-weights.svg)
-
-- This is a weighted average. The weight of each sub-metric depends on its score, not on the tier. It is 1 at score 100 and doubles for every 25 points the score falls: 2 at 75, 4 at 50, 8 at 25 and 16 at 0.
-- A sub-metric at score 0 counts 16× more than one at score 100.
-- The weight changes smoothly, so the KPI does not jump when a value crosses a limit ([issue #18](https://github.com/e1-rahabok/VCF-vCommunity-Adapter/issues/18)).
-- This is deliberate. One bad sub-metric is not hidden by eight good ones.
 - **Known limitation.** Because the weight grows as the score falls, a sub-metric that gets worse can raise the KPI. This happens when the sub-metric moves into a heavier tier while it is still better than the sub-metrics already pulling the KPI down. See [A worse sub-metric can lower Cluster Risk](cluster-risk.md#known-limitation-a-worse-sub-metric-can-lower-cluster-risk): it is the same scoring, mirrored.
 
 ## Limits per sub-metric

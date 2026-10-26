@@ -6,7 +6,9 @@ Bottom 10 Percent Cluster Performance replaces the "vSphere Clusters Performance
 
 The vSphere World object also has two Operational Availability metrics. See [Operational Availability](operational-availability.md).
 
-Code: [`Management Pack/app/metrics/world/cluster_summary_metrics.py`](../../../Management%20Pack/app/metrics/world/cluster_summary_metrics.py)
+Two more count how many clusters changed their [Close for Business](periodic-cluster-check.md), see [Close for Business changes](#close-for-business-changes).
+
+Code: [`Management Pack/app/metrics/world/cluster_summary_metrics.py`](../../../Management%20Pack/app/metrics/world/cluster_summary_metrics.py), and [`cluster_close_changes.py`](../../../Management%20Pack/app/metrics/world/cluster_close_changes.py) for the two counts
 
 ## Known limitations
 
@@ -17,6 +19,8 @@ Code: [`Management Pack/app/metrics/world/cluster_summary_metrics.py`](../../../
 - **Every account calculates the same values.** There is one vSphere World object, but one account of this pack per vCenter. So that the accounts do not overwrite each other with the clusters of their own vCenter only, every account reads the clusters of all vCenters and publishes the same values. With many vCenters, this is the same small calculation done once per account.
 - **The values can move slightly between two accounts' writes.** Two accounts that collect a few minutes apart can read different cluster scores, so the vSphere World values can change between their two writes.
 - **A cluster without a score is left out.** For example, a cluster with no powered-on VMs has no Cluster Performance score.
+- **The Close for Business counts wait for every cluster.** They are not published until every cluster is calculated for the latest Periodic Cluster Check window, so they can come a few cycles after the window ends, like the check itself.
+- **Only the latest window is counted.** If the collection stops for longer than a window, the windows in between are not counted.
 
 ## The 4 metrics
 
@@ -35,6 +39,19 @@ Each metric takes the bad end. **Bottom 10 Percent** is the boundary of the wors
 - Cluster Risk is "higher is worse" (100 = maximum risk), so the bad end is the high end: the 90th percentile and the highest.
 
 **10th and 90th percentile.** The clusters are sorted, and the one at position 10 % (or 90 %) of the count, rounded up, is taken (nearest rank, the same method as the cluster KPIs). With 20 clusters that is the 2nd lowest (or the 18th lowest). With 10 clusters or fewer it is the lowest (or the highest), the same as the worst cluster.
+
+## Close for Business changes
+
+Two counts on the vSphere World object, over all clusters of all vCenters. They compare the [Close for Business](periodic-cluster-check.md) of each cluster in the latest Periodic Cluster Check window with the window before it.
+
+| Metric | Calculation |
+| :--- | :--- |
+| `vCommunity\|Cluster Delta Close Count` | The number of clusters whose Close for Business changed from 0 (open) to 1 (closed). |
+| `vCommunity\|Cluster Delta Open Count` | The number of clusters whose Close for Business changed from 1 (closed) to 0 (open). |
+
+- **Once per window, not every 5 minutes.** The counts are published with the Periodic Cluster Check: once per window, after its window ends, with the same [settings](periodic-cluster-check.md#settings). Between two windows, the last value stays.
+- **A blank value is not counted.** A cluster with no Close for Business in one of the two windows, such as a new cluster, has no earlier state to change from, so it is not counted as a change. This avoids a false count when a cluster is added.
+- **A count, not a percentage.** The values are numbers of clusters.
 
 ## Example
 

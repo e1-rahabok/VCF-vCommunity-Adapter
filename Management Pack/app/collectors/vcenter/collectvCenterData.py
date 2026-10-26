@@ -2,7 +2,9 @@
 #  Author: Onur Yuzseven onur.yuzseven@broadcom.com
 
 import logging
+import time
 from typing import Any, List, Optional
+from aria.ops.event import Criticality
 from aria.ops.object import Object
 from aria.ops.result import CollectResult
 from aria.ops.suite_api_client import SuiteApiClient
@@ -23,6 +25,7 @@ def collect_vcenter_data(
     availability: OperationalAvailability = NO_DATA,
     presented_certificate: Optional[str] = None,
     vcenter_host: str = "",
+    config_problems: Optional[List[str]] = None,
 ) -> None:
     """presented_certificate: the SHA-256 thumbprint vCenter presented this collection (utils/tls.py), compared
     with the recorded one by properties/vcenter/certificate.py. None when it could not be read."""
@@ -59,6 +62,19 @@ def collect_vcenter_data(
         if not vcenter_obj:
             logger.debug("Can not find the vCenter object in the VCF Operations. Skipping vCenter data collection.")
             return
+
+        # Problems with the configuration files of this Adapter Instance: shown as events on the vCenter. Each
+        # cancels by itself a few cycles after the problem is fixed (auto_cancel).
+        now = int(time.time() * 1000)
+        for problem in config_problems or []:
+            vcenter_obj.with_event(
+                message=f"vCommunity configuration: {problem}",
+                criticality=Criticality.WARNING,
+                auto_cancel=True,
+                watch_wait_cycle=1,
+                cancel_wait_cycle=3,
+                update_date=now,
+            )
 
         vc_name = "vCenter Server"
         try:
