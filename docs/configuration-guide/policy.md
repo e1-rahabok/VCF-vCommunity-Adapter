@@ -26,7 +26,7 @@ Some metrics and properties this pack needs are **deactivated by default** in VC
 
 The metrics have data from the next collection cycle.
 
-> **To verify on a live system:** once Configured Speed is active, `net:vmnic0|configuredSpeed` should appear as a property on the host, next to `net:vmnic0|speed`. Its value for a NIC set to auto-negotiate is not yet known.
+> **To verify on a live system:** once Configured Speed is active, `net:vmnic0|configuredSpeed` should appear as a property on the host, next to `net:vmnic0|speed`. A NIC set to auto-negotiate has no configured speed, so no `configuredSpeed` property is shown for it, and the metric leaves it out. Confirmed on sun05-esxi45 for vmnic0. See [Network Speed Degradation](../reference/metrics/network-speed-degradation.md#known-limitations).
 
 ---
 
