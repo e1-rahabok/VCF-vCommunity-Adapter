@@ -23,7 +23,7 @@ from metrics.cluster.cluster_risk_metrics import (
 from utils.ops_inventory import read_hosts, read_vms, powered_on_vms_by_host, hosts_by_cluster
 from utils.ops_stats import query_resources, read_latest_stats
 from metrics.vcenter.vcenter_availability import OperationalAvailability, NO_DATA
-from metrics.cluster import cluster_availability, periodic_cluster_check, cluster_consumption_metrics
+from metrics.cluster import cluster_availability, periodic_cluster_check, cluster_consumption_metrics, resource_pool_counts
 from pyVmomi import vim
 
 logger = logging.getLogger(__name__)
@@ -104,6 +104,15 @@ def collect_cluster_data(
         consumption_stats_by_cluster = {}
         tier_stats_by_host = {}
 
+    # Number of Resource Pools and Cascading Resource Pools, from the pools' parents in VCF Operations. A read that
+    # fails publishes nothing this cycle. A cluster without pools gets 0 when the read worked.
+    try:
+        pool_counts = resource_pool_counts.read_counts(suite_api_client, adapter_instance_id)
+    except Exception as e:
+        logger.warning(f"Failed to read the resource pools, so no Number of Resource Pools this cycle - {repr(e)}")
+        pool_counts = None
+    cluster_id_by_moid = {cluster.moid: cluster.id for cluster in ops_clusters}
+
     # Periodic Cluster Check: only the clusters due this cycle. See metrics/cluster/periodic_cluster_check.py.
     try:
         checks = periodic_cluster_check.read_periodic_cluster_check(
@@ -159,6 +168,9 @@ def collect_cluster_data(
             cluster_availability.publish(cluster_obj, availability.by_cluster.get(cluster_obj.get_key().name))
 
             periodic_cluster_check.publish(cluster_obj, checks.get(cluster_moid))
+
+            if pool_counts is not None:
+                resource_pool_counts.publish(cluster_obj, pool_counts.get(cluster_id_by_moid.get(cluster_moid), (0, 0)))
 
             result.add_object(cluster_obj)
 
