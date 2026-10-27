@@ -37,6 +37,7 @@ from collectors.vm.collectVMData import collect_vm_data
 from collectors.datastore.collectDatastoreData import collect_datastore_data
 from collectors.vcenter.collectvCenterData import collect_vcenter_data
 from collectors.world.collectWorldData import collect_world_data
+from metrics.container import tier_probe
 from collectors.datacenter.collectDatacenterData import collect_datacenter_data
 from metrics.cluster import (
     cluster_performance_metrics, cluster_risk_metrics, cluster_consumption_metrics, periodic_cluster_check,
@@ -901,8 +902,12 @@ def collect(adapter_instance: AdapterInstance) -> CollectResult:
                     start_times["collect_datacenter_data"] = time.perf_counter()
                     future_dc = data_executor.submit(collect_datacenter_data, client, adapter_instance_id, result, network_speed)
 
+                    # 8. Tier probe: one test metric on the Tier objects. See metrics/container/tier_probe.py.
+                    start_times["collect_tier_probe"] = time.perf_counter()
+                    future_tier = data_executor.submit(tier_probe.collect_tier_probe, client, result)
+
                     # Define main futures
-                    main_futures = [future_cls, future_host, future_vm, future_ds, future_vc, future_world, future_dc]
+                    main_futures = [future_cls, future_host, future_vm, future_ds, future_vc, future_world, future_dc, future_tier]
     
                     for future in concurrent.futures.as_completed(main_futures):
                         # Check future function
@@ -918,6 +923,8 @@ def collect(adapter_instance: AdapterInstance) -> CollectResult:
                             func_name = "collect_world_data"
                         elif future == future_dc:
                             func_name = "collect_datacenter_data"
+                        elif future == future_tier:
+                            func_name = "collect_tier_probe"
                         else:
                             func_name = "collect_vm_data"
 

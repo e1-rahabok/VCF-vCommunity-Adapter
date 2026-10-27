@@ -43,6 +43,7 @@ Each KPI's source limits are shown in its page under [Reference](../reference/me
 | `vm/vm_guest_os_kpi.py` | VM Guest OS KPI: the average of the guest OS scores, with a fallback when VMware Tools is missing. |
 | `vm/contention_by_vms.py` | The worst-VM and 90th-percentile rows of VM contention, shared by Cluster Performance and ESXi Performance. |
 | `host/esxi_performance_metrics.py` | ESXi Performance KPI. |
+| `container/tier_probe.py` | Temporary probe: one test metric on the Tier objects of the Container adapter, to learn whether the pack can publish on them. Remove once answered. |
 | `host/host_availability.py` | ESXi Host Operational Availability. |
 | `host/host_network_speed.py` | Network Speed Degradation per host, and the degraded-host count. |
 | `host/host_bad_network_packets.py` | Bad network packets of one host, as a % of its packets. A row of Cluster Performance and ESXi Performance. |
