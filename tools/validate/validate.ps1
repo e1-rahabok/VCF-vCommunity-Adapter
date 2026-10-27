@@ -294,18 +294,38 @@ try {
     # --- Content (release sign-off only) -------------------------------------
     if ($Release) {
         Add-Type -AssemblyName System.IO.Compression
+        $deadline = (Get-Date).AddMinutes(10)
+        # An export another run started may still be going: a new one is refused until it finishes.
+        $previous = Get-Api 'content/operations/export'
+        while ($previous.state -in 'RUNNING', 'NOT_INITIALIZED' -and (Get-Date) -lt $deadline) {
+            Start-Sleep -Seconds 5; $previous = Get-Api 'content/operations/export'
+        }
         $request = @{ scope = 'ALL'; contentTypes = @('VIEW_DEFINITIONS', 'DASHBOARDS') } | ConvertTo-Json
         Invoke-RestMethod -Method Post -Uri "$base/content/operations/export" -Body $request -ContentType 'application/json' -Headers $headers @web | Out-Null
-        $deadline = (Get-Date).AddMinutes(10)
-        # The job can still be NOT_INITIALIZED at the first poll: it has not started yet, so keep waiting.
-        do { Start-Sleep -Seconds 5; $export = Get-Api 'content/operations/export' } while ($export.state -in 'RUNNING', 'NOT_INITIALIZED' -and (Get-Date) -lt $deadline)
-        if ($export.state -ne 'FINISHED') {
+        # The status describes the last export until this run's job replaces it, and the last one may already be
+        # FINISHED. So wait for a job with a different id, and then for that job to finish. Each job has its own id.
+        do { Start-Sleep -Seconds 5; $export = Get-Api 'content/operations/export' } while (
+            ($export.id -eq $previous.id -or $export.state -in 'RUNNING', 'NOT_INITIALIZED') -and (Get-Date) -lt $deadline)
+        if ($export.id -eq $previous.id) {
+            Add-Result 'FAIL' 'Content export' 'The export did not start within 10 minutes'
+        } elseif ($export.state -ne 'FINISHED') {
             Add-Result 'FAIL' 'Content export' "Export ended as $($export.state) $($export.errorMessages -join ' ')"
         } else {
             $zipFile = [IO.Path]::GetTempFileName()
             try {
                 $zipHeaders = $headers.Clone(); $zipHeaders.Accept = 'application/octet-stream'
-                Invoke-WebRequest -Uri "$base/content/operations/export/zip" -Headers $zipHeaders -OutFile $zipFile @web
+                # FINISHED can be reported a little before the zip can be downloaded: "No data available for the last
+                # export operation". Retry for up to 3 minutes, and fail with that message if it never becomes available.
+                $zipDeadline = (Get-Date).AddMinutes(3)
+                while ($true) {
+                    try {
+                        Invoke-WebRequest -Uri "$base/content/operations/export/zip" -Headers $zipHeaders -OutFile $zipFile @web
+                        break
+                    } catch {
+                        if ((Get-Date) -ge $zipDeadline) { throw }
+                        Start-Sleep -Seconds 10
+                    }
+                }
                 $outer = [IO.Compression.ZipFile]::OpenRead($zipFile)
                 function Read-Entry($Archive, [string]$Name) {
                     $stream = $Archive.GetEntry($Name).Open(); $memory = [IO.MemoryStream]::new(); $stream.CopyTo($memory); $stream.Dispose(); $memory
