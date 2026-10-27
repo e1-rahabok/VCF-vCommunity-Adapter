@@ -254,6 +254,8 @@ Every property and metric the vCommunity Management Pack pushes to VCF Operation
 | ⚪ Property | `vCommunity\|Configuration\|Database\|Maximum Connections` | Maximum number of connections allowed to the vCenter database. |
 | ⚪ Property | `vCommunity\|Configuration\|Log Level` | Configured log level of the vCenter Server (e.g. info, debug, warning). |
 | 🟢 Metric | `vCommunity\|Number of Port Groups` | The port groups of this vCenter: distributed and standard, counted per Datacenter. Kept for up to 15 minutes if a read fails, the one exception to the 10-minute rule. See [Port groups and VMware Tools](metrics/vsphere-world-metrics.md#port-groups-and-vmware-tools). |
+| 🟢 Metric | `vCommunity\|Collection Health\|Warnings in Last Cycle` | The number of warnings and errors the last collection cycle wrote. Above 0 raises the Collection Warnings alert. See [Symptoms](../troubleshooting-guide/symptoms.md#a-collection-warnings-alert-is-shown). |
+| ⚪ Property | `vCommunity\|Collection Health\|First Warning` | The first warning or error of the last collection cycle, or "None in the last cycle". Read it first when the alert is active. |
 
 [⬆ Back to top](#metrics--properties-reference)
 

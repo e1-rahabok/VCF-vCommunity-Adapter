@@ -47,6 +47,7 @@ from properties.vm import vm_shares
 from metrics.world import cluster_summary_metrics, availability_summary_metrics, cluster_close_changes
 from metrics.world import port_group_counts, vm_tools_counts
 from metrics.vcenter import vcenter_port_groups
+from utils import collection_health
 from metrics.cluster import cluster_availability
 from metrics.datacenter import datacenter_network_degradation
 from metrics.vcenter import vcenter_availability
@@ -616,6 +617,11 @@ def get_adapter_definition() -> AdapterDefinition:
         # Number of Port Groups of this vCenter, summed on vSphere World: see metrics/vcenter/vcenter_port_groups.py.
         vCommunity.define_metric(vcenter_port_groups.METRIC, vcenter_port_groups.METRIC)
 
+        # Collection warnings of this vCenter's last cycle, for the Collection Warnings alert. See utils/collection_health.py.
+        vCenterCollectionHealth = vCommunity.define_group(collection_health.GROUP, collection_health.GROUP)
+        vCenterCollectionHealth.define_metric(collection_health.WARNINGS_METRIC, collection_health.WARNINGS_METRIC)
+        vCenterCollectionHealth.define_string_property(collection_health.FIRST_WARNING_PROPERTY, collection_health.FIRST_WARNING_PROPERTY)
+
         # Trust on First Use of the vCenter certificate: see properties/vcenter/certificate.py.
         vCenterCertificate = vCommunity.define_group("Certificate", "Certificate")
         vCenterCertificate.define_string_property("SHA-256 Thumbprint", "SHA-256 Thumbprint")
@@ -757,6 +763,8 @@ def test(adapter_instance: AdapterInstance) -> TestResult:
 def collect(adapter_instance: AdapterInstance) -> CollectResult:
     with Timer(logger, "Collection"):
         result = CollectResult()
+        # Counts the warnings and errors of this cycle, for the Collection Warnings alert. See utils/collection_health.py.
+        warnings = collection_health.start()
         try:
             start_time = time.perf_counter()
             service_instance = _get_service_instance(adapter_instance)
@@ -919,12 +927,14 @@ def collect(adapter_instance: AdapterInstance) -> CollectResult:
                             logger.error(f"Main data collection thread error in {func_name}: {exc}")
                             
                 logger.info(f"Finished total data collection.")
+                collection_health.publish(result.objects.values(), warnings)
 
         except Exception as e:
             logger.error("Unexpected collection error")
             logger.exception(e)
             result.with_error("Unexpected collection error: " + repr(e))
         finally:
+            collection_health.stop(warnings)
             timingSummary()
             return result
 

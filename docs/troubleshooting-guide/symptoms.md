@@ -4,6 +4,7 @@ Each section starts with what you see, then the cause, then what to do. Start wi
 
 **On this page:**
 
+- Alerts: [A Collection Warnings alert is shown](#a-collection-warnings-alert-is-shown)
 - Setup and connection: [The account never shows Collecting](#the-account-never-shows-collecting) · [The account is collecting, but the vCenter has no vCommunity values](#the-account-is-collecting-but-the-vcenter-has-no-vcommunity-values) · [Validate Connection fails](#validate-connection-fails) · [The certificate of vCenter changed](#the-certificate-of-vcenter-changed)
 - Values: [A KPI or metric is blank](#a-kpi-or-metric-is-blank) · [Bad Network Packets or Network Speed Degradation is blank](#bad-network-packets-or-network-speed-degradation-is-blank) · [The Periodic Cluster Check or the Cluster Delta counts are late or blank](#the-periodic-cluster-check-or-the-cluster-delta-counts-are-late-or-blank)
 - Configuration: [A configuration file change has no effect](#a-configuration-file-change-has-no-effect) · [Windows Service names are left out](#windows-service-names-are-left-out)
@@ -11,6 +12,23 @@ Each section starts with what you see, then the cause, then what to do. Start wi
 - Running: [Data stops after an upgrade](#data-stops-after-an-upgrade) · [Collection is slow](#collection-is-slow) · [The Cloud Proxy cannot start the adapter](#the-cloud-proxy-cannot-start-the-adapter)
 
 ---
+
+## A Collection Warnings alert is shown
+
+**What you see:** the alert **vCommunity Collection Warnings** is active on the vCenter object. It means the last collection cycle wrote warnings or errors. Some values were not collected, and nothing else is shown.
+
+**Cause:** the alert is raised on purpose, for any warning or error in a cycle. A value that cannot be read is logged, and the rest of the cycle is still published, so the alert is the only visible sign. It is one alert for the whole collection, not one per value.
+
+**What to do:**
+
+1. On the vCenter object, read the property `vCommunity|Collection Health|First Warning`. It is the first warning of the last cycle, and it names the object and the reason.
+2. Search `adapter.log` on the Cloud Proxy for these keywords:
+   - `Failed to`: one value could not be read for one object.
+   - `Skipping`: one object was left out of this cycle.
+   - `Unexpected collection error`: the whole cycle failed, and a traceback follows.
+3. The metric `vCommunity|Collection Health|Warnings in Last Cycle` shows how many warnings the cycle wrote. The alert clears when a cycle has none.
+
+Some warnings are expected, such as a value that a host does not have. The alert is a prompt to read the first warning, not a sign that the pack is broken. See [Log Messages](log-messages.md).
 
 ## The account never shows Collecting
 

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?><alertContent>
+    <AlertDefinitions>
+        <AlertDefinition adapterKind="VMWARE" cancelCycle="2" description="vCommunity Collection Warnings" disableInBasePolicy="true" id="AlertDefinition-e5da6dcc-0e22-46da-a405-8bb514ff4f1b" name="vCommunity Collection Warnings" resourceKind="VMwareAdapter Instance" subType="19" type="15" waitCycle="2">
+            <State severity="warning">
+                <SymptomSet applyOn="self" operator="and" ref="SymptomDefinition-dc3a1b70-0df7-4872-bf47-ca34ce799478"/>
+                <Impact key="health" type="badge"/>
+                <Recommendations>
+                    <Recommendation priority="1" ref="vCommunityCollectionWarnings"/>
+                </Recommendations>
+            </State>
+        </AlertDefinition>
+    </AlertDefinitions>
+    <SymptomDefinitions>
+        <SymptomDefinition adapterKind="VMWARE" cancelCycle="2" disableInBasePolicy="true" id="SymptomDefinition-dc3a1b70-0df7-4872-bf47-ca34ce799478" name="vCommunity Collection Warnings" resourceKind="VMwareAdapter Instance" waitCycle="2">
+            <State severity="warning">
+                <Condition instanced="false" key="vCommunity|Collection Health|Warnings in Last Cycle" operator=">" thresholdType="static" type="metric" value="0" valueType="numeric"/>
+            </State>
+        </SymptomDefinition>
+    </SymptomDefinitions>
+    <Recommendations>
+        <Recommendation key="vCommunityCollectionWarnings">
+            <Description>The vCommunity Management Pack wrote warnings or errors in its last collection cycle. Some values were not collected. Find the cause as follows. (1) Open the vCenter object and read the property 'vCommunity|Collection Health|First Warning': it is the first warning of the cycle. (2) Search adapter.log, on the Cloud Proxy that runs this adapter instance, for these keywords. 'Failed to': one value could not be read for one object. 'Skipping': one object was left out of this cycle. 'Unexpected collection error': the whole cycle failed, and the traceback follows it. The log line shows the object and the reason. The alert clears by itself when a cycle has no warnings.</Description>
+        </Recommendation>
+    </Recommendations>
+</alertContent>
