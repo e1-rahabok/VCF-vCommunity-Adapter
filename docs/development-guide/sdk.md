@@ -48,7 +48,7 @@ See [Repository Layout](repository-layout.md) for every file.
 
 The SDK version is set in one place: `Management Pack/requirements.txt`, currently **1.3.1**, the latest release. The developer's machine, the tests and the build tools use it from there.
 
-- **The container** gets the SDK from its base image, named in the `Dockerfile`. The base image's tag (`python-1.2.0`) is the image's own version, not the SDK's. The base image is built with the SDK 1.3 or later, as the `Dockerfile` comment says. The container no longer pins the SDK's runtime library separately, so it is the base image that decides it.
+- **The container** runs the SDK's runtime library (`vmware-aria-operations-integration-sdk-lib`, which provides the `aria` package the adapter imports). Its version is pinned in `adapter_requirements.txt`, because the base image does not contain the `aria` package. The base image's tag (`python-1.2.0`) is the image's own version, not the SDK's.
 - **The build** ([Build Script](../../tools/build/build.md)) needs the SDK 1.3 or later.
 - **Python:** the SDK 1.3.1 package requires Python 3.9 to 3.12. Use one of those on the developer's machine.
 
@@ -58,4 +58,4 @@ To change the SDK, change the one line in `requirements.txt`, then build and val
 
 - **The SDK documentation is general.** This page covers the parts the pack uses. For anything else, use the links above.
 - **Each call starts a process.** The start-up cost is paid at each call. For a collection every 5 minutes, this is small against the work of the cycle.
-- **The container's SDK version is not set in this repository.** It is whatever the base image bundles. Check it with each build, see [Versions](#versions).
+- **Two SDK versions are involved.** The build tool (1.3.1, in `requirements.txt`) and the runtime library (in `adapter_requirements.txt`) are separate packages. Keep them compatible when either changes. See [Versions](#versions).

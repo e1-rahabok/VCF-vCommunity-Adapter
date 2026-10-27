@@ -29,7 +29,7 @@ This page maps the repository: what each folder and file is, why it is there, an
 | `manifest.txt` | The name, version, minimum VCF Operations version and platforms of the pack. | Read by the builder, and by the install script for the version. | [SDK](sdk.md#what-is-packaged) |
 | `commands.cfg` | The four methods that VCF Operations can call, mapped to `app/adapter.py`. | How VCF Operations starts the adapter. | [App Folder](app-folder.md#entry-points) |
 | `Dockerfile` | The container image of the adapter. It starts from a base image, installs the Python libraries, and copies `app/`. | The Cloud Proxy runs the adapter in this image. | [How It Works](../installation-guide/how-it-works.md) |
-| `adapter_requirements.txt` | The Python libraries the adapter runs with, except the SDK. | Installed into the container image. | [SDK](sdk.md#versions) |
+| `adapter_requirements.txt` | The Python libraries the adapter runs with, including the SDK runtime library. | Installed into the container image. | [SDK](sdk.md#versions) |
 | `requirements.txt` | The SDK version, the same libraries, and the test library. This is the one place that names the SDK. | Installed with `pip` on a developer's machine. | [SDK](sdk.md#versions) |
 | `eula.txt` | The license shown when the pack is installed. | Required by the pak. | [Installation](../installation-guide/installation.md) |
 | `VCF-Operations-vCommunity.png` | The icon of the pack, shown in the UI. | Required by the pak. | [SDK](sdk.md#what-is-packaged) |

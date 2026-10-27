@@ -1,4 +1,4 @@
-# The one place that names the VCF Operations Integration SDK. The container gets the same SDK from its base image.
+# The one place that names the VCF Operations Integration SDK build tool (mp-build). The container's runtime library is pinned in adapter_requirements.txt.
 # 1.3.1 is the latest release; the build (mp-build) needs 1.3 or later. Requires Python 3.9 to 3.12.
 vmware-aria-operations-integration-sdk==1.3.1
 # The libraries the adapter runs with, shared with the container image (adapter_requirements.txt).
