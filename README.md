@@ -31,7 +31,7 @@ Full documentation starts at [docs/README.md](docs/README.md).
 <details>
 <summary>Dashboards, reports and super metrics included</summary>
 
-New dashboards: Critical Business Application, vSphere Resource Management, VM Storage Configuration, VCF Management Service.
+New dashboards: Critical Business Application, vSphere Resource Management, VM Storage Configuration, VCF Management Service, Overall Daily Check.
 
 Enhanced dashboards, replacing the existing ones: VM Configuration, VM Capacity, VM Performance, vSphere Cluster Performance, vSphere Cluster Capacity, vSphere Cluster Configuration, ESXi Configuration, vSphere Network Configuration.
 
