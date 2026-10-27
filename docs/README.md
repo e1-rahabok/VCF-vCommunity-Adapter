@@ -28,7 +28,7 @@ It is built with the [VCF Operations Integration SDK](https://github.com/vmware/
 
 **User Guide**
 
-- [Extreme Capacity Dashboard](user-guide/extreme-capacity-dashboard.md)
+- [vSphere Cluster Capacity 2.0 Dashboard](user-guide/vsphere-cluster-capacity-dashboard.md)
 
 **Reference**
 
