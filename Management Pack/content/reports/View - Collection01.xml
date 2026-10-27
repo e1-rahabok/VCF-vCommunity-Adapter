@@ -9208,7 +9208,7 @@ Note: this requires Service Discovery adapter.</Description>
                                         
                                     <Property name="objectType" value="RESOURCE"/>
                                         
-                                    <Property name="attributeKey" value="Super Metric|sm_2c3a09ab-96c7-46f1-9ebe-a9b275cf1ead"/>
+                                    <Property name="attributeKey" value="vCommunity|Resource Pools|Cascading Resource Pools"/>
                                         
                                     <Property name="isStringAttribute" value="false"/>
                                         
@@ -9258,7 +9258,7 @@ Note: this requires Service Discovery adapter.</Description>
                                         
                                     <Property name="objectType" value="RESOURCE"/>
                                         
-                                    <Property name="attributeKey" value="Super Metric|sm_44e2c78f-8332-4f16-ba3a-eed89a6d24d5"/>
+                                    <Property name="attributeKey" value="vCommunity|Resource Pools|Number of Resource Pools"/>
                                         
                                     <Property name="isStringAttribute" value="false"/>
                                         

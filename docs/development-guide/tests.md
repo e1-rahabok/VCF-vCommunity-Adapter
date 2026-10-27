@@ -28,6 +28,7 @@ They need the Python requirements of the repository (`requirements.txt`). The fa
 | `test_cluster_performance_metrics.py` | Cluster Performance formulas and worked examples. |
 | `test_cluster_risk_metrics.py` | Cluster Risk formulas and worked examples. |
 | `test_cluster_consumption_metrics.py` | Cluster Consumption formulas and a worked example. |
+| `test_resource_pool_counts.py` | Number of Resource Pools and Cascading Resource Pools: the levels of the lab tree, and the limits. |
 | `test_vm_performance_metrics.py` | VM Performance formulas and worked examples. |
 | `test_vm_guest_os_kpi.py` | VM Guest OS KPI: the average, and the fallback without VMware Tools. |
 | `test_guest_os_performance_metrics.py` | Guest OS Performance formulas and worked examples. |

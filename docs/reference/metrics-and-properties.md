@@ -77,6 +77,8 @@ Every property and metric the vCommunity Management Pack pushes to VCF Operation
 | 🟢 Metric | `vCommunity\|Periodic Cluster Check\|Worst Cluster Risk` | The high end (%) of Cluster Risk Score over the same window, the same way. |
 | 🟢 Metric | `vCommunity\|Periodic Cluster Check\|Worst Cluster Consumption` | The high end (%) of Cluster Consumption Score over the same window, the same way. |
 | 🟢 Metric | `vCommunity\|Periodic Cluster Check\|Close for Business` | 1: the cluster is full, do not place new VMs. 0: open to new VMs. See [the rule](metrics/periodic-cluster-check.md#the-rule). |
+| 🟢 Metric | `vCommunity\|Resource Pools\|Number of Resource Pools` | The resource pools of the cluster at level 1 to 3 (directly under the cluster, and up to three levels down). Read from the pools' parents in VCF Operations. Replaces the former super metric of the same name. |
+| 🟢 Metric | `vCommunity\|Resource Pools\|Cascading Resource Pools` | The resource pools of the cluster at level 2 to 5, that is, pools under another pool. Replaces the former super metric of the same name. |
 
 [⬆ Back to top](#metrics--properties-reference)
 

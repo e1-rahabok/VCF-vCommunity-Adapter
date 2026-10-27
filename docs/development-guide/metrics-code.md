@@ -37,6 +37,7 @@ Each KPI's source limits are shown in its page under [Reference](../reference/me
 | `cluster/drs_metrics.py` | DRS Score. A plain metric. |
 | `cluster/periodic_cluster_check.py` | Periodic Cluster Check: once per period, Close for Business per cluster. See [its page](../reference/metrics/periodic-cluster-check.md). |
 | `cluster/cluster_availability.py` | Cluster Operational Availability. |
+| `cluster/resource_pool_counts.py` | Number of Resource Pools and Cascading Resource Pools. Reads each pool's parents from VCF Operations, not from vCenter. |
 | `vm/vm_performance_metrics.py` | VM Performance KPI. Also reads the stats of Guest OS Performance. |
 | `vm/guest_os_performance_metrics.py` | Guest OS Performance KPI, for VMs with VMware Tools. |
 | `vm/vm_guest_os_kpi.py` | VM Guest OS KPI: the average of the guest OS scores, with a fallback when VMware Tools is missing. |

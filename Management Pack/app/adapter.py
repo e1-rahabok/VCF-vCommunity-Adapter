@@ -48,6 +48,7 @@ from metrics.world import cluster_summary_metrics, availability_summary_metrics,
 from metrics.world import port_group_counts, vm_tools_counts
 from metrics.vcenter import vcenter_port_groups
 from utils import collection_health
+from metrics.cluster import resource_pool_counts
 from metrics.cluster import cluster_availability
 from metrics.datacenter import datacenter_network_degradation
 from metrics.vcenter import vcenter_availability
@@ -342,6 +343,10 @@ def get_adapter_definition() -> AdapterDefinition:
         define_kpi(vCommunity, cluster_risk_metrics)
         define_kpi(vCommunity, cluster_consumption_metrics)
         define_availability(vCommunity, cluster_availability.CLUSTER_METRIC)
+        # Resource pools of the cluster, from VCF Operations: see metrics/cluster/resource_pool_counts.py.
+        clusterResourcePools = vCommunity.define_group(resource_pool_counts.GROUP, resource_pool_counts.GROUP)
+        clusterResourcePools.define_metric(resource_pool_counts.COUNT_METRIC, resource_pool_counts.COUNT_METRIC)
+        clusterResourcePools.define_metric(resource_pool_counts.CASCADING_METRIC, resource_pool_counts.CASCADING_METRIC)
 
         # Periodic Cluster Check: set once per period. See metrics/cluster/periodic_cluster_check.py.
         periodicCheck = vCommunity.define_group(periodic_cluster_check.GROUP, periodic_cluster_check.GROUP)
