@@ -134,7 +134,7 @@ It replaces nothing. It fills one gap:
 
 - **Free**, community licensed: see [License](../LICENSE).
 - Installs like any VCF Operations Management Pack. No agent on ESXi, no change to vCenter. Guest OS features are optional and agentless.
-- Built for large environments: parallel collectors, and careful limits on expensive host calls. A full collection cycle stays under 5 minutes at 1,500+ hosts and 15,000+ VMs.
+- Built for large environments: parallel collectors, and careful limits on expensive host calls. The collection time at scale is not yet measured, see [issue #42](https://github.com/e1-rahabok/VCF-vCommunity-Adapter/issues/42).
 - Start with a few settings from your hardening guide, and add more over time.
 
 For what the pack is, its features and how to get started, see the main [README](../README.md). For support and licensing, see [Support](../SUPPORT.md) and [License](../LICENSE).
