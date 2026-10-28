@@ -59,7 +59,7 @@ For contributors: how the code is organised, what each part does, and how to cha
 8. [Content Folder](development-guide/content-folder.md): dashboards, reports, super metrics, and the configuration files the code reads.
 9. [Tests](development-guide/tests.md): the three test layers and the test files.
 10. [Template and Content Library Design](development-guide/template-and-library-design.md): the plan for showing templates and content libraries in VCF Operations. Design only, not built.
-11. [To Do](development-guide/to-do.md): the work still to do. Issues are for what is broken; enhancements are listed here, one line each.
+11. [To Do project](https://github.com/users/e1-rahabok/projects/1): the enhancements still to do, one line each. Broken things are GitHub issues.
 
 Planned work is tracked in [GitHub Issues](https://github.com/e1-rahabok/VCF-vCommunity-Adapter/issues?q=is%3Aissue+is%3Aopen+label%3Aenhancement), not here.
 

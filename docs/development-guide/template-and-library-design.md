@@ -1,6 +1,6 @@
 # Template and Content Library Design
 
-**Status: design, approved for the content library read on 2026-10-28. Not built.** The model of the objects is in [Templates and Content Libraries](../concepts/templates-and-content-libraries.md). The open items are on the [To Do list](to-do.md).
+**Status: design, approved for the content library read on 2026-10-28. Not built.** The model of the objects is in [Templates and Content Libraries](../concepts/templates-and-content-libraries.md). The open items are on the [To Do project](https://github.com/users/e1-rahabok/projects/1).
 
 ## Verified on the test instance (read-only)
 
@@ -23,7 +23,7 @@
 
 - **Approved on 2026-10-28:** read the content libraries from vCenter through the vSphere Automation API. This is a second connection to vCenter, next to the pyVmomi calls the pack makes today.
 - **One object type for all library items.** The object type is `Library Item`, with `Type` as a property. It covers every type: `ovf`, `ova`, `vm-template`, `iso`, `other` and any type not seen yet. Excluding a type would hide items. The lab already has five items of type `other`, which a subset of `ovf` and `ova` would have dropped. The type costs nothing as a property.
-- **Subscribed-library sync-age metric:** later. It is on the [To Do list](to-do.md).
+- **Subscribed-library sync-age metric:** later. It is on the [To Do project](https://github.com/users/e1-rahabok/projects/1).
 
 ## Still open
 
