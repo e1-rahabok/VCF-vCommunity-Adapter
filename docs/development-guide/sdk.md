@@ -15,7 +15,7 @@ The SDK documentation is written for any adapter. The sections below only cover 
 | :--- | :--- | :--- |
 | Command interface | VCF Operations runs the adapter with a method name: `adapter_definition`, `test`, `collect`, `endpoint_urls`. | [`commands.cfg`](../../Management%20Pack/commands.cfg), `main()` in `adapter.py` |
 | `AdapterInstance` | Reads the input of a call: the Adapter Instance, its settings and its credentials. | `adapter.py`, for every call |
-| `AdapterDefinition` | Declares the object types, metrics, properties and units of the pack. The units are in `Units`. | `get_adapter_definition()` in `adapter.py` |
+| `AdapterDefinition` | Declares the object types, metrics, properties and units of the pack. The units are in `Units`. | `get_adapter_definition()` in `definition.py` |
 | `Object`, `CollectResult` | An object of VCF Operations that the pack sets metrics and properties on, and the result that holds all objects of a cycle. | Every collector, and every metric and property module |
 | `SuiteApiClient` | Client for the VCF Operations REST API (the Suite API), to read objects, stats and properties. | `utils/ops_stats.py`, `utils/ops_inventory.py`, and `adapter.py` |
 | `TestResult`, `EndpointResult` | The results of the `test` and `endpoint_urls` calls. | `test()` and `get_endpoints()` in `adapter.py` |

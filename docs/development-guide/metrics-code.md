@@ -130,7 +130,7 @@ The adapter definition reads the same tables, so there is nothing to update in `
 2. Fill in `GROUP`, `KPI_NAME`, `KPI_KEY`, `METRICS` and `PUBLISHED_METRICS`.
 3. Write the formulas and the entry point.
 4. Call the entry point from the collector of that object type. Read the stats once, before the loop over the objects. See [Collectors](collectors.md).
-5. Add one line to `adapter.py`: `define_kpi(vCommunity, <your module>)`, in the section of that object type. A unit used in a KPI table must also be listed in `KPI_UNITS` there.
+5. Add one line to `definition.py`: `define_kpi(vCommunity, <your module>)`, in the section of that object type. A unit used in a KPI table must also be listed in `KPI_UNITS` there.
 6. Add the module to `KPI_MODULES` in `tests/test_kpi_score.py`. Two tests then check every row of your table.
 7. Add a test file with worked examples, and a page under `docs/reference/metrics/`. Add it to the contents of `docs/README.md`.
 
