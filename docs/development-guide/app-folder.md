@@ -16,7 +16,8 @@ The adapter reads the ESXi and VM data that the vCenter adapter of VCF Operation
 
 | Path | What it is | Page |
 | :--- | :--- | :--- |
-| `adapter.py` | The entry point. Declares the adapter to VCF Operations, and runs the test, collect and endpoint methods. | This page |
+| `adapter.py` | The entry point. Runs the test, collect and endpoint methods. | This page |
+| `definition.py` | The adapter definition: the object types, groups, metrics, properties and parameters that VCF Operations shows. Also the KPI table helpers and `KPI_UNITS`. | [Metrics Code](metrics-code.md) |
 | `collectors/` | One collector per VCF Operations object type. Each one calls the modules for its objects. | [Collectors](collectors.md) |
 | `metrics/` | The calculation of metrics and KPIs. | [Metrics Code](metrics-code.md) |
 | `properties/` | The properties published on each object. | [Properties](properties.md) |

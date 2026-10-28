@@ -73,7 +73,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger("importer")
 
-# Constants taken VERBATIM from get_adapter_definition() in the vCommunity adapter.py.
+# Constants taken VERBATIM from get_adapter_definition() in the vCommunity definition.py.
 # If you update this file, keep it in sync with the definition in adapter.py.
 ADAPTER_KIND_KEY = "vCommunity"
 CREDENTIAL_KIND_KEY = "vsphere_user"
