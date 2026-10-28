@@ -1,62 +1,75 @@
 # Template and Content Library Design
 
-**Status: design only, not built.** It describes three object types the pack would add, and what is still to be decided before building. The model of the objects is in [Templates and Content Libraries](../concepts/templates-and-content-libraries.md).
+**Status: design, approved for the content library read on 2026-10-28. Not built.** The model of the objects is in [Templates and Content Libraries](../concepts/templates-and-content-libraries.md). The open items are on the [To Do list](to-do.md).
 
-## What is verified and what is not
+## Verified on the test instance (read-only)
 
-Verified on the test instance, read-only, on 2026-10-28:
+- VCF Operations has **no content library object and no library item object**. The vCenter adapter's objects are the kinds the pack already reads, plus `VirtualMachine`.
+- Five VirtualMachine objects have `summary|config|isTemplate` = `true`. Two queries gave 139 and 142 VirtualMachine objects, so that count is not settled. Name matching is not reliable: six names contain "template", and one of them is not a template.
+- **No VCF Operations property links a VM to the template it came from.** Over 20 VMs there were 364 property names, none of them a source. The closest are `summary|folder`, `summary|datastore`, `summary|parentHost` and the template flag.
+- The content libraries, read from vCenter through the vSphere Automation API:
 
-- VCF Operations has **no content library object and no library item object** under the vCenter adapter. The vCenter adapter's resource kinds are the ones the pack already reads, plus `VirtualMachine`, `Datastore`, `ResourcePool`, `NamespaceV2` and similar. None is a library.
-- The VirtualMachine objects include templates. Five of them have `summary|config|isTemplate` = `true`. The count of VirtualMachine objects differed between two queries (139 and 142), so it is not a settled number.
-- A template's name does not identify it. Six names contain the word "template", but only five are flagged. Use the flag.
+| Library | Items | Item types | Not stored locally (`cached` = false) |
+| :--- | :--- | :--- | :--- |
+| `497d9b6a…` (cl-vks01) | 138 | `ovf`: 138 | 138 |
+| `479fa23e…` | 7 | `ovf`: 2, `other`: 5 | 6 |
 
-Not yet verified (each is a check in the first build, see [Verification](#verification)): the VCF Operations property names of a template VM; whether the vSphere Automation API's list call returns the item fields, or each item needs its own call; whether a relationship from a pack object to a vCenter object is accepted when the vCenter object is not in the same result.
+- In the lab there are 145 items, 3.9 GB in total. All 145 have `security_compliance` = true, and all 145 have a `source_id`. The `source_id` on local items is to be checked, because the documentation says it is null for local items.
+- No item of type `vm-template` or `iso` was seen.
+- The item list call returns **only item IDs**. Each item needs its own get call to read its size, state and compliance.
+- Item fields: `creation_time`, `last_modified_time`, `last_sync_time`, `certificate_verification_info`, `description`, `type`, `version`, `content_version`, `library_id`, `size`, `cached`, `name`, `security_compliance`, `id`, `source_id`, `metadata_version`.
 
-## Decision needed first
+## Decisions
 
-**VCF Operations does not hold content library data, so the pack would have to read the library from vCenter.** Libraries are only in the vSphere Automation API, which is a second API next to the pyVmomi calls the pack uses today. This is a direct read from vCenter for data VCF Operations does not have. Under the rule in this project, that is not allowed without an explicit decision. Nothing below should be built until the decision is made.
+- **Approved on 2026-10-28:** read the content libraries from vCenter through the vSphere Automation API. This is a second connection to vCenter, next to the pyVmomi calls the pack makes today.
+- **One object type for all library items.** The object type is `Library Item`, with `Type` as a property. It covers every type: `ovf`, `ova`, `vm-template`, `iso`, `other` and any type not seen yet. Excluding a type would hide items. The lab already has five items of type `other`, which a subset of `ovf` and `ova` would have dropped. The type costs nothing as a property.
+- **Subscribed-library sync-age metric:** later. It is on the [To Do list](to-do.md).
 
-An earlier answer said the efficiency was fine because the template data is already in VCF Operations. That is true only of the VM templates. It is not true of the content libraries, which are the larger part of the design.
+## Still open
+
+1. **What links a VM to its template?** The relation is real: one template has many VMs, and a VM has at most one template. VCF Operations does not store it (see above), so the pack needs another source. The options are:
+   - **vCenter task history.** A clone task records its source template. This is a read from vCenter beyond the library read, so it needs your approval. How long vCenter keeps task history is to be verified.
+   - **A VM annotation or custom attribute** set by the tool that provisions the VM. It works only for VMs made by that tool.
+
+   Until one is chosen, the VM Template object can be built without its children.
 
 ## Object types
 
-All three are created by the pack under its own adapter kind, `vCommunity`, with `define_object_type`. They do not change the vCenter adapter's objects. Naming: keys without `&`, so the key is `OVF OVA Template`, with the label `OVF & OVA Template`.
+All three are created by the pack under its own adapter kind, `vCommunity`, with `define_object_type`. They do not change the vCenter adapter's objects. Keys have no special characters.
 
-| Object type | Created from | Count in the lab |
+| Object type | Created from | Lab count |
 | :--- | :--- | :--- |
-| Content Library | vSphere Automation API, the libraries of each vCenter | 1 seen in the screenshots (`cl-vks01`) |
-| OVF OVA Template | vSphere Automation API, the library items of type ovf or ova | 138 in `cl-vks01` |
-| VM Template | VCF Operations VirtualMachine objects with the template flag | 5 |
-
-Whether a VM template in a library (type `vm-template`) is a fourth type, or part of Content Library, is open.
+| `Content Library` | vSphere Automation API, one per library | 2 |
+| `Library Item` | vSphere Automation API, every item of every library, all types | 145 |
+| `VM Template` | VCF Operations VirtualMachine objects with the template flag | 5 |
 
 ## Parent and child relationships
 
-The SDK has `add_parent` and `add_child`, so a pack object can be a child of an existing object.
+The SDK has `add_parent` and `add_child`, so a pack object can be a child of an existing object, and a parent can have many children.
 
-| Object | Parent (existing object) | Children |
+| Object | Parent | Children |
 | :--- | :--- | :--- |
-| Content Library | the vCenter object (the `VMwareAdapter Instance` and `vCenter` objects are already in the result) | OVF OVA Template, VM Template items |
-| OVF OVA Template | its Content Library | none |
-| VM Template | the VirtualMachine object of the template, and its Datastore | none |
+| vCenter object (existing) | none | `Content Library` |
+| `Content Library` | the vCenter object | `Library Item` |
+| `Library Item` | its `Content Library` | none |
+| `VM Template` | the Datastore (existing) that holds its disk, and the VM folder (existing) | the VMs (existing VirtualMachine objects) cloned from it |
+| VM (existing) | the `VM Template` it came from, if the source is known | none |
 
 Notes:
 
-- A template is not a parent of the library item it was cloned to. The API does not store that link. It is not shown.
-- A VM Template object is a child of the VirtualMachine object, so the template appears under the VM it describes. It is still a separate object, so it can carry template data without changing the VM object. Whether it should instead replace the VM object is open.
-- A subscribed library's item has `source_id`. That is not an inventory object, so no relationship is made. It is a property.
+- **Cardinality:** one `VM Template` has many VMs, and a VM has at most one `VM Template`. In the SDK, the template is the parent, so the template calls `add_child` for each of its VMs.
+- A library item has no link in the API to the inventory template it came from, so no relationship is made between a `Library Item` and a `VM Template`. The library is the parent of the item.
+- Whether VCF Operations accepts a link from a pack object to an existing object that is not in the same result is not verified. It is a check in the first build (see [Verification](#verification)).
 
 ## Properties
 
-Properties are text, published under `vCommunity|`. The VCF Operations names of the VM fields need checking first.
+Properties are text, published under `vCommunity|`. Only the keys that VCF Operations returns are published, so a property is not added until its key is seen in a response.
 
 | Object | Properties |
 | :--- | :--- |
-| Content Library | Name, Library ID, Type (local or subscribed; how to tell them apart is to verify) |
-| OVF OVA Template | Name, Type (ovf, ova, or other), Content Version, Stored Locally (`cached`), Security Compliant (`security_compliance`), Certificate Verification (`certificate_verification_info.status`, ovf only), Last Modified, Last Sync (subscribed only), Source Item ID (subscribed only) |
-| VM Template | Guest OS, VMware Tools status, Hardware Version, vCPUs, Memory (GB), Disk Used (GB), Encryption, Datastore name, VM folder, Content Library it belongs to (by name, if any), Library Content Version (if any) |
-
-Keys that are not in the item model (for example "Publish state") are not added until seen in a response.
+| `Content Library` | Name, Library ID, whether it is subscribed (to verify) |
+| `Library Item` | Name, Library ID, Type, Description, Version, Content Version, Size (GB), Stored Locally (`cached`), Security Compliant (`security_compliance`), Certificate Verification (`certificate_verification_info.status`), Last Modified, Last Sync, Source Item ID (`source_id`) |
+| `VM Template` | Guest OS, VMware Tools status, Hardware Version, vCPUs, Memory (GB), Disk Used (GB), Encryption, Datastore name, VM folder. The VCF Operations keys for these are to be checked. |
 
 ## Metrics
 
@@ -64,45 +77,36 @@ Metrics are numbers, published on the object, and can be charted and alerted on.
 
 | Object | Metric | Meaning |
 | :--- | :--- | :--- |
-| Content Library | Items | Number of items |
-| Content Library | Items Not Stored Locally | Items with `cached` = false |
-| Content Library | Items Not Security Compliant | Items with `security_compliance` = false |
-| Content Library | Total Size (GB) | Sum of `size` of the items |
-| Content Library | Days Since Last Sync | Subscribed libraries only: the oldest item's last sync |
-| OVF OVA Template | Size (GB) | `size` / 1 GiB |
-| VM Template | Disk Used (GB) | Disk space of the template VM |
-| Datastore (existing object) | Template Storage (GB) | Total of the disk space of the VM templates on the datastore |
+| `Content Library` | Items | Number of items |
+| `Content Library` | Items Not Stored Locally | Items with `cached` = false |
+| `Content Library` | Items Not Security Compliant | Items with `security_compliance` = false |
+| `Content Library` | Total Size (GB) | Sum of `size` of the items |
+| `Library Item` | Size (GB) | `size` in GiB |
+| `VM Template` | Disk Used (GB) | Disk space of the template VM |
+| `VM Template` | Number of VMs | Its VMs, once the source of the link is chosen |
+| Datastore (existing object) | Template Storage (GB) | Total disk space of the VM templates on the datastore |
 
-A template VM has no performance statistics (it cannot run), so no KPI is proposed for it.
+A template VM cannot run, so it has no performance statistics and no KPI is proposed for it.
 
 ## Efficiency
 
 - **VM Template: no new call.** `summary|config|isTemplate` is added to the property list that the pack already reads in one batched call for all VMs (`read_vms`). The cost is one object per template.
-- **Content library: new calls.** One list call per vCenter for the libraries, then one list call per library for the items. The item fields are fetched by the list call if it returns them, otherwise by one get call per item. In the lab, `cl-vks01` alone has 138 items, so per-item calls would be 138 requests per cycle. Avoid this.
-- **Read on a long window.** Libraries change rarely. Read them at most once per hour, like the Periodic Cluster Check, and keep the last values between reads. This is a design choice; it can be changed.
-- **Only changed items.** Within a read, fetch an item again only when its `content_version` or `last_modified_time` has changed. The first read after a restart is the only full read.
-- **A separate session.** The vSphere Automation API needs its own session. It is not the same as the pyVmomi connection, so it is a second connection to vCenter.
+- **Content library: one request per item.** The item list returns IDs only, so the state, size and compliance of each item need one get call each. In the lab that is 145 get calls per full read. This cannot be avoided if those fields are needed.
+- **Read on a long window.** Libraries change rarely. Read them once an hour, like the Periodic Cluster Check, and keep the last values between reads, so the cycle does not make these calls. The interval is a design choice. Measure one full read before fixing it.
+- **A second session.** The vSphere Automation API has its own session, separate from the pyVmomi connection, and uses the same account as the Adapter Instance.
 
 ## Verification
 
-Done before any build, with a read-only probe:
+Done with a read-only probe, before any build:
 
-1. The property names of one template VM in VCF Operations, from its properties list.
-2. Whether a library item list call returns `cached`, `size`, `security_compliance` and `content_version`, for one library.
-3. The item types of the lab's libraries.
+1. The VCF Operations keys of the template properties (Guest OS, VMware Tools, Hardware Version and the rest), on one template VM.
+2. Whether a library item's `source_id` is set for local items, to tell whether these libraries are subscribed.
+3. The time of one full library read, for the interval.
 
 Done with a build on the test instance, after an approved install:
 
-4. Whether a pack-created object of its own kind shows in VCF Operations with its parent link to a VirtualMachine or Datastore object.
-5. Whether a pack-created object survives a collection cycle, and what happens to an object the pack stops reporting. The Tier probe answers the first half for the related case of another kind's object.
-
-## Open decisions
-
-1. **Read the content libraries from vCenter?** Needs approval; see [Decision needed first](#decision-needed-first).
-2. **VM Template: a separate object or a replacement?** Separate, as a child of the VM, is the proposal here. The alternative is to show the template data as properties on the existing VM object.
-3. **Which item types?** `ovf`, `ova`, `vm-template`, `iso`, or all.
-4. **Subscribed libraries:** include `Days Since Last Sync` now, or later?
-5. **Planned work and `docs/`.** [CONTRIBUTING.md](../../CONTRIBUTING.md#documentation) says planned work goes in a GitHub issue, not in `docs/`. This page is in `docs/` because it was asked for. Whether an issue should also be opened is open.
+4. Whether a pack-created object of its own kind shows in VCF Operations, with a parent link to an existing VirtualMachine or Datastore object.
+5. Whether a pack-created object survives a collection cycle, and what happens to an object the pack stops reporting. The Tier probe answers the first half for another adapter kind's object. The parent link is a separate test.
 
 ## Not in this design
 

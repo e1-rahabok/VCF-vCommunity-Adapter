@@ -39,7 +39,9 @@ vCenter
        └── VM template in the library (library item; the type value is to verify)
 ```
 
-The vSphere Client shows the library as a tree node. In the screenshots taken on the lab, the library `cl-vks01` has 138 OVF & OVA templates and no VM templates in its VM Templates tab. The template `vcf-services-runtime-template-9.1.1.0.25714471` is an inventory VM template, under the `vcf-automation` folder, and its Versioning tab explains that versioning needs a library.
+The vSphere Client shows the library as a tree node. In the screenshots taken on the lab, the library `cl-vks01` has 138 OVF & OVA templates and no VM templates in its VM Templates tab. The lab has a second library with 7 more items, of types `ovf` and `other`. No item of type `vm-template` was seen.
+
+One VM template can be the source of many VMs, and a VM comes from at most one template. vSphere does not show that link on the VM, and VCF Operations does not store it either. The template `vcf-services-runtime-template-9.1.1.0.25714471` is an inventory VM template, under the `vcf-automation` folder, and its Versioning tab explains that versioning needs a library.
 
 ## Source
 
