@@ -40,7 +40,7 @@
 | # | Status | File | Problem | Proposed update |
 | :-- | :-- | :-- | :-- | :-- |
 | H1 | proposed | `README.md` | Dashboard list names "VM Configuration" and "vSphere Cluster Capacity". No such files exist in `Management Pack/content/dashboards/`. "Extreme Capacity" is missing. | List the real dashboard files: Cluster Performance 2.0, Critical Business Applications, ESXi Configuration 2.0, Extreme Capacity, VCF Management Service, VM Capacity 2.0, VM Performance 2.0, VM Storage Configuration, vSphere Cluster Configuration 2.0, vSphere Network Configuration 2.0, vSphere Resource Management. |
-| H2 | question | `README.md` | Badges and the Super Metrics link use `github.com/vmbro/...`. Repo and other docs use `e1-rahabok/...`. | Ask the user which org is canonical. Then update all links. |
+| H2 | approved | `README.md` | Badges and the Super Metrics link use `github.com/vmbro/...`. Repo and other docs use `e1-rahabok/...`. | Decided: `e1-rahabok` is canonical. `vmbro` is the parent of the user's fork and is no longer needed. Replace every `vmbro/...` link and badge with `e1-rahabok/...`. |
 | H3 | question | `docs/README.md` | "What it collects" says "VM snapshot count". No code collects it (checked `Management Pack/app`). | Ask: remove the claim, or add a collector? Default: remove. |
 | H4 | question | `docs/README.md` | "A full collection cycle stays under 5 minutes at 1,500+ hosts and 15,000+ VMs." No evidence in repo. | Ask the user to confirm or remove. |
 | H5 | proposed | `docs/reference/metrics-and-properties.md` | Top note says Guest OS properties are not included. They are in code: `Guest OS\|Operating System` (`properties/vm/vmOSInformation.py`) and `Guest OS\|Services:<name>` (`properties/vm/vmService.py`). | Remove the note. Add rows: OS Name, OS Version, OS BuildNumber, OS Architecture, OS Last Boot Up Time, OS Release ID (Operating System). Add rows: Service Name, Service Status, Service Start Type (Services, instanced by service display name). Mention Windows Event Logs are events, not properties. |
@@ -85,7 +85,7 @@
 
 ## Open questions for the user
 
-1. H2: Which GitHub org is canonical, `e1-rahabok` or `vmbro`?
+1. H2: Answered. `e1-rahabok` is canonical. `vmbro` is not needed.
 2. H3: Remove the "VM snapshot count" claim, or add a collector?
 3. H4: Keep, confirm, or remove the 1,500 hosts and 5 minutes claim?
 4. H7: Finish the CONTRIBUTING section, or remove it?
@@ -94,3 +94,4 @@
 ## Log
 
 - 2026-10-23: First review pass. Items H1 to L3 recorded. No files changed.
+- 2026-10-28: H2 decided. Canonical org is `e1-rahabok`. `vmbro` is the fork parent, not needed.
