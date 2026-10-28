@@ -93,7 +93,8 @@ The documentation is in `docs/`, and [`docs/README.md`](docs/README.md) lists ev
 
 The rules, which keep the documentation easy to maintain:
 
-- **Say what is built, and why.** Describe the design decisions and the alternatives weighed. Planned work goes in a GitHub issue, not in `docs/`.
+- **Say what is built, and why.** Describe the design decisions and the alternatives weighed. A page for a design that is not built yet says so at the top.
+- **Broken is an issue. Anything else is a To Do item.** A GitHub issue is for something that is broken, with the label `bug`. A new feature or a plan is an enhancement, which is not an issue: it is a draft item on the [To Do project](https://github.com/users/e1-rahabok/projects/1), one line, linked to the page that has the details.
 - **One topic per page, and no step written twice.** Link to the page that has it.
 - **Names are lowercase, with `-` between words, and no spaces.** Do not repeat the folder in the name: `metrics/cluster-risk.md`, not `metrics/cluster-risk-kpi.md`.
 - **Images go in an `images/` folder next to the page that uses them.** KPI formula images go in `docs/reference/metrics/formula/`.

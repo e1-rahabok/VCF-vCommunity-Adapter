@@ -10,6 +10,7 @@ It is built with the [VCF Operations Integration SDK](https://github.com/vmware/
 
 - [Capacity Management Model](concepts/capacity-management.md): how consumption, contention and risk decide, automatically, whether a cluster can take more VMs.
 - [KPI Scoring Models](concepts/kpi-scoring-models.md): three ways to combine colored sub-metrics into one KPI, which fits performance, capacity and availability, and how the pack scores a KPI: its limits, weights, skipped and missing data.
+- [Templates and Content Libraries](concepts/templates-and-content-libraries.md): the two kinds of template, VM Template and OVF & OVA Template, and the content library that holds them.
 
 **Installation Guide**
 
@@ -57,6 +58,8 @@ For contributors: how the code is organised, what each part does, and how to cha
 7. [Supporting Code](development-guide/supporting-code.md): reading from VCF Operations, TLS and guest handling, constants and Windows event logs.
 8. [Content Folder](development-guide/content-folder.md): dashboards, reports, super metrics, and the configuration files the code reads.
 9. [Tests](development-guide/tests.md): the three test layers and the test files.
+10. [Template and Content Library Design](development-guide/template-and-library-design.md): the plan for showing templates and content libraries in VCF Operations. Design only, not built.
+11. [To Do project](https://github.com/users/e1-rahabok/projects/1): the enhancements still to do, one line each. Broken things are GitHub issues.
 
 Planned work is tracked in [GitHub Issues](https://github.com/e1-rahabok/VCF-vCommunity-Adapter/issues?q=is%3Aissue+is%3Aopen+label%3Aenhancement), not here.
 
