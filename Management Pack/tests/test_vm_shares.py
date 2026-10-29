@@ -20,10 +20,12 @@ NORMAL = {vs.CPU_SHARES: 4000.0, vs.MEMORY_SHARES: 163840.0}
 def test_normal_shares():
     vm = FakeObject("vm-1")
     vs.collect_vm_shares(vm, "vm-1", VM, NORMAL)
-    assert vm.properties == {
+    assert vm.metrics == {
         "vCommunity|Configuration|Share per vCPU": 1000.0,
         "vCommunity|Configuration|Share per MB of Memory": 10.0,
     }
+    # Metrics for now, see issue #49: no property is published.
+    assert vm.properties == {}
 
 
 def test_same_values_as_the_super_metric():
@@ -41,7 +43,7 @@ def test_no_value_instead_of_a_division_by_zero():
 def test_a_powered_off_vm_gets_its_shares_too():
     vm = FakeObject("vm-1")
     vs.collect_vm_shares(vm, "vm-1", VM._replace(powered_on=False), NORMAL)
-    assert len(vm.properties) == 2
+    assert len(vm.metrics) == 2
 
 
 def test_shares_are_read_as_properties_or_as_stats():
