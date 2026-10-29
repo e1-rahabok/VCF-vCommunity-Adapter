@@ -41,6 +41,20 @@ The file names above are the ones shipped in this folder. An Adapter Instance ca
 
 The Management Pack Builder (`mp-build`, in the SDK) includes these folders in the `.pak` file when it builds it. When the pak is installed, VCF Operations imports the dashboards, reports, super metrics, alert and symptom definitions and resources. The configuration files stay in VCF Operations, where the code reads them. See [SDK](sdk.md).
 
+## Where the pak's files sit on the appliance
+
+Found on the test appliance (`vcf-m02-ops01`) by listing its folders. The VCF Operations version of that appliance is not recorded here, so check the paths on another version before relying on them.
+
+| Path | What is there |
+| :--- | :--- |
+| `/usr/lib/vmware-vcops/tomcat-web-app/webapps/ui` | The VCF Operations UI web app. The pack's icons go under `images/adpknd/` and `images/resknd/custom/`, and its content pack under `ContentPack/`. |
+| `/usr/lib/vmware-vcops/user/plugins/inbound/vCommunity.conf` and `vCommunity/` | The pack's inbound plugin configuration and its adapter kind image. |
+| `/usr/lib/vmware-vcops/tomcat-enterprise/webapps` | Holds `ROOT`, `suite-api`, `telemetry` and `vrops-unicorn`. It does not hold the UI. |
+
+The path `/usr/lib/vmware-vcops/tomcat-enterprise/webapps/vcops-web-ent` that older documents give does not exist on this appliance. Text Widget Content entries are stored in the VCF Operations database, not in a folder, so no path holds them. See [Text Display Widget](../reference/text-display-widget.md).
+
+Do not edit the files in these folders by hand. A manual change may be lost at the next install or upgrade.
+
 ## Limitations
 
 - **The content is exported from VCF Operations, so it is not hand-written.** Editing the JSON or XML by hand is fragile. The safe way is to change the object in the VCF Operations UI, export it, and replace the file.

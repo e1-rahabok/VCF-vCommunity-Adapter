@@ -13,6 +13,9 @@ Every property and metric the vCommunity Management Pack pushes to VCF Operation
 - [vCenter](#vcenter) (16 items)
 - [vSphere World](#vsphere-world) (9 items)
 - [Datacenter](#datacenter) (1 item)
+- [Content Library](#content-library) (8 items)
+- [Library Item](#library-item) (11 items)
+- [VM Template](#vm-template) (7 items)
 - [Super metrics replaced by built-in metrics](#super-metrics-replaced-by-built-in-metrics)
 
 ---
@@ -289,6 +292,65 @@ Every property and metric the vCommunity Management Pack pushes to VCF Operation
 | Type | Path | Description |
 | :--- | :--- | :--- |
 | 🟢 Metric | `vCommunity\|Network\|Total Network Speed Degradation` | The number of hosts of the Datacenter below 100 % Network Speed Degradation, from the same collection cycle. See [Network Speed Degradation](metrics/network-speed-degradation.md#known-limitations). |
+
+[⬆ Back to top](#metrics--properties-reference)
+
+---
+
+## Content Library
+
+A Content Library of the vCenter, local or subscribed. Its parent is the vCenter object. Read from vCenter's REST API at most once an hour. See [Templates and Content Libraries](../concepts/templates-and-content-libraries.md).
+
+| Type | Path | Description |
+| :--- | :--- | :--- |
+| ⚪ Property | `vCommunity\|Content Library\|Type` | `SUBSCRIBED` or local. |
+| ⚪ Property | `vCommunity\|Content Library\|Subscription URL` | The published library the library subscribes to. Empty for a local library. |
+| ⚪ Property | `vCommunity\|Content Library\|Automatic Sync` | Whether the library syncs automatically. |
+| ⚪ Property | `vCommunity\|Content Library\|State` | The state of the library, from vCenter. |
+| 🟢 Metric | `vCommunity\|Content Library\|Items` | The number of items. |
+| 🟢 Metric | `vCommunity\|Content Library\|Items Not Stored Locally` | Items with `cached` false. |
+| 🟢 Metric | `vCommunity\|Content Library\|Items Not Security Compliant` | Items with `security_compliance` false. |
+| 🟢 Metric | `vCommunity\|Content Library\|Total Size (GB)` | The total size of the items. |
+
+[⬆ Back to top](#metrics--properties-reference)
+
+---
+
+## Library Item
+
+One item of a Content Library, of every type (OVF, OVA, VM template, ISO and others). Its parent is its Content Library.
+
+| Type | Path | Description |
+| :--- | :--- | :--- |
+| ⚪ Property | `vCommunity\|Library Item\|Type` | The item type. |
+| ⚪ Property | `vCommunity\|Library Item\|Description` | The description of the item. |
+| ⚪ Property | `vCommunity\|Library Item\|Version` | The version of the item. |
+| ⚪ Property | `vCommunity\|Library Item\|Content Version` | The content version of the item. |
+| ⚪ Property | `vCommunity\|Library Item\|Stored Locally` | Whether the item's files are stored in the library (`cached`). |
+| ⚪ Property | `vCommunity\|Library Item\|Security Compliant` | The `security_compliance` value. |
+| ⚪ Property | `vCommunity\|Library Item\|Certificate Verification` | The certificate verification status. |
+| ⚪ Property | `vCommunity\|Library Item\|Last Modified` | When the item was last modified. |
+| ⚪ Property | `vCommunity\|Library Item\|Last Sync` | When the item was last synced. |
+| ⚪ Property | `vCommunity\|Library Item\|Source Item ID` | The ID of the published item the item came from, for a subscribed library. |
+| 🟢 Metric | `vCommunity\|Library Item\|Size (GB)` | The size of the item. |
+
+[⬆ Back to top](#metrics--properties-reference)
+
+---
+
+## VM Template
+
+A virtual machine marked as a template in vCenter. Its parent is the Virtual Machine Folder it sits in. It has no children yet: the VMs cloned from it are not linked, because VCF Operations does not store that link. See [Template and Content Library Design](../development-guide/template-and-library-design.md).
+
+| Type | Path | Description |
+| :--- | :--- | :--- |
+| ⚪ Property | `vCommunity\|VM Template\|Guest OS` | The guest operating system. |
+| ⚪ Property | `vCommunity\|VM Template\|Hardware Version` | The virtual hardware version. |
+| ⚪ Property | `vCommunity\|VM Template\|vCPUs` | The number of virtual CPUs. |
+| ⚪ Property | `vCommunity\|VM Template\|Memory (GB)` | The memory, in GB. |
+| ⚪ Property | `vCommunity\|VM Template\|Datastore` | The datastore names the template's disks are on. |
+| ⚪ Property | `vCommunity\|VM Template\|VM Folder` | The name of the folder the template sits in. |
+| 🟢 Metric | `vCommunity\|VM Template\|Disk Used (GB)` | The disk space the template uses. |
 
 [⬆ Back to top](#metrics--properties-reference)
 

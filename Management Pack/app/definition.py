@@ -23,6 +23,8 @@ from metrics.datacenter import datacenter_network_degradation
 from utils import collection_health
 from utils import guest_http
 from utils import tls
+from collectors.library.collectLibraryData import ITEM_ID_KEY, ITEM_KIND, LIBRARY_ID_KEY, LIBRARY_KIND
+from collectors.library.collectTemplateData import TEMPLATE_KIND
 
 logger = logging.getLogger(__name__)
 
@@ -616,6 +618,35 @@ def get_adapter_definition() -> AdapterDefinition:
         vCenterDatabaseRuntime.define_string_property("vCenter Unique ID", "vCenter Unique ID")
         vCenterDatabaseRuntime.define_string_property("vCenter managed address", "vCenter managed address")
         vCenterDatabaseRuntime.define_string_property("Maximum Connections", "Maximum Connections")
+
+        # Content Library: one per library of a vCenter, local or subscribed. See collectors/library/collectLibraryData.py.
+        contentLibrary = definition.define_object_type(LIBRARY_KIND, LIBRARY_KIND)
+        contentLibrary.define_string_identifier(LIBRARY_ID_KEY, LIBRARY_ID_KEY)
+        libraryGroup = contentLibrary.define_group("vCommunity", "vCommunity").define_group(LIBRARY_KIND, LIBRARY_KIND)
+        for name in ("Type", "Subscription URL", "Automatic Sync", "State"):
+            libraryGroup.define_string_property(name, name)
+        for name in ("Items", "Items Not Stored Locally", "Items Not Security Compliant"):
+            libraryGroup.define_metric(name, name)
+        libraryGroup.define_metric("Total Size (GB)", "Total Size (GB)")
+
+        # Library Item: one per item of every type (OVF, OVA, VM template, ISO and others), with Type as a property.
+        libraryItem = definition.define_object_type(ITEM_KIND, ITEM_KIND)
+        libraryItem.define_string_identifier(ITEM_ID_KEY, ITEM_ID_KEY)
+        itemGroup = libraryItem.define_group("vCommunity", "vCommunity").define_group(ITEM_KIND, ITEM_KIND)
+        for name in ("Type", "Description", "Version", "Content Version", "Stored Locally", "Security Compliant",
+                     "Certificate Verification", "Last Modified", "Last Sync", "Source Item ID"):
+            itemGroup.define_string_property(name, name)
+        itemGroup.define_metric("Size (GB)", "Size (GB)")
+
+        # VM Template: a VM marked as a template, with the Virtual Machine Folder it sits in as its parent.
+        # See collectors/library/collectTemplateData.py.
+        vmTemplate = definition.define_object_type(TEMPLATE_KIND, TEMPLATE_KIND)
+        vmTemplate.define_string_identifier("VMEntityObjectID", "VMEntityObjectID")
+        vmTemplate.define_string_identifier("VMEntityVCID", "VMEntityVCID")
+        templateGroup = vmTemplate.define_group("vCommunity", "vCommunity").define_group(TEMPLATE_KIND, TEMPLATE_KIND)
+        for name in ("Guest OS", "Hardware Version", "vCPUs", "Memory (GB)", "Datastore", "VM Folder"):
+            templateGroup.define_string_property(name, name)
+        templateGroup.define_metric("Disk Used (GB)", "Disk Used (GB)")
 
         logger.debug(f"Returning adapter definition: {definition.to_json()}")
 

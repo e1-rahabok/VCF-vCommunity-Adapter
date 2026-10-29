@@ -35,6 +35,7 @@ It is built with the [VCF Operations Integration SDK](https://github.com/vmware/
 
 - [Metrics and Properties](reference/metrics-and-properties.md): every key the pack publishes, by object type.
 - [Metrics](reference/metrics/README.md): how each metric and KPI is calculated, and its known limitations.
+- [Text Display Widget](reference/text-display-widget.md): what HTML a Text Display widget keeps and drops, and how to add a page to it.
 
 **Troubleshooting Guide**
 

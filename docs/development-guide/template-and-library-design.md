@@ -1,10 +1,13 @@
 # Template and Content Library Design
 
-**Status: design, approved for the content library read on 2026-10-28. Not built.** The model of the objects is in [Templates and Content Libraries](../concepts/templates-and-content-libraries.md). The open items are on the [To Do project](https://github.com/users/e1-rahabok/projects/1).
+**Status: built in the code, not yet installed or verified on the test instance.** `Content Library`, `Library Item` and `VM Template` are in `definition.py` and written by `collectors/library/`. Unit tests cover them with fakes (`tests/test_library_collection.py`, `tests/test_vm_template.py`). Not built: the VM-to-template children, the template storage metric on the Datastore, and the library sync-age metric. The model of the objects is in [Templates and Content Libraries](../concepts/templates-and-content-libraries.md). The open items are on the [To Do project](https://github.com/users/e1-rahabok/projects/1).
 
 ## Verified on the test instance (read-only)
 
 - VCF Operations has **no content library object and no library item object**. The vCenter adapter's objects are the kinds the pack already reads, plus `VirtualMachine`.
+- **Folders in VCF Operations (VMWARE adapter), by object count:** there are four folder types, one per folder kind: `HostFolder` (Compute, 0 objects), `NetworkFolder` (Network, 21), `DatastoreFolder` (Storage, 0) and `VMFolder` (VM, 6). Their kind type is `TAG`, and they do have objects. The general `Folder` kind has 0 objects, so it is not used.
+- **A template is a VirtualMachine in VCF Operations.** There is no template object type. A template VM has a `VMFolder` object as its parent, and a status object, `VM Entity Status:Template`, that marks it as a template. Its child in the relation list is its Datastore.
+- **vSphere, read-only (vCenter 10.115.1.87):** each VM template sits in a VM folder (`Folder`), which sits in the Datacenter. Each template is registered to a host and holds its disks on a datastore. Those are relations, not containers. Both content libraries are **subscribed** (`type` = `SUBSCRIBED`), and each stores its items on a datastore. Each library is held by the vCenter (`server_guid`), not by a folder. Each subscription points at a published library on the internet: `supervisor-library` at `https://wp-content.broadcom.com/supervisor/v1/latest/lib.json` and `cl-vks01` at `https://wp-content.broadcom.com/v2/latest/lib.json`. Both have automatic sync and on-demand sync enabled, and no authentication.
 - Five VirtualMachine objects have `summary|config|isTemplate` = `true`. Two queries gave 139 and 142 VirtualMachine objects, so that count is not settled. Name matching is not reliable: six names contain "template", and one of them is not a template.
 - **No VCF Operations property links a VM to the template it came from.** Over 20 VMs there were 364 property names, none of them a source. The closest are `summary|folder`, `summary|datastore`, `summary|parentHost` and the template flag.
 - The content libraries, read from vCenter through the vSphere Automation API:
@@ -50,15 +53,16 @@ The SDK has `add_parent` and `add_child`, so a pack object can be a child of an 
 | Object | Parent | Children |
 | :--- | :--- | :--- |
 | vCenter object (existing) | none | `Content Library` |
-| `Content Library` | the vCenter object | `Library Item` |
+| `Content Library` | the vCenter object (existing, kind `vCenter`) | `Library Item` |
 | `Library Item` | its `Content Library` | none |
-| `VM Template` | the Datastore (existing) that holds its disk, and the VM folder (existing) | the VMs (existing VirtualMachine objects) cloned from it |
+| `VM Template` | the `VMFolder` object (existing, "Virtual Machine Folder") that the template VM is in. VCF Operations already lists it as the parent of the template VM. The Datastore is a child in the relation list, not a parent. | the VMs (existing VirtualMachine objects) cloned from it |
 | VM (existing) | the `VM Template` it came from, if the source is known | none |
 
 Notes:
 
 - **Cardinality:** one `VM Template` has many VMs, and a VM has at most one `VM Template`. In the SDK, the template is the parent, so the template calls `add_child` for each of its VMs.
 - A library item has no link in the API to the inventory template it came from, so no relationship is made between a `Library Item` and a `VM Template`. The library is the parent of the item.
+- **Subscription:** a subscribed `Content Library` is linked to a published library on the internet, through its subscription URL. That published library is not an object in VCF Operations, so it is not a parent or child. It is a property of the `Content Library`. A `Library Item` links to its published item through `source_id`, which is a property too.
 - Whether VCF Operations accepts a link from a pack object to an existing object that is not in the same result is not verified. It is a check in the first build (see [Verification](#verification)).
 
 ## Properties
@@ -67,7 +71,7 @@ Properties are text, published under `vCommunity|`. Only the keys that VCF Opera
 
 | Object | Properties |
 | :--- | :--- |
-| `Content Library` | Name, Library ID, whether it is subscribed (to verify) |
+| `Content Library` | Name, Library ID, Type (`SUBSCRIBED` or local), Subscription URL (`subscription_info.subscription_url`), Automatic Sync, State |
 | `Library Item` | Name, Library ID, Type, Description, Version, Content Version, Size (GB), Stored Locally (`cached`), Security Compliant (`security_compliance`), Certificate Verification (`certificate_verification_info.status`), Last Modified, Last Sync, Source Item ID (`source_id`) |
 | `VM Template` | Guest OS, VMware Tools status, Hardware Version, vCPUs, Memory (GB), Disk Used (GB), Encryption, Datastore name, VM folder. The VCF Operations keys for these are to be checked. |
 

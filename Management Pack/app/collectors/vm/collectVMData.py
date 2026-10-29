@@ -22,6 +22,8 @@ from metrics.vm.vm_guest_os_kpi import collect_vm_guest_os_kpi
 from properties.vm.vm_shares import read_vm_shares, collect_vm_shares
 from utils.vi_property_collector import retrieve_properties
 from utils.ops_inventory import read_vms
+from collectors.library.collectTemplateData import PROPERTY_PATHS as TEMPLATE_PROPERTY_PATHS
+from collectors.library.collectTemplateData import folders_by_moid, publish_vm_template
 from pyVmomi import vim
 
 logger = logging.getLogger(__name__)
@@ -84,6 +86,8 @@ def collect_vm_data(
     propertyPaths.append("summary.config.vmPathName")
     propertyPaths.append("config.memoryAllocation.shares.level")
     propertyPaths.append("guest")
+    # The VM Template object is built from these, with the same read. See collectors/library/collectTemplateData.py.
+    propertyPaths.extend(TEMPLATE_PROPERTY_PATHS)
 
     vm_props = retrieve_properties(content, vim.VirtualMachine, propertyPaths)
 
@@ -109,6 +113,9 @@ def collect_vm_data(
     )
     # Shares of every VM, powered on or off, in bulk. See properties/vm/vm_shares.py.
     vm_shares = read_vm_shares(suite_api_client, [vm.id for vm in ops_vms_by_moid.values()])
+
+    vcenter_uuid = getattr(getattr(content, "about", None), "instanceUuid", "") or ""
+    template_folders = None
 
     for vm_data in vm_props:
         try:
@@ -157,6 +164,13 @@ def collect_vm_data(
                 collect_windows_events(vm_obj, vm_ref, content, winUser, winPassword, winEventLogConfigFile)
 
             result.add_object(vm_obj)
+
+            # A VM marked as a template also gets its own VM Template object. The folder objects are read once, and only
+            # when a template is found.
+            if prop_dict.get("config.template"):
+                if template_folders is None:
+                    template_folders = folders_by_moid(suite_api_client, adapter_instance_id)
+                publish_vm_template(vm_ref, prop_dict, vm_name, vcenter_uuid, template_folders, result)
 
         except Exception as e:
             logger.warning(f"Skipping VM data collection on {vm_name} due to error: {repr(e)}")
