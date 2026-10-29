@@ -2,7 +2,7 @@
     "display_name": "DISPLAY_NAME",
     "name": "iSDK_vCommunity",
     "description": "DESCRIPTION",
-    "version": "0.6.7",
+    "version": "0.6.10",
     "vcops_minimum_version": "8.18.0",
     "disk_space_required": 500,
     "run_scripts_on_all_nodes": "true",

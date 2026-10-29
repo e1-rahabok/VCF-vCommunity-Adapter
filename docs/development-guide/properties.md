@@ -39,7 +39,7 @@ A property is therefore a fact that holds until it changes, and a metric is a re
 | `vm/` | `vm_disk.py` | The disks of the VM. |
 | `vm/` | `vmOSInformation.py` | The guest OS of the VM, read inside a Windows guest with `getWindowsOSInformation.ps1`. |
 | `vm/` | `vmService.py` | The Windows services of the VM, read inside the guest with `getWindowsServices.ps1`, for the services chosen in the configuration file. |
-| `vm/` | `vm_shares.py` | The share per vCPU and per MB of memory, normalised by the size of the VM. |
+| `vm/` | `vm_shares.py` | The share per vCPU and per MB of memory, normalised by the size of the VM. Published as metrics for now, though they should be properties (issue #49). |
 
 The modules take the vSphere properties that the collector has already read. Some of them, such as `vmOSInformation.py`, also run a script inside the guest. The scripts are the `.ps1` files in the same folder.
 

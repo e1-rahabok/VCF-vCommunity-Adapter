@@ -8,7 +8,7 @@ import time
 import json
 import atexit
 import xml.etree.ElementTree as ET
-import concurrent
+import concurrent.futures
 import constants.main
 import aria.ops.adapter_logging as logging
 from typing import Any

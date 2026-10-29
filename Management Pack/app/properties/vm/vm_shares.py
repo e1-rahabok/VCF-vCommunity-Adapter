@@ -2,14 +2,16 @@
 """Share per vCPU and Share per MB of Memory: a VM's CPU and memory shares, normalised by its size.
 
 Shares grow with the size of the VM, so raw shares cannot be compared between VMs. Per vCPU and per MB they can.
-Published as properties on every VM, powered on or off. No value when the VM has no vCPU, no memory size or no
+Published as metrics on every VM, powered on or off. No value when the VM has no vCPU, no memory size or no
 shares, instead of a division by zero.
+
+They are meant to be properties, because they change only with the VM configuration. They are metrics for now:
+VCF Operations shows no value for the properties on the test instance, see GitHub issue #49.
 
 Called from: collectors/vm/collectVMData.py. Description: docs/reference/metrics/vm-shares.md
 """
 import logging
 from typing import Dict, List, Optional
-from aria.ops.definition.units import Unit
 from aria.ops.object import Object
 from aria.ops.suite_api_client import SuiteApiClient
 from utils.ops_inventory import VmInfo
@@ -17,23 +19,10 @@ from utils.ops_stats import as_number, read_latest_properties, read_latest_stats
 
 logger = logging.getLogger(__name__)
 
-# Where the properties are published: the existing "Configuration" group of the VM, next to the share levels.
+# Where the metrics are published: the existing "Configuration" group of the VM, next to the share levels.
 GROUP = "Configuration"
-CPU_PROPERTY = "Share per vCPU"
-MEMORY_PROPERTY = "Share per MB of Memory"
-
-class _CountUnit:
-    """TEST (0.6.7 build only): the unit "count", which the SDK does not define.
-
-    The SDK takes a unit from its enum and reads only unit.value.key and unit.value.is_rate, so this object gives it
-    those two values. A plain Unit is refused: the SDK reads unit.value, and fails to build the definition.
-    """
-    value = Unit("count", "count", 1, 1)
-
-
-COUNT_UNIT = _CountUnit()
-# TEST (0.6.7 build only): the same value as a metric, to compare with the property on the same object.
-TEST_METRIC = "Share per vCPU (count unit test)"
+CPU_METRIC = "Share per vCPU"
+MEMORY_METRIC = "Share per MB of Memory"
 
 CPU_SHARES = "config|cpuAllocation|shares|shares"
 MEMORY_SHARES = "config|memoryAllocation|shares|shares"
@@ -68,16 +57,14 @@ def read_vm_shares(suite_api_client: SuiteApiClient, vm_ids: List[str]) -> Dict[
 
 
 def collect_vm_shares(vm_obj: Object, vm_name: str, vm: VmInfo, shares: Dict[str, float]) -> None:
-    """Publishes Share per vCPU and Share per MB of Memory. shares is the entry of this VM in read_vm_shares()."""
+    """Publishes Share per vCPU and Share per MB of Memory as metrics. shares is the entry of this VM in read_vm_shares()."""
     try:
         values = {
-            CPU_PROPERTY: per_unit(shares.get(CPU_SHARES), vm.vcpus),
-            MEMORY_PROPERTY: per_unit(shares.get(MEMORY_SHARES), vm.memory_mb),
+            CPU_METRIC: per_unit(shares.get(CPU_SHARES), vm.vcpus),
+            MEMORY_METRIC: per_unit(shares.get(MEMORY_SHARES), vm.memory_mb),
         }
         for name, value in values.items():
             if value is not None:
-                vm_obj.with_property(f"vCommunity|{GROUP}|{name}", round(value, 2))
-        if values[CPU_PROPERTY] is not None:
-            vm_obj.with_metric(f"vCommunity|{GROUP}|{TEST_METRIC}", round(values[CPU_PROPERTY], 2))
+                vm_obj.with_metric(f"vCommunity|{GROUP}|{name}", round(value, 2))
     except Exception as e:
         logger.warning(f"Failed to publish the VM shares for : {vm_name} - {repr(e)}")

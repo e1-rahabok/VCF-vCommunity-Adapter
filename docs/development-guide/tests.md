@@ -48,8 +48,27 @@ They need the Python requirements of the repository (`requirements.txt`). The fa
 | `test_config_files.py` | The lists read from the configuration files, the refusal of invalid XML, and the problem texts that name the file. |
 | `test_importer.py` | The bulk Adapter Instance importer, see [Importer](../../tools/importer/importer.md). |
 | `test_docs_links.py` | Every link and image in the Markdown files resolves. It runs [`check_links.py`](../../tools/check-docs/check_links.py). |
+| `test_submodule_imports.py` | The app code imports `concurrent.futures` by its full name. See [Submodule imports](#submodule-imports). |
 
 When you add a KPI, add its test file and its entry in `KPI_MODULES` of `test_kpi_score.py`. See [Metrics Code](metrics-code.md#how-to-add-a-kpi).
+
+## Submodule imports
+
+**Import a submodule by its full name in the app code.** Write `import concurrent.futures`, not `import concurrent`. A bare `import concurrent` binds only the package. `concurrent.futures` is then an attribute that exists only if some other module has already imported it.
+
+This is the trap. The unit tests pass, because pytest loads the `anyio` plugin at start-up, and that plugin imports `concurrent.futures`. The code then fails in the container, where nothing else has loaded it. The bug reached the test instance in 0.6.7 as `AttributeError: module 'concurrent' has no attribute 'futures'`, and the adapter stopped collecting. It was fixed in 0.6.8.
+
+To check the trap by hand, run this in a plain Python, with no pytest:
+
+```
+python -c "import concurrent; concurrent.futures"
+```
+
+It fails with `AttributeError`. The same goes for any package whose submodules are used by name, such as `xml.etree` after a bare `import xml`.
+
+The test `test_submodule_imports.py` makes the unit tests fail when the app code has a bare `import concurrent`, or uses `concurrent.futures` without importing it.
+
+The unit tests can hide a missing import this way in other places too. If a test passes and the instance fails with `has no attribute`, check the imports first.
 
 ## KPI equivalence
 
