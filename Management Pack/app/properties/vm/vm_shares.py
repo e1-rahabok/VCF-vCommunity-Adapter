@@ -9,7 +9,6 @@ Called from: collectors/vm/collectVMData.py. Description: docs/reference/metrics
 """
 import logging
 from typing import Dict, List, Optional
-from aria.ops.definition.units import Unit
 from aria.ops.object import Object
 from aria.ops.suite_api_client import SuiteApiClient
 from utils.ops_inventory import VmInfo
@@ -21,19 +20,6 @@ logger = logging.getLogger(__name__)
 GROUP = "Configuration"
 CPU_PROPERTY = "Share per vCPU"
 MEMORY_PROPERTY = "Share per MB of Memory"
-
-class _CountUnit:
-    """TEST (0.6.7 build only): the unit "count", which the SDK does not define.
-
-    The SDK takes a unit from its enum and reads only unit.value.key and unit.value.is_rate, so this object gives it
-    those two values. A plain Unit is refused: the SDK reads unit.value, and fails to build the definition.
-    """
-    value = Unit("count", "count", 1, 1)
-
-
-COUNT_UNIT = _CountUnit()
-# TEST (0.6.7 build only): the same value as a metric, to compare with the property on the same object.
-TEST_METRIC = "Share per vCPU (count unit test)"
 
 CPU_SHARES = "config|cpuAllocation|shares|shares"
 MEMORY_SHARES = "config|memoryAllocation|shares|shares"
@@ -77,7 +63,5 @@ def collect_vm_shares(vm_obj: Object, vm_name: str, vm: VmInfo, shares: Dict[str
         for name, value in values.items():
             if value is not None:
                 vm_obj.with_property(f"vCommunity|{GROUP}|{name}", round(value, 2))
-        if values[CPU_PROPERTY] is not None:
-            vm_obj.with_metric(f"vCommunity|{GROUP}|{TEST_METRIC}", round(values[CPU_PROPERTY], 2))
     except Exception as e:
         logger.warning(f"Failed to publish the VM shares for : {vm_name} - {repr(e)}")
