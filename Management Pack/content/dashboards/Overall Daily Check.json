@@ -3,17 +3,17 @@
       "resourceKind": [
          {
             "resourceKindKey": "VirtualMachine",
-            "internalId": "resourceKind:id:2_::_",
-            "adapterKindKey": "VMWARE"
-         },
-         {
-            "resourceKindKey": "ClusterComputeResource",
             "internalId": "resourceKind:id:1_::_",
             "adapterKindKey": "VMWARE"
          },
          {
-            "resourceKindKey": "vSphere World",
+            "resourceKindKey": "ClusterComputeResource",
             "internalId": "resourceKind:id:0_::_",
+            "adapterKindKey": "VMWARE"
+         },
+         {
+            "resourceKindKey": "vSphere World",
+            "internalId": "resourceKind:id:2_::_",
             "adapterKindKey": "VMWARE"
          }
       ],
@@ -40,61 +40,6 @@
          {
             "tabId": "2ec3cc95-1a5c-4967-bd19-a38f56d1ddae",
             "collapsed": true,
-            "id": "25b1e47f-769b-46f9-9382-41b8be97ec76",
-            "gridsterCoords": {
-               "w": 12,
-               "x": 1,
-               "h": 1,
-               "y": 4
-            },
-            "state": "",
-            "type": "Section",
-            "title": "AVAILABILITY",
-            "config": {
-               "titleLocalized": "AVAILABILITY",
-               "widgetId": "25b1e47f-769b-46f9-9382-41b8be97ec76",
-               "description": "Since VM runs on ESXi, any availability or consumption issue at ESXi need to be checked.\n\nThe data comes from all ESXi in the environment.",
-               "title": "AVAILABILITY",
-               "widgets": [
-                  "b75465a0-cb3c-45e0-8bc8-7fd4da0944e3",
-                  "ce3a6956-a0aa-48c4-9517-41910da0bd22",
-                  "854e1b3c-50f2-4c8d-a0d7-63835dd40859"
-               ]
-            },
-            "height": 0
-         },
-         {
-            "tabId": "2ec3cc95-1a5c-4967-bd19-a38f56d1ddae",
-            "collapsed": false,
-            "id": "64922b42-ce96-40b3-a8d5-6da49f1649e9",
-            "gridsterCoords": {
-               "w": 12,
-               "x": 1,
-               "h": 1,
-               "y": 5
-            },
-            "state": "",
-            "type": "Section",
-            "title": "CAPACITY",
-            "config": {
-               "titleLocalized": "CAPACITY",
-               "widgetId": "64922b42-ce96-40b3-a8d5-6da49f1649e9",
-               "description": "The aggregate workload or demand on your private cloud should be fairly stable. If not, it should matches either the business cycle or data center activities. \n\nInvestigate if the number drops when it's a supposed to be busy day for business, or if the number spike when it's supposed to be a quiet hours.",
-               "title": "CAPACITY",
-               "widgets": [
-                  "928dd83b-6b33-4dc3-ac7c-95a78666cbbc",
-                  "5f1aa8d9-5be7-4cbe-a8c3-eb8de0116144",
-                  "42cb53d3-4d37-48fd-8110-29adb257ce12",
-                  "45bd649a-1af3-4c94-aad9-3b189c224cc4",
-                  "fa591260-9646-4954-af48-73f0b69380b1",
-                  "20d11e2e-07d2-4f83-a322-fdef03e97b4a"
-               ]
-            },
-            "height": 0
-         },
-         {
-            "tabId": "2ec3cc95-1a5c-4967-bd19-a38f56d1ddae",
-            "collapsed": true,
             "id": "93a51d2b-c6a3-4982-8eaf-9ba02dddcd30",
             "gridsterCoords": {
                "w": 12,
@@ -111,175 +56,6 @@
                "description": "A big drop in these numbers indicate a major issue.",
                "title": "KEY METRICS",
                "widgets": ["098630f3-5e0f-4463-9a0f-232f9a5904a1"]
-            },
-            "height": 0
-         },
-         {
-            "tabId": "2ec3cc95-1a5c-4967-bd19-a38f56d1ddae",
-            "collapsed": false,
-            "id": "098630f3-5e0f-4463-9a0f-232f9a5904a1",
-            "gridsterCoords": {
-               "w": 12,
-               "x": 1,
-               "h": 3,
-               "y": 2
-            },
-            "state": "",
-            "type": "Scoreboard",
-            "title": "Key Inventory",
-            "config": {
-               "maxCellCount": 100,
-               "oldMetricValues": false,
-               "relationshipMode": {"relationshipMode": 0},
-               "description": "If these numbers change drastically and not matching your expectation, something wrong has happened.",
-               "valueSize": 24,
-               "title": "Key Inventory",
-               "boxHeight": null,
-               "showResourceName": {"showResourceName": false},
-               "roundDecimals": null,
-               "mode": {"layoutMode": "fixedView"},
-               "labelSize": 16,
-               "titleLocalized": "Key Inventory",
-               "customFilter": {
-                  "filter": [],
-                  "excludedResources": null,
-                  "includedResources": null
-               },
-               "viewDetails": "",
-               "selfProvider": {"selfProvider": true},
-               "resInteractionMode": null,
-               "visualTheme": 8,
-               "showMetricName": {"showMetricName": true},
-               "refreshInterval": 300,
-               "resource": [],
-               "widgetId": "098630f3-5e0f-4463-9a0f-232f9a5904a1",
-               "showDT": {"showDT": false},
-               "showRemaining": false,
-               "refreshContent": {"refreshContent": false},
-               "focusOnPercent": false,
-               "showMetricUnit": {"showMetricUnit": true},
-               "depth": 1,
-               "metric": {
-                  "mode": "resourceKind",
-                  "resourceMetrics": [],
-                  "resourceKindMetrics": [
-                     {
-                        "yellowBound": null,
-                        "metricName": "Summary|Number of Running VMs",
-                        "metricKey": "summary|number_running_vms",
-                        "handleOldColoring": false,
-                        "link": "",
-                        "resourceKindName": "vSphere World",
-                        "isStringMetric": false,
-                        "resourceKindId": "resourceKind:id:0_::_",
-                        "label": "",
-                        "orangeBound": null,
-                        "labelOrig": "",
-                        "labelLocalized": "",
-                        "redBound": null,
-                        "id": "extModel30055-2",
-                        "colorMethod": 2
-                     },
-                     {
-                        "yellowBound": null,
-                        "metricName": "Summary|Total Number of VMs",
-                        "metricKey": "summary|total_number_vms",
-                        "handleOldColoring": false,
-                        "link": "",
-                        "resourceKindName": "vSphere World",
-                        "isStringMetric": false,
-                        "resourceKindId": "resourceKind:id:0_::_",
-                        "label": "",
-                        "orangeBound": null,
-                        "labelOrig": "",
-                        "labelLocalized": "",
-                        "redBound": null,
-                        "id": "extModel30055-3",
-                        "colorMethod": 2
-                     },
-                     {
-                        "yellowBound": null,
-                        "metricUnitId": null,
-                        "metricName": "Summary|Number of Running Hosts",
-                        "metricKey": "summary|number_running_hosts",
-                        "handleOldColoring": false,
-                        "maxValue": "",
-                        "link": "",
-                        "resourceKindName": "vSphere World",
-                        "isStringMetric": false,
-                        "resourceKindId": "resourceKind:id:0_::_",
-                        "label": "",
-                        "orangeBound": null,
-                        "metricUnit": "",
-                        "labelOrig": "",
-                        "unit": "",
-                        "labelLocalized": "",
-                        "redBound": null,
-                        "id": "extModel30055-1",
-                        "colorMethod": 2
-                     },
-                     {
-                        "yellowBound": null,
-                        "metricName": "Summary|Total Number of Datastores",
-                        "metricKey": "summary|total_number_datastores",
-                        "handleOldColoring": false,
-                        "link": "",
-                        "resourceKindName": "vSphere World",
-                        "isStringMetric": false,
-                        "resourceKindId": "resourceKind:id:0_::_",
-                        "label": "",
-                        "orangeBound": null,
-                        "labelOrig": "",
-                        "labelLocalized": "",
-                        "redBound": null,
-                        "id": "extModel30055-5",
-                        "colorMethod": 2
-                     },
-                     {
-                        "yellowBound": null,
-                        "metricUnitId": null,
-                        "metricName": "vCommunity|Number of Port Groups",
-                        "metricKey": "vCommunity|Number of Port Groups",
-                        "handleOldColoring": false,
-                        "maxValue": "",
-                        "link": "",
-                        "resourceKindName": "vSphere World",
-                        "isStringMetric": false,
-                        "resourceKindId": "resourceKind:id:0_::_",
-                        "label": "",
-                        "orangeBound": null,
-                        "metricUnit": "",
-                        "labelOrig": "",
-                        "unit": "",
-                        "labelLocalized": "",
-                        "redBound": null,
-                        "id": "extModel3752-1",
-                        "colorMethod": 2
-                     },
-                     {
-                        "yellowBound": null,
-                        "metricName": "Summary|Total Number of Clusters",
-                        "metricKey": "summary|total_number_clusters",
-                        "handleOldColoring": false,
-                        "link": "",
-                        "resourceKindName": "vSphere World",
-                        "isStringMetric": false,
-                        "resourceKindId": "resourceKind:id:0_::_",
-                        "label": "",
-                        "orangeBound": null,
-                        "labelOrig": "",
-                        "labelLocalized": "",
-                        "redBound": null,
-                        "id": "extModel30055-4",
-                        "colorMethod": 2
-                     }
-                  ],
-                  "subMode": "resourceKindAll"
-               },
-               "showSparkline": {"showSparkline": true},
-               "showPercentText": false,
-               "boxColumns": 6,
-               "periodLength": "dashboardTime"
             },
             "height": 0
          },
@@ -310,246 +86,29 @@
          },
          {
             "tabId": "2ec3cc95-1a5c-4967-bd19-a38f56d1ddae",
-            "collapsed": false,
-            "id": "54c0536e-9faa-4707-afa8-c37cb72480e5",
+            "collapsed": true,
+            "id": "25b1e47f-769b-46f9-9382-41b8be97ec76",
             "gridsterCoords": {
                "w": 12,
                "x": 1,
                "h": 1,
-               "y": 16
+               "y": 3
             },
             "state": "",
             "type": "Section",
-            "title": "VOLATILITY",
+            "title": "AVAILABILITY",
             "config": {
-               "titleLocalized": "VOLATILITY",
-               "widgetId": "54c0536e-9faa-4707-afa8-c37cb72480e5",
-               "description": "While your private cloud is dynamic, the degree of changes need to be within your expectation. It needs to match business cycle or data center operations.\n\nInvestigate if the number drops when it's a supposed to be busy day for business, or if the number spike when it's supposed to be a quiet hours.",
-               "title": "VOLATILITY",
+               "titleLocalized": "AVAILABILITY",
+               "widgetId": "25b1e47f-769b-46f9-9382-41b8be97ec76",
+               "description": "Since VM runs on ESXi, any availability or consumption issue at ESXi need to be checked.\n\nThe data comes from all ESXi in the environment.",
+               "title": "AVAILABILITY",
                "widgets": [
-                  "99191a76-5159-4b90-b081-3d4c43bd2dcb",
-                  "46cf2b20-2517-4202-9150-f55595900186",
-                  "b875f44f-6754-49b3-b2dc-73393388a5dc"
+                  "b75465a0-cb3c-45e0-8bc8-7fd4da0944e3",
+                  "ce3a6956-a0aa-48c4-9517-41910da0bd22",
+                  "854e1b3c-50f2-4c8d-a0d7-63835dd40859"
                ]
             },
             "height": 0
-         },
-         {
-            "tabId": "2ec3cc95-1a5c-4967-bd19-a38f56d1ddae",
-            "collapsed": false,
-            "id": "45374319-59a1-4fcc-a2fc-6337dd343463",
-            "gridsterCoords": {
-               "w": 12,
-               "x": 1,
-               "h": 1,
-               "y": 21
-            },
-            "state": "",
-            "type": "Section",
-            "title": "CONFIGURATION",
-            "config": {
-               "titleLocalized": "CONFIGURATION",
-               "widgetId": "45374319-59a1-4fcc-a2fc-6337dd343463",
-               "description": "",
-               "title": "CONFIGURATION",
-               "widgets": [
-                  "8b45be09-c6b6-46c0-bc58-55948984909c",
-                  "038d9e01-0eba-438e-9f76-8bc4d8dcccf4",
-                  "8ab607e1-6e03-43c8-854d-7fd5f4cff942",
-                  "90ccfa01-58e0-48e9-a1c7-0bb522015218"
-               ]
-            },
-            "height": 0
-         },
-         {
-            "tabId": "2ec3cc95-1a5c-4967-bd19-a38f56d1ddae",
-            "collapsed": false,
-            "id": "038d9e01-0eba-438e-9f76-8bc4d8dcccf4",
-            "gridsterCoords": {
-               "w": 4,
-               "x": 5,
-               "h": 4,
-               "y": 22
-            },
-            "state": "",
-            "type": "HealthChart",
-            "title": "VM with Tools Down",
-            "config": {
-               "yellowBound": 1,
-               "metricName": "vCommunity|Number of VMware Tools down",
-               "metricKey": "vCommunity|Number of VMware Tools down",
-               "relationshipMode": {"relationshipMode": 0},
-               "description": "VMware Tools are installed, but not running.",
-               "sortByDir": {"orderByDir": "asc"},
-               "title": "VM with Tools Down",
-               "showResourceName": {"showResourceName": false},
-               "chartHeight": 135,
-               "metricUnit": {
-                  "metricUnitId": -1,
-                  "metricUnitName": "Default Unit"
-               },
-               "undefined": [],
-               "mode": "resource",
-               "metricType": {"metricType": "custom"},
-               "filterMode": "tagPicker",
-               "tagFilter": null,
-               "paginationNumber": 15,
-               "customFilter": {
-                  "filter": [],
-                  "filterMode": "tagPicker",
-                  "excludedResources": null,
-                  "includedResources": null
-               },
-               "selectFirstRow": {"selectFirstRow": false},
-               "sortBy": "metricValue",
-               "viewDetails": "",
-               "selfProvider": {"selfProvider": true},
-               "refreshInterval": 300,
-               "resource": [{
-                  "name": "vSphere World",
-                  "id": "resource:id:0_::_"
-               }],
-               "widgetId": "038d9e01-0eba-438e-9f76-8bc4d8dcccf4",
-               "refreshContent": {"refreshContent": false},
-               "resourceKindId": "resourceKind:id:0_::_",
-               "orangeBound": 25,
-               "metricFullName": "vCommunity|Number of VMware Tools down",
-               "showMetricLabel": {"showMetricLabel": false},
-               "depth": 1,
-               "metricLabel": "",
-               "redBound": 100
-            },
-            "height": 0,
-            "states": [{
-               "value": "s%3A%7B%22dateRange%22%3A%22dashboardTime%22%2C%22dateFrom%22%3Anull%2C%22dateTo%22%3Anull%2C%22timeFrom%22%3Anull%2C%22timeTo%22%3Anull%7D",
-               "key": "permDateRange_HealthChart_widget_2ec3cc95-1a5c-4967-bd19-a38f56d1ddae_038d9e01-0eba-438e-9f76-8bc4d8dcccf4"
-            }]
-         },
-         {
-            "tabId": "2ec3cc95-1a5c-4967-bd19-a38f56d1ddae",
-            "collapsed": false,
-            "id": "8ab607e1-6e03-43c8-854d-7fd5f4cff942",
-            "gridsterCoords": {
-               "w": 4,
-               "x": 9,
-               "h": 4,
-               "y": 22
-            },
-            "state": "",
-            "type": "HealthChart",
-            "title": "VM with No Tools",
-            "config": {
-               "yellowBound": 1,
-               "metricName": "vCommunity|Number of VM without Tools",
-               "metricKey": "vCommunity|Number of VM without Tools",
-               "relationshipMode": {"relationshipMode": 0},
-               "description": "VM with no VMware Tools installed",
-               "sortByDir": {"orderByDir": "asc"},
-               "title": "VM with No Tools",
-               "showResourceName": {"showResourceName": false},
-               "chartHeight": 135,
-               "metricUnit": {
-                  "metricUnitId": -1,
-                  "metricUnitName": "Default Unit"
-               },
-               "undefined": [],
-               "mode": "resource",
-               "metricType": {"metricType": "custom"},
-               "filterMode": "tagPicker",
-               "tagFilter": null,
-               "paginationNumber": 15,
-               "customFilter": {
-                  "filter": [],
-                  "filterMode": "tagPicker",
-                  "excludedResources": null,
-                  "includedResources": null
-               },
-               "selectFirstRow": {"selectFirstRow": false},
-               "sortBy": "metricValue",
-               "viewDetails": "",
-               "selfProvider": {"selfProvider": true},
-               "refreshInterval": 300,
-               "resource": [{
-                  "name": "vSphere World",
-                  "id": "resource:id:0_::_"
-               }],
-               "widgetId": "8ab607e1-6e03-43c8-854d-7fd5f4cff942",
-               "refreshContent": {"refreshContent": false},
-               "resourceKindId": "resourceKind:id:0_::_",
-               "orangeBound": 25,
-               "metricFullName": "vCommunity|Number of VM without Tools",
-               "showMetricLabel": {"showMetricLabel": false},
-               "depth": 1,
-               "metricLabel": "",
-               "redBound": 100
-            },
-            "height": 0,
-            "states": [{
-               "value": "s%3A%7B%22dateRange%22%3A%22dashboardTime%22%2C%22dateFrom%22%3Anull%2C%22dateTo%22%3Anull%2C%22timeFrom%22%3Anull%2C%22timeTo%22%3Anull%7D",
-               "key": "permDateRange_HealthChart_widget_2ec3cc95-1a5c-4967-bd19-a38f56d1ddae_8ab607e1-6e03-43c8-854d-7fd5f4cff942"
-            }]
-         },
-         {
-            "tabId": "2ec3cc95-1a5c-4967-bd19-a38f56d1ddae",
-            "collapsed": false,
-            "id": "928dd83b-6b33-4dc3-ac7c-95a78666cbbc",
-            "gridsterCoords": {
-               "w": 6,
-               "x": 7,
-               "h": 4,
-               "y": 6
-            },
-            "state": "",
-            "type": "HealthChart",
-            "title": "Clusters being opened",
-            "config": {
-               "yellowBound": 100,
-               "metricName": "vCommunity|Cluster Delta Open Count",
-               "metricKey": "vCommunity|Cluster Delta Open Count",
-               "relationshipMode": {"relationshipMode": 0},
-               "description": "vSphere Clusters that system decided it's open for business",
-               "sortByDir": {"orderByDir": "asc"},
-               "title": "Clusters being opened",
-               "showResourceName": {"showResourceName": false},
-               "chartHeight": 135,
-               "metricUnit": {
-                  "metricUnitId": -1,
-                  "metricUnitName": "Default Unit"
-               },
-               "mode": "resource",
-               "metricType": {"metricType": "custom"},
-               "filterMode": "tagPicker",
-               "tagFilter": null,
-               "paginationNumber": 15,
-               "customFilter": {
-                  "filter": [],
-                  "excludedResources": null,
-                  "includedResources": null
-               },
-               "selectFirstRow": {"selectFirstRow": false},
-               "sortBy": "metricValue",
-               "viewDetails": "",
-               "selfProvider": {"selfProvider": true},
-               "refreshInterval": 300,
-               "resource": [{
-                  "name": "vSphere World",
-                  "id": "resource:id:0_::_"
-               }],
-               "widgetId": "928dd83b-6b33-4dc3-ac7c-95a78666cbbc",
-               "refreshContent": {"refreshContent": false},
-               "resourceKindId": "resourceKind:id:0_::_",
-               "orangeBound": 50,
-               "metricFullName": "vCommunity|Cluster Delta Open Count",
-               "showMetricLabel": {"showMetricLabel": false},
-               "depth": 1,
-               "metricLabel": "",
-               "redBound": 10
-            },
-            "height": 0,
-            "states": [{
-               "value": "s%3A%7B%22dateRange%22%3A%22dashboardTime%22%2C%22dateFrom%22%3Anull%2C%22dateTo%22%3Anull%2C%22timeFrom%22%3Anull%2C%22timeTo%22%3Anull%7D",
-               "key": "permDateRange_HealthChart_widget_2ec3cc95-1a5c-4967-bd19-a38f56d1ddae_928dd83b-6b33-4dc3-ac7c-95a78666cbbc"
-            }]
          },
          {
             "tabId": "2ec3cc95-1a5c-4967-bd19-a38f56d1ddae",
@@ -559,7 +118,7 @@
                "w": 12,
                "x": 1,
                "h": 1,
-               "y": 3
+               "y": 4
             },
             "state": "",
             "type": "Section",
@@ -581,210 +140,104 @@
          {
             "tabId": "2ec3cc95-1a5c-4967-bd19-a38f56d1ddae",
             "collapsed": false,
-            "id": "99191a76-5159-4b90-b081-3d4c43bd2dcb",
+            "id": "ac93cd19-4074-4e3e-ac4c-1d29b111c56c",
             "gridsterCoords": {
-               "w": 4,
-               "x": 1,
-               "h": 4,
-               "y": 17
+               "w": 2,
+               "x": 9,
+               "h": 5,
+               "y": 8
             },
             "state": "",
-            "type": "HealthChart",
-            "title": "VM: Inventory Change",
+            "type": "View",
+            "title": "Old Snapshots",
             "config": {
-               "yellowBound": 10,
-               "metricName": "Summary|VM Inventory Changes",
-               "metricKey": "summary|number_inventory_changes",
-               "relationshipMode": {"relationshipMode": 0},
-               "description": "7 types of VM inventory changes: clone, create, delete, reconfigure, register to vCenter, unregister to vCenter, deploy from template.",
-               "sortByDir": {"orderByDir": "asc"},
-               "title": "VM: Inventory Change",
-               "showResourceName": {"showResourceName": false},
-               "chartHeight": 135,
-               "metricUnit": {
-                  "metricUnitId": -1,
-                  "metricUnitName": "Default Unit"
-               },
-               "undefined": [],
-               "mode": "resource",
-               "metricType": {"metricType": "custom"},
-               "filterMode": "tagPicker",
-               "tagFilter": null,
-               "paginationNumber": 15,
-               "titleLocalized": "VM: Inventory Change",
-               "customFilter": {
-                  "filter": [],
-                  "filterMode": "tagPicker",
-                  "excludedResources": null,
-                  "includedResources": null
-               },
-               "selectFirstRow": {"selectFirstRow": false},
-               "sortBy": "metricValue",
-               "viewDetails": "",
-               "selfProvider": {"selfProvider": true},
                "refreshInterval": 300,
-               "resource": [{
-                  "name": "vSphere World",
-                  "id": "resource:id:0_::_"
-               }],
-               "widgetId": "99191a76-5159-4b90-b081-3d4c43bd2dcb",
+               "resource": {
+                  "resourceId": "resource:id:0_::_",
+                  "traversalSpecId": "vSphere Hosts and Clusters-VMWARE-vSphere World",
+                  "resourceName": "vSphere World",
+                  "resourceKindId": "002006VMWAREvSphere World",
+                  "id": "Ext.vcops.chrome.model.Resource-46"
+               },
+               "widgetId": "ac93cd19-4074-4e3e-ac4c-1d29b111c56c",
+               "traversalSpecId": null,
                "refreshContent": {"refreshContent": false},
-               "resourceKindId": "resourceKind:id:0_::_",
-               "orangeBound": 40,
-               "metricFullName": "Summary|VM Inventory Changes",
-               "showMetricLabel": {"showMetricLabel": false},
-               "depth": 1,
-               "metricLabel": "",
-               "redBound": 160
+               "description": "",
+               "isUpdatedView": true,
+               "title": "Old Snapshots",
+               "viewDefinitionId": "ca5859dc-1574-4c4a-88c6-b45beceff0f2",
+               "chartViewItems": [],
+               "selectFirstRow": {"selectFirstRow": false},
+               "viewDetails": "",
+               "selfProvider": {"selfProvider": true}
             },
-            "height": 0,
-            "states": [{
-               "value": "s%3A%7B%22dateRange%22%3A%22dashboardTime%22%2C%22dateFrom%22%3Anull%2C%22dateTo%22%3Anull%2C%22timeFrom%22%3Anull%2C%22timeTo%22%3Anull%7D",
-               "key": "permDateRange_HealthChart_widget_2ec3cc95-1a5c-4967-bd19-a38f56d1ddae_99191a76-5159-4b90-b081-3d4c43bd2dcb"
-            }]
+            "height": 0
          },
          {
             "tabId": "2ec3cc95-1a5c-4967-bd19-a38f56d1ddae",
             "collapsed": false,
-            "id": "7000a685-5ef2-48ca-98c1-c1c796e80a03",
+            "id": "b64f0712-41c1-409e-9209-25c6bef99861",
             "gridsterCoords": {
-               "w": 6,
-               "x": 1,
-               "h": 4,
-               "y": 3
+               "w": 2,
+               "x": 7,
+               "h": 5,
+               "y": 8
             },
             "state": "",
-            "type": "HealthChart",
-            "title": "Alerts: Urgent and Important",
+            "type": "View",
+            "title": "VM Tools Down",
             "config": {
-               "yellowBound": 0,
-               "metricName": "VCF Operations Generated|Alert Count Critical",
-               "metricKey": "System Attributes|alert_count_critical",
-               "relationshipMode": {"relationshipMode": 0},
-               "description": "Red = attend as soon as possible, not delay until end of day. This number should be 0 most of the time.",
-               "sortByDir": {"orderByDir": "asc"},
-               "title": "Alerts: Urgent and Important",
-               "showResourceName": {"showResourceName": false},
-               "chartHeight": 135,
-               "metricUnit": {
-                  "metricUnitId": -1,
-                  "metricUnitName": "Default Unit"
-               },
-               "undefined": [],
-               "mode": "resource",
-               "metricType": {"metricType": "custom"},
-               "filterMode": "tagPicker",
-               "tagFilter": null,
-               "paginationNumber": 15,
-               "titleLocalized": "Alerts: Urgent and Important",
-               "customFilter": {
-                  "filter": [],
-                  "filterMode": "tagPicker",
-                  "excludedResources": null,
-                  "includedResources": null
-               },
-               "selectFirstRow": {"selectFirstRow": false},
-               "sortBy": "metricValue",
-               "viewDetails": "",
-               "selfProvider": {"selfProvider": true},
                "refreshInterval": 300,
-               "resource": [{
-                  "name": "vSphere World",
-                  "id": "resource:id:0_::_"
-               }],
-               "widgetId": "7000a685-5ef2-48ca-98c1-c1c796e80a03",
+               "resource": {
+                  "resourceId": "resource:id:0_::_",
+                  "traversalSpecId": "vSphere Hosts and Clusters-VMWARE-vSphere World",
+                  "resourceName": "vSphere World",
+                  "resourceKindId": "002006VMWAREvSphere World",
+                  "id": "Ext.vcops.chrome.model.Resource-69"
+               },
+               "widgetId": "b64f0712-41c1-409e-9209-25c6bef99861",
+               "traversalSpecId": null,
                "refreshContent": {"refreshContent": false},
-               "resourceKindId": "resourceKind:id:0_::_",
-               "orangeBound": 0,
-               "metricFullName": "vRealize Operations Generated|Alert Count Critical",
-               "showMetricLabel": {"showMetricLabel": false},
-               "depth": 1,
-               "metricLabel": "",
-               "redBound": 1
+               "description": "",
+               "isUpdatedView": true,
+               "title": "VM Tools Down",
+               "viewDefinitionId": "35584e40-c780-48c2-8b7a-7a8db67a78c5",
+               "chartViewItems": [],
+               "selectFirstRow": {"selectFirstRow": false},
+               "viewDetails": "",
+               "selfProvider": {"selfProvider": true}
             },
-            "height": 0,
-            "states": [{
-               "value": "s%3A%7B%22dateRange%22%3A%22dashboardTime%22%2C%22dateFrom%22%3Anull%2C%22dateTo%22%3Anull%2C%22timeFrom%22%3Anull%2C%22timeTo%22%3Anull%7D",
-               "key": "permDateRange_HealthChart_widget_2ec3cc95-1a5c-4967-bd19-a38f56d1ddae_7000a685-5ef2-48ca-98c1-c1c796e80a03"
-            }]
+            "height": 0
          },
          {
             "tabId": "2ec3cc95-1a5c-4967-bd19-a38f56d1ddae",
             "collapsed": false,
-            "id": "45bd649a-1af3-4c94-aad9-3b189c224cc4",
+            "id": "45374319-59a1-4fcc-a2fc-6337dd343463",
             "gridsterCoords": {
-               "w": 3,
-               "x": 4,
-               "h": 6,
-               "y": 10
+               "w": 12,
+               "x": 1,
+               "h": 1,
+               "y": 7
             },
             "state": "",
-            "type": "MetricChart",
-            "title": "Total Load: Network Throughput",
+            "type": "Section",
+            "title": "CONFIGURATION",
             "config": {
-               "refreshInterval": 300,
-               "resource": [],
-               "widgetId": "45bd649a-1af3-4c94-aad9-3b189c224cc4",
-               "refreshContent": {"refreshContent": false},
-               "relationshipMode": {"relationshipMode": 0},
-               "description": "Total network throughput (send and receive) in the entire environment. \n\nPro Tip: set a threshold so your expectation is known as a team.",
-               "title": "Total Load: Network Throughput",
-               "depth": 1,
-               "metric": {
-                  "mode": "resourceKind",
-                  "resourceMetrics": [],
-                  "resourceKindMetrics": [{
-                     "yellowBound": null,
-                     "metricUnitId": "gbitsps",
-                     "metricName": "Network|Usage Rate",
-                     "metricKey": "net|usage_average",
-                     "handleOldColoring": false,
-                     "maxValue": "",
-                     "resourceKindName": "vSphere World",
-                     "isStringMetric": false,
-                     "resourceKindId": "resourceKind:id:0_::_",
-                     "orangeBound": null,
-                     "metricUnit": "Gbps",
-                     "unit": "Gbps",
-                     "redBound": null,
-                     "id": "extModel22764-1",
-                     "colorMethod": 2
-                  }],
-                  "subMode": "resourceKindAll"
-               },
-               "titleLocalized": "Total Load: Network Throughput",
-               "customFilter": {
-                  "filter": [],
-                  "excludedResources": null,
-                  "includedResources": null
-               },
-               "viewDetails": "",
-               "selfProvider": {"selfProvider": true},
-               "resInteractionMode": null
+               "titleLocalized": "CONFIGURATION",
+               "widgetId": "45374319-59a1-4fcc-a2fc-6337dd343463",
+               "description": "",
+               "title": "CONFIGURATION",
+               "widgets": [
+                  "0b891d5f-a0fd-456f-9404-7f395e0bc573",
+                  "82ba1067-b2a1-44b6-83c4-212392e129b8",
+                  "28cd3545-e0c0-44a2-8056-ddef55dce61e",
+                  "ac93cd19-4074-4e3e-ac4c-1d29b111c56c",
+                  "8899d08c-c27e-49d9-b81f-13f4b94c3d5f",
+                  "b64f0712-41c1-409e-9209-25c6bef99861",
+                  "90ccfa01-58e0-48e9-a1c7-0bb522015218"
+               ]
             },
-            "height": 0,
-            "states": [
-               {
-                  "value": "b%3A0",
-                  "key": "permBtn_pan_permMetricChart_widget_2ec3cc95-1a5c-4967-bd19-a38f56d1ddae_45bd649a-1af3-4c94-aad9-3b189c224cc4"
-               },
-               {
-                  "value": "b%3A0",
-                  "key": "permBtn_zoomAllGraphs_permMetricChart_widget_2ec3cc95-1a5c-4967-bd19-a38f56d1ddae_45bd649a-1af3-4c94-aad9-3b189c224cc4"
-               },
-               {
-                  "value": "s%3A%7B%22dateRange%22%3A%22dashboardTime%22%2C%22dateFrom%22%3Anull%2C%22dateTo%22%3Anull%2C%22timeFrom%22%3Anull%2C%22timeTo%22%3Anull%7D",
-                  "key": "permDateRange1_permMetricChart_widget_2ec3cc95-1a5c-4967-bd19-a38f56d1ddae_45bd649a-1af3-4c94-aad9-3b189c224cc4"
-               },
-               {
-                  "value": "o%3A",
-                  "key": "permMetricChart_widget_2ec3cc95-1a5c-4967-bd19-a38f56d1ddae_45bd649a-1af3-4c94-aad9-3b189c224cc4"
-               },
-               {
-                  "value": "b%3A0",
-                  "key": "perm_toolbarVisible_widget_2ec3cc95-1a5c-4967-bd19-a38f56d1ddae_45bd649a-1af3-4c94-aad9-3b189c224cc4"
-               }
-            ]
+            "height": 0
          },
          {
             "tabId": "2ec3cc95-1a5c-4967-bd19-a38f56d1ddae",
@@ -794,7 +247,7 @@
                "w": 12,
                "x": 1,
                "h": 6,
-               "y": 26
+               "y": 13
             },
             "state": "",
             "type": "Heatmap",
@@ -827,7 +280,7 @@
                      "originalText": "Cluster Compute Resource",
                      "resourceKind": "ClusterComputeResource",
                      "adapterKind": "VMWARE",
-                     "typeId": "resourceKind:id:1_::_",
+                     "typeId": "resourceKind:id:0_::_",
                      "id": "004null002006VMWAREClusterComputeResource",
                      "text": "Cluster Compute Resource",
                      "type": "resourceKind",
@@ -838,7 +291,7 @@
                   "attributeKind": {"value": ""},
                   "thenBy": null,
                   "mode": {"mode": false},
-                  "resourceKind": "resourceKind:id:2_::_",
+                  "resourceKind": "resourceKind:id:1_::_",
                   "filterMode": "tagPicker",
                   "tagFilter": null,
                   "solidColoring": false,
@@ -892,24 +345,130 @@
          {
             "tabId": "2ec3cc95-1a5c-4967-bd19-a38f56d1ddae",
             "collapsed": false,
-            "id": "46cf2b20-2517-4202-9150-f55595900186",
+            "id": "28cd3545-e0c0-44a2-8056-ddef55dce61e",
+            "gridsterCoords": {
+               "w": 2,
+               "x": 5,
+               "h": 5,
+               "y": 8
+            },
+            "state": "",
+            "type": "View",
+            "title": "VM Tools Outdated or Missing",
+            "config": {
+               "refreshInterval": 300,
+               "resource": {
+                  "resourceId": "resource:id:0_::_",
+                  "traversalSpecId": "vSphere Hosts and Clusters-VMWARE-vSphere World",
+                  "resourceName": "vSphere World",
+                  "resourceKindId": "002006VMWAREvSphere World",
+                  "id": "Ext.vcops.chrome.model.Resource-75"
+               },
+               "widgetId": "28cd3545-e0c0-44a2-8056-ddef55dce61e",
+               "traversalSpecId": null,
+               "refreshContent": {"refreshContent": false},
+               "description": "",
+               "isUpdatedView": true,
+               "title": "VM Tools Outdated or Missing",
+               "viewDefinitionId": "75d99f2b-4f61-49df-ab8f-952689728ae6",
+               "chartViewItems": [],
+               "selectFirstRow": {"selectFirstRow": false},
+               "viewDetails": "",
+               "selfProvider": {"selfProvider": true}
+            },
+            "height": 0,
+            "states": [{
+               "value": "o%3Acolumns%3Da%253Ao%25253Aid%25253Ds%2525253ApermTableView_widget_2ec3cc95-1a5c-4967-bd19-a38f56d1ddae_28cd3545-e0c0-44a2-8056-ddef55dce61e-column-0%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_2ec3cc95-1a5c-4967-bd19-a38f56d1ddae_28cd3545-e0c0-44a2-8056-ddef55dce61e-column-summary%2525257Cruntime%2525257CpowerState1%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_2ec3cc95-1a5c-4967-bd19-a38f56d1ddae_28cd3545-e0c0-44a2-8056-ddef55dce61e-column-summary%2525257Cconfig%2525257CnumEthernetCards2%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_2ec3cc95-1a5c-4967-bd19-a38f56d1ddae_28cd3545-e0c0-44a2-8056-ddef55dce61e-column-net%2525253A4000%2525257Cip_address3%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_2ec3cc95-1a5c-4967-bd19-a38f56d1ddae_28cd3545-e0c0-44a2-8056-ddef55dce61e-column-net%2525253A4000%2525257Cmac_address4%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_2ec3cc95-1a5c-4967-bd19-a38f56d1ddae_28cd3545-e0c0-44a2-8056-ddef55dce61e-column-summary%2525257CparentDatacenter5%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_2ec3cc95-1a5c-4967-bd19-a38f56d1ddae_28cd3545-e0c0-44a2-8056-ddef55dce61e-column-summary%2525257CparentCluster6%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_2ec3cc95-1a5c-4967-bd19-a38f56d1ddae_28cd3545-e0c0-44a2-8056-ddef55dce61e-column-summary%2525257Cguest%2525257CfullName7%25255Ehidden%25253Db%2525253A0",
+               "key": "permTableView_widget_2ec3cc95-1a5c-4967-bd19-a38f56d1ddae_28cd3545-e0c0-44a2-8056-ddef55dce61e"
+            }]
+         },
+         {
+            "tabId": "2ec3cc95-1a5c-4967-bd19-a38f56d1ddae",
+            "collapsed": false,
+            "id": "8899d08c-c27e-49d9-b81f-13f4b94c3d5f",
+            "gridsterCoords": {
+               "w": 2,
+               "x": 11,
+               "h": 5,
+               "y": 8
+            },
+            "state": "",
+            "type": "View",
+            "title": "Large Snapshots",
+            "config": {
+               "refreshInterval": 300,
+               "resource": {
+                  "resourceId": "resource:id:0_::_",
+                  "traversalSpecId": "vSphere Hosts and Clusters-VMWARE-vSphere World",
+                  "resourceName": "vSphere World",
+                  "resourceKindId": "002006VMWAREvSphere World",
+                  "id": "Ext.vcops.chrome.model.Resource-52"
+               },
+               "widgetId": "8899d08c-c27e-49d9-b81f-13f4b94c3d5f",
+               "traversalSpecId": null,
+               "refreshContent": {"refreshContent": false},
+               "description": "",
+               "isUpdatedView": true,
+               "title": "Large Snapshots",
+               "viewDefinitionId": "5f2b8152-2e2e-4fc9-8fd6-62c6c946b541",
+               "chartViewItems": [],
+               "selectFirstRow": {"selectFirstRow": false},
+               "viewDetails": "",
+               "selfProvider": {"selfProvider": true}
+            },
+            "height": 0
+         },
+         {
+            "tabId": "2ec3cc95-1a5c-4967-bd19-a38f56d1ddae",
+            "collapsed": true,
+            "id": "64922b42-ce96-40b3-a8d5-6da49f1649e9",
+            "gridsterCoords": {
+               "w": 12,
+               "x": 1,
+               "h": 1,
+               "y": 5
+            },
+            "state": "",
+            "type": "Section",
+            "title": "CAPACITY",
+            "config": {
+               "titleLocalized": "CAPACITY",
+               "widgetId": "64922b42-ce96-40b3-a8d5-6da49f1649e9",
+               "description": "The aggregate workload or demand on your private cloud should be fairly stable. If not, it should matches either the business cycle or data center activities. \n\nInvestigate if the number drops when it's a supposed to be busy day for business, or if the number spike when it's supposed to be a quiet hours.",
+               "title": "CAPACITY",
+               "widgets": [
+                  "4d9c2e5a-ef9d-4fce-aa15-4f710a1d51a5",
+                  "5c006224-7e64-47b5-a5a1-97c7ef28f172",
+                  "f5dbcf40-20a7-46d6-ae9f-71591b0c0e7a",
+                  "45bd649a-1af3-4c94-aad9-3b189c224cc4",
+                  "42cb53d3-4d37-48fd-8110-29adb257ce12",
+                  "fa591260-9646-4954-af48-73f0b69380b1",
+                  "20d11e2e-07d2-4f83-a322-fdef03e97b4a"
+               ]
+            },
+            "height": 0
+         },
+         {
+            "tabId": "2ec3cc95-1a5c-4967-bd19-a38f56d1ddae",
+            "collapsed": false,
+            "id": "b875f44f-6754-49b3-b2dc-73393388a5dc",
             "gridsterCoords": {
                "w": 4,
-               "x": 5,
+               "x": 9,
                "h": 4,
-               "y": 17
+               "y": 7
             },
             "state": "",
             "type": "HealthChart",
-            "title": "VM: Location Change",
+            "title": "VM: State Change",
             "config": {
                "yellowBound": 10,
-               "metricName": "Summary|VM Location Changes",
-               "metricKey": "summary|number_vm_location_changes",
+               "metricName": "Summary|VM State Changes",
+               "metricKey": "summary|number_vm_state_changes",
                "relationshipMode": {"relationshipMode": 0},
-               "description": "Tracks all 6 types, grouped into cold or hot migration.\ncompute change, storage change, both changes.",
+               "description": "Track all 7 changes to VM states: guest reboot, guest shutdown, VM power off, VM power on, VM reset, VM Standby Guest and VM Suspend.",
                "sortByDir": {"orderByDir": "asc"},
-               "title": "VM: Location Change",
+               "title": "VM: State Change",
                "showResourceName": {"showResourceName": false},
                "chartHeight": 135,
                "metricUnit": {
@@ -922,7 +481,7 @@
                "filterMode": "tagPicker",
                "tagFilter": null,
                "paginationNumber": 15,
-               "titleLocalized": "VM: Location Change",
+               "titleLocalized": "VM: State Change",
                "customFilter": {
                   "filter": [],
                   "filterMode": "tagPicker",
@@ -938,231 +497,21 @@
                   "name": "vSphere World",
                   "id": "resource:id:0_::_"
                }],
-               "widgetId": "46cf2b20-2517-4202-9150-f55595900186",
+               "widgetId": "b875f44f-6754-49b3-b2dc-73393388a5dc",
                "refreshContent": {"refreshContent": false},
-               "resourceKindId": "resourceKind:id:0_::_",
-               "orangeBound": 50,
-               "metricFullName": "Summary|VM Location Changes",
+               "resourceKindId": "resourceKind:id:2_::_",
+               "orangeBound": 30,
+               "metricFullName": "Summary|VM State Changes",
                "showMetricLabel": {"showMetricLabel": false},
                "depth": 1,
                "metricLabel": "",
-               "redBound": 250
+               "redBound": 100
             },
             "height": 0,
             "states": [{
                "value": "s%3A%7B%22dateRange%22%3A%22dashboardTime%22%2C%22dateFrom%22%3Anull%2C%22dateTo%22%3Anull%2C%22timeFrom%22%3Anull%2C%22timeTo%22%3Anull%7D",
-               "key": "permDateRange_HealthChart_widget_2ec3cc95-1a5c-4967-bd19-a38f56d1ddae_46cf2b20-2517-4202-9150-f55595900186"
+               "key": "permDateRange_HealthChart_widget_2ec3cc95-1a5c-4967-bd19-a38f56d1ddae_b875f44f-6754-49b3-b2dc-73393388a5dc"
             }]
-         },
-         {
-            "tabId": "2ec3cc95-1a5c-4967-bd19-a38f56d1ddae",
-            "collapsed": false,
-            "id": "8b45be09-c6b6-46c0-bc58-55948984909c",
-            "gridsterCoords": {
-               "w": 4,
-               "x": 1,
-               "h": 4,
-               "y": 22
-            },
-            "state": "",
-            "type": "HealthChart",
-            "title": "Network Speed Degradation",
-            "config": {
-               "yellowBound": 99,
-               "metricName": "vCommunity|Network|Total Network Speed Degradation",
-               "metricKey": "vCommunity|Network|Total Network Speed Degradation",
-               "relationshipMode": {"relationshipMode": 0},
-               "description": "",
-               "sortByDir": {"orderByDir": "asc"},
-               "title": "Network Speed Degradation",
-               "showResourceName": {"showResourceName": false},
-               "chartHeight": 135,
-               "metricUnit": {
-                  "metricUnitId": -1,
-                  "metricUnitName": "Default Unit"
-               },
-               "mode": "resource",
-               "metricType": {"metricType": "custom"},
-               "filterMode": "tagPicker",
-               "tagFilter": null,
-               "paginationNumber": 15,
-               "customFilter": {
-                  "filter": [],
-                  "excludedResources": null,
-                  "includedResources": null
-               },
-               "selectFirstRow": {"selectFirstRow": false},
-               "sortBy": "metricValue",
-               "viewDetails": "",
-               "selfProvider": {"selfProvider": true},
-               "refreshInterval": 300,
-               "resource": [{
-                  "name": "vSphere World",
-                  "id": "resource:id:0_::_"
-               }],
-               "widgetId": "8b45be09-c6b6-46c0-bc58-55948984909c",
-               "refreshContent": {"refreshContent": false},
-               "resourceKindId": "resourceKind:id:0_::_",
-               "orangeBound": 95,
-               "metricFullName": "vCommunity|Network|Total Network Speed Degradation",
-               "showMetricLabel": {"showMetricLabel": false},
-               "depth": 1,
-               "metricLabel": "",
-               "redBound": 90
-            },
-            "height": 0,
-            "states": [{
-               "value": "s%3A%7B%22dateRange%22%3A%22dashboardTime%22%2C%22dateFrom%22%3Anull%2C%22dateTo%22%3Anull%2C%22timeFrom%22%3Anull%2C%22timeTo%22%3Anull%7D",
-               "key": "permDateRange_HealthChart_widget_2ec3cc95-1a5c-4967-bd19-a38f56d1ddae_8b45be09-c6b6-46c0-bc58-55948984909c"
-            }]
-         },
-         {
-            "tabId": "2ec3cc95-1a5c-4967-bd19-a38f56d1ddae",
-            "collapsed": false,
-            "id": "fa591260-9646-4954-af48-73f0b69380b1",
-            "gridsterCoords": {
-               "w": 3,
-               "x": 7,
-               "h": 6,
-               "y": 10
-            },
-            "state": "",
-            "type": "MetricChart",
-            "title": "CPU Reservation",
-            "config": {
-               "refreshInterval": 300,
-               "resource": [],
-               "widgetId": "fa591260-9646-4954-af48-73f0b69380b1",
-               "refreshContent": {"refreshContent": false},
-               "relationshipMode": {"relationshipMode": 0},
-               "description": "Total amount of reservation given to VM CPU. This amount should be low or 0. Setting reservation impacts both vSphere DRS and HA, creating a risk of overall performance.",
-               "title": "CPU Reservation",
-               "depth": 1,
-               "metric": {
-                  "mode": "resourceKind",
-                  "resourceMetrics": [],
-                  "resourceKindMetrics": [{
-                     "yellowBound": null,
-                     "metricUnitId": "ghz",
-                     "metricName": "CPU|Reserved Capacity",
-                     "metricKey": "cpu|reservedCapacity_average",
-                     "handleOldColoring": false,
-                     "maxValue": "",
-                     "resourceKindName": "vSphere World",
-                     "isStringMetric": false,
-                     "resourceKindId": "resourceKind:id:0_::_",
-                     "orangeBound": null,
-                     "metricUnit": "GHz",
-                     "unit": "GHz",
-                     "redBound": null,
-                     "id": "extModel11916-1",
-                     "colorMethod": 2
-                  }],
-                  "subMode": "resourceKindAll"
-               },
-               "titleLocalized": "CPU Reservation",
-               "customFilter": {
-                  "filter": [],
-                  "excludedResources": null,
-                  "includedResources": null
-               },
-               "viewDetails": "",
-               "selfProvider": {"selfProvider": true},
-               "resInteractionMode": null
-            },
-            "height": 0,
-            "states": [
-               {
-                  "value": "o%3A",
-                  "key": "permMetricChart_widget_2ec3cc95-1a5c-4967-bd19-a38f56d1ddae_fa591260-9646-4954-af48-73f0b69380b1"
-               },
-               {
-                  "value": "s%3A%7B%22dateRange%22%3A%22dashboardTime%22%2C%22dateFrom%22%3Anull%2C%22dateTo%22%3Anull%2C%22timeFrom%22%3Anull%2C%22timeTo%22%3Anull%7D",
-                  "key": "permDateRange1_permMetricChart_widget_2ec3cc95-1a5c-4967-bd19-a38f56d1ddae_fa591260-9646-4954-af48-73f0b69380b1"
-               },
-               {
-                  "value": "b%3A0",
-                  "key": "permBtn_zoomAllGraphs_permMetricChart_widget_2ec3cc95-1a5c-4967-bd19-a38f56d1ddae_fa591260-9646-4954-af48-73f0b69380b1"
-               },
-               {
-                  "value": "b%3A0",
-                  "key": "permBtn_pan_permMetricChart_widget_2ec3cc95-1a5c-4967-bd19-a38f56d1ddae_fa591260-9646-4954-af48-73f0b69380b1"
-               }
-            ]
-         },
-         {
-            "tabId": "2ec3cc95-1a5c-4967-bd19-a38f56d1ddae",
-            "collapsed": false,
-            "id": "20d11e2e-07d2-4f83-a322-fdef03e97b4a",
-            "gridsterCoords": {
-               "w": 3,
-               "x": 10,
-               "h": 6,
-               "y": 10
-            },
-            "state": "",
-            "type": "MetricChart",
-            "title": "Memory Reservation",
-            "config": {
-               "refreshInterval": 300,
-               "resource": [],
-               "widgetId": "20d11e2e-07d2-4f83-a322-fdef03e97b4a",
-               "refreshContent": {"refreshContent": false},
-               "relationshipMode": {"relationshipMode": 0},
-               "description": "Total amount of reservation given to VM memory. This amount should be 0 as memory reservation is \"sticky\". It persists despite the Guest OS not using the page anymore.",
-               "title": "Memory Reservation",
-               "depth": 1,
-               "metric": {
-                  "mode": "resourceKind",
-                  "resourceMetrics": [],
-                  "resourceKindMetrics": [{
-                     "yellowBound": null,
-                     "metricUnitId": "gb",
-                     "metricName": "Memory|Reserved Capacity",
-                     "metricKey": "mem|reservedCapacity_average",
-                     "handleOldColoring": false,
-                     "maxValue": "",
-                     "resourceKindName": "vSphere World",
-                     "isStringMetric": false,
-                     "resourceKindId": "resourceKind:id:0_::_",
-                     "orangeBound": null,
-                     "metricUnit": "GB",
-                     "unit": "GB",
-                     "redBound": null,
-                     "id": "extModel12720-1",
-                     "colorMethod": 2
-                  }],
-                  "subMode": "resourceKindAll"
-               },
-               "titleLocalized": "Memory Reservation",
-               "customFilter": {
-                  "filter": [],
-                  "excludedResources": null,
-                  "includedResources": null
-               },
-               "viewDetails": "",
-               "selfProvider": {"selfProvider": true},
-               "resInteractionMode": null
-            },
-            "height": 0,
-            "states": [
-               {
-                  "value": "b%3A0",
-                  "key": "permBtn_pan_permMetricChart_widget_2ec3cc95-1a5c-4967-bd19-a38f56d1ddae_20d11e2e-07d2-4f83-a322-fdef03e97b4a"
-               },
-               {
-                  "value": "o%3A",
-                  "key": "permMetricChart_widget_2ec3cc95-1a5c-4967-bd19-a38f56d1ddae_20d11e2e-07d2-4f83-a322-fdef03e97b4a"
-               },
-               {
-                  "value": "s%3A%7B%22dateRange%22%3A%22dashboardTime%22%2C%22dateFrom%22%3Anull%2C%22dateTo%22%3Anull%2C%22timeFrom%22%3Anull%2C%22timeTo%22%3Anull%7D",
-                  "key": "permDateRange1_permMetricChart_widget_2ec3cc95-1a5c-4967-bd19-a38f56d1ddae_20d11e2e-07d2-4f83-a322-fdef03e97b4a"
-               },
-               {
-                  "value": "b%3A0",
-                  "key": "permBtn_zoomAllGraphs_permMetricChart_widget_2ec3cc95-1a5c-4967-bd19-a38f56d1ddae_20d11e2e-07d2-4f83-a322-fdef03e97b4a"
-               }
-            ]
          },
          {
             "tabId": "2ec3cc95-1a5c-4967-bd19-a38f56d1ddae",
@@ -1196,7 +545,7 @@
                      "handleOldColoring": false,
                      "resourceKindName": "vSphere World",
                      "isStringMetric": false,
-                     "resourceKindId": "resourceKind:id:0_::_",
+                     "resourceKindId": "resourceKind:id:2_::_",
                      "redBound": null,
                      "id": "extModel21007-1",
                      "orangeBound": null,
@@ -1241,12 +590,142 @@
          {
             "tabId": "2ec3cc95-1a5c-4967-bd19-a38f56d1ddae",
             "collapsed": false,
+            "id": "ce3a6956-a0aa-48c4-9517-41910da0bd22",
+            "gridsterCoords": {
+               "w": 4,
+               "x": 5,
+               "h": 5,
+               "y": 4
+            },
+            "state": "",
+            "type": "HealthChart",
+            "title": "Worst Cluster Operational Availability",
+            "config": {
+               "yellowBound": 99,
+               "metricName": "vCommunity|Availability|Worst Cluster Operational Availability",
+               "metricKey": "vCommunity|Availability|Worst Cluster Operational Availability",
+               "relationshipMode": {"relationshipMode": 0},
+               "description": "",
+               "sortByDir": {"orderByDir": "asc"},
+               "title": "Worst Cluster Operational Availability",
+               "showResourceName": {"showResourceName": false},
+               "chartHeight": 190,
+               "metricUnit": {
+                  "metricUnitId": -1,
+                  "metricUnitName": "Default Unit"
+               },
+               "undefined": [],
+               "mode": "resource",
+               "metricType": {"metricType": "custom"},
+               "filterMode": "tagPicker",
+               "tagFilter": null,
+               "paginationNumber": 15,
+               "titleLocalized": "Worst Cluster Operational Availability",
+               "customFilter": {
+                  "filter": [],
+                  "filterMode": "tagPicker",
+                  "excludedResources": null,
+                  "includedResources": null
+               },
+               "selectFirstRow": {"selectFirstRow": false},
+               "sortBy": "metricValue",
+               "viewDetails": "",
+               "selfProvider": {"selfProvider": true},
+               "refreshInterval": 300,
+               "resource": [{
+                  "name": "vSphere World",
+                  "id": "resource:id:0_::_"
+               }],
+               "widgetId": "ce3a6956-a0aa-48c4-9517-41910da0bd22",
+               "refreshContent": {"refreshContent": false},
+               "resourceKindId": "resourceKind:id:2_::_",
+               "orangeBound": 95,
+               "metricFullName": "vCommunity|Availability|Worst Cluster Operational Availability",
+               "showMetricLabel": {"showMetricLabel": false},
+               "depth": 1,
+               "metricLabel": "",
+               "redBound": 90
+            },
+            "height": 0,
+            "states": [{
+               "value": "s%3A%7B%22dateRange%22%3A%22dashboardTime%22%2C%22dateFrom%22%3Anull%2C%22dateTo%22%3Anull%2C%22timeFrom%22%3Anull%2C%22timeTo%22%3Anull%7D",
+               "key": "permDateRange_HealthChart_widget_2ec3cc95-1a5c-4967-bd19-a38f56d1ddae_ce3a6956-a0aa-48c4-9517-41910da0bd22"
+            }]
+         },
+         {
+            "tabId": "2ec3cc95-1a5c-4967-bd19-a38f56d1ddae",
+            "collapsed": false,
+            "id": "854e1b3c-50f2-4c8d-a0d7-63835dd40859",
+            "gridsterCoords": {
+               "w": 4,
+               "x": 9,
+               "h": 5,
+               "y": 4
+            },
+            "state": "",
+            "type": "HealthChart",
+            "title": "Average ESXi Hosts Operational Availability",
+            "config": {
+               "yellowBound": 98,
+               "metricName": "vCommunity|Availability|ESXi Hosts Operational Availability",
+               "metricKey": "vCommunity|Availability|ESXi Hosts Operational Availability",
+               "relationshipMode": {"relationshipMode": 0},
+               "description": "",
+               "sortByDir": {"orderByDir": "asc"},
+               "title": "Average ESXi Hosts Operational Availability",
+               "showResourceName": {"showResourceName": false},
+               "chartHeight": 190,
+               "metricUnit": {
+                  "metricUnitId": -1,
+                  "metricUnitName": "Default Unit"
+               },
+               "undefined": [],
+               "mode": "resource",
+               "metricType": {"metricType": "custom"},
+               "filterMode": "tagPicker",
+               "tagFilter": null,
+               "paginationNumber": 15,
+               "titleLocalized": "Average ESXi Hosts Operational Availability",
+               "customFilter": {
+                  "filter": [],
+                  "filterMode": "tagPicker",
+                  "excludedResources": null,
+                  "includedResources": null
+               },
+               "selectFirstRow": {"selectFirstRow": false},
+               "sortBy": "metricValue",
+               "viewDetails": "",
+               "selfProvider": {"selfProvider": true},
+               "refreshInterval": 300,
+               "resource": [{
+                  "name": "vSphere World",
+                  "id": "resource:id:0_::_"
+               }],
+               "widgetId": "854e1b3c-50f2-4c8d-a0d7-63835dd40859",
+               "refreshContent": {"refreshContent": false},
+               "resourceKindId": "resourceKind:id:2_::_",
+               "orangeBound": 96,
+               "metricFullName": "vCommunity|Availability|ESXi Hosts Operational Availability",
+               "showMetricLabel": {"showMetricLabel": false},
+               "depth": 1,
+               "metricLabel": "",
+               "redBound": 94
+            },
+            "height": 0,
+            "states": [{
+               "value": "s%3A%7B%22dateRange%22%3A%22dashboardTime%22%2C%22dateFrom%22%3Anull%2C%22dateTo%22%3Anull%2C%22timeFrom%22%3Anull%2C%22timeTo%22%3Anull%7D",
+               "key": "permDateRange_HealthChart_widget_2ec3cc95-1a5c-4967-bd19-a38f56d1ddae_854e1b3c-50f2-4c8d-a0d7-63835dd40859"
+            }]
+         },
+         {
+            "tabId": "2ec3cc95-1a5c-4967-bd19-a38f56d1ddae",
+            "collapsed": false,
             "id": "1ccf472d-de23-421a-802e-c7be5ad8ed31",
             "gridsterCoords": {
                "w": 6,
                "x": 1,
                "h": 4,
-               "y": 4
+               "y": 5
             },
             "state": "",
             "type": "HealthChart",
@@ -1290,7 +769,7 @@
                }],
                "widgetId": "40f7a080-aa3d-46a7-b2a7-451daafdfc58",
                "refreshContent": {"refreshContent": false},
-               "resourceKindId": "resourceKind:id:0_::_",
+               "resourceKindId": "resourceKind:id:2_::_",
                "orangeBound": 50,
                "metricFullName": "vCommunity|Worst Cluster Performance",
                "showMetricLabel": {"showMetricLabel": false},
@@ -1313,334 +792,12 @@
          {
             "tabId": "2ec3cc95-1a5c-4967-bd19-a38f56d1ddae",
             "collapsed": false,
-            "id": "5f1aa8d9-5be7-4cbe-a8c3-eb8de0116144",
-            "gridsterCoords": {
-               "w": 6,
-               "x": 1,
-               "h": 4,
-               "y": 6
-            },
-            "state": "",
-            "type": "HealthChart",
-            "title": "Clusters being closed",
-            "config": {
-               "yellowBound": 5,
-               "metricName": "vCommunity|Cluster Delta Close Count",
-               "metricKey": "vCommunity|Cluster Delta Close Count",
-               "relationshipMode": {"relationshipMode": 0},
-               "description": "VMware Tools are installed, but not running.",
-               "sortByDir": {"orderByDir": "asc"},
-               "title": "Clusters being closed",
-               "showResourceName": {"showResourceName": false},
-               "chartHeight": 135,
-               "metricUnit": {
-                  "metricUnitId": -1,
-                  "metricUnitName": "Default Unit"
-               },
-               "mode": "resource",
-               "metricType": {"metricType": "custom"},
-               "filterMode": "tagPicker",
-               "tagFilter": null,
-               "paginationNumber": 15,
-               "customFilter": {
-                  "filter": [],
-                  "excludedResources": null,
-                  "includedResources": null
-               },
-               "selectFirstRow": {"selectFirstRow": false},
-               "sortBy": "metricValue",
-               "viewDetails": "",
-               "selfProvider": {"selfProvider": true},
-               "refreshInterval": 300,
-               "resource": [{
-                  "name": "vSphere World",
-                  "id": "resource:id:0_::_"
-               }],
-               "widgetId": "5f1aa8d9-5be7-4cbe-a8c3-eb8de0116144",
-               "refreshContent": {"refreshContent": false},
-               "resourceKindId": "resourceKind:id:0_::_",
-               "orangeBound": 15,
-               "metricFullName": "vCommunity|Cluster Delta Close Count",
-               "showMetricLabel": {"showMetricLabel": false},
-               "depth": 1,
-               "metricLabel": "",
-               "redBound": 25
-            },
-            "height": 0,
-            "states": [{
-               "value": "s%3A%7B%22dateRange%22%3A%22dashboardTime%22%2C%22dateFrom%22%3Anull%2C%22dateTo%22%3Anull%2C%22timeFrom%22%3Anull%2C%22timeTo%22%3Anull%7D",
-               "key": "permDateRange_HealthChart_widget_2ec3cc95-1a5c-4967-bd19-a38f56d1ddae_5f1aa8d9-5be7-4cbe-a8c3-eb8de0116144"
-            }]
-         },
-         {
-            "tabId": "2ec3cc95-1a5c-4967-bd19-a38f56d1ddae",
-            "collapsed": false,
-            "id": "1d34b7ce-0878-49bd-9181-c9b25090cdac",
-            "gridsterCoords": {
-               "w": 6,
-               "x": 7,
-               "h": 4,
-               "y": 3
-            },
-            "state": "",
-            "type": "HealthChart",
-            "title": "Alerts: Urgent but Not Important",
-            "config": {
-               "yellowBound": 0,
-               "metricName": "VCF Operations Generated|Alert Count Immediate",
-               "metricKey": "System Attributes|alert_count_immediate",
-               "relationshipMode": {"relationshipMode": 0},
-               "description": "The number should be low. It may not be 0.\n\nAttend by end of day, not defer until tomorrow. Alerts that you defer until tomorrow means it's not urgent. It's more effective to see these non-urgent warning in totality as insight than as individual alerts",
-               "sortByDir": {"orderByDir": "asc"},
-               "title": "Alerts: Urgent but Not Important",
-               "showResourceName": {"showResourceName": false},
-               "chartHeight": 135,
-               "metricUnit": {
-                  "metricUnitId": -1,
-                  "metricUnitName": "Default Unit"
-               },
-               "undefined": [],
-               "mode": "resource",
-               "metricType": {"metricType": "custom"},
-               "filterMode": "tagPicker",
-               "tagFilter": null,
-               "paginationNumber": 15,
-               "titleLocalized": "Alerts: Urgent but Not Important",
-               "customFilter": {
-                  "filter": [],
-                  "filterMode": "tagPicker",
-                  "excludedResources": null,
-                  "includedResources": null
-               },
-               "selectFirstRow": {"selectFirstRow": false},
-               "sortBy": "metricValue",
-               "viewDetails": "",
-               "selfProvider": {"selfProvider": true},
-               "refreshInterval": 300,
-               "resource": [{
-                  "name": "vSphere World",
-                  "id": "resource:id:0_::_"
-               }],
-               "widgetId": "1d34b7ce-0878-49bd-9181-c9b25090cdac",
-               "refreshContent": {"refreshContent": false},
-               "resourceKindId": "resourceKind:id:0_::_",
-               "orangeBound": 1,
-               "metricFullName": "vRealize Operations Generated|Alert Count Immediate",
-               "showMetricLabel": {"showMetricLabel": false},
-               "depth": 1,
-               "metricLabel": "",
-               "redBound": 999999999
-            },
-            "height": 0,
-            "states": [{
-               "value": "s%3A%7B%22dateRange%22%3A%22dashboardTime%22%2C%22dateFrom%22%3Anull%2C%22dateTo%22%3Anull%2C%22timeFrom%22%3Anull%2C%22timeTo%22%3Anull%7D",
-               "key": "permDateRange_HealthChart_widget_2ec3cc95-1a5c-4967-bd19-a38f56d1ddae_1d34b7ce-0878-49bd-9181-c9b25090cdac"
-            }]
-         },
-         {
-            "tabId": "2ec3cc95-1a5c-4967-bd19-a38f56d1ddae",
-            "collapsed": false,
-            "id": "ce3a6956-a0aa-48c4-9517-41910da0bd22",
-            "gridsterCoords": {
-               "w": 4,
-               "x": 5,
-               "h": 5,
-               "y": 5
-            },
-            "state": "",
-            "type": "HealthChart",
-            "title": "Worst Cluster Operational Availability",
-            "config": {
-               "yellowBound": 99,
-               "metricName": "vCommunity|Availability|Worst Cluster Operational Availability",
-               "metricKey": "vCommunity|Availability|Worst Cluster Operational Availability",
-               "relationshipMode": {"relationshipMode": 0},
-               "description": "",
-               "sortByDir": {"orderByDir": "asc"},
-               "title": "Worst Cluster Operational Availability",
-               "showResourceName": {"showResourceName": false},
-               "chartHeight": 190,
-               "metricUnit": {
-                  "metricUnitId": -1,
-                  "metricUnitName": "Default Unit"
-               },
-               "undefined": [],
-               "mode": "resource",
-               "metricType": {"metricType": "custom"},
-               "filterMode": "tagPicker",
-               "tagFilter": null,
-               "paginationNumber": 15,
-               "titleLocalized": "Worst Cluster Operational Availability",
-               "customFilter": {
-                  "filter": [],
-                  "filterMode": "tagPicker",
-                  "excludedResources": null,
-                  "includedResources": null
-               },
-               "selectFirstRow": {"selectFirstRow": false},
-               "sortBy": "metricValue",
-               "viewDetails": "",
-               "selfProvider": {"selfProvider": true},
-               "refreshInterval": 300,
-               "resource": [{
-                  "name": "vSphere World",
-                  "id": "resource:id:0_::_"
-               }],
-               "widgetId": "ce3a6956-a0aa-48c4-9517-41910da0bd22",
-               "refreshContent": {"refreshContent": false},
-               "resourceKindId": "resourceKind:id:0_::_",
-               "orangeBound": 95,
-               "metricFullName": "vCommunity|Availability|Worst Cluster Operational Availability",
-               "showMetricLabel": {"showMetricLabel": false},
-               "depth": 1,
-               "metricLabel": "",
-               "redBound": 90
-            },
-            "height": 0,
-            "states": [{
-               "value": "s%3A%7B%22dateRange%22%3A%22dashboardTime%22%2C%22dateFrom%22%3Anull%2C%22dateTo%22%3Anull%2C%22timeFrom%22%3Anull%2C%22timeTo%22%3Anull%7D",
-               "key": "permDateRange_HealthChart_widget_2ec3cc95-1a5c-4967-bd19-a38f56d1ddae_ce3a6956-a0aa-48c4-9517-41910da0bd22"
-            }]
-         },
-         {
-            "tabId": "2ec3cc95-1a5c-4967-bd19-a38f56d1ddae",
-            "collapsed": false,
-            "id": "854e1b3c-50f2-4c8d-a0d7-63835dd40859",
-            "gridsterCoords": {
-               "w": 4,
-               "x": 9,
-               "h": 5,
-               "y": 5
-            },
-            "state": "",
-            "type": "HealthChart",
-            "title": "Average ESXi Hosts Operational Availability",
-            "config": {
-               "yellowBound": 98,
-               "metricName": "vCommunity|Availability|ESXi Hosts Operational Availability",
-               "metricKey": "vCommunity|Availability|ESXi Hosts Operational Availability",
-               "relationshipMode": {"relationshipMode": 0},
-               "description": "",
-               "sortByDir": {"orderByDir": "asc"},
-               "title": "Average ESXi Hosts Operational Availability",
-               "showResourceName": {"showResourceName": false},
-               "chartHeight": 190,
-               "metricUnit": {
-                  "metricUnitId": -1,
-                  "metricUnitName": "Default Unit"
-               },
-               "undefined": [],
-               "mode": "resource",
-               "metricType": {"metricType": "custom"},
-               "filterMode": "tagPicker",
-               "tagFilter": null,
-               "paginationNumber": 15,
-               "titleLocalized": "Average ESXi Hosts Operational Availability",
-               "customFilter": {
-                  "filter": [],
-                  "filterMode": "tagPicker",
-                  "excludedResources": null,
-                  "includedResources": null
-               },
-               "selectFirstRow": {"selectFirstRow": false},
-               "sortBy": "metricValue",
-               "viewDetails": "",
-               "selfProvider": {"selfProvider": true},
-               "refreshInterval": 300,
-               "resource": [{
-                  "name": "vSphere World",
-                  "id": "resource:id:0_::_"
-               }],
-               "widgetId": "854e1b3c-50f2-4c8d-a0d7-63835dd40859",
-               "refreshContent": {"refreshContent": false},
-               "resourceKindId": "resourceKind:id:0_::_",
-               "orangeBound": 96,
-               "metricFullName": "vCommunity|Availability|ESXi Hosts Operational Availability",
-               "showMetricLabel": {"showMetricLabel": false},
-               "depth": 1,
-               "metricLabel": "",
-               "redBound": 94
-            },
-            "height": 0,
-            "states": [{
-               "value": "s%3A%7B%22dateRange%22%3A%22dashboardTime%22%2C%22dateFrom%22%3Anull%2C%22dateTo%22%3Anull%2C%22timeFrom%22%3Anull%2C%22timeTo%22%3Anull%7D",
-               "key": "permDateRange_HealthChart_widget_2ec3cc95-1a5c-4967-bd19-a38f56d1ddae_854e1b3c-50f2-4c8d-a0d7-63835dd40859"
-            }]
-         },
-         {
-            "tabId": "2ec3cc95-1a5c-4967-bd19-a38f56d1ddae",
-            "collapsed": false,
-            "id": "b875f44f-6754-49b3-b2dc-73393388a5dc",
-            "gridsterCoords": {
-               "w": 4,
-               "x": 9,
-               "h": 4,
-               "y": 17
-            },
-            "state": "",
-            "type": "HealthChart",
-            "title": "VM: State Change",
-            "config": {
-               "yellowBound": 10,
-               "metricName": "Summary|VM State Changes",
-               "metricKey": "summary|number_vm_state_changes",
-               "relationshipMode": {"relationshipMode": 0},
-               "description": "Track all 7 changes to VM states: guest reboot, guest shutdown, VM power off, VM power on, VM reset, VM Standby Guest and VM Suspend.",
-               "sortByDir": {"orderByDir": "asc"},
-               "title": "VM: State Change",
-               "showResourceName": {"showResourceName": false},
-               "chartHeight": 135,
-               "metricUnit": {
-                  "metricUnitId": -1,
-                  "metricUnitName": "Default Unit"
-               },
-               "undefined": [],
-               "mode": "resource",
-               "metricType": {"metricType": "custom"},
-               "filterMode": "tagPicker",
-               "tagFilter": null,
-               "paginationNumber": 15,
-               "titleLocalized": "VM: State Change",
-               "customFilter": {
-                  "filter": [],
-                  "filterMode": "tagPicker",
-                  "excludedResources": null,
-                  "includedResources": null
-               },
-               "selectFirstRow": {"selectFirstRow": false},
-               "sortBy": "metricValue",
-               "viewDetails": "",
-               "selfProvider": {"selfProvider": true},
-               "refreshInterval": 300,
-               "resource": [{
-                  "name": "vSphere World",
-                  "id": "resource:id:0_::_"
-               }],
-               "widgetId": "b875f44f-6754-49b3-b2dc-73393388a5dc",
-               "refreshContent": {"refreshContent": false},
-               "resourceKindId": "resourceKind:id:0_::_",
-               "orangeBound": 30,
-               "metricFullName": "Summary|VM State Changes",
-               "showMetricLabel": {"showMetricLabel": false},
-               "depth": 1,
-               "metricLabel": "",
-               "redBound": 100
-            },
-            "height": 0,
-            "states": [{
-               "value": "s%3A%7B%22dateRange%22%3A%22dashboardTime%22%2C%22dateFrom%22%3Anull%2C%22dateTo%22%3Anull%2C%22timeFrom%22%3Anull%2C%22timeTo%22%3Anull%7D",
-               "key": "permDateRange_HealthChart_widget_2ec3cc95-1a5c-4967-bd19-a38f56d1ddae_b875f44f-6754-49b3-b2dc-73393388a5dc"
-            }]
-         },
-         {
-            "tabId": "2ec3cc95-1a5c-4967-bd19-a38f56d1ddae",
-            "collapsed": false,
             "id": "335c884e-b33d-43b1-baa6-ef0e8331a01c",
             "gridsterCoords": {
                "w": 6,
                "x": 7,
                "h": 4,
-               "y": 4
+               "y": 5
             },
             "state": "",
             "type": "HealthChart",
@@ -1684,7 +841,7 @@
                }],
                "widgetId": "3df1e0bc-ab28-461f-bb0e-b1d8fe80b9e2",
                "refreshContent": {"refreshContent": false},
-               "resourceKindId": "resourceKind:id:0_::_",
+               "resourceKindId": "resourceKind:id:2_::_",
                "orangeBound": 50,
                "metricFullName": "vCommunity|Worst Cluster Risk",
                "showMetricLabel": {"showMetricLabel": false},
@@ -1700,25 +857,51 @@
          },
          {
             "tabId": "2ec3cc95-1a5c-4967-bd19-a38f56d1ddae",
-            "collapsed": false,
-            "id": "8b37dc2b-e9b8-4be0-ab63-ad2915de0f3f",
+            "collapsed": true,
+            "id": "54c0536e-9faa-4707-afa8-c37cb72480e5",
             "gridsterCoords": {
-               "w": 6,
+               "w": 12,
+               "x": 1,
+               "h": 1,
+               "y": 6
+            },
+            "state": "",
+            "type": "Section",
+            "title": "VOLATILITY",
+            "config": {
+               "titleLocalized": "VOLATILITY",
+               "widgetId": "54c0536e-9faa-4707-afa8-c37cb72480e5",
+               "description": "While your private cloud is dynamic, the degree of changes need to be within your expectation. It needs to match business cycle or data center operations.\n\nInvestigate if the number drops when it's a supposed to be busy day for business, or if the number spike when it's supposed to be a quiet hours.",
+               "title": "VOLATILITY",
+               "widgets": [
+                  "99191a76-5159-4b90-b081-3d4c43bd2dcb",
+                  "46cf2b20-2517-4202-9150-f55595900186",
+                  "b875f44f-6754-49b3-b2dc-73393388a5dc"
+               ]
+            },
+            "height": 0
+         },
+         {
+            "tabId": "2ec3cc95-1a5c-4967-bd19-a38f56d1ddae",
+            "collapsed": false,
+            "id": "99191a76-5159-4b90-b081-3d4c43bd2dcb",
+            "gridsterCoords": {
+               "w": 4,
                "x": 1,
                "h": 4,
-               "y": 8
+               "y": 7
             },
             "state": "",
             "type": "HealthChart",
-            "title": "Worst 10% Cluster Performance",
+            "title": "VM: Inventory Change",
             "config": {
-               "yellowBound": 75,
-               "metricName": "vCommunity|Bottom 10 Percent Cluster Performance",
-               "metricKey": "vCommunity|Bottom 10 Percent Cluster Performance",
+               "yellowBound": 10,
+               "metricName": "Summary|VM Inventory Changes",
+               "metricKey": "summary|number_inventory_changes",
                "relationshipMode": {"relationshipMode": 0},
-               "description": "",
+               "description": "7 types of VM inventory changes: clone, create, delete, reconfigure, register to vCenter, unregister to vCenter, deploy from template.",
                "sortByDir": {"orderByDir": "asc"},
-               "title": "Worst 10% Cluster Performance",
+               "title": "VM: Inventory Change",
                "showResourceName": {"showResourceName": false},
                "chartHeight": 135,
                "metricUnit": {
@@ -1731,7 +914,7 @@
                "filterMode": "tagPicker",
                "tagFilter": null,
                "paginationNumber": 15,
-               "titleLocalized": "Worst 10% Cluster Performance",
+               "titleLocalized": "VM: Inventory Change",
                "customFilter": {
                   "filter": [],
                   "filterMode": "tagPicker",
@@ -1742,27 +925,270 @@
                "sortBy": "metricValue",
                "viewDetails": "",
                "selfProvider": {"selfProvider": true},
-               "key": "HealthChart",
                "refreshInterval": 300,
                "resource": [{
                   "name": "vSphere World",
                   "id": "resource:id:0_::_"
                }],
-               "widgetId": "9b4ff433-5b1f-4c5d-a941-ed4ea386dc17",
+               "widgetId": "99191a76-5159-4b90-b081-3d4c43bd2dcb",
                "refreshContent": {"refreshContent": false},
-               "resourceKindId": "resourceKind:id:0_::_",
-               "orangeBound": 50,
-               "metricFullName": "vCommunity|Bottom 10 Percent Cluster Performance",
+               "resourceKindId": "resourceKind:id:2_::_",
+               "orangeBound": 40,
+               "metricFullName": "Summary|VM Inventory Changes",
                "showMetricLabel": {"showMetricLabel": false},
                "depth": 1,
                "metricLabel": "",
-               "redBound": 25
+               "redBound": 160
             },
             "height": 0,
             "states": [{
                "value": "s%3A%7B%22dateRange%22%3A%22dashboardTime%22%2C%22dateFrom%22%3Anull%2C%22dateTo%22%3Anull%2C%22timeFrom%22%3Anull%2C%22timeTo%22%3Anull%7D",
-               "key": "permDateRange_HealthChart_widget_2ec3cc95-1a5c-4967-bd19-a38f56d1ddae_8b37dc2b-e9b8-4be0-ab63-ad2915de0f3f"
+               "key": "permDateRange_HealthChart_widget_2ec3cc95-1a5c-4967-bd19-a38f56d1ddae_99191a76-5159-4b90-b081-3d4c43bd2dcb"
             }]
+         },
+         {
+            "tabId": "2ec3cc95-1a5c-4967-bd19-a38f56d1ddae",
+            "collapsed": false,
+            "id": "4d9c2e5a-ef9d-4fce-aa15-4f710a1d51a5",
+            "gridsterCoords": {
+               "w": 5,
+               "x": 3,
+               "h": 4,
+               "y": 6
+            },
+            "state": "",
+            "type": "HealthChart",
+            "title": "Highest Consumption of all Clusters",
+            "config": {
+               "yellowBound": 25,
+               "metricName": "vCommunity|Worst Cluster Performance",
+               "metricKey": "vCommunity|Worst Cluster Performance",
+               "relationshipMode": {"relationshipMode": 0},
+               "description": "",
+               "sortByDir": {"orderByDir": "asc"},
+               "title": "Highest Consumption of all Clusters",
+               "showResourceName": {"showResourceName": false},
+               "chartHeight": 135,
+               "metricUnit": {
+                  "metricUnitId": -1,
+                  "metricUnitName": "Default Unit"
+               },
+               "undefined": [],
+               "mode": "resource",
+               "metricType": {"metricType": "custom"},
+               "filterMode": "tagPicker",
+               "tagFilter": null,
+               "paginationNumber": 15,
+               "customFilter": {
+                  "filter": [],
+                  "filterMode": "tagPicker",
+                  "excludedResources": null,
+                  "includedResources": null
+               },
+               "selectFirstRow": {"selectFirstRow": false},
+               "sortBy": "metricValue",
+               "viewDetails": "",
+               "selfProvider": {"selfProvider": true},
+               "refreshInterval": 300,
+               "resource": [{
+                  "name": "vSphere World",
+                  "id": "resource:id:0_::_"
+               }],
+               "widgetId": "4d9c2e5a-ef9d-4fce-aa15-4f710a1d51a5",
+               "refreshContent": {"refreshContent": false},
+               "resourceKindId": "resourceKind:id:2_::_",
+               "orangeBound": 50,
+               "metricFullName": "vCommunity|Worst Cluster Performance",
+               "showMetricLabel": {"showMetricLabel": false},
+               "depth": 1,
+               "metricLabel": "",
+               "redBound": 75
+            },
+            "height": 0,
+            "states": [{
+               "value": "s%3A%7B%22dateRange%22%3A%22dashboardTime%22%2C%22dateFrom%22%3Anull%2C%22dateTo%22%3Anull%2C%22timeFrom%22%3Anull%2C%22timeTo%22%3Anull%7D",
+               "key": "permDateRange_HealthChart_widget_2ec3cc95-1a5c-4967-bd19-a38f56d1ddae_4d9c2e5a-ef9d-4fce-aa15-4f710a1d51a5"
+            }]
+         },
+         {
+            "tabId": "2ec3cc95-1a5c-4967-bd19-a38f56d1ddae",
+            "collapsed": false,
+            "id": "7000a685-5ef2-48ca-98c1-c1c796e80a03",
+            "gridsterCoords": {
+               "w": 6,
+               "x": 1,
+               "h": 4,
+               "y": 3
+            },
+            "state": "",
+            "type": "HealthChart",
+            "title": "Alerts: Urgent and Important",
+            "config": {
+               "yellowBound": 0,
+               "metricName": "VCF Operations Generated|Alert Count Critical",
+               "metricKey": "System Attributes|alert_count_critical",
+               "relationshipMode": {"relationshipMode": 0},
+               "description": "Red = attend as soon as possible, not delay until end of day. This number should be 0 most of the time.",
+               "sortByDir": {"orderByDir": "asc"},
+               "title": "Alerts: Urgent and Important",
+               "showResourceName": {"showResourceName": false},
+               "chartHeight": 135,
+               "metricUnit": {
+                  "metricUnitId": -1,
+                  "metricUnitName": "Default Unit"
+               },
+               "undefined": [],
+               "mode": "resource",
+               "metricType": {"metricType": "custom"},
+               "filterMode": "tagPicker",
+               "tagFilter": null,
+               "paginationNumber": 15,
+               "titleLocalized": "Alerts: Urgent and Important",
+               "customFilter": {
+                  "filter": [],
+                  "filterMode": "tagPicker",
+                  "excludedResources": null,
+                  "includedResources": null
+               },
+               "selectFirstRow": {"selectFirstRow": false},
+               "sortBy": "metricValue",
+               "viewDetails": "/vcf-operations/ui/operate/alerts;tab=alerts",
+               "selfProvider": {"selfProvider": true},
+               "refreshInterval": 300,
+               "resource": [{
+                  "name": "vSphere World",
+                  "id": "resource:id:0_::_"
+               }],
+               "widgetId": "7000a685-5ef2-48ca-98c1-c1c796e80a03",
+               "refreshContent": {"refreshContent": false},
+               "resourceKindId": "resourceKind:id:2_::_",
+               "orangeBound": 0,
+               "metricFullName": "vRealize Operations Generated|Alert Count Critical",
+               "showMetricLabel": {"showMetricLabel": false},
+               "depth": 1,
+               "metricLabel": "",
+               "redBound": 1
+            },
+            "height": 0,
+            "states": [{
+               "value": "s%3A%7B%22dateRange%22%3A%22dashboardTime%22%2C%22dateFrom%22%3Anull%2C%22dateTo%22%3Anull%2C%22timeFrom%22%3Anull%2C%22timeTo%22%3Anull%7D",
+               "key": "permDateRange_HealthChart_widget_2ec3cc95-1a5c-4967-bd19-a38f56d1ddae_7000a685-5ef2-48ca-98c1-c1c796e80a03"
+            }]
+         },
+         {
+            "tabId": "2ec3cc95-1a5c-4967-bd19-a38f56d1ddae",
+            "collapsed": false,
+            "id": "45bd649a-1af3-4c94-aad9-3b189c224cc4",
+            "gridsterCoords": {
+               "w": 3,
+               "x": 4,
+               "h": 6,
+               "y": 10
+            },
+            "state": "",
+            "type": "MetricChart",
+            "title": "Total Load: Network Throughput",
+            "config": {
+               "refreshInterval": 300,
+               "resource": [],
+               "widgetId": "45bd649a-1af3-4c94-aad9-3b189c224cc4",
+               "refreshContent": {"refreshContent": false},
+               "relationshipMode": {"relationshipMode": 0},
+               "description": "Total network throughput (send and receive) in the entire environment. \n\nPro Tip: set a threshold so your expectation is known as a team.",
+               "title": "Total Load: Network Throughput",
+               "depth": 1,
+               "metric": {
+                  "mode": "resourceKind",
+                  "resourceMetrics": [],
+                  "resourceKindMetrics": [{
+                     "yellowBound": null,
+                     "metricUnitId": "gbitsps",
+                     "metricName": "Network|Usage Rate",
+                     "metricKey": "net|usage_average",
+                     "handleOldColoring": false,
+                     "maxValue": "",
+                     "resourceKindName": "vSphere World",
+                     "isStringMetric": false,
+                     "resourceKindId": "resourceKind:id:2_::_",
+                     "orangeBound": null,
+                     "metricUnit": "Gbps",
+                     "unit": "Gbps",
+                     "redBound": null,
+                     "id": "extModel22764-1",
+                     "colorMethod": 2
+                  }],
+                  "subMode": "resourceKindAll"
+               },
+               "titleLocalized": "Total Load: Network Throughput",
+               "customFilter": {
+                  "filter": [],
+                  "excludedResources": null,
+                  "includedResources": null
+               },
+               "viewDetails": "",
+               "selfProvider": {"selfProvider": true},
+               "resInteractionMode": null
+            },
+            "height": 0,
+            "states": [
+               {
+                  "value": "b%3A0",
+                  "key": "permBtn_pan_permMetricChart_widget_2ec3cc95-1a5c-4967-bd19-a38f56d1ddae_45bd649a-1af3-4c94-aad9-3b189c224cc4"
+               },
+               {
+                  "value": "b%3A0",
+                  "key": "permBtn_zoomAllGraphs_permMetricChart_widget_2ec3cc95-1a5c-4967-bd19-a38f56d1ddae_45bd649a-1af3-4c94-aad9-3b189c224cc4"
+               },
+               {
+                  "value": "s%3A%7B%22dateRange%22%3A%22dashboardTime%22%2C%22dateFrom%22%3Anull%2C%22dateTo%22%3Anull%2C%22timeFrom%22%3Anull%2C%22timeTo%22%3Anull%7D",
+                  "key": "permDateRange1_permMetricChart_widget_2ec3cc95-1a5c-4967-bd19-a38f56d1ddae_45bd649a-1af3-4c94-aad9-3b189c224cc4"
+               },
+               {
+                  "value": "o%3A",
+                  "key": "permMetricChart_widget_2ec3cc95-1a5c-4967-bd19-a38f56d1ddae_45bd649a-1af3-4c94-aad9-3b189c224cc4"
+               },
+               {
+                  "value": "b%3A0",
+                  "key": "perm_toolbarVisible_widget_2ec3cc95-1a5c-4967-bd19-a38f56d1ddae_45bd649a-1af3-4c94-aad9-3b189c224cc4"
+               }
+            ]
+         },
+         {
+            "tabId": "2ec3cc95-1a5c-4967-bd19-a38f56d1ddae",
+            "collapsed": false,
+            "id": "82ba1067-b2a1-44b6-83c4-212392e129b8",
+            "gridsterCoords": {
+               "w": 2,
+               "x": 3,
+               "h": 5,
+               "y": 8
+            },
+            "state": "",
+            "type": "View",
+            "title": "VM Memory Share",
+            "config": {
+               "refreshInterval": 300,
+               "resource": {
+                  "resourceId": "resource:id:0_::_",
+                  "traversalSpecId": "vSphere Hosts and Clusters-VMWARE-vSphere World",
+                  "resourceName": "vSphere World",
+                  "resourceKindId": "002006VMWAREvSphere World",
+                  "id": "Ext.vcops.chrome.model.Resource-8"
+               },
+               "widgetId": "82ba1067-b2a1-44b6-83c4-212392e129b8",
+               "traversalSpecId": null,
+               "refreshContent": {"refreshContent": false},
+               "description": "",
+               "isUpdatedView": true,
+               "title": "VM Memory Share",
+               "viewDefinitionId": "23b3812d-fac8-449a-acb7-488a388a0716",
+               "titleLocalized": "VM Memory Share",
+               "chartViewItems": [],
+               "selectFirstRow": {"selectFirstRow": false},
+               "viewDetails": "",
+               "selfProvider": {"selfProvider": true}
+            },
+            "height": 0
          },
          {
             "tabId": "2ec3cc95-1a5c-4967-bd19-a38f56d1ddae",
@@ -1772,7 +1198,7 @@
                "w": 6,
                "x": 7,
                "h": 4,
-               "y": 8
+               "y": 9
             },
             "state": "",
             "type": "HealthChart",
@@ -1816,7 +1242,7 @@
                }],
                "widgetId": "5b5bc568-efd6-4bcb-a88e-4506768c15ea",
                "refreshContent": {"refreshContent": false},
-               "resourceKindId": "resourceKind:id:0_::_",
+               "resourceKindId": "resourceKind:id:2_::_",
                "orangeBound": 50,
                "metricFullName": "vCommunity|Bottom 10 Percent Cluster Risk",
                "showMetricLabel": {"showMetricLabel": false},
@@ -1833,12 +1259,374 @@
          {
             "tabId": "2ec3cc95-1a5c-4967-bd19-a38f56d1ddae",
             "collapsed": false,
+            "id": "098630f3-5e0f-4463-9a0f-232f9a5904a1",
+            "gridsterCoords": {
+               "w": 12,
+               "x": 1,
+               "h": 3,
+               "y": 2
+            },
+            "state": "",
+            "type": "Scoreboard",
+            "title": "Key Inventory",
+            "config": {
+               "maxCellCount": 100,
+               "oldMetricValues": false,
+               "relationshipMode": {"relationshipMode": 0},
+               "description": "If these numbers change drastically and not matching your expectation, something wrong has happened.",
+               "valueSize": 24,
+               "title": "Key Inventory",
+               "boxHeight": null,
+               "showResourceName": {"showResourceName": false},
+               "roundDecimals": null,
+               "mode": {"layoutMode": "fixedView"},
+               "labelSize": 16,
+               "titleLocalized": "Key Inventory",
+               "customFilter": {
+                  "filter": [],
+                  "excludedResources": null,
+                  "includedResources": null
+               },
+               "viewDetails": "",
+               "selfProvider": {"selfProvider": true},
+               "resInteractionMode": null,
+               "visualTheme": 8,
+               "showMetricName": {"showMetricName": true},
+               "refreshInterval": 300,
+               "resource": [],
+               "widgetId": "098630f3-5e0f-4463-9a0f-232f9a5904a1",
+               "showDT": {"showDT": false},
+               "showRemaining": false,
+               "refreshContent": {"refreshContent": false},
+               "focusOnPercent": false,
+               "showMetricUnit": {"showMetricUnit": true},
+               "depth": 1,
+               "metric": {
+                  "mode": "resourceKind",
+                  "resourceMetrics": [],
+                  "resourceKindMetrics": [
+                     {
+                        "yellowBound": null,
+                        "metricUnitId": null,
+                        "metricName": "Summary|Number of Running VMs",
+                        "metricKey": "summary|number_running_vms",
+                        "handleOldColoring": false,
+                        "maxValue": "",
+                        "link": "../vcf-operations/ui/operate/dashboards/dashboards;tabId=cc6454bb-4a01-40b5-b6fa-eaed60934e21",
+                        "resourceKindName": "vSphere World",
+                        "isStringMetric": false,
+                        "resourceKindId": "resourceKind:id:2_::_",
+                        "label": "",
+                        "orangeBound": null,
+                        "metricUnit": "",
+                        "labelOrig": "",
+                        "unit": "",
+                        "labelLocalized": "",
+                        "redBound": null,
+                        "id": "extModel30055-2",
+                        "colorMethod": 2
+                     },
+                     {
+                        "yellowBound": null,
+                        "metricUnitId": null,
+                        "metricName": "Summary|Total Number of VMs",
+                        "metricKey": "summary|total_number_vms",
+                        "handleOldColoring": false,
+                        "maxValue": "",
+                        "link": "./vcf-operations/ui/operate/dashboards/dashboards;tabId=cc6454bb-4a01-40b5-b6fa-eaed60934e21",
+                        "resourceKindName": "vSphere World",
+                        "isStringMetric": false,
+                        "resourceKindId": "resourceKind:id:2_::_",
+                        "label": "",
+                        "orangeBound": null,
+                        "metricUnit": "",
+                        "labelOrig": "",
+                        "unit": "",
+                        "labelLocalized": "",
+                        "redBound": null,
+                        "id": "extModel30055-3",
+                        "colorMethod": 2
+                     },
+                     {
+                        "yellowBound": null,
+                        "metricUnitId": null,
+                        "metricName": "Summary|Number of Running Hosts",
+                        "metricKey": "summary|number_running_hosts",
+                        "handleOldColoring": false,
+                        "maxValue": "",
+                        "link": "/vcf-operations/ui/operate/dashboards/dashboards;tabId=cc6454bb-4a01-40b5-b6fa-eaed60934e21",
+                        "resourceKindName": "vSphere World",
+                        "isStringMetric": false,
+                        "resourceKindId": "resourceKind:id:2_::_",
+                        "label": "",
+                        "orangeBound": null,
+                        "metricUnit": "",
+                        "labelOrig": "",
+                        "unit": "",
+                        "labelLocalized": "",
+                        "redBound": null,
+                        "id": "extModel30055-1",
+                        "colorMethod": 2
+                     },
+                     {
+                        "yellowBound": null,
+                        "metricName": "Summary|Total Number of Datastores",
+                        "metricKey": "summary|total_number_datastores",
+                        "handleOldColoring": false,
+                        "link": "",
+                        "resourceKindName": "vSphere World",
+                        "isStringMetric": false,
+                        "resourceKindId": "resourceKind:id:2_::_",
+                        "label": "",
+                        "orangeBound": null,
+                        "labelOrig": "",
+                        "labelLocalized": "",
+                        "redBound": null,
+                        "id": "extModel30055-5",
+                        "colorMethod": 2
+                     },
+                     {
+                        "yellowBound": null,
+                        "metricUnitId": null,
+                        "metricName": "vCommunity|Number of Port Groups",
+                        "metricKey": "vCommunity|Number of Port Groups",
+                        "handleOldColoring": false,
+                        "maxValue": "",
+                        "link": "/vcf-operations/ui/operate/dashboards/dashboards;tabId=50522b10-6dff-46a4-b1a5-c4c5d61cdf64",
+                        "resourceKindName": "vSphere World",
+                        "isStringMetric": false,
+                        "resourceKindId": "resourceKind:id:2_::_",
+                        "label": "",
+                        "orangeBound": null,
+                        "metricUnit": "",
+                        "labelOrig": "",
+                        "unit": "",
+                        "labelLocalized": "",
+                        "redBound": null,
+                        "id": "extModel3752-1",
+                        "colorMethod": 2
+                     },
+                     {
+                        "yellowBound": null,
+                        "metricName": "Summary|Total Number of Clusters",
+                        "metricKey": "summary|total_number_clusters",
+                        "handleOldColoring": false,
+                        "link": "",
+                        "resourceKindName": "vSphere World",
+                        "isStringMetric": false,
+                        "resourceKindId": "resourceKind:id:2_::_",
+                        "label": "",
+                        "orangeBound": null,
+                        "labelOrig": "",
+                        "labelLocalized": "",
+                        "redBound": null,
+                        "id": "extModel30055-4",
+                        "colorMethod": 2
+                     }
+                  ],
+                  "subMode": "resourceKindAll"
+               },
+               "showSparkline": {"showSparkline": true},
+               "showPercentText": false,
+               "boxColumns": 6,
+               "periodLength": "dashboardTime"
+            },
+            "height": 0
+         },
+         {
+            "tabId": "2ec3cc95-1a5c-4967-bd19-a38f56d1ddae",
+            "collapsed": false,
+            "id": "20d11e2e-07d2-4f83-a322-fdef03e97b4a",
+            "gridsterCoords": {
+               "w": 3,
+               "x": 10,
+               "h": 6,
+               "y": 10
+            },
+            "state": "",
+            "type": "MetricChart",
+            "title": "Memory Reservation",
+            "config": {
+               "refreshInterval": 300,
+               "resource": [],
+               "widgetId": "20d11e2e-07d2-4f83-a322-fdef03e97b4a",
+               "refreshContent": {"refreshContent": false},
+               "relationshipMode": {"relationshipMode": 0},
+               "description": "Total amount of reservation given to VM memory. This amount should be 0 as memory reservation is \"sticky\". It persists despite the Guest OS not using the page anymore.",
+               "title": "Memory Reservation",
+               "depth": 1,
+               "metric": {
+                  "mode": "resourceKind",
+                  "resourceMetrics": [],
+                  "resourceKindMetrics": [{
+                     "yellowBound": null,
+                     "metricUnitId": "gb",
+                     "metricName": "Memory|Reserved Capacity",
+                     "metricKey": "mem|reservedCapacity_average",
+                     "handleOldColoring": false,
+                     "maxValue": "",
+                     "resourceKindName": "vSphere World",
+                     "isStringMetric": false,
+                     "resourceKindId": "resourceKind:id:2_::_",
+                     "orangeBound": null,
+                     "metricUnit": "GB",
+                     "unit": "GB",
+                     "redBound": null,
+                     "id": "extModel12720-1",
+                     "colorMethod": 2
+                  }],
+                  "subMode": "resourceKindAll"
+               },
+               "titleLocalized": "Memory Reservation",
+               "customFilter": {
+                  "filter": [],
+                  "excludedResources": null,
+                  "includedResources": null
+               },
+               "viewDetails": "",
+               "selfProvider": {"selfProvider": true},
+               "resInteractionMode": null
+            },
+            "height": 0,
+            "states": [
+               {
+                  "value": "b%3A0",
+                  "key": "permBtn_pan_permMetricChart_widget_2ec3cc95-1a5c-4967-bd19-a38f56d1ddae_20d11e2e-07d2-4f83-a322-fdef03e97b4a"
+               },
+               {
+                  "value": "o%3A",
+                  "key": "permMetricChart_widget_2ec3cc95-1a5c-4967-bd19-a38f56d1ddae_20d11e2e-07d2-4f83-a322-fdef03e97b4a"
+               },
+               {
+                  "value": "s%3A%7B%22dateRange%22%3A%22dashboardTime%22%2C%22dateFrom%22%3Anull%2C%22dateTo%22%3Anull%2C%22timeFrom%22%3Anull%2C%22timeTo%22%3Anull%7D",
+                  "key": "permDateRange1_permMetricChart_widget_2ec3cc95-1a5c-4967-bd19-a38f56d1ddae_20d11e2e-07d2-4f83-a322-fdef03e97b4a"
+               },
+               {
+                  "value": "b%3A0",
+                  "key": "permBtn_zoomAllGraphs_permMetricChart_widget_2ec3cc95-1a5c-4967-bd19-a38f56d1ddae_20d11e2e-07d2-4f83-a322-fdef03e97b4a"
+               }
+            ]
+         },
+         {
+            "tabId": "2ec3cc95-1a5c-4967-bd19-a38f56d1ddae",
+            "collapsed": false,
+            "id": "0b891d5f-a0fd-456f-9404-7f395e0bc573",
+            "gridsterCoords": {
+               "w": 2,
+               "x": 1,
+               "h": 5,
+               "y": 8
+            },
+            "state": "",
+            "type": "View",
+            "title": "VM CPU Shares",
+            "config": {
+               "refreshInterval": 300,
+               "resource": {
+                  "resourceId": "resource:id:0_::_",
+                  "traversalSpecId": "vSphere Hosts and Clusters-VMWARE-vSphere World",
+                  "resourceName": "vSphere World",
+                  "resourceKindId": "002006VMWAREvSphere World",
+                  "id": "Ext.vcops.chrome.model.Resource-7"
+               },
+               "widgetId": "0b891d5f-a0fd-456f-9404-7f395e0bc573",
+               "traversalSpecId": null,
+               "refreshContent": {"refreshContent": false},
+               "description": "",
+               "isUpdatedView": true,
+               "title": "VM CPU Shares",
+               "viewDefinitionId": "40c5bbc9-db9d-468c-8094-2137d22e53a7",
+               "titleLocalized": "VM CPU Shares",
+               "chartViewItems": [],
+               "selectFirstRow": {"selectFirstRow": false},
+               "viewDetails": "",
+               "selfProvider": {"selfProvider": true}
+            },
+            "height": 0
+         },
+         {
+            "tabId": "2ec3cc95-1a5c-4967-bd19-a38f56d1ddae",
+            "collapsed": false,
+            "id": "fa591260-9646-4954-af48-73f0b69380b1",
+            "gridsterCoords": {
+               "w": 3,
+               "x": 7,
+               "h": 6,
+               "y": 10
+            },
+            "state": "",
+            "type": "MetricChart",
+            "title": "CPU Reservation",
+            "config": {
+               "refreshInterval": 300,
+               "resource": [],
+               "widgetId": "fa591260-9646-4954-af48-73f0b69380b1",
+               "refreshContent": {"refreshContent": false},
+               "relationshipMode": {"relationshipMode": 0},
+               "description": "Total amount of reservation given to VM CPU. This amount should be low or 0. Setting reservation impacts both vSphere DRS and HA, creating a risk of overall performance.",
+               "title": "CPU Reservation",
+               "depth": 1,
+               "metric": {
+                  "mode": "resourceKind",
+                  "resourceMetrics": [],
+                  "resourceKindMetrics": [{
+                     "yellowBound": null,
+                     "metricUnitId": "ghz",
+                     "metricName": "CPU|Reserved Capacity",
+                     "metricKey": "cpu|reservedCapacity_average",
+                     "handleOldColoring": false,
+                     "maxValue": "",
+                     "resourceKindName": "vSphere World",
+                     "isStringMetric": false,
+                     "resourceKindId": "resourceKind:id:2_::_",
+                     "orangeBound": null,
+                     "metricUnit": "GHz",
+                     "unit": "GHz",
+                     "redBound": null,
+                     "id": "extModel11916-1",
+                     "colorMethod": 2
+                  }],
+                  "subMode": "resourceKindAll"
+               },
+               "titleLocalized": "CPU Reservation",
+               "customFilter": {
+                  "filter": [],
+                  "excludedResources": null,
+                  "includedResources": null
+               },
+               "viewDetails": "",
+               "selfProvider": {"selfProvider": true},
+               "resInteractionMode": null
+            },
+            "height": 0,
+            "states": [
+               {
+                  "value": "o%3A",
+                  "key": "permMetricChart_widget_2ec3cc95-1a5c-4967-bd19-a38f56d1ddae_fa591260-9646-4954-af48-73f0b69380b1"
+               },
+               {
+                  "value": "s%3A%7B%22dateRange%22%3A%22dashboardTime%22%2C%22dateFrom%22%3Anull%2C%22dateTo%22%3Anull%2C%22timeFrom%22%3Anull%2C%22timeTo%22%3Anull%7D",
+                  "key": "permDateRange1_permMetricChart_widget_2ec3cc95-1a5c-4967-bd19-a38f56d1ddae_fa591260-9646-4954-af48-73f0b69380b1"
+               },
+               {
+                  "value": "b%3A0",
+                  "key": "permBtn_zoomAllGraphs_permMetricChart_widget_2ec3cc95-1a5c-4967-bd19-a38f56d1ddae_fa591260-9646-4954-af48-73f0b69380b1"
+               },
+               {
+                  "value": "b%3A0",
+                  "key": "permBtn_pan_permMetricChart_widget_2ec3cc95-1a5c-4967-bd19-a38f56d1ddae_fa591260-9646-4954-af48-73f0b69380b1"
+               }
+            ]
+         },
+         {
+            "tabId": "2ec3cc95-1a5c-4967-bd19-a38f56d1ddae",
+            "collapsed": false,
             "id": "b75465a0-cb3c-45e0-8bc8-7fd4da0944e3",
             "gridsterCoords": {
                "w": 4,
                "x": 1,
                "h": 5,
-               "y": 5
+               "y": 4
             },
             "state": "",
             "type": "Scoreboard",
@@ -1889,7 +1677,7 @@
                         "link": "",
                         "resourceKindName": "vSphere World",
                         "isStringMetric": false,
-                        "resourceKindId": "resourceKind:id:0_::_",
+                        "resourceKindId": "resourceKind:id:2_::_",
                         "label": "",
                         "orangeBound": 10,
                         "metricUnit": "",
@@ -1910,7 +1698,7 @@
                         "link": "",
                         "resourceKindName": "vSphere World",
                         "isStringMetric": false,
-                        "resourceKindId": "resourceKind:id:0_::_",
+                        "resourceKindId": "resourceKind:id:2_::_",
                         "label": "",
                         "orangeBound": 10,
                         "metricUnit": "",
@@ -1922,7 +1710,7 @@
                         "colorMethod": 0
                      },
                      {
-                        "yellowBound": null,
+                        "yellowBound": 1,
                         "metricUnitId": null,
                         "metricName": "Number of VM Operations|Inventory|VM Delete",
                         "metricKey": "vmop|inventoryChange|numDestroy_latest",
@@ -1931,111 +1719,497 @@
                         "link": "",
                         "resourceKindName": "vSphere World",
                         "isStringMetric": false,
-                        "resourceKindId": "resourceKind:id:0_::_",
+                        "resourceKindId": "resourceKind:id:2_::_",
                         "label": "",
-                        "orangeBound": null,
+                        "orangeBound": 10,
                         "metricUnit": "",
                         "labelOrig": "",
                         "unit": "",
                         "labelLocalized": "",
-                        "redBound": null,
+                        "redBound": 25,
                         "id": "extModel13975-1",
-                        "colorMethod": 2
+                        "colorMethod": 0
                      },
                      {
-                        "yellowBound": null,
+                        "yellowBound": 1,
                         "metricName": "Number of VM Operations|State|VM Power Off",
                         "metricKey": "vmop|stateChange|numPoweroff_latest",
                         "handleOldColoring": false,
                         "link": "",
                         "resourceKindName": "vSphere World",
                         "isStringMetric": false,
-                        "resourceKindId": "resourceKind:id:0_::_",
+                        "resourceKindId": "resourceKind:id:2_::_",
                         "label": "",
-                        "orangeBound": null,
+                        "orangeBound": 10,
                         "labelOrig": "",
                         "labelLocalized": "",
-                        "redBound": null,
+                        "redBound": 25,
                         "id": "extModel13975-5",
-                        "colorMethod": 2
+                        "colorMethod": 0
                      },
                      {
-                        "yellowBound": null,
+                        "yellowBound": 1,
                         "metricName": "Number of VM Operations|Inventory|VM Unregister",
                         "metricKey": "vmop|inventoryChange|numUnregister_latest",
                         "handleOldColoring": false,
                         "link": "",
                         "resourceKindName": "vSphere World",
                         "isStringMetric": false,
-                        "resourceKindId": "resourceKind:id:0_::_",
+                        "resourceKindId": "resourceKind:id:2_::_",
                         "label": "",
-                        "orangeBound": null,
+                        "orangeBound": 10,
                         "labelOrig": "",
                         "labelLocalized": "",
-                        "redBound": null,
+                        "redBound": 25,
                         "id": "extModel13975-2",
-                        "colorMethod": 2
+                        "colorMethod": 0
                      },
                      {
-                        "yellowBound": null,
+                        "yellowBound": 1,
                         "metricName": "Number of VM Operations|State|VM Guest Reboot",
                         "metricKey": "vmop|stateChange|numRebootGuest_latest",
                         "handleOldColoring": false,
                         "link": "",
                         "resourceKindName": "vSphere World",
                         "isStringMetric": false,
-                        "resourceKindId": "resourceKind:id:0_::_",
+                        "resourceKindId": "resourceKind:id:2_::_",
                         "label": "",
-                        "orangeBound": null,
+                        "orangeBound": 10,
                         "labelOrig": "",
                         "labelLocalized": "",
-                        "redBound": null,
+                        "redBound": 25,
                         "id": "extModel13975-3",
-                        "colorMethod": 2
+                        "colorMethod": 0
                      },
                      {
-                        "yellowBound": null,
+                        "yellowBound": 1,
                         "metricName": "Number of VM Operations|State|VM Guest Shutdown",
                         "metricKey": "vmop|stateChange|numShutdownGuest_latest",
                         "handleOldColoring": false,
                         "link": "",
                         "resourceKindName": "vSphere World",
                         "isStringMetric": false,
-                        "resourceKindId": "resourceKind:id:0_::_",
+                        "resourceKindId": "resourceKind:id:2_::_",
                         "label": "",
-                        "orangeBound": null,
+                        "orangeBound": 10,
                         "labelOrig": "",
                         "labelLocalized": "",
-                        "redBound": null,
+                        "redBound": 25,
                         "id": "extModel13975-4",
-                        "colorMethod": 2
+                        "colorMethod": 0
                      },
                      {
-                        "yellowBound": null,
+                        "yellowBound": 1,
                         "metricName": "Number of VM Operations|State|VM Standby Guest",
                         "metricKey": "vmop|stateChange|numStandbyGuest_latest",
                         "handleOldColoring": false,
                         "link": "",
                         "resourceKindName": "vSphere World",
                         "isStringMetric": false,
-                        "resourceKindId": "resourceKind:id:0_::_",
+                        "resourceKindId": "resourceKind:id:2_::_",
                         "label": "",
-                        "orangeBound": null,
+                        "orangeBound": 10,
                         "labelOrig": "",
                         "labelLocalized": "",
-                        "redBound": null,
+                        "redBound": 25,
                         "id": "extModel13975-7",
-                        "colorMethod": 2
+                        "colorMethod": 0
                      }
                   ],
                   "subMode": "resourceKindAll"
                },
-               "showSparkline": {"showSparkline": false},
+               "showSparkline": {"showSparkline": true},
                "showPercentText": false,
                "boxColumns": 4,
+               "periodLength": "dashboardTime"
+            },
+            "height": 0
+         },
+         {
+            "tabId": "2ec3cc95-1a5c-4967-bd19-a38f56d1ddae",
+            "collapsed": false,
+            "id": "8b37dc2b-e9b8-4be0-ab63-ad2915de0f3f",
+            "gridsterCoords": {
+               "w": 6,
+               "x": 1,
+               "h": 4,
+               "y": 9
+            },
+            "state": "",
+            "type": "HealthChart",
+            "title": "Worst 10% Cluster Performance",
+            "config": {
+               "yellowBound": 75,
+               "metricName": "vCommunity|Bottom 10 Percent Cluster Performance",
+               "metricKey": "vCommunity|Bottom 10 Percent Cluster Performance",
+               "relationshipMode": {"relationshipMode": 0},
+               "description": "",
+               "sortByDir": {"orderByDir": "asc"},
+               "title": "Worst 10% Cluster Performance",
+               "showResourceName": {"showResourceName": false},
+               "chartHeight": 135,
+               "metricUnit": {
+                  "metricUnitId": -1,
+                  "metricUnitName": "Default Unit"
+               },
+               "undefined": [],
+               "mode": "resource",
+               "metricType": {"metricType": "custom"},
+               "filterMode": "tagPicker",
+               "tagFilter": null,
+               "paginationNumber": 15,
+               "titleLocalized": "Worst 10% Cluster Performance",
+               "customFilter": {
+                  "filter": [],
+                  "filterMode": "tagPicker",
+                  "excludedResources": null,
+                  "includedResources": null
+               },
+               "selectFirstRow": {"selectFirstRow": false},
+               "sortBy": "metricValue",
+               "viewDetails": "",
+               "selfProvider": {"selfProvider": true},
+               "key": "HealthChart",
+               "refreshInterval": 300,
+               "resource": [{
+                  "name": "vSphere World",
+                  "id": "resource:id:0_::_"
+               }],
+               "widgetId": "9b4ff433-5b1f-4c5d-a941-ed4ea386dc17",
+               "refreshContent": {"refreshContent": false},
+               "resourceKindId": "resourceKind:id:2_::_",
+               "orangeBound": 50,
+               "metricFullName": "vCommunity|Bottom 10 Percent Cluster Performance",
+               "showMetricLabel": {"showMetricLabel": false},
+               "depth": 1,
+               "metricLabel": "",
+               "redBound": 25
+            },
+            "height": 0,
+            "states": [{
+               "value": "s%3A%7B%22dateRange%22%3A%22dashboardTime%22%2C%22dateFrom%22%3Anull%2C%22dateTo%22%3Anull%2C%22timeFrom%22%3Anull%2C%22timeTo%22%3Anull%7D",
+               "key": "permDateRange_HealthChart_widget_2ec3cc95-1a5c-4967-bd19-a38f56d1ddae_8b37dc2b-e9b8-4be0-ab63-ad2915de0f3f"
+            }]
+         },
+         {
+            "tabId": "2ec3cc95-1a5c-4967-bd19-a38f56d1ddae",
+            "collapsed": false,
+            "id": "46cf2b20-2517-4202-9150-f55595900186",
+            "gridsterCoords": {
+               "w": 4,
+               "x": 5,
+               "h": 4,
+               "y": 7
+            },
+            "state": "",
+            "type": "HealthChart",
+            "title": "VM: Location Change",
+            "config": {
+               "yellowBound": 10,
+               "metricName": "Summary|VM Location Changes",
+               "metricKey": "summary|number_vm_location_changes",
+               "relationshipMode": {"relationshipMode": 0},
+               "description": "Tracks all 6 types, grouped into cold or hot migration.\ncompute change, storage change, both changes.",
+               "sortByDir": {"orderByDir": "asc"},
+               "title": "VM: Location Change",
+               "showResourceName": {"showResourceName": false},
+               "chartHeight": 135,
+               "metricUnit": {
+                  "metricUnitId": -1,
+                  "metricUnitName": "Default Unit"
+               },
+               "undefined": [],
+               "mode": "resource",
+               "metricType": {"metricType": "custom"},
+               "filterMode": "tagPicker",
+               "tagFilter": null,
+               "paginationNumber": 15,
+               "titleLocalized": "VM: Location Change",
+               "customFilter": {
+                  "filter": [],
+                  "filterMode": "tagPicker",
+                  "excludedResources": null,
+                  "includedResources": null
+               },
+               "selectFirstRow": {"selectFirstRow": false},
+               "sortBy": "metricValue",
+               "viewDetails": "",
+               "selfProvider": {"selfProvider": true},
+               "refreshInterval": 300,
+               "resource": [{
+                  "name": "vSphere World",
+                  "id": "resource:id:0_::_"
+               }],
+               "widgetId": "46cf2b20-2517-4202-9150-f55595900186",
+               "refreshContent": {"refreshContent": false},
+               "resourceKindId": "resourceKind:id:2_::_",
+               "orangeBound": 50,
+               "metricFullName": "Summary|VM Location Changes",
+               "showMetricLabel": {"showMetricLabel": false},
+               "depth": 1,
+               "metricLabel": "",
+               "redBound": 250
+            },
+            "height": 0,
+            "states": [{
+               "value": "s%3A%7B%22dateRange%22%3A%22dashboardTime%22%2C%22dateFrom%22%3Anull%2C%22dateTo%22%3Anull%2C%22timeFrom%22%3Anull%2C%22timeTo%22%3Anull%7D",
+               "key": "permDateRange_HealthChart_widget_2ec3cc95-1a5c-4967-bd19-a38f56d1ddae_46cf2b20-2517-4202-9150-f55595900186"
+            }]
+         },
+         {
+            "tabId": "2ec3cc95-1a5c-4967-bd19-a38f56d1ddae",
+            "collapsed": false,
+            "id": "f5dbcf40-20a7-46d6-ae9f-71591b0c0e7a",
+            "gridsterCoords": {
+               "w": 2,
+               "x": 1,
+               "h": 4,
+               "y": 6
+            },
+            "state": "",
+            "type": "Scoreboard",
+            "title": "Total Capacity",
+            "config": {
+               "maxCellCount": 100,
+               "oldMetricValues": false,
+               "relationshipMode": {"relationshipMode": 0},
+               "description": "",
+               "valueSize": 24,
+               "title": "Total Capacity",
+               "boxHeight": null,
+               "showResourceName": {"showResourceName": false},
+               "roundDecimals": 0,
+               "mode": {"layoutMode": "fixedView"},
+               "labelSize": 16,
+               "titleLocalized": "Total Capacity",
+               "customFilter": {
+                  "filter": [],
+                  "excludedResources": null,
+                  "includedResources": null
+               },
+               "viewDetails": "",
+               "selfProvider": {"selfProvider": true},
+               "resInteractionMode": null,
+               "visualTheme": 4,
+               "showMetricName": {"showMetricName": true},
+               "refreshInterval": 300,
+               "resource": [{
+                  "name": "vSphere World",
+                  "id": "resource:id:0_::_"
+               }],
+               "widgetId": "f5dbcf40-20a7-46d6-ae9f-71591b0c0e7a",
+               "showDT": {"showDT": false},
+               "showRemaining": false,
+               "refreshContent": {"refreshContent": false},
+               "focusOnPercent": false,
+               "showMetricUnit": {"showMetricUnit": true},
+               "depth": 1,
+               "metric": {
+                  "mode": "resourceKind",
+                  "resourceMetrics": [],
+                  "resourceKindMetrics": [
+                     {
+                        "yellowBound": null,
+                        "metricUnitId": "ghz",
+                        "metricName": "CPU|Total Capacity",
+                        "metricKey": "cpu|capacity_provisioned",
+                        "handleOldColoring": false,
+                        "maxValue": "",
+                        "link": "/vcf-operations/ui/operate/dashboards/dashboards;tabId=c608ccb8-218a-4834-8a9d-af9241e01de1",
+                        "resourceKindName": "vSphere World",
+                        "isStringMetric": false,
+                        "resourceKindId": "resourceKind:id:2_::_",
+                        "label": "CPU",
+                        "orangeBound": null,
+                        "metricUnit": "GHz",
+                        "labelOrig": "CPU",
+                        "unit": "GHz",
+                        "labelLocalized": "CPU",
+                        "redBound": null,
+                        "id": "extModel14275-1",
+                        "colorMethod": 2
+                     },
+                     {
+                        "yellowBound": null,
+                        "metricUnitId": "tb",
+                        "metricName": "Memory|Total Capacity",
+                        "metricKey": "mem|host_provisioned",
+                        "handleOldColoring": false,
+                        "maxValue": "",
+                        "link": "/vcf-operations/ui/operate/dashboards/dashboards;tabId=c608ccb8-218a-4834-8a9d-af9241e01de1",
+                        "resourceKindName": "vSphere World",
+                        "isStringMetric": false,
+                        "resourceKindId": "resourceKind:id:2_::_",
+                        "label": "Memory",
+                        "orangeBound": null,
+                        "metricUnit": "TB",
+                        "labelOrig": "Memory",
+                        "unit": "TB",
+                        "labelLocalized": "Memory",
+                        "redBound": null,
+                        "id": "extModel14275-2",
+                        "colorMethod": 2
+                     },
+                     {
+                        "yellowBound": null,
+                        "metricUnitId": "tb",
+                        "metricName": "Disk Space|Total Capacity",
+                        "metricKey": "diskspace|total_capacity",
+                        "handleOldColoring": false,
+                        "maxValue": "",
+                        "link": "/vcf-operations/ui/operate/dashboards/dashboards;tabId=c608ccb8-218a-4834-8a9d-af9241e01de1",
+                        "resourceKindName": "vSphere World",
+                        "isStringMetric": false,
+                        "resourceKindId": "resourceKind:id:2_::_",
+                        "label": "Disk",
+                        "orangeBound": null,
+                        "metricUnit": "TB",
+                        "labelOrig": "Disk",
+                        "unit": "TB",
+                        "labelLocalized": "Disk",
+                        "redBound": null,
+                        "id": "extModel14275-3",
+                        "colorMethod": 2
+                     }
+                  ]
+               },
+               "showSparkline": {"showSparkline": false},
+               "showPercentText": false,
+               "boxColumns": 3,
                "periodLength": null
             },
             "height": 0
+         },
+         {
+            "tabId": "2ec3cc95-1a5c-4967-bd19-a38f56d1ddae",
+            "collapsed": false,
+            "id": "1d34b7ce-0878-49bd-9181-c9b25090cdac",
+            "gridsterCoords": {
+               "w": 6,
+               "x": 7,
+               "h": 4,
+               "y": 3
+            },
+            "state": "",
+            "type": "HealthChart",
+            "title": "Alerts: Urgent but Not Important",
+            "config": {
+               "yellowBound": 0,
+               "metricName": "VCF Operations Generated|Alert Count Immediate",
+               "metricKey": "System Attributes|alert_count_immediate",
+               "relationshipMode": {"relationshipMode": 0},
+               "description": "The number should be low. It may not be 0.\n\nAttend by end of day, not defer until tomorrow. Alerts that you defer until tomorrow means it's not urgent. It's more effective to see these non-urgent warning in totality as insight than as individual alerts",
+               "sortByDir": {"orderByDir": "asc"},
+               "title": "Alerts: Urgent but Not Important",
+               "showResourceName": {"showResourceName": false},
+               "chartHeight": 135,
+               "metricUnit": {
+                  "metricUnitId": -1,
+                  "metricUnitName": "Default Unit"
+               },
+               "undefined": [],
+               "mode": "resource",
+               "metricType": {"metricType": "custom"},
+               "filterMode": "tagPicker",
+               "tagFilter": null,
+               "paginationNumber": 15,
+               "titleLocalized": "Alerts: Urgent but Not Important",
+               "customFilter": {
+                  "filter": [],
+                  "filterMode": "tagPicker",
+                  "excludedResources": null,
+                  "includedResources": null
+               },
+               "selectFirstRow": {"selectFirstRow": false},
+               "sortBy": "metricValue",
+               "viewDetails": "/vcf-operations/ui/operate/alerts;tab=alerts",
+               "selfProvider": {"selfProvider": true},
+               "refreshInterval": 300,
+               "resource": [{
+                  "name": "vSphere World",
+                  "id": "resource:id:0_::_"
+               }],
+               "widgetId": "1d34b7ce-0878-49bd-9181-c9b25090cdac",
+               "refreshContent": {"refreshContent": false},
+               "resourceKindId": "resourceKind:id:2_::_",
+               "orangeBound": 1,
+               "metricFullName": "vRealize Operations Generated|Alert Count Immediate",
+               "showMetricLabel": {"showMetricLabel": false},
+               "depth": 1,
+               "metricLabel": "",
+               "redBound": 999999999
+            },
+            "height": 0,
+            "states": [{
+               "value": "s%3A%7B%22dateRange%22%3A%22dashboardTime%22%2C%22dateFrom%22%3Anull%2C%22dateTo%22%3Anull%2C%22timeFrom%22%3Anull%2C%22timeTo%22%3Anull%7D",
+               "key": "permDateRange_HealthChart_widget_2ec3cc95-1a5c-4967-bd19-a38f56d1ddae_1d34b7ce-0878-49bd-9181-c9b25090cdac"
+            }]
+         },
+         {
+            "tabId": "2ec3cc95-1a5c-4967-bd19-a38f56d1ddae",
+            "collapsed": false,
+            "id": "5c006224-7e64-47b5-a5a1-97c7ef28f172",
+            "gridsterCoords": {
+               "w": 5,
+               "x": 8,
+               "h": 4,
+               "y": 6
+            },
+            "state": "",
+            "type": "HealthChart",
+            "title": "Worst Performance of all Clusters",
+            "config": {
+               "yellowBound": 75,
+               "metricName": "vCommunity|Worst Cluster Performance",
+               "metricKey": "vCommunity|Worst Cluster Performance",
+               "relationshipMode": {"relationshipMode": 0},
+               "description": "",
+               "sortByDir": {"orderByDir": "asc"},
+               "title": "Worst Performance of all Clusters",
+               "showResourceName": {"showResourceName": false},
+               "chartHeight": 135,
+               "metricUnit": {
+                  "metricUnitId": -1,
+                  "metricUnitName": "Default Unit"
+               },
+               "undefined": [],
+               "mode": "resource",
+               "metricType": {"metricType": "custom"},
+               "filterMode": "tagPicker",
+               "tagFilter": null,
+               "paginationNumber": 15,
+               "titleLocalized": "Worst Performance of all Clusters",
+               "customFilter": {
+                  "filter": [],
+                  "filterMode": "tagPicker",
+                  "excludedResources": null,
+                  "includedResources": null
+               },
+               "selectFirstRow": {"selectFirstRow": false},
+               "sortBy": "metricValue",
+               "viewDetails": "",
+               "selfProvider": {"selfProvider": true},
+               "key": "HealthChart",
+               "refreshInterval": 300,
+               "resource": [{
+                  "name": "vSphere World",
+                  "id": "resource:id:0_::_"
+               }],
+               "widgetId": "40f7a080-aa3d-46a7-b2a7-451daafdfc58",
+               "refreshContent": {"refreshContent": false},
+               "resourceKindId": "resourceKind:id:2_::_",
+               "orangeBound": 50,
+               "metricFullName": "vCommunity|Worst Cluster Performance",
+               "showMetricLabel": {"showMetricLabel": false},
+               "depth": 1,
+               "metricLabel": "",
+               "redBound": 25
+            },
+            "height": 0,
+            "states": [{
+               "value": "s%3A%7B%22dateRange%22%3A%22dashboardTime%22%2C%22dateFrom%22%3Anull%2C%22dateTo%22%3Anull%2C%22timeFrom%22%3Anull%2C%22timeTo%22%3Anull%7D",
+               "key": "permDateRange_HealthChart_widget_2ec3cc95-1a5c-4967-bd19-a38f56d1ddae_5c006224-7e64-47b5-a5a1-97c7ef28f172"
+            }]
          }
       ],
       "userId": "936105f8-faa4-48cb-b268-0eec2ea9e205",
@@ -2051,14 +2225,23 @@
       "disabled": false,
       "id": "2ec3cc95-1a5c-4967-bd19-a38f56d1ddae",
       "locked": false,
-      "dashboardNavigations": {"1ccf472d-de23-421a-802e-c7be5ad8ed31": [{
-         "id": "325fd7c9-b8a9-48f2-a018-be070f49e1b5",
-         "widgets": [{
-            "interactionType": "resourceId",
-            "id": "d739edfe-3025-4aa5-8f0b-91f53d3eb657"
+      "dashboardNavigations": {
+         "335c884e-b33d-43b1-baa6-ef0e8331a01c": [{
+            "id": "c608ccb8-218a-4834-8a9d-af9241e01de1",
+            "widgets": [{
+               "interactionType": "resourceId",
+               "id": "6ac88211-b58e-407a-849c-39f42caa86bc"
+            }]
+         }],
+         "1ccf472d-de23-421a-802e-c7be5ad8ed31": [{
+            "id": "325fd7c9-b8a9-48f2-a018-be070f49e1b5",
+            "widgets": [{
+               "interactionType": "resourceId",
+               "id": "d739edfe-3025-4aa5-8f0b-91f53d3eb657"
+            }]
          }]
-      }]},
-      "lastUpdateTime": 1793076078470
+      },
+      "lastUpdateTime": 1793263597233
    }],
-   "uuid": "f4ee9c06-92d7-4e48-81c9-cfd7d3273056"
+   "uuid": "daafb988-425c-45c3-b245-9fa2cbc35fa8"
 }

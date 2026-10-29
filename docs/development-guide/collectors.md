@@ -14,7 +14,7 @@ Code: [`Management Pack/app/collectors/`](../../Management%20Pack/app/collectors
 | `datastore/collectDatastoreData.py` | Datastore | Datastore identifiers and summary properties. |
 | `vcenter/collectvCenterData.py` | vCenter | vCenter properties and the certificate check. Worst Cluster Operational Availability, and the Network Speed count of the vCenter. |
 | `datacenter/collectDatacenterData.py` | Datacenter | Total Network Speed Degradation: the number of its hosts below 100 %. |
-| `world/collectWorldData.py` | vSphere World | The summary metrics over all vCenters: Bottom 10 Percent and worst cluster scores, the availability and network counts, and the Cluster Delta Close and Open Counts. |
+| `world/collectWorldData.py` | vSphere World | The summary metrics over all vCenters: Bottom 10 Percent and worst cluster scores, the top 10 percent and highest cluster utilization, the availability and network counts, and the Cluster Delta Close and Open Counts. |
 
 The metrics and properties themselves are in [Metrics Code](metrics-code.md) and [Properties](properties.md). A collector does not calculate them. It finds the objects, reads their inputs and calls the modules.
 

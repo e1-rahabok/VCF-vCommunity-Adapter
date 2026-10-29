@@ -277,6 +277,8 @@ Every property and metric the vCommunity Management Pack pushes to VCF Operation
 | 🟢 Metric | `vCommunity\|Availability\|ESXi Hosts Operational Availability` | The average ESXi Host Operational Availability of all hosts, of all vCenters. Same limitation. |
 | 🟢 Metric | `vCommunity\|Network\|Total Network Speed Degradation` | The number of hosts below 100 % Network Speed Degradation, of all vCenters. Can be up to one collection cycle old. See [Network Speed Degradation](metrics/network-speed-degradation.md#known-limitations). |
 | 🟢 Metric | `vCommunity\|Worst Cluster Risk` | The highest Cluster Risk of all clusters. Same limitation. |
+| 🟢 Metric | `vCommunity\|Top 10 Percent Cluster Utilization` | The Cluster Consumption score that 10 % of all clusters are at or above (Cluster Consumption is higher-is-worse). Same limitation. |
+| 🟢 Metric | `vCommunity\|Highest Cluster Utilization` | The highest Cluster Consumption score of all clusters. Same limitation. |
 | 🟢 Metric | `vCommunity\|Cluster Delta Close Count` | The number of clusters whose Close for Business changed from 0 to 1 since the previous Periodic Cluster Check window. Once per window. See [Close for Business changes](metrics/vsphere-world-metrics.md#close-for-business-changes). |
 | 🟢 Metric | `vCommunity\|Cluster Delta Open Count` | The number of clusters whose Close for Business changed from 1 to 0 since the previous window. Once per window. Same section. |
 | 🟢 Metric | `vCommunity\|Number of Port Groups` | The sum of the vCenters' port group counts. Uses each vCenter's last value for up to 15 minutes. See [Port groups and VMware Tools](metrics/vsphere-world-metrics.md#port-groups-and-vmware-tools). |

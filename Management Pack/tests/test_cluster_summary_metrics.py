@@ -13,11 +13,13 @@ from fakes import FakeObject, FakeSuiteApi
 
 PERFORMANCE = cs.CLUSTER_PERFORMANCE_SCORE
 RISK = cs.CLUSTER_RISK_SCORE
+CONSUMPTION = cs.CLUSTER_CONSUMPTION_SCORE
 
 
 def test_score_keys_are_the_published_cluster_kpis():
     assert PERFORMANCE == "vCommunity|Cluster Performance|Cluster Performance Score"
     assert RISK == "vCommunity|Cluster Risk|Cluster Risk Score"
+    assert CONSUMPTION == "vCommunity|Cluster Consumption|Cluster Consumption Score"
 
 
 def test_10th_percentile_is_the_value_90_percent_are_at_or_above():
@@ -30,15 +32,17 @@ def test_10th_percentile_is_the_value_90_percent_are_at_or_above():
 
 def test_summary_of_all_clusters():
     scores = {
-        "cl-1": {PERFORMANCE: 86.35, RISK: 19.16},
-        "cl-2": {PERFORMANCE: 98.0, RISK: 75.0},
-        "cl-3": {PERFORMANCE: 50.0},                 # no Cluster Risk score this cycle: left out of it
+        "cl-1": {PERFORMANCE: 86.35, RISK: 19.16, CONSUMPTION: 30.0},
+        "cl-2": {PERFORMANCE: 98.0, RISK: 75.0, CONSUMPTION: 60.0},
+        "cl-3": {PERFORMANCE: 50.0},                 # no Risk or Consumption score this cycle: left out of them
     }
     assert cs.summary_values(scores) == {
         "Bottom 10 Percent Cluster Performance": 50.0,
         "Worst Cluster Performance": 50.0,
         "Bottom 10 Percent Cluster Risk": 75.0,      # Risk is higher-is-worse: the high end
         "Worst Cluster Risk": 75.0,
+        "Top 10 Percent Cluster Utilization": 60.0,  # Consumption is higher-is-worse: the high end
+        "Highest Cluster Utilization": 60.0,
     }
 
 
@@ -49,7 +53,8 @@ def test_no_cluster_score_gives_no_data():
 def test_reads_the_clusters_of_all_vcenters_and_publishes_on_vsphere_world():
     api = FakeSuiteApi(
         resources={"ClusterComputeResource": [("cl-1", "cluster-a", "domain-c1"), ("cl-2", "cluster-b", "domain-c2")]},
-        samples={"cl-1": {PERFORMANCE: [70.0, 86.354], RISK: [19.16]}, "cl-2": {PERFORMANCE: [98.0], RISK: [75.0]}},
+        samples={"cl-1": {PERFORMANCE: [70.0, 86.354], RISK: [19.16], CONSUMPTION: [30.0]},
+                 "cl-2": {PERFORMANCE: [98.0], RISK: [75.0], CONSUMPTION: [60.0]}},
     )
     world = FakeObject("vSphere World")
     cs.collect_cluster_summary_metrics(world, api)
@@ -60,6 +65,8 @@ def test_reads_the_clusters_of_all_vcenters_and_publishes_on_vsphere_world():
         "vCommunity|Worst Cluster Performance": 86.35,
         "vCommunity|Bottom 10 Percent Cluster Risk": 75.0,
         "vCommunity|Worst Cluster Risk": 75.0,
+        "vCommunity|Top 10 Percent Cluster Utilization": 60.0,
+        "vCommunity|Highest Cluster Utilization": 60.0,
     }
 
 

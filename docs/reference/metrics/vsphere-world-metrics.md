@@ -1,6 +1,6 @@
 # vSphere World Cluster Metrics
 
-Four metrics on the **vSphere World** object summarise the [Cluster Performance](cluster-performance.md) and [Cluster Risk](cluster-risk.md) scores of every cluster, across all vCenters. Use them to watch the whole estate in one place.
+Six metrics on the **vSphere World** object summarise the [Cluster Performance](cluster-performance.md), [Cluster Risk](cluster-risk.md) and [Cluster Consumption](cluster-consumption.md) scores of every cluster, across all vCenters. Use them to watch the whole estate in one place.
 
 Bottom 10 Percent Cluster Performance replaces the "vSphere Clusters Performance" super metric, which was the average of all clusters.
 
@@ -22,7 +22,7 @@ Code: [`Management Pack/app/metrics/world/cluster_summary_metrics.py`](../../../
 - **The Close for Business counts wait for every cluster.** They are not published until every cluster is calculated for the latest Periodic Cluster Check window, so they can come a few cycles after the window ends, like the check itself.
 - **Only the latest window is counted.** If the collection stops for longer than a window, the windows in between are not counted.
 
-## The 4 metrics
+## The 6 metrics
 
 All are published on the vSphere World object under `vCommunity`, in %.
 
@@ -32,11 +32,13 @@ All are published on the vSphere World object under `vCommunity`, in %.
 | `vCommunity\|Worst Cluster Performance` | The lowest Cluster Performance score of any cluster. |
 | `vCommunity\|Bottom 10 Percent Cluster Risk` | The Cluster Risk that 90 % of the clusters are at or below. |
 | `vCommunity\|Worst Cluster Risk` | The highest Cluster Risk of any cluster. |
+| `vCommunity\|Top 10 Percent Cluster Utilization` | The Cluster Consumption score that 10 % of the clusters are at or above. |
+| `vCommunity\|Highest Cluster Utilization` | The highest Cluster Consumption score of any cluster. |
 
-Each metric takes the bad end. **Bottom 10 Percent** is the boundary of the worst 10 % of the clusters, whichever direction is worse, so the name means the same for both KPIs:
+Each metric takes the bad end. **Bottom 10 Percent** and **Top 10 Percent** are the boundary of the worst 10 % of the clusters, whichever direction is worse, so the name means the same for each KPI:
 
 - Cluster Performance is "higher is better", so the bad end is the low end: the 10th percentile and the lowest.
-- Cluster Risk is "higher is worse" (100 = maximum risk), so the bad end is the high end: the 90th percentile and the highest.
+- Cluster Risk and Cluster Consumption are "higher is worse" (100 = maximum), so the bad end is the high end: the 90th percentile and the highest. Cluster Utilization is the Cluster Consumption score: the share of the usable capacity consumed.
 
 **10th and 90th percentile.** The clusters are sorted, and the one at position 10 % (or 90 %) of the count, rounded up, is taken (nearest rank, the same method as the cluster KPIs). With 20 clusters that is the 2nd lowest (or the 18th lowest). With 10 clusters or fewer it is the lowest (or the highest), the same as the worst cluster.
 
@@ -72,7 +74,12 @@ Three counts on the vSphere World object, over all vCenters.
 - **NSX.** Only vCenter is checked, not NSX Manager. An NSX segment that vCenter shows as a distributed port group is counted once, as that port group. A segment that vCenter does not show, such as one that is not realised on a distributed switch, is not counted.
 - A vCenter without an account of this pack has no value, and is left out.
 
-**VMware Tools.** Read from the VM properties that the vCenter adapter stores.
+**VMware Tools.** Read from the VM properties that the vCenter adapter stores. Their possible values, as shown in VCF Operations:
+
+| Property | Possible values |
+| :--- | :--- |
+| `Summary\|Guest Operating System\|Tools Running Status` | Guest Tools Running, Guest Tools Not Running |
+| `Summary\|Guest Operating System\|Tools Version Status` | Guest Tools Current, Guest Tools Supported Old, Guest Tools Too Old, Guest Tools Unmanaged, Guest Tools Not Installed |
 
 - **Without Tools** is the VM's Tools status *Not Installed*. It is counted whatever the power state, because the Tools are not installed.
 - **Tools down** needs three things: the VM is powered on, its Tools are installed, and its Tools are not running. A powered-off VM is never counted: a property keeps its last value, so a powered-off VM keeps the Tools status it had when it was last on.

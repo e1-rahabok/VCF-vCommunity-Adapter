@@ -3,17 +3,19 @@
 
 What they are
 -------------
-Four numbers that summarise the Cluster Performance and Cluster Risk scores of every cluster in VCF Operations,
-across all vCenters. They are published on the vSphere World object, under vCommunity:
+Six numbers that summarise the Cluster Performance, Cluster Risk and Cluster Consumption scores of every cluster in
+VCF Operations, across all vCenters. They are published on the vSphere World object, under vCommunity:
 
     Bottom 10 Percent Cluster Performance   90 % of the clusters score at or above it
-    Worst Cluster Performance             the lowest Cluster Performance score
+    Worst Cluster Performance               the lowest Cluster Performance score
     Bottom 10 Percent Cluster Risk          90 % of the clusters are at or below it
-    Worst Cluster Risk                    the highest Cluster Risk
+    Worst Cluster Risk                      the highest Cluster Risk
+    Top 10 Percent Cluster Utilization      10 % of the clusters are at or above it
+    Highest Cluster Utilization             the highest Cluster Consumption score
 
 Each takes the bad end. Cluster Performance is "higher is better", so the bad end is the low end: the 10th
-percentile and the lowest. Cluster Risk is "higher is worse", so the bad end is the high end: the 90th
-percentile and the highest.
+percentile and the lowest. Cluster Risk and Cluster Consumption are "higher is worse", so the bad end is the high
+end: the 90th percentile and the highest.
 
 Where the scores come from
 --------------------------
@@ -30,7 +32,7 @@ from typing import Dict, List, Optional
 from aria.ops.object import Object
 from aria.ops.suite_api_client import SuiteApiClient
 from constants.main import VCENTER_ADAPTER_KIND
-from metrics.cluster import cluster_performance_metrics, cluster_risk_metrics
+from metrics.cluster import cluster_consumption_metrics, cluster_performance_metrics, cluster_risk_metrics
 from metrics.kpi_score import percentile_90
 from utils.ops_stats import query_resources, read_latest_stats
 
@@ -39,14 +41,7 @@ logger = logging.getLogger(__name__)
 # The cluster scores, as stored in VCF Operations.
 CLUSTER_PERFORMANCE_SCORE = f"vCommunity|{cluster_performance_metrics.GROUP}|{cluster_performance_metrics.KPI_KEY}"
 CLUSTER_RISK_SCORE = f"vCommunity|{cluster_risk_metrics.GROUP}|{cluster_risk_metrics.KPI_KEY}"
-
-# Metric name -> (cluster score it summarises, how).
-METRICS = {
-    "Bottom 10 Percent Cluster Performance": (CLUSTER_PERFORMANCE_SCORE, "10th percentile"),
-    "Worst Cluster Performance":           (CLUSTER_PERFORMANCE_SCORE, "lowest"),
-    "Bottom 10 Percent Cluster Risk":        (CLUSTER_RISK_SCORE, "90th percentile"),
-    "Worst Cluster Risk":                  (CLUSTER_RISK_SCORE, "highest"),
-}
+CLUSTER_CONSUMPTION_SCORE = f"vCommunity|{cluster_consumption_metrics.GROUP}|{cluster_consumption_metrics.KPI_KEY}"
 
 
 def percentile_10(numbers: List[float]) -> Optional[float]:
@@ -62,21 +57,24 @@ def percentile_10(numbers: List[float]) -> Optional[float]:
     return sorted(numbers)[position - 1]
 
 
+# Metric name -> (cluster score it summarises, function that takes the scores of all clusters).
+# To add a metric, add a row. The functions are shared: percentile_10, percentile_90, min and max.
+METRICS = {
+    "Bottom 10 Percent Cluster Performance": (CLUSTER_PERFORMANCE_SCORE, percentile_10),
+    "Worst Cluster Performance":             (CLUSTER_PERFORMANCE_SCORE, min),
+    "Bottom 10 Percent Cluster Risk":        (CLUSTER_RISK_SCORE, percentile_90),
+    "Worst Cluster Risk":                    (CLUSTER_RISK_SCORE, max),
+    "Top 10 Percent Cluster Utilization":    (CLUSTER_CONSUMPTION_SCORE, percentile_90),
+    "Highest Cluster Utilization":           (CLUSTER_CONSUMPTION_SCORE, max),
+}
+
+
 def summary_values(scores_by_cluster: Dict[str, Dict[str, float]]) -> Dict[str, Optional[float]]:
     """Value of every metric in METRICS. A cluster without a score is left out. None means "no data"."""
     values = {}
-    for name, (score_key, how) in METRICS.items():
+    for name, (score_key, summarise) in METRICS.items():
         scores = [stats[score_key] for stats in scores_by_cluster.values() if score_key in stats]
-        if not scores:
-            values[name] = None
-        elif how == "10th percentile":
-            values[name] = percentile_10(scores)
-        elif how == "90th percentile":
-            values[name] = percentile_90(scores)
-        elif how == "lowest":
-            values[name] = min(scores)
-        else:
-            values[name] = max(scores)
+        values[name] = summarise(scores) if scores else None
     return values
 
 
@@ -84,7 +82,7 @@ def read_cluster_scores(suite_api_client: SuiteApiClient) -> Dict[str, Dict[str,
     """{cluster resource id: {score key: latest score}} for every cluster in VCF Operations, of all vCenters."""
     clusters = query_resources(suite_api_client, VCENTER_ADAPTER_KIND, "ClusterComputeResource", None)
     return read_latest_stats(suite_api_client, [cluster.id for cluster in clusters],
-                             [CLUSTER_PERFORMANCE_SCORE, CLUSTER_RISK_SCORE])
+                             [CLUSTER_PERFORMANCE_SCORE, CLUSTER_RISK_SCORE, CLUSTER_CONSUMPTION_SCORE])
 
 
 def collect_cluster_summary_metrics(world_obj: Object, suite_api_client: SuiteApiClient) -> None:
