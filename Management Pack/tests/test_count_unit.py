@@ -1,5 +1,5 @@
 #  Copyright 2026 VCF Operations vCommunity Management Pack
-"""TEST (0.6.6 build only): the unit "count", on the two share properties and the test metric.
+"""TEST (0.6.7 build only): the unit "count", on the two share properties and the test metric.
 
 Remove this file, and the TEST lines in vm_shares.py and definition.py, once the result is known.
 

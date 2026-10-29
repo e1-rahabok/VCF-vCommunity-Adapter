@@ -3,11 +3,16 @@
       "resourceKind": [
          {
             "resourceKindKey": "HostSystem",
-            "internalId": "resourceKind:id:1_::_",
+            "internalId": "resourceKind:id:2_::_",
             "adapterKindKey": "VMWARE"
          },
          {
             "resourceKindKey": "ClusterComputeResource",
+            "internalId": "resourceKind:id:1_::_",
+            "adapterKindKey": "VMWARE"
+         },
+         {
+            "resourceKindKey": "vSphere World",
             "internalId": "resourceKind:id:0_::_",
             "adapterKindKey": "VMWARE"
          }
@@ -28,17 +33,147 @@
       "importAttempts": 0,
       "columnProportion": "1",
       "importComplete": true,
-      "description": "",
+      "description": "Designed to be used weekly, not daily. It complements the Daily Check",
       "widgets": [
          {
             "tabId": "c608ccb8-218a-4834-8a9d-af9241e01de1",
-            "collapsed": true,
+            "collapsed": false,
+            "id": "0a22b1fe-c1c7-43ef-abee-07d9533658e8",
+            "gridsterCoords": {
+               "w": 6,
+               "x": 1,
+               "h": 4,
+               "y": 1
+            },
+            "state": "",
+            "type": "HealthChart",
+            "title": "Clusters being opened",
+            "config": {
+               "yellowBound": 100,
+               "metricName": "vCommunity|Cluster Delta Open Count",
+               "metricKey": "vCommunity|Cluster Delta Open Count",
+               "relationshipMode": {"relationshipMode": 0},
+               "description": "vSphere Clusters that system decided it's open for business",
+               "sortByDir": {"orderByDir": "asc"},
+               "title": "Clusters being opened",
+               "showResourceName": {"showResourceName": false},
+               "chartHeight": 135,
+               "metricUnit": {
+                  "metricUnitId": -1,
+                  "metricUnitName": "Default Unit"
+               },
+               "undefined": [],
+               "mode": "resource",
+               "metricType": {"metricType": "custom"},
+               "filterMode": "tagPicker",
+               "tagFilter": null,
+               "paginationNumber": 15,
+               "customFilter": {
+                  "filter": [],
+                  "filterMode": "tagPicker",
+                  "excludedResources": null,
+                  "includedResources": null
+               },
+               "selectFirstRow": {"selectFirstRow": false},
+               "sortBy": "metricValue",
+               "viewDetails": "",
+               "selfProvider": {"selfProvider": true},
+               "refreshInterval": 300,
+               "resource": [{
+                  "name": "vSphere World",
+                  "id": "resource:id:0_::_"
+               }],
+               "widgetId": "0a22b1fe-c1c7-43ef-abee-07d9533658e8",
+               "refreshContent": {"refreshContent": false},
+               "resourceKindId": "resourceKind:id:0_::_",
+               "orangeBound": 50,
+               "metricFullName": "vCommunity|Cluster Delta Open Count",
+               "showMetricLabel": {"showMetricLabel": false},
+               "depth": 1,
+               "metricLabel": "",
+               "redBound": 10
+            },
+            "height": 0,
+            "states": [{
+               "value": "s%3A%7B%22dateRange%22%3A%22dashboardTime%22%2C%22dateFrom%22%3Anull%2C%22dateTo%22%3Anull%2C%22timeFrom%22%3Anull%2C%22timeTo%22%3Anull%7D",
+               "key": "permDateRange_HealthChart_widget_c608ccb8-218a-4834-8a9d-af9241e01de1_0a22b1fe-c1c7-43ef-abee-07d9533658e8"
+            }]
+         },
+         {
+            "tabId": "c608ccb8-218a-4834-8a9d-af9241e01de1",
+            "collapsed": false,
+            "id": "07419c27-0a96-43d5-94cb-4df445730565",
+            "gridsterCoords": {
+               "w": 6,
+               "x": 7,
+               "h": 4,
+               "y": 1
+            },
+            "state": "",
+            "type": "HealthChart",
+            "title": "Clusters being opened",
+            "config": {
+               "yellowBound": 100,
+               "metricName": "vCommunity|Cluster Delta Open Count",
+               "metricKey": "vCommunity|Cluster Delta Open Count",
+               "relationshipMode": {"relationshipMode": 0},
+               "description": "vSphere Clusters that system decided it's open for business",
+               "sortByDir": {"orderByDir": "asc"},
+               "title": "Clusters being opened",
+               "showResourceName": {"showResourceName": false},
+               "chartHeight": 135,
+               "metricUnit": {
+                  "metricUnitId": -1,
+                  "metricUnitName": "Default Unit"
+               },
+               "undefined": [],
+               "mode": "resource",
+               "metricType": {"metricType": "custom"},
+               "filterMode": "tagPicker",
+               "tagFilter": null,
+               "paginationNumber": 15,
+               "titleLocalized": "Clusters being opened",
+               "customFilter": {
+                  "filter": [],
+                  "filterMode": "tagPicker",
+                  "excludedResources": null,
+                  "includedResources": null
+               },
+               "selectFirstRow": {"selectFirstRow": false},
+               "sortBy": "metricValue",
+               "viewDetails": "",
+               "selfProvider": {"selfProvider": true},
+               "key": "HealthChart",
+               "refreshInterval": 300,
+               "resource": [{
+                  "name": "vSphere World",
+                  "id": "resource:id:0_::_"
+               }],
+               "widgetId": "928dd83b-6b33-4dc3-ac7c-95a78666cbbc",
+               "refreshContent": {"refreshContent": false},
+               "resourceKindId": "resourceKind:id:0_::_",
+               "orangeBound": 50,
+               "metricFullName": "vCommunity|Cluster Delta Open Count",
+               "showMetricLabel": {"showMetricLabel": false},
+               "depth": 1,
+               "metricLabel": "",
+               "redBound": 10
+            },
+            "height": 0,
+            "states": [{
+               "value": "s%3A%7B%22dateRange%22%3A%22dashboardTime%22%2C%22dateFrom%22%3Anull%2C%22dateTo%22%3Anull%2C%22timeFrom%22%3Anull%2C%22timeTo%22%3Anull%7D",
+               "key": "permDateRange_HealthChart_widget_c608ccb8-218a-4834-8a9d-af9241e01de1_07419c27-0a96-43d5-94cb-4df445730565"
+            }]
+         },
+         {
+            "tabId": "c608ccb8-218a-4834-8a9d-af9241e01de1",
+            "collapsed": false,
             "id": "7203dd6d-5ebf-4d9e-98b8-a966b06be350",
             "gridsterCoords": {
                "w": 12,
                "x": 1,
                "h": 1,
-               "y": 1
+               "y": 5
             },
             "state": "",
             "type": "Section",
@@ -70,7 +205,7 @@
                "w": 6,
                "x": 1,
                "h": 12,
-               "y": 2
+               "y": 6
             },
             "state": "",
             "type": "View",
@@ -117,7 +252,7 @@
                "w": 5,
                "x": 7,
                "h": 4,
-               "y": 2
+               "y": 6
             },
             "state": "",
             "type": "HealthChart",
@@ -157,7 +292,7 @@
                "resource": [],
                "widgetId": "9f10db30-65de-48e9-8513-95fd56b2bb2c",
                "refreshContent": {"refreshContent": false},
-               "resourceKindId": "resourceKind:id:0_::_",
+               "resourceKindId": "resourceKind:id:1_::_",
                "orangeBound": 50,
                "metricFullName": "vCommunity|Cluster Performance|Cluster Performance Score",
                "showMetricLabel": {"showMetricLabel": false},
@@ -179,7 +314,7 @@
                "w": 1,
                "x": 12,
                "h": 12,
-               "y": 2
+               "y": 6
             },
             "state": "",
             "type": "Scoreboard",
@@ -229,7 +364,7 @@
                         "link": "",
                         "resourceKindName": "Cluster Compute Resource",
                         "isStringMetric": false,
-                        "resourceKindId": "resourceKind:id:0_::_",
+                        "resourceKindId": "resourceKind:id:1_::_",
                         "label": "Running VMs",
                         "orangeBound": null,
                         "metricUnit": "VM",
@@ -249,7 +384,7 @@
                         "link": "",
                         "resourceKindName": "Cluster Compute Resource",
                         "isStringMetric": false,
-                        "resourceKindId": "resourceKind:id:0_::_",
+                        "resourceKindId": "resourceKind:id:1_::_",
                         "label": "Usable Core",
                         "orangeBound": null,
                         "metricUnit": "Cores",
@@ -269,7 +404,7 @@
                         "link": "",
                         "resourceKindName": "Cluster Compute Resource",
                         "isStringMetric": false,
-                        "resourceKindId": "resourceKind:id:0_::_",
+                        "resourceKindId": "resourceKind:id:1_::_",
                         "label": "Running VM vCPU",
                         "orangeBound": null,
                         "metricUnit": "vCPU",
@@ -289,7 +424,7 @@
                         "link": "",
                         "resourceKindName": "Cluster Compute Resource",
                         "isStringMetric": false,
-                        "resourceKindId": "resourceKind:id:0_::_",
+                        "resourceKindId": "resourceKind:id:1_::_",
                         "label": "Usable Memory",
                         "orangeBound": null,
                         "metricUnit": "TB",
@@ -309,7 +444,7 @@
                         "link": "",
                         "resourceKindName": "Cluster Compute Resource",
                         "isStringMetric": false,
-                        "resourceKindId": "resourceKind:id:0_::_",
+                        "resourceKindId": "resourceKind:id:1_::_",
                         "label": "",
                         "orangeBound": null,
                         "metricUnit": "TB",
@@ -338,7 +473,7 @@
                "w": 5,
                "x": 7,
                "h": 4,
-               "y": 6
+               "y": 10
             },
             "state": "",
             "type": "HealthChart",
@@ -378,7 +513,7 @@
                "resource": [],
                "widgetId": "fa40c0bb-85a6-4c9e-9570-ad591e3970c4",
                "refreshContent": {"refreshContent": false},
-               "resourceKindId": "resourceKind:id:0_::_",
+               "resourceKindId": "resourceKind:id:1_::_",
                "orangeBound": 50,
                "metricFullName": "vCommunity|Cluster Risk|Cluster Risk Score",
                "showMetricLabel": {"showMetricLabel": false},
@@ -400,7 +535,7 @@
                "w": 5,
                "x": 7,
                "h": 4,
-               "y": 10
+               "y": 14
             },
             "state": "",
             "type": "HealthChart",
@@ -440,7 +575,7 @@
                "resource": [],
                "widgetId": "2f4ec658-166f-4856-8ea8-2d6d2b735b09",
                "refreshContent": {"refreshContent": false},
-               "resourceKindId": "resourceKind:id:0_::_",
+               "resourceKindId": "resourceKind:id:1_::_",
                "orangeBound": 50,
                "metricFullName": "vCommunity|Cluster Consumption|Cluster Consumption Score",
                "showMetricLabel": {"showMetricLabel": false},
@@ -462,7 +597,7 @@
                "w": 6,
                "x": 1,
                "h": 3,
-               "y": 14
+               "y": 18
             },
             "state": "",
             "type": "Scoreboard",
@@ -513,7 +648,7 @@
                         "link": "",
                         "resourceKindName": "Cluster Compute Resource",
                         "isStringMetric": false,
-                        "resourceKindId": "resourceKind:id:0_::_",
+                        "resourceKindId": "resourceKind:id:1_::_",
                         "label": "",
                         "orangeBound": 80,
                         "metricUnit": "",
@@ -534,7 +669,7 @@
                         "link": "",
                         "resourceKindName": "Cluster Compute Resource",
                         "isStringMetric": false,
-                        "resourceKindId": "resourceKind:id:0_::_",
+                        "resourceKindId": "resourceKind:id:1_::_",
                         "label": "",
                         "orangeBound": 90,
                         "metricUnit": "",
@@ -555,7 +690,7 @@
                         "link": "",
                         "resourceKindName": "Cluster Compute Resource",
                         "isStringMetric": false,
-                        "resourceKindId": "resourceKind:id:0_::_",
+                        "resourceKindId": "resourceKind:id:1_::_",
                         "label": "",
                         "orangeBound": 5,
                         "metricUnit": "",
@@ -576,7 +711,7 @@
                         "link": "",
                         "resourceKindName": "Cluster Compute Resource",
                         "isStringMetric": false,
-                        "resourceKindId": "resourceKind:id:0_::_",
+                        "resourceKindId": "resourceKind:id:1_::_",
                         "label": "",
                         "orangeBound": 2,
                         "metricUnit": "",
@@ -605,7 +740,7 @@
                "w": 6,
                "x": 7,
                "h": 3,
-               "y": 14
+               "y": 18
             },
             "state": "",
             "type": "Scoreboard",
@@ -656,7 +791,7 @@
                         "link": "",
                         "resourceKindName": "Cluster Compute Resource",
                         "isStringMetric": false,
-                        "resourceKindId": "resourceKind:id:0_::_",
+                        "resourceKindId": "resourceKind:id:1_::_",
                         "label": "",
                         "orangeBound": 0,
                         "metricUnit": "",
@@ -677,7 +812,7 @@
                         "link": "",
                         "resourceKindName": "Cluster Compute Resource",
                         "isStringMetric": false,
-                        "resourceKindId": "resourceKind:id:0_::_",
+                        "resourceKindId": "resourceKind:id:1_::_",
                         "label": "",
                         "orangeBound": 50,
                         "metricUnit": "",
@@ -698,7 +833,7 @@
                         "link": "",
                         "resourceKindName": "Cluster Compute Resource",
                         "isStringMetric": false,
-                        "resourceKindId": "resourceKind:id:0_::_",
+                        "resourceKindId": "resourceKind:id:1_::_",
                         "label": "",
                         "orangeBound": 8,
                         "metricUnit": "",
@@ -719,7 +854,7 @@
                         "link": "",
                         "resourceKindName": "Cluster Compute Resource",
                         "isStringMetric": false,
-                        "resourceKindId": "resourceKind:id:0_::_",
+                        "resourceKindId": "resourceKind:id:1_::_",
                         "label": "",
                         "orangeBound": 8,
                         "metricUnit": "",
@@ -740,7 +875,7 @@
                         "link": "",
                         "resourceKindName": "Cluster Compute Resource",
                         "isStringMetric": false,
-                        "resourceKindId": "resourceKind:id:0_::_",
+                        "resourceKindId": "resourceKind:id:1_::_",
                         "label": "",
                         "orangeBound": 1,
                         "metricUnit": "",
@@ -769,7 +904,7 @@
                "w": 12,
                "x": 1,
                "h": 3,
-               "y": 17
+               "y": 21
             },
             "state": "",
             "type": "Scoreboard",
@@ -820,7 +955,7 @@
                         "link": "",
                         "resourceKindName": "Cluster Compute Resource",
                         "isStringMetric": false,
-                        "resourceKindId": "resourceKind:id:0_::_",
+                        "resourceKindId": "resourceKind:id:1_::_",
                         "label": "",
                         "orangeBound": 80,
                         "metricUnit": "%",
@@ -839,7 +974,7 @@
                         "link": "",
                         "resourceKindName": "Cluster Compute Resource",
                         "isStringMetric": false,
-                        "resourceKindId": "resourceKind:id:0_::_",
+                        "resourceKindId": "resourceKind:id:1_::_",
                         "label": "",
                         "orangeBound": 0,
                         "labelOrig": "",
@@ -856,7 +991,7 @@
                         "link": "",
                         "resourceKindName": "Cluster Compute Resource",
                         "isStringMetric": false,
-                        "resourceKindId": "resourceKind:id:0_::_",
+                        "resourceKindId": "resourceKind:id:1_::_",
                         "label": "",
                         "orangeBound": 0,
                         "labelOrig": "",
@@ -873,7 +1008,7 @@
                         "link": "",
                         "resourceKindName": "Cluster Compute Resource",
                         "isStringMetric": false,
-                        "resourceKindId": "resourceKind:id:0_::_",
+                        "resourceKindId": "resourceKind:id:1_::_",
                         "label": "",
                         "orangeBound": 0,
                         "labelOrig": "",
@@ -890,7 +1025,7 @@
                         "link": "",
                         "resourceKindName": "Cluster Compute Resource",
                         "isStringMetric": false,
-                        "resourceKindId": "resourceKind:id:0_::_",
+                        "resourceKindId": "resourceKind:id:1_::_",
                         "label": "",
                         "orangeBound": 0,
                         "labelOrig": "",
@@ -907,7 +1042,7 @@
                         "link": "",
                         "resourceKindName": "Cluster Compute Resource",
                         "isStringMetric": false,
-                        "resourceKindId": "resourceKind:id:0_::_",
+                        "resourceKindId": "resourceKind:id:1_::_",
                         "label": "",
                         "orangeBound": 0,
                         "labelOrig": "",
@@ -924,7 +1059,7 @@
                         "link": "",
                         "resourceKindName": "Cluster Compute Resource",
                         "isStringMetric": false,
-                        "resourceKindId": "resourceKind:id:0_::_",
+                        "resourceKindId": "resourceKind:id:1_::_",
                         "label": "",
                         "orangeBound": 0,
                         "labelOrig": "",
@@ -941,7 +1076,7 @@
                         "link": "",
                         "resourceKindName": "Cluster Compute Resource",
                         "isStringMetric": false,
-                        "resourceKindId": "resourceKind:id:0_::_",
+                        "resourceKindId": "resourceKind:id:1_::_",
                         "label": "",
                         "orangeBound": 0,
                         "labelOrig": "",
@@ -958,7 +1093,7 @@
                         "link": "",
                         "resourceKindName": "Cluster Compute Resource",
                         "isStringMetric": false,
-                        "resourceKindId": "resourceKind:id:0_::_",
+                        "resourceKindId": "resourceKind:id:1_::_",
                         "label": "",
                         "orangeBound": 0,
                         "labelOrig": "",
@@ -977,7 +1112,7 @@
                         "link": "",
                         "resourceKindName": "Cluster Compute Resource",
                         "isStringMetric": false,
-                        "resourceKindId": "resourceKind:id:0_::_",
+                        "resourceKindId": "resourceKind:id:1_::_",
                         "label": "",
                         "orangeBound": 0,
                         "metricUnit": "",
@@ -996,7 +1131,7 @@
                         "link": "",
                         "resourceKindName": "Cluster Compute Resource",
                         "isStringMetric": false,
-                        "resourceKindId": "resourceKind:id:0_::_",
+                        "resourceKindId": "resourceKind:id:1_::_",
                         "label": "",
                         "orangeBound": 0,
                         "labelOrig": "",
@@ -1018,196 +1153,12 @@
          {
             "tabId": "c608ccb8-218a-4834-8a9d-af9241e01de1",
             "collapsed": false,
-            "id": "7fd04cd1-4dd3-4dbe-ab37-bfb2fe3badfb",
-            "gridsterCoords": {
-               "w": 12,
-               "x": 1,
-               "h": 1,
-               "y": 2
-            },
-            "state": "",
-            "type": "Section",
-            "title": "Details of Selected Cluster",
-            "config": {
-               "titleLocalized": "Details of Selected Cluster",
-               "widgetId": "7fd04cd1-4dd3-4dbe-ab37-bfb2fe3badfb",
-               "description": "",
-               "title": "Details of Selected Cluster",
-               "widgets": [
-                  "0d44dc85-1360-4895-942c-6140e4883718",
-                  "b55080c1-2410-43f6-98d8-7bbd3d820062",
-                  "dd4893d0-f188-4947-a434-458d0c060547",
-                  "3334aa41-bb56-44fc-857a-b51791412c2a",
-                  "c3dbe507-631a-417b-a7cd-0dbeb1b72721",
-                  "5b4a3cf6-9f4b-492e-bf57-c5f694fe8b5f"
-               ]
-            },
-            "height": 0
-         },
-         {
-            "tabId": "c608ccb8-218a-4834-8a9d-af9241e01de1",
-            "collapsed": false,
-            "id": "0d44dc85-1360-4895-942c-6140e4883718",
-            "gridsterCoords": {
-               "w": 10,
-               "x": 1,
-               "h": 7,
-               "y": 3
-            },
-            "state": "",
-            "type": "View",
-            "title": "ESXi Hosts in the Cluster",
-            "config": {
-               "refreshInterval": 300,
-               "resource": null,
-               "widgetId": "0d44dc85-1360-4895-942c-6140e4883718",
-               "traversalSpecId": "",
-               "refreshContent": {"refreshContent": false},
-               "description": "",
-               "isUpdatedView": true,
-               "title": "ESXi Hosts in the Cluster",
-               "viewDefinitionId": "493527e2-d992-4e56-98ae-d9245c255174",
-               "titleLocalized": "ESXi Hosts in the Cluster",
-               "chartViewItems": [],
-               "selectFirstRow": {"selectFirstRow": false},
-               "viewDetails": "",
-               "selfProvider": {"selfProvider": false}
-            },
-            "height": 0,
-            "states": [{
-               "value": "o%3Acolumns%3Da%253Ao%25253Aid%25253Ds%2525253ApermTableView_widget_c608ccb8-218a-4834-8a9d-af9241e01de1_0d44dc85-1360-4895-942c-6140e4883718-column-0%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_c608ccb8-218a-4834-8a9d-af9241e01de1_0d44dc85-1360-4895-942c-6140e4883718-column-cpu%2525257CcoreUtilization_average1%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_c608ccb8-218a-4834-8a9d-af9241e01de1_0d44dc85-1360-4895-942c-6140e4883718-column-cpu%2525257Cutilization_average2%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_c608ccb8-218a-4834-8a9d-af9241e01de1_0d44dc85-1360-4895-942c-6140e4883718-column-mem%2525257Cconsumed_average3%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_c608ccb8-218a-4834-8a9d-af9241e01de1_0d44dc85-1360-4895-942c-6140e4883718-column-mem%2525257Ctotal_need4%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_c608ccb8-218a-4834-8a9d-af9241e01de1_0d44dc85-1360-4895-942c-6140e4883718-column-mem%2525257Cvmmemctl_average5%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_c608ccb8-218a-4834-8a9d-af9241e01de1_0d44dc85-1360-4895-942c-6140e4883718-column-mem%2525257Ccompressed_average6%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_c608ccb8-218a-4834-8a9d-af9241e01de1_0d44dc85-1360-4895-942c-6140e4883718-column-mem%2525257Cswapout_average7%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_c608ccb8-218a-4834-8a9d-af9241e01de1_0d44dc85-1360-4895-942c-6140e4883718-column-cpu%2525257Cpercentage_of_vms_facing_cpu_costop8%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_c608ccb8-218a-4834-8a9d-af9241e01de1_0d44dc85-1360-4895-942c-6140e4883718-column-cpu%2525257Cpercentage_of_vms_facing_cpu_ready9%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_c608ccb8-218a-4834-8a9d-af9241e01de1_0d44dc85-1360-4895-942c-6140e4883718-column-cpu%2525257Cmax_cpu_costop10%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_c608ccb8-218a-4834-8a9d-af9241e01de1_0d44dc85-1360-4895-942c-6140e4883718-column-cpu%2525257Cmax_cpu_ready11%25255Ehidden%25253Db%2525253A0",
-               "key": "permTableView_widget_c608ccb8-218a-4834-8a9d-af9241e01de1_0d44dc85-1360-4895-942c-6140e4883718"
-            }]
-         },
-         {
-            "tabId": "c608ccb8-218a-4834-8a9d-af9241e01de1",
-            "collapsed": false,
-            "id": "dd4893d0-f188-4947-a434-458d0c060547",
-            "gridsterCoords": {
-               "w": 4,
-               "x": 1,
-               "h": 6,
-               "y": 10
-            },
-            "state": "",
-            "type": "View",
-            "title": "CPU Utilization (%)",
-            "config": {
-               "refreshInterval": 300,
-               "resource": null,
-               "titleLocalized": "CPU Utilization (%)",
-               "traversalSpecId": "",
-               "refreshContent": {"refreshContent": false},
-               "isUpdatedView": true,
-               "chartViewItems": [],
-               "selectFirstRow": {"selectFirstRow": false},
-               "selfProvider": {"selfProvider": false},
-               "title": "CPU Utilization (%)",
-               "viewDefinitionId": "7bcdb50d-c015-4237-9014-832a74f07f91",
-               "key": "View"
-            },
-            "height": 0
-         },
-         {
-            "tabId": "c608ccb8-218a-4834-8a9d-af9241e01de1",
-            "collapsed": false,
-            "id": "3334aa41-bb56-44fc-857a-b51791412c2a",
-            "gridsterCoords": {
-               "w": 4,
-               "x": 5,
-               "h": 6,
-               "y": 10
-            },
-            "state": "",
-            "type": "View",
-            "title": "Memory Utilization (GB)",
-            "config": {
-               "refreshInterval": 300,
-               "resource": null,
-               "titleLocalized": "Memory Utilization (GB)",
-               "traversalSpecId": "",
-               "refreshContent": {"refreshContent": false},
-               "isUpdatedView": true,
-               "chartViewItems": [],
-               "selectFirstRow": {"selectFirstRow": false},
-               "selfProvider": {"selfProvider": false},
-               "title": "Memory Utilization (GB)",
-               "viewDefinitionId": "87399ea9-d93a-4591-b15b-d30a9003972e",
-               "key": "View"
-            },
-            "height": 0
-         },
-         {
-            "tabId": "c608ccb8-218a-4834-8a9d-af9241e01de1",
-            "collapsed": false,
-            "id": "c3dbe507-631a-417b-a7cd-0dbeb1b72721",
-            "gridsterCoords": {
-               "w": 4,
-               "x": 9,
-               "h": 6,
-               "y": 10
-            },
-            "state": "",
-            "type": "View",
-            "title": "High Memory Utilization",
-            "config": {
-               "refreshInterval": 300,
-               "resource": null,
-               "titleLocalized": "High Memory Utilization",
-               "traversalSpecId": "",
-               "refreshContent": {"refreshContent": false},
-               "isUpdatedView": true,
-               "chartViewItems": [],
-               "selectFirstRow": {"selectFirstRow": false},
-               "selfProvider": {"selfProvider": false},
-               "title": "High Memory Utilization",
-               "viewDefinitionId": "26d914f9-06d9-4126-9357-887261117d99",
-               "key": "View"
-            },
-            "height": 0
-         },
-         {
-            "tabId": "c608ccb8-218a-4834-8a9d-af9241e01de1",
-            "collapsed": false,
-            "id": "5b4a3cf6-9f4b-492e-bf57-c5f694fe8b5f",
-            "gridsterCoords": {
-               "w": 12,
-               "x": 1,
-               "h": 6,
-               "y": 16
-            },
-            "state": "",
-            "type": "View",
-            "title": "VMs in the ESXi or Cluster",
-            "config": {
-               "refreshInterval": 300,
-               "resource": null,
-               "titleLocalized": "VMs in the ESXi or Cluster",
-               "traversalSpecId": "",
-               "refreshContent": {"refreshContent": false},
-               "isUpdatedView": true,
-               "chartViewItems": [],
-               "selectFirstRow": {"selectFirstRow": false},
-               "selfProvider": {"selfProvider": false},
-               "title": "VMs in the ESXi or Cluster",
-               "viewDefinitionId": "c59b828f-5840-4aa7-8bda-2b3639323a89",
-               "key": "View"
-            },
-            "height": 0,
-            "states": [{
-               "value": "o%3Acolumns%3Da%253Ao%25253Aid%25253Ds%2525253ApermTableView_widget_c608ccb8-218a-4834-8a9d-af9241e01de1_5b4a3cf6-9f4b-492e-bf57-c5f694fe8b5f-column-0%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_c608ccb8-218a-4834-8a9d-af9241e01de1_5b4a3cf6-9f4b-492e-bf57-c5f694fe8b5f-column-config%2525257Chardware%2525257CnumCpu1%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_c608ccb8-218a-4834-8a9d-af9241e01de1_5b4a3cf6-9f4b-492e-bf57-c5f694fe8b5f-column-config%2525257CcpuAllocation%2525257Creservation2%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_c608ccb8-218a-4834-8a9d-af9241e01de1_5b4a3cf6-9f4b-492e-bf57-c5f694fe8b5f-column-config%2525257Chardware%2525257CmemoryKB3%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_c608ccb8-218a-4834-8a9d-af9241e01de1_5b4a3cf6-9f4b-492e-bf57-c5f694fe8b5f-column-config%2525257CmemoryAllocation%2525257Creservation4%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_c608ccb8-218a-4834-8a9d-af9241e01de1_5b4a3cf6-9f4b-492e-bf57-c5f694fe8b5f-column-mem%2525257CvmMemoryDemand5%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_c608ccb8-218a-4834-8a9d-af9241e01de1_5b4a3cf6-9f4b-492e-bf57-c5f694fe8b5f-column-mem%2525257Cconsumed_average6%25255Ehidden%25253Db%2525253A0",
-               "key": "permTableView_widget_c608ccb8-218a-4834-8a9d-af9241e01de1_5b4a3cf6-9f4b-492e-bf57-c5f694fe8b5f"
-            }]
-         },
-         {
-            "tabId": "c608ccb8-218a-4834-8a9d-af9241e01de1",
-            "collapsed": false,
             "id": "bdf444d2-27c5-4e4f-81ba-1b9897e03a9c",
             "gridsterCoords": {
                "w": 12,
                "x": 1,
                "h": 4,
-               "y": 20
+               "y": 24
             },
             "state": "",
             "type": "Scoreboard",
@@ -1224,6 +1175,7 @@
                "roundDecimals": 1,
                "mode": {"layoutMode": "fixedSize"},
                "labelSize": 12,
+               "titleLocalized": "Relevant Configuration",
                "customFilter": {
                   "filter": [],
                   "excludedResources": null,
@@ -1257,7 +1209,7 @@
                         "isStringMetric": true,
                         "resourceKindName": "Cluster Compute Resource",
                         "label": "",
-                        "resourceKindId": "resourceKind:id:0_::_",
+                        "resourceKindId": "resourceKind:id:1_::_",
                         "orangeBound": null,
                         "metricUnit": "",
                         "labelOrig": "",
@@ -1276,7 +1228,7 @@
                         "isStringMetric": false,
                         "resourceKindName": "Cluster Compute Resource",
                         "label": "",
-                        "resourceKindId": "resourceKind:id:0_::_",
+                        "resourceKindId": "resourceKind:id:1_::_",
                         "orangeBound": null,
                         "labelOrig": "",
                         "labelLocalized": "",
@@ -1293,7 +1245,7 @@
                         "isStringMetric": true,
                         "resourceKindName": "Cluster Compute Resource",
                         "label": "",
-                        "resourceKindId": "resourceKind:id:0_::_",
+                        "resourceKindId": "resourceKind:id:1_::_",
                         "orangeBound": null,
                         "labelOrig": "",
                         "labelLocalized": "",
@@ -1310,7 +1262,7 @@
                         "isStringMetric": true,
                         "resourceKindName": "Cluster Compute Resource",
                         "label": "",
-                        "resourceKindId": "resourceKind:id:0_::_",
+                        "resourceKindId": "resourceKind:id:1_::_",
                         "orangeBound": null,
                         "labelOrig": "",
                         "labelLocalized": "",
@@ -1328,7 +1280,7 @@
                         "isStringMetric": true,
                         "resourceKindName": "Cluster Compute Resource",
                         "label": "Datacenter",
-                        "resourceKindId": "resourceKind:id:0_::_",
+                        "resourceKindId": "resourceKind:id:1_::_",
                         "orangeBound": null,
                         "metricUnit": "",
                         "labelOrig": "Datacenter",
@@ -1348,7 +1300,7 @@
                         "isStringMetric": true,
                         "resourceKindName": "Cluster Compute Resource",
                         "label": "",
-                        "resourceKindId": "resourceKind:id:0_::_",
+                        "resourceKindId": "resourceKind:id:1_::_",
                         "orangeBound": null,
                         "metricUnit": "",
                         "labelOrig": "",
@@ -1368,7 +1320,7 @@
                         "isStringMetric": true,
                         "resourceKindName": "Cluster Compute Resource",
                         "label": "",
-                        "resourceKindId": "resourceKind:id:0_::_",
+                        "resourceKindId": "resourceKind:id:1_::_",
                         "orangeBound": null,
                         "metricUnit": "",
                         "labelOrig": "",
@@ -1391,12 +1343,76 @@
          {
             "tabId": "c608ccb8-218a-4834-8a9d-af9241e01de1",
             "collapsed": false,
+            "id": "7fd04cd1-4dd3-4dbe-ab37-bfb2fe3badfb",
+            "gridsterCoords": {
+               "w": 12,
+               "x": 1,
+               "h": 1,
+               "y": 28
+            },
+            "state": "",
+            "type": "Section",
+            "title": "Details of Selected Cluster",
+            "config": {
+               "titleLocalized": "Details of Selected Cluster",
+               "widgetId": "7fd04cd1-4dd3-4dbe-ab37-bfb2fe3badfb",
+               "description": "",
+               "title": "Details of Selected Cluster",
+               "widgets": [
+                  "0d44dc85-1360-4895-942c-6140e4883718",
+                  "b55080c1-2410-43f6-98d8-7bbd3d820062",
+                  "dd4893d0-f188-4947-a434-458d0c060547",
+                  "3334aa41-bb56-44fc-857a-b51791412c2a",
+                  "c3dbe507-631a-417b-a7cd-0dbeb1b72721",
+                  "5b4a3cf6-9f4b-492e-bf57-c5f694fe8b5f"
+               ]
+            },
+            "height": 0
+         },
+         {
+            "tabId": "c608ccb8-218a-4834-8a9d-af9241e01de1",
+            "collapsed": false,
+            "id": "0d44dc85-1360-4895-942c-6140e4883718",
+            "gridsterCoords": {
+               "w": 10,
+               "x": 1,
+               "h": 7,
+               "y": 29
+            },
+            "state": "",
+            "type": "View",
+            "title": "ESXi Hosts in the Cluster",
+            "config": {
+               "refreshInterval": 300,
+               "resource": null,
+               "widgetId": "0d44dc85-1360-4895-942c-6140e4883718",
+               "traversalSpecId": "",
+               "refreshContent": {"refreshContent": false},
+               "description": "",
+               "isUpdatedView": true,
+               "title": "ESXi Hosts in the Cluster",
+               "viewDefinitionId": "493527e2-d992-4e56-98ae-d9245c255174",
+               "titleLocalized": "ESXi Hosts in the Cluster",
+               "chartViewItems": [],
+               "selectFirstRow": {"selectFirstRow": false},
+               "viewDetails": "",
+               "selfProvider": {"selfProvider": false}
+            },
+            "height": 0,
+            "states": [{
+               "value": "o%3Acolumns%3Da%253Ao%25253Aid%25253Ds%2525253ApermTableView_widget_c608ccb8-218a-4834-8a9d-af9241e01de1_0d44dc85-1360-4895-942c-6140e4883718-column-0%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_c608ccb8-218a-4834-8a9d-af9241e01de1_0d44dc85-1360-4895-942c-6140e4883718-column-cpu%2525257CcoreUtilization_average1%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_c608ccb8-218a-4834-8a9d-af9241e01de1_0d44dc85-1360-4895-942c-6140e4883718-column-cpu%2525257Cutilization_average2%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_c608ccb8-218a-4834-8a9d-af9241e01de1_0d44dc85-1360-4895-942c-6140e4883718-column-mem%2525257Cconsumed_average3%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_c608ccb8-218a-4834-8a9d-af9241e01de1_0d44dc85-1360-4895-942c-6140e4883718-column-mem%2525257Ctotal_need4%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_c608ccb8-218a-4834-8a9d-af9241e01de1_0d44dc85-1360-4895-942c-6140e4883718-column-mem%2525257Cvmmemctl_average5%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_c608ccb8-218a-4834-8a9d-af9241e01de1_0d44dc85-1360-4895-942c-6140e4883718-column-mem%2525257Ccompressed_average6%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_c608ccb8-218a-4834-8a9d-af9241e01de1_0d44dc85-1360-4895-942c-6140e4883718-column-mem%2525257Cswapout_average7%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_c608ccb8-218a-4834-8a9d-af9241e01de1_0d44dc85-1360-4895-942c-6140e4883718-column-cpu%2525257Cpercentage_of_vms_facing_cpu_costop8%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_c608ccb8-218a-4834-8a9d-af9241e01de1_0d44dc85-1360-4895-942c-6140e4883718-column-cpu%2525257Cpercentage_of_vms_facing_cpu_ready9%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_c608ccb8-218a-4834-8a9d-af9241e01de1_0d44dc85-1360-4895-942c-6140e4883718-column-cpu%2525257Cmax_cpu_costop10%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_c608ccb8-218a-4834-8a9d-af9241e01de1_0d44dc85-1360-4895-942c-6140e4883718-column-cpu%2525257Cmax_cpu_ready11%25255Ehidden%25253Db%2525253A0",
+               "key": "permTableView_widget_c608ccb8-218a-4834-8a9d-af9241e01de1_0d44dc85-1360-4895-942c-6140e4883718"
+            }]
+         },
+         {
+            "tabId": "c608ccb8-218a-4834-8a9d-af9241e01de1",
+            "collapsed": false,
             "id": "b55080c1-2410-43f6-98d8-7bbd3d820062",
             "gridsterCoords": {
                "w": 2,
                "x": 11,
                "h": 7,
-               "y": 3
+               "y": 29
             },
             "state": "",
             "type": "Scoreboard",
@@ -1443,7 +1459,7 @@
                         "isStringMetric": true,
                         "resourceKindName": "Host System",
                         "label": "",
-                        "resourceKindId": "resourceKind:id:1_::_",
+                        "resourceKindId": "resourceKind:id:2_::_",
                         "orangeBound": null,
                         "metricUnit": "",
                         "labelOrig": "",
@@ -1462,7 +1478,7 @@
                         "isStringMetric": true,
                         "resourceKindName": "Host System",
                         "label": "",
-                        "resourceKindId": "resourceKind:id:1_::_",
+                        "resourceKindId": "resourceKind:id:2_::_",
                         "orangeBound": null,
                         "labelOrig": "",
                         "labelLocalized": "",
@@ -1480,7 +1496,7 @@
                         "isStringMetric": true,
                         "resourceKindName": "Host System",
                         "label": "Hyper Threading?",
-                        "resourceKindId": "resourceKind:id:1_::_",
+                        "resourceKindId": "resourceKind:id:2_::_",
                         "orangeBound": null,
                         "metricUnit": "",
                         "labelOrig": "Hyper Threading?",
@@ -1500,7 +1516,7 @@
                         "isStringMetric": false,
                         "resourceKindName": "Host System",
                         "label": "",
-                        "resourceKindId": "resourceKind:id:1_::_",
+                        "resourceKindId": "resourceKind:id:2_::_",
                         "orangeBound": null,
                         "metricUnit": "GHz",
                         "labelOrig": "",
@@ -1519,7 +1535,7 @@
                         "isStringMetric": false,
                         "resourceKindName": "Host System",
                         "label": "",
-                        "resourceKindId": "resourceKind:id:1_::_",
+                        "resourceKindId": "resourceKind:id:2_::_",
                         "orangeBound": null,
                         "labelOrig": "",
                         "labelLocalized": "",
@@ -1537,7 +1553,7 @@
                         "isStringMetric": false,
                         "resourceKindName": "Host System",
                         "label": "Usable Memory",
-                        "resourceKindId": "resourceKind:id:1_::_",
+                        "resourceKindId": "resourceKind:id:2_::_",
                         "orangeBound": null,
                         "metricUnit": "GB",
                         "labelOrig": "Usable Memory",
@@ -1555,6 +1571,126 @@
                "periodLength": null
             },
             "height": 0
+         },
+         {
+            "tabId": "c608ccb8-218a-4834-8a9d-af9241e01de1",
+            "collapsed": false,
+            "id": "dd4893d0-f188-4947-a434-458d0c060547",
+            "gridsterCoords": {
+               "w": 4,
+               "x": 1,
+               "h": 6,
+               "y": 36
+            },
+            "state": "",
+            "type": "View",
+            "title": "CPU Utilization (%)",
+            "config": {
+               "refreshInterval": 300,
+               "resource": null,
+               "titleLocalized": "CPU Utilization (%)",
+               "traversalSpecId": "",
+               "refreshContent": {"refreshContent": false},
+               "isUpdatedView": true,
+               "chartViewItems": [],
+               "selectFirstRow": {"selectFirstRow": false},
+               "selfProvider": {"selfProvider": false},
+               "title": "CPU Utilization (%)",
+               "viewDefinitionId": "7bcdb50d-c015-4237-9014-832a74f07f91",
+               "key": "View"
+            },
+            "height": 0
+         },
+         {
+            "tabId": "c608ccb8-218a-4834-8a9d-af9241e01de1",
+            "collapsed": false,
+            "id": "3334aa41-bb56-44fc-857a-b51791412c2a",
+            "gridsterCoords": {
+               "w": 4,
+               "x": 5,
+               "h": 6,
+               "y": 36
+            },
+            "state": "",
+            "type": "View",
+            "title": "Memory Utilization (GB)",
+            "config": {
+               "refreshInterval": 300,
+               "resource": null,
+               "titleLocalized": "Memory Utilization (GB)",
+               "traversalSpecId": "",
+               "refreshContent": {"refreshContent": false},
+               "isUpdatedView": true,
+               "chartViewItems": [],
+               "selectFirstRow": {"selectFirstRow": false},
+               "selfProvider": {"selfProvider": false},
+               "title": "Memory Utilization (GB)",
+               "viewDefinitionId": "87399ea9-d93a-4591-b15b-d30a9003972e",
+               "key": "View"
+            },
+            "height": 0
+         },
+         {
+            "tabId": "c608ccb8-218a-4834-8a9d-af9241e01de1",
+            "collapsed": false,
+            "id": "c3dbe507-631a-417b-a7cd-0dbeb1b72721",
+            "gridsterCoords": {
+               "w": 4,
+               "x": 9,
+               "h": 6,
+               "y": 36
+            },
+            "state": "",
+            "type": "View",
+            "title": "High Memory Utilization",
+            "config": {
+               "refreshInterval": 300,
+               "resource": null,
+               "titleLocalized": "High Memory Utilization",
+               "traversalSpecId": "",
+               "refreshContent": {"refreshContent": false},
+               "isUpdatedView": true,
+               "chartViewItems": [],
+               "selectFirstRow": {"selectFirstRow": false},
+               "selfProvider": {"selfProvider": false},
+               "title": "High Memory Utilization",
+               "viewDefinitionId": "26d914f9-06d9-4126-9357-887261117d99",
+               "key": "View"
+            },
+            "height": 0
+         },
+         {
+            "tabId": "c608ccb8-218a-4834-8a9d-af9241e01de1",
+            "collapsed": false,
+            "id": "5b4a3cf6-9f4b-492e-bf57-c5f694fe8b5f",
+            "gridsterCoords": {
+               "w": 12,
+               "x": 1,
+               "h": 6,
+               "y": 42
+            },
+            "state": "",
+            "type": "View",
+            "title": "VMs in the ESXi or Cluster",
+            "config": {
+               "refreshInterval": 300,
+               "resource": null,
+               "titleLocalized": "VMs in the ESXi or Cluster",
+               "traversalSpecId": "",
+               "refreshContent": {"refreshContent": false},
+               "isUpdatedView": true,
+               "chartViewItems": [],
+               "selectFirstRow": {"selectFirstRow": false},
+               "selfProvider": {"selfProvider": false},
+               "title": "VMs in the ESXi or Cluster",
+               "viewDefinitionId": "c59b828f-5840-4aa7-8bda-2b3639323a89",
+               "key": "View"
+            },
+            "height": 0,
+            "states": [{
+               "value": "o%3Acolumns%3Da%253Ao%25253Aid%25253Ds%2525253ApermTableView_widget_c608ccb8-218a-4834-8a9d-af9241e01de1_5b4a3cf6-9f4b-492e-bf57-c5f694fe8b5f-column-0%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_c608ccb8-218a-4834-8a9d-af9241e01de1_5b4a3cf6-9f4b-492e-bf57-c5f694fe8b5f-column-config%2525257Chardware%2525257CnumCpu1%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_c608ccb8-218a-4834-8a9d-af9241e01de1_5b4a3cf6-9f4b-492e-bf57-c5f694fe8b5f-column-config%2525257CcpuAllocation%2525257Creservation2%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_c608ccb8-218a-4834-8a9d-af9241e01de1_5b4a3cf6-9f4b-492e-bf57-c5f694fe8b5f-column-config%2525257Chardware%2525257CmemoryKB3%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_c608ccb8-218a-4834-8a9d-af9241e01de1_5b4a3cf6-9f4b-492e-bf57-c5f694fe8b5f-column-config%2525257CmemoryAllocation%2525257Creservation4%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_c608ccb8-218a-4834-8a9d-af9241e01de1_5b4a3cf6-9f4b-492e-bf57-c5f694fe8b5f-column-mem%2525257CvmMemoryDemand5%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_c608ccb8-218a-4834-8a9d-af9241e01de1_5b4a3cf6-9f4b-492e-bf57-c5f694fe8b5f-column-mem%2525257Cconsumed_average6%25255Ehidden%25253Db%2525253A0",
+               "key": "permTableView_widget_c608ccb8-218a-4834-8a9d-af9241e01de1_5b4a3cf6-9f4b-492e-bf57-c5f694fe8b5f"
+            }]
          }
       ],
       "states": [{
@@ -1652,7 +1788,7 @@
       "userId": "936105f8-faa4-48cb-b268-0eec2ea9e205",
       "name": "vSphere Cluster Capacity 2.0",
       "gridsterMaxColumns": 12,
-      "lastUpdateTime": 1793077168449
+      "lastUpdateTime": 1793263998970
    }],
-   "uuid": "e1a09a63-6734-4de4-80db-86ce60ba90e8"
+   "uuid": "87b200f5-5e83-462d-ae1f-4be3362b74d1"
 }

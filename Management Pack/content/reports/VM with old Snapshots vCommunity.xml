@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Content>
+    
+    <Views>
+        
+<ViewDef id="ca5859dc-1574-4c4a-88c6-b45beceff0f2">
+                        
+            <Title>VM with old Snapshots </Title>
+                        
+            <Description>Count of snapshots grouped by age. Snapshot should only be used as protection of change. Once change is successful, snapshot does more  harm as it impacts performance and take up space. Delete them before they are forgotten.</Description>
+                        
+            <SubjectType adapterKind="VMWARE" filter="[[{&quot;filterType&quot;:&quot;properties&quot;,&quot;metricKey&quot;:&quot;diskspace|snapshot|snapshotAge&quot;,&quot;condition&quot;:&quot;GREATER_THAN&quot;,&quot;metricValue&quot;:{&quot;value&quot;:7,&quot;isStringMetric&quot;:false},&quot;transform&quot;:&quot;CURRENT&quot;}]]" resourceKind="VirtualMachine" type="descendant"/>
+                        
+            <Usage>dashboard</Usage>
+                        
+            <Usage>report</Usage>
+                        
+            <Usage>content</Usage>
+                        
+            <Controls>
+                                
+                <Control id="time-interval-selector_id_919" type="time-interval-selector" visible="false">
+                                        
+                    <Property name="advancedTimeMode" value="false"/>
+                                        
+                    <Property name="unit" value="MINUTES"/>
+                                        
+                    <Property name="count" value="1"/>
+                                    
+                </Control>
+                                
+                <Control id="attributes-selector_id_920" type="attributes-selector" visible="false">
+                                        
+                    <Property name="attributeInfos">
+                                                
+                        <List>
+                                                        
+                            <Item>
+                                                                
+                                <Value>
+                                                                        
+                                    <Property name="objectType" value="RESOURCE"/>
+                                                                        
+                                    <Property name="attributeKey" value="diskspace|snapshot|snapshotAge"/>
+                                                                        
+                                    <Property name="isStringAttribute" value="false"/>
+                                                                        
+                                    <Property name="adapterKind" value="VMWARE"/>
+                                                                        
+                                    <Property name="resourceKind" value="VirtualMachine"/>
+                                                                        
+                                    <Property name="rollUpCount" value="0"/>
+                                                                        
+                                    <Property name="transformations">
+                                                                                
+                                        <List>
+                                                                                        
+                                            <Item value="CURRENT"/>
+                                                                                    
+                                        </List>
+                                                                            
+                                    </Property>
+                                                                        
+                                    <Property name="sortCriteria" value="true"/>
+                                                                        
+                                    <Property name="isProperty" value="true"/>
+                                                                        
+                                    <Property name="displayName" value="Snapshot Age (Days)"/>
+                                                                    
+                                </Value>
+                                                            
+                            </Item>
+                                                    
+                        </List>
+                                            
+                    </Property>
+                                    
+                </Control>
+                                
+                <Control id="buckets-control_id_921" type="buckets-control" visible="false">
+                                        
+                    <Property name="bucketCount" value="10"/>
+                                        
+                    <Property name="maxValue" value="100"/>
+                                        
+                    <Property name="minValue" value="0"/>
+                                        
+                    <Property name="dynamicCalcFunction" value="SIMPLEMAXMIN"/>
+                                        
+                    <Property name="isDynamic" value="false"/>
+                                        
+                    <Property name="isSum" value="false"/>
+                                    
+                </Control>
+                                
+                <Control id="metadata_id_922" type="metadata" visible="false">
+                                        
+                    <Property name="maxPointsCount" value="5000"/>
+                                        
+                    <Property name="distributionColor" value="D23292"/>
+                                        
+                    <Property name="hideObjectNameColumn" value="false"/>
+                                        
+                    <Property name="listTopResultSize" value="-1"/>
+                                    
+                </Control>
+                            
+            </Controls>
+                        
+            <DataProviders>
+                                
+                <DataProvider dataType="distribution-view" id="distribution-view_id_918"/>
+                            
+            </DataProviders>
+                        
+            <Presentation type="pie-chart"/>
+                    
+        </ViewDef>
+            
+    </Views>
+    
+</Content>

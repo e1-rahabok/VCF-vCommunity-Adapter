@@ -470,7 +470,7 @@ def get_adapter_definition() -> AdapterDefinition:
         # Normalized shares, as properties: they change only with the VM configuration. See properties/vm/vm_shares.py.
         configuration.define_numeric_property(vm_shares.CPU_PROPERTY, vm_shares.CPU_PROPERTY, unit=vm_shares.COUNT_UNIT)
         configuration.define_numeric_property(vm_shares.MEMORY_PROPERTY, vm_shares.MEMORY_PROPERTY, unit=vm_shares.COUNT_UNIT)
-        # TEST (0.6.6 build only): the same value as a metric, with the unit "count".
+        # TEST (0.6.7 build only): the same value as a metric, with the unit "count".
         configuration.define_metric(vm_shares.TEST_METRIC, vm_shares.TEST_METRIC, unit=vm_shares.COUNT_UNIT)
         configuration.define_string_property("VM Change Version", "VM Change Version")
         configuration.define_string_property("VM Firmware", "VM Firmware")

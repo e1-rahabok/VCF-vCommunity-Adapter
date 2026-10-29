@@ -23,7 +23,7 @@ CPU_PROPERTY = "Share per vCPU"
 MEMORY_PROPERTY = "Share per MB of Memory"
 
 class _CountUnit:
-    """TEST (0.6.6 build only): the unit "count", which the SDK does not define.
+    """TEST (0.6.7 build only): the unit "count", which the SDK does not define.
 
     The SDK takes a unit from its enum and reads only unit.value.key and unit.value.is_rate, so this object gives it
     those two values. A plain Unit is refused: the SDK reads unit.value, and fails to build the definition.
@@ -32,7 +32,7 @@ class _CountUnit:
 
 
 COUNT_UNIT = _CountUnit()
-# TEST (0.6.6 build only): the same value as a metric, to compare with the property on the same object.
+# TEST (0.6.7 build only): the same value as a metric, to compare with the property on the same object.
 TEST_METRIC = "Share per vCPU (count unit test)"
 
 CPU_SHARES = "config|cpuAllocation|shares|shares"

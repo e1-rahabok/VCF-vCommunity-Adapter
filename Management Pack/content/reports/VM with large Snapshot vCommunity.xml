@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Content>
+    
+    <Views>
+        
+<ViewDef id="5f2b8152-2e2e-4fc9-8fd6-62c6c946b541">
+                        
+            <Title>VM with large Snapshot</Title>
+                        
+            <Description>Distribution of VM by their snapshots size. Snapshots are temporary protection, so a large one indicates unexpected result. Investigates the age too. If it's old, then it could be a forgotten snapshot. It's showing snapshot that is older than 1 day, as daily back up typically creates a snapshot.
+		</Description>
+                        
+            <SubjectType adapterKind="VMWARE" filter="[[{&quot;filterType&quot;:&quot;metrics&quot;,&quot;metricKey&quot;:&quot;diskspace|snapshot&quot;,&quot;condition&quot;:&quot;GREATER_THAN&quot;,&quot;metricValue&quot;:{&quot;value&quot;:10,&quot;isStringMetric&quot;:false},&quot;transform&quot;:&quot;CURRENT&quot;}]]" resourceKind="VirtualMachine" type="descendant"/>
+                        
+            <Usage>dashboard</Usage>
+                        
+            <Usage>report</Usage>
+                        
+            <Usage>content</Usage>
+                        
+            <Controls>
+                                
+                <Control id="time-interval-selector_id_944" type="time-interval-selector" visible="false">
+                                        
+                    <Property name="advancedTimeMode" value="false"/>
+                                        
+                    <Property name="unit" value="MINUTES"/>
+                                        
+                    <Property name="count" value="1"/>
+                                    
+                </Control>
+                                
+                <Control id="attributes-selector_id_945" type="attributes-selector" visible="false">
+                                        
+                    <Property name="attributeInfos">
+                                                
+                        <List>
+                                                        
+                            <Item>
+                                                                
+                                <Value>
+                                                                        
+                                    <Property name="objectType" value="RESOURCE"/>
+                                                                        
+                                    <Property name="attributeKey" value="diskspace|snapshot"/>
+                                                                        
+                                    <Property name="preferredUnitId" value="gb"/>
+                                                                        
+                                    <Property name="isStringAttribute" value="false"/>
+                                                                        
+                                    <Property name="adapterKind" value="VMWARE"/>
+                                                                        
+                                    <Property name="resourceKind" value="VirtualMachine"/>
+                                                                        
+                                    <Property name="rollUpType" value="NONE"/>
+                                                                        
+                                    <Property name="rollUpCount" value="0"/>
+                                                                        
+                                    <Property name="transformations">
+                                                                                
+                                        <List>
+                                                                                        
+                                            <Item value="CURRENT"/>
+                                                                                    
+                                        </List>
+                                                                            
+                                    </Property>
+                                                                        
+                                    <Property name="isProperty" value="false"/>
+                                                                        
+                                    <Property name="displayName" value="Snapshot size"/>
+                                                                        
+                                    <Property name="isShowRelativeTimestamp" value="false"/>
+                                                                    
+                                </Value>
+                                                            
+                            </Item>
+                                                    
+                        </List>
+                                            
+                    </Property>
+                                    
+                </Control>
+                                
+                <Control id="buckets-control_id_946" type="buckets-control" visible="false">
+                                        
+                    <Property name="bucketCount" value="10"/>
+                                        
+                    <Property name="maxValue" value="100"/>
+                                        
+                    <Property name="minValue" value="0"/>
+                                        
+                    <Property name="dynamicCalcFunction" value="SIMPLEMAXMIN"/>
+                                        
+                    <Property name="isDynamic" value="false"/>
+                                        
+                    <Property name="isSum" value="false"/>
+                                    
+                </Control>
+                                
+                <Control id="metadata_id_947" type="metadata" visible="false">
+                                        
+                    <Property name="maxPointsCount" value="5000"/>
+                                        
+                    <Property name="distributionColor" value="D23292"/>
+                                        
+                    <Property name="hideObjectNameColumn" value="false"/>
+                                        
+                    <Property name="listTopResultSize" value="-1"/>
+                                    
+                </Control>
+                            
+            </Controls>
+                        
+            <DataProviders>
+                                
+                <DataProvider dataType="distribution-view" id="distribution-view_id_943"/>
+                            
+            </DataProviders>
+                        
+            <Presentation type="pie-chart"/>
+                    
+        </ViewDef>
+            
+    </Views>
+    
+</Content>
