@@ -61,7 +61,8 @@ For contributors: how the code is organised, what each part does, and how to cha
 9. [Tests](development-guide/tests.md): the three test layers and the test files.
 10. [Template and Content Library Design](development-guide/template-and-library-design.md): the design for showing templates and content libraries in VCF Operations. Built in the code, not yet verified on the test instance.
 11. [Future Enhancements](development-guide/future-enhancements.md): metric ideas noted for later, not designed.
-12. [To Do project](https://github.com/users/e1-rahabok/projects/1): the enhancements still to do, one line each. Broken things are GitHub issues.
+12. [Application Review](development-guide/application-review.md): security, reliability, maintainability and repository review of the code at version 0.6.10, with a tracked list of findings.
+13. [To Do project](https://github.com/users/e1-rahabok/projects/1): the enhancements still to do, one line each. Broken things are GitHub issues.
 
 Planned work is tracked in [GitHub Issues](https://github.com/e1-rahabok/VCF-vCommunity-Adapter/issues?q=is%3Aissue+is%3Aopen+label%3Aenhancement), not here.
 
