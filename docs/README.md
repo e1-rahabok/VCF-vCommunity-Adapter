@@ -34,7 +34,19 @@ It is built with the [VCF Operations Integration SDK](https://github.com/vmware/
 **Reference**
 
 - [Metrics and Properties](reference/metrics-and-properties.md): every key the pack publishes, by object type.
-- [Metrics](reference/metrics/README.md): how each metric and KPI is calculated, and its known limitations.
+- [Metrics](reference/metrics/README.md): how each metric and KPI is calculated, and its known limitations. The pages:
+  [Business Application Performance](reference/metrics/business-application-performance.md),
+  [Cluster Consumption](reference/metrics/cluster-consumption.md),
+  [Cluster Performance](reference/metrics/cluster-performance.md),
+  [Cluster Risk](reference/metrics/cluster-risk.md),
+  [ESXi Performance](reference/metrics/esxi-performance.md),
+  [Guest OS Performance](reference/metrics/guest-os-performance.md),
+  [Network Speed Degradation](reference/metrics/network-speed-degradation.md),
+  [Operational Availability](reference/metrics/operational-availability.md),
+  [Periodic Cluster Check](reference/metrics/periodic-cluster-check.md),
+  [VM Performance](reference/metrics/vm-performance.md),
+  [VM Shares](reference/metrics/vm-shares.md),
+  [vSphere World Cluster Metrics](reference/metrics/vsphere-world-metrics.md).
 - [Text Display Widget](reference/text-display-widget.md): what HTML a Text Display widget keeps and drops, and how to add a page to it.
 
 **Troubleshooting Guide**
@@ -61,7 +73,7 @@ For contributors: how the code is organised, what each part does, and how to cha
 9. [Tests](development-guide/tests.md): the three test layers and the test files.
 10. [Template and Content Library Design](development-guide/template-and-library-design.md): the design for showing templates and content libraries in VCF Operations. Built in the code, not yet verified on the test instance.
 11. [Future Enhancements](development-guide/future-enhancements.md): metric ideas noted for later, not designed.
-12. [Application Review](development-guide/application-review.md): security, reliability, maintainability and repository review of the code at version 0.6.10, with a tracked list of findings.
+12. [Engineering Review](development-guide/engineering-review.md): security, reliability, maintainability, repository and VCF Operations 9 review of the pack at version 0.6.12, with a tracked list of findings and the plan for 0.7.0.
 13. [To Do project](https://github.com/users/e1-rahabok/projects/1): the enhancements still to do, one line each. Broken things are GitHub issues.
 
 Planned work is tracked in [GitHub Issues](https://github.com/e1-rahabok/VCF-vCommunity-Adapter/issues?q=is%3Aissue+is%3Aopen+label%3Aenhancement), not here.

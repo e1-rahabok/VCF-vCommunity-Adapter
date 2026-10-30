@@ -2,13 +2,13 @@
 #  Author: Onur Yuzseven onur.yuzseven@broadcom.com
 
 import logging
+from dataclasses import dataclass, field
 from typing import Any
 from typing import List
 from aria.ops.object import Object
 from aria.ops.result import CollectResult
 from aria.ops.suite_api_client import SuiteApiClient
 from constants.main import VCENTER_ADAPTER_KIND
-from pyVmomi import vim
 from properties.vm.vmConfig import collect_vm_config_properties
 from properties.vm.vm_extra_config import collect_vm_extraconfig_properties
 from properties.vm.vmService import collect_vm_service_properties
@@ -20,6 +20,7 @@ from metrics.vm.vm_performance_metrics import read_vm_performance_stats, collect
 from metrics.vm.guest_os_performance_metrics import collect_guest_os_performance_metrics
 from metrics.vm.vm_guest_os_kpi import collect_vm_guest_os_kpi
 from properties.vm.vm_shares import read_vm_shares, collect_vm_shares
+from utils.guest_ops import GuestBudget
 from utils.vi_property_collector import retrieve_properties
 from utils.ops_inventory import read_vms
 from collectors.library.collectTemplateData import PROPERTY_PATHS as TEMPLATE_PROPERTY_PATHS
@@ -28,21 +29,28 @@ from pyVmomi import vim
 
 logger = logging.getLogger(__name__)
 
+
+@dataclass
+class GuestSettings:
+    """What the Windows guest monitoring of one Adapter Instance is set to. Used only for Windows VMs with Tools running."""
+    service_monitoring: str                 # "Enabled" or not
+    event_monitoring: str                   # "Enabled" or not
+    win_user: str
+    win_password: str
+    event_config: str                       # the event list, already checked as XML; "" when it could not be read
+    services: List[str] = field(default_factory=list)   # the Windows service names to monitor
+
+
 def collect_vm_data(
     suite_api_client: SuiteApiClient,
     adapter_instance_id: str,
     result: CollectResult,
     content: Any,
-    ServiceMonitoringStatus,
-    WindowsEventLogMonitoringStatus,
-    winUser,
-    winPassword,
-    winEventLogConfigFile,
+    guest: GuestSettings,
     vmConfigs,
     vmAdvParameters,
-    windowsServices
 ) -> None:
-    
+
     propertyPaths: List[str] = []
 
     if vmConfigs:
@@ -116,8 +124,11 @@ def collect_vm_data(
 
     vcenter_uuid = getattr(getattr(content, "about", None), "instanceUuid", "") or ""
     template_folders = None
+    guest_budget = GuestBudget()
 
     for vm_data in vm_props:
+        # Set before the try, so that the handler below can name the VM even when the failure is before its name is read.
+        vm_name = "Unknown"
         try:
             vm_ref = vm_data.obj
             vm_moid = vm_ref._moId
@@ -150,18 +161,17 @@ def collect_vm_data(
                 collect_vm_guest_os_kpi(vm_obj, vm_name, vm_performance, guest_os_performance)
 
 
-            # TODO need to improve data collection 
-            # a logic need that we can only collect data for vms from the config file
-
-            # --- Guest OS Monitoring ---
-            if ServiceMonitoringStatus == "Enabled":
-                collect_vm_service_properties(vm_obj, vm_ref, content, winUser, winPassword, windowsServices)
-                collect_vm_os_information_properties(vm_obj, vm_ref, content, winUser, winPassword)
-
-            # --- Windows Event Log Monitoring ---
-            # Empty when the event list could not be read: its problem is reported on the vCenter object.
-            if WindowsEventLogMonitoringStatus == "Enabled" and winEventLogConfigFile:
-                collect_windows_events(vm_obj, vm_ref, content, winUser, winPassword, winEventLogConfigFile)
+            # --- Guest OS and Windows Event Log Monitoring ---
+            # Empty event list: it could not be read, and its problem is reported on the vCenter object.
+            guest_wanted = guest.service_monitoring == "Enabled" or (
+                guest.event_monitoring == "Enabled" and bool(guest.event_config))
+            # Guest work is time-boxed per cycle. See utils/guest_ops.py: GuestBudget.
+            if guest_wanted and guest_budget.has_time():
+                if guest.service_monitoring == "Enabled":
+                    collect_vm_service_properties(vm_obj, vm_ref, content, guest.win_user, guest.win_password, guest.services)
+                    collect_vm_os_information_properties(vm_obj, vm_ref, content, guest.win_user, guest.win_password)
+                if guest.event_monitoring == "Enabled" and guest.event_config:
+                    collect_windows_events(vm_obj, vm_ref, content, guest.win_user, guest.win_password, guest.event_config)
 
             result.add_object(vm_obj)
 

@@ -22,6 +22,8 @@ python -m pytest tests
 
 They need the Python requirements of the repository (`requirements.txt`). The fake VCF Operations in `fakes.py` answers the Suite API calls with stored data, so the tests run without a live system. `tls_server.py` starts a local HTTPS server with a generated certificate, for the TLS tests.
 
+The CI workflow (`.github/workflows/ci.yml`) runs the same unit tests on every pull request, with the lint (`ruff`, the rules in `ruff.toml` at the root), a security scan of `app` (`bandit`) and an audit of the runtime dependencies (`pip-audit`). Python 3.12 is used there, the version in [CONTRIBUTING.md](../../CONTRIBUTING.md), which the Integration SDK build tool supports.
+
 | Test file | What it checks |
 | :--- | :--- |
 | `test_kpi_score.py` | The scoring, the batching of the stats requests, and the tables of every KPI. It also checks that each KPI calculates exactly the sub-metrics in its table, so a misspelt name cannot slip through. |
@@ -38,6 +40,9 @@ They need the Python requirements of the repository (`requirements.txt`). The fa
 | `test_cluster_close_changes.py` | Cluster Delta Close and Open Count: the direction of each change, blank values not counted, and the window. |
 | `test_port_group_and_tools_counts.py` | Port groups per Datacenter (distributed and standard), the vSphere World sum, the 15-minute limit used only by the port group count, and the VMware Tools counts, including powered-off VMs. |
 | `test_cluster_summary_metrics.py` | vSphere World: Bottom 10 Percent and worst cluster scores, over the clusters of all vCenters. |
+| `test_guest_collectors.py` | The Windows guest collectors with fakes for the GuestAPI: the 5-minute timeout that stops a hung script, the back-off, the guest budget, a failed download, a service name with a comma, the event levels, the event cap, and a failed temporary file. |
+| `test_collection_steps.py` | A failed vCenter read raises instead of returning no objects, a bad VM does not stop the VM loop, an unreadable configuration file does not discard the cycle, and the TLS warnings. |
+| `test_shared_connection.py` | Five threads read one shared vCenter content object: each call gets its own objects, and each view is released. It is a fake, not a live vCenter. |
 | `test_operational_availability.py` | Host and cluster Operational Availability: the super-metric bugs, N+0 to N+2, missing data, and the vSphere World summary. |
 | `test_network_speed_degradation.py` | Network Speed Degradation: NIC by NIC, NICs that are down or have no configured speed, and the counts. |
 | `test_vm_shares.py` | Share per vCPU and per MB: normal values, the super metric's values, and no division by zero. |

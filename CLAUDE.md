@@ -20,7 +20,7 @@ Builds the `.pak` into `Management Pack/build` and pushes the adapter image to `
 pwsh tools/install/install.ps1
 ```
 
-Uploads and installs the newest pak for the `manifest.txt` version (unsigned, signature checking ignored). Auto mode blocks this script, so ask the user to run it in their terminal, then run `pwsh tools/restart/restart.ps1` (the pack's Adapter Instances often stop collecting after an upgrade), wait one collection cycle, and run the live validation. Details: [tools/install/install.md](tools/install/install.md), [tools/restart/restart.md](tools/restart/restart.md).
+Uploads and installs the newest pak for the `manifest.txt` version (unsigned, signature checking ignored). Check whether auto mode blocks this script before starting, not partway through: the user is away during this fully automated process. If it is blocked, ask the user to run it in their terminal before the process begins. Then run `pwsh tools/restart/restart.ps1` (the pack's Adapter Instances often stop collecting after an upgrade), wait one collection cycle, and run the live validation. Details: [tools/install/install.md](tools/install/install.md), [tools/restart/restart.md](tools/restart/restart.md).
 
 ## Screenshots
 

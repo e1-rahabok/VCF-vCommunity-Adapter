@@ -12,7 +12,8 @@ This page maps the repository: what each folder and file is, why it is there, an
 | `README.md` | The front page of the repository. | First thing a visitor reads. |
 | `CONTRIBUTING.md` | How to contribute, and the rules for the documentation. | Keeps the docs in one structure. |
 | `CLAUDE.md` | The instructions of the AI coding assistant used on this repository: build, install and test steps. | Keeps the assistant to the same steps as a contributor. |
-| `.github/` | Issue templates for bug reports and feature requests. | GitHub uses them when someone opens an issue. |
+| `.github/` | Issue and pull request templates, the CI workflow (`workflows/ci.yml`: the unit tests, the lint and the security checks on every pull request), Dependabot, and CODEOWNERS. | GitHub runs and uses them. |
+| `ruff.toml` | The lint rules the CI workflow applies to `app` and `tests`. Kept outside the pack folder, so it is not packed. | Keeps the code to the same rules everywhere. |
 | `.claude/` | Settings of the AI coding assistant. | Not used by the pack. |
 | `LICENSE` | The license of the repository: the terms on which the code can be used. | Says how others may use and change the code. |
 | `.gitignore` (root) | Files that are not committed. | Keeps local and generated files out of the repository. |
@@ -38,8 +39,8 @@ This page maps the repository: what each folder and file is, why it is there, an
 ## Files that are not used
 
 - **`conf/describeSchema.xsd`** is not referenced anywhere in the repository. See [SDK](sdk.md).
-- **`.DS_Store`** files, from macOS, are committed in two folders. They have no effect.
-- **Empty folders** `content/customgroups/`, `content/policies/` and `content/recommendations/` hold only a `.gitkeep` file. They are placeholders for content that is not written yet.
+- **`.DS_Store`** files, from macOS, are ignored by Git. They are not committed.
+- **Placeholder folders** hold only a `.gitkeep` file, which keeps an empty folder in Git. They have no content yet, and no code reads them. `content/customgroups/`, `content/policies/` and `content/recommendations/` are for content that is not written yet. `content/files/reskndmetric/`, `content/files/topowidget/` and `content/files/txtwidget/` are kept for the content types their names give. Every other `.gitkeep` sits in a folder that also holds content, so it has no effect on the pak.
 
 ## Limitations
 

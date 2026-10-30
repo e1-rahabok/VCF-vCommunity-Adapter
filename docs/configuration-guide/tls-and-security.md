@@ -53,6 +53,8 @@ An Adapter Instance created before these settings existed has them empty, which 
 
 This is how the VCF Operations vCenter account itself works: you accept the certificate when you add the vCenter. The pack does the same, and then keeps watching it.
 
+> **Warning.** The user name and password are sent before the certificate is checked. On the first connection, a server that impersonates vCenter receives them. Use `Pinned` or `Enabled` on any network you do not fully trust. The default is kept for the common lab and internal case, and the adapter log notes it at each connection.
+
 The result is on the **vCenter** object in VCF Operations, under **vCommunity → Certificate**:
 
 | Property | Meaning |
@@ -77,7 +79,7 @@ Use `Enabled` for a vCenter whose certificate comes from a CA that the Cloud Pro
 
 A wrong setting is refused, never treated as "no check": `Pinned` without a thumbprint, a thumbprint that is not SHA-256 or SHA-512, and an unknown mode all stop the connection. **Validate Connection** and the adapter log say what to change.
 
-With `Pinned`, a thumbprint mismatch stops the connection before the user name and password are sent. The message shows the thumbprint the vCenter presented. Compare it with the certificate in vCenter before you change the setting: a thumbprint copied from a failing connection proves nothing about who answered.
+With `Pinned`, a thumbprint mismatch stops the connection before the user name and password are sent. The same check protects the connection to the vSphere Automation REST API, which reads the Content Libraries: its login is refused on a mismatch, and nothing is sent. The message shows the thumbprint the vCenter presented. Compare it with the certificate in vCenter before you change the setting: a thumbprint copied from a failing connection proves nothing about who answered.
 
 When the vCenter certificate is replaced, `Pinned` needs the new thumbprint. `Enabled` and `Trust on First Use` do not.
 
@@ -113,6 +115,8 @@ The certificate is compared during the TLS handshake, so a refused host receives
 ## What runs inside a Windows VM
 
 Only when **Guest OS Service Monitoring Status** or **Windows Event Log Monitoring Status** is `Enabled`. Both are `Disabled` by default.
+
+Each PowerShell step in the guest is stopped after 5 minutes, and the VM is skipped for that cycle with a warning. The guest work of one cycle is limited to 30 minutes: when it is spent, the remaining VMs wait for the next cycle, and the log says so.
 
 For every Windows VM whose VMware Tools are running, through the vSphere GuestAPI and the Windows account in the credential:
 

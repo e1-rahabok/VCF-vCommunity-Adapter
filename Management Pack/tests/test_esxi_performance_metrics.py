@@ -8,7 +8,6 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "app"))
 
-from metrics.kpi_score import kpi_score
 from metrics.host import esxi_performance_metrics as ep
 from metrics.host import host_bad_network_packets as hb
 from metrics.vm import contention_by_vms as vc

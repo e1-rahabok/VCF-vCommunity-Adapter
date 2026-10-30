@@ -2,13 +2,17 @@
 #  Author: Onur Yuzseven onur.yuzseven@broadcom.com
 
 import logging
-from typing import List, Type, Any
 from pyVmomi import vmodl, vim
 
 logger = logging.getLogger(__name__)
 
 
 def retrieve_properties(content, objectType, propertyPaths):
+    """The objects of one type with the properties asked for, read from vCenter in pages.
+
+    Raises when the read fails. An empty list means that vCenter has no such objects, so a failed read must not return
+    one: the caller would publish "no VMs" for a read that did not happen.
+    """
     view = None
     try:
         pc = content.propertyCollector
@@ -57,7 +61,7 @@ def retrieve_properties(content, objectType, propertyPaths):
             page_count += 1
             current_objects = result.objects or []
             objects.extend(current_objects)
-            
+
             logger.debug(f"Reading page: {page_count}. Newly added object is {len(current_objects)}. Total object count: {len(objects)}")
 
             if result.token:
@@ -65,19 +69,18 @@ def retrieve_properties(content, objectType, propertyPaths):
             else:
                 break
 
-        view.Destroy()
-        view = None
-
         logger.info(f"Successfully collected {len(objects)} {objectType.__name__} objects.")
         return objects
-    
+
     except vmodl.query.InvalidProperty as e:
-        logger.warning(f"Invalid property requested: {e.name}")
-        if view:view.Destroy()
-        return []
+        logger.error(f"Invalid property requested for {objectType.__name__}: {e.name}. Nothing is published for it this cycle.")
+        raise
     except Exception as e:
-        logger.error(f"Failed to execute propertyCollector: {str(e)}")
-        if view:
-            try: view.Destroy()
-            except: pass
-        return []
+        logger.error(f"Failed to read {objectType.__name__} objects from the vCenter: {repr(e)}. Nothing is published for them this cycle.")
+        raise
+    finally:
+        if view is not None:
+            try:
+                view.Destroy()
+            except Exception as e:
+                logger.warning(f"Could not release the container view of {objectType.__name__}: {repr(e)}")

@@ -19,7 +19,7 @@ def collect_drs_metrics(cluster_obj, cluster_name, prop_dict):
     try:
         drsScore = "vCommunity|Cluster Configuration|Distributed Resource Scheduler|DRS Score"
         drsSummary = prop_dict.get("summary")
-        drsScoreValue= getattr(drsSummary, "drsScore")
+        drsScoreValue= drsSummary.drsScore
         drsEnabled = prop_dict.get("configuration.drsConfig.enabled")
 
         # DRS is off, so vCenter has no meaningful score for this cluster

@@ -43,7 +43,13 @@ import socket
 import ssl
 from typing import Any, Dict, Optional
 
+from requests.adapters import HTTPAdapter
+
 logger = logging.getLogger(__name__)
+
+# urllib3's message when a server certificate does not match the fingerprint it is pinned to. The text is checked by
+# test_tls.py against the installed urllib3, so an upgrade that changes it fails a test instead of a collection.
+FINGERPRINT_MISMATCH = "Fingerprints did not match"
 
 TRUST_ON_FIRST_USE = "Trust on First Use"
 ENABLED = "Enabled"
@@ -59,6 +65,13 @@ _HEX = re.compile(r"^[0-9a-f]+$")
 
 # Reading the certificate is one TLS handshake. It must not hold up the collection when vCenter is slow.
 _HANDSHAKE_TIMEOUT_SECONDS = 10
+
+TRUST_ON_FIRST_USE_WARNING = (
+    "vCenter TLS Validation is Trust on First Use: the certificate of vCenter is not checked before the user name and "
+    "password are sent, so a server that impersonates vCenter on the first connection receives them. To check the "
+    f"certificate first, set 'vCenter TLS Validation' to {PINNED} with the vCenter Thumbprint, or to {ENABLED} when "
+    "the Cloud Proxy trusts the certificate."
+)
 
 
 class TlsConfigError(ValueError):
@@ -117,6 +130,10 @@ def vcenter_connect_args(mode: Optional[str], thumbprint: Optional[str]) -> Dict
 
     # Trust on First Use: connect whatever the certificate. It is watched after the login, by presented_thumbprint()
     # and properties/vcenter/certificate.py, and a change is reported, never refused.
+    # The password is sent before the certificate is checked, so an impostor on the first connection receives it.
+    # Logged as information, not warning: the default is the normal setting, and a warning here would fire the
+    # Collection Warnings alert on every cycle of every default install. The setting's own description says it too.
+    logger.info(TRUST_ON_FIRST_USE_WARNING)
     return {"disableSslCertValidation": True}
 
 
@@ -143,7 +160,21 @@ def presented_thumbprint(host: str, port: int = 443) -> Optional[str]:
     return hashlib.sha256(der).hexdigest()
 
 
-def explain_connect_error(exc: BaseException, host: str, mode: Optional[str] = None) -> Optional[str]:
+class PinnedAdapter(HTTPAdapter):
+    """A requests adapter that accepts only a server certificate with this fingerprint (the SHA-256 or SHA-1 of the
+    DER certificate, as hex). urllib3 compares it during the TLS handshake, before any request is sent, so no
+    credentials reach a server that does not match. It replaces the chain check, which the Cloud Proxy cannot make."""
+
+    def __init__(self, fingerprint: str, **kwargs: Any) -> None:
+        self._fingerprint = fingerprint
+        super().__init__(**kwargs)
+
+    def init_poolmanager(self, connections, maxsize, block=False, **pool_kwargs):
+        pool_kwargs["assert_fingerprint"] = self._fingerprint
+        super().init_poolmanager(connections, maxsize, block=block, **pool_kwargs)
+
+
+def explain_connect_error(exc: BaseException, host: str) -> Optional[str]:
     """A message that says what to change, when a vCenter connection failed on the certificate. Otherwise None.
 
     Only Enabled and Pinned can fail on the certificate, because Trust on First Use does not check it before the

@@ -150,7 +150,10 @@ def _query_stats(
         batch = resource_ids[start:start + resources_per_request]
         response = suite_api_client.post(path, json={**query, "resourceId": batch})
         if response.status_code != 200:
-            logger.warning(f"Stats query {path} failed with HTTP {response.status_code}")
+            # The values of these resources are missing this cycle, and the aggregates built on them are partial.
+            logger.warning(
+                f"Stats query {path} failed with HTTP {response.status_code}: {len(batch)} resources have no stats this cycle"
+            )
             if failed is not None:
                 failed.extend(batch)
             continue
@@ -164,7 +167,7 @@ def _query_stats(
                 samples = stat.get("data") or []
                 timestamps = stat.get("timestamps") or []
                 if oldest_ms is not None and len(timestamps) == len(samples):
-                    samples = [sample for sample, ts in zip(samples, timestamps) if ts >= oldest_ms]
+                    samples = [sample for sample, ts in zip(samples, timestamps, strict=False) if ts >= oldest_ms]
                 # VCF Operations also returns every instance of a requested stat, such as
                 # "cpu:26|utilization_average" for CPU thread 26. Only the requested keys are kept,
                 # and their instances when keep_instances is set.
@@ -249,7 +252,11 @@ def read_latest_properties(
         request = {"resourceIds": resource_ids[start:start + RESOURCES_PER_REQUEST], "propertyKeys": property_keys}
         response = suite_api_client.post(LATEST_PROPERTIES_PATH, json=request)
         if response.status_code != 200:
-            logger.warning(f"Properties query failed with HTTP {response.status_code}")
+            # The properties of these resources are missing this cycle, and the counts built on them are partial.
+            logger.warning(
+                f"Properties query failed with HTTP {response.status_code}: "
+                f"{len(request['resourceIds'])} resources have no properties this cycle"
+            )
             continue
 
         for resource in response.json().get("values", []):

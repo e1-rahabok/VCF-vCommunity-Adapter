@@ -1,7 +1,6 @@
 {
   "permissions": {
     "allow": [
-      "Bash(gh pr merge *)",
       "Bash(gh pr create *)",
       "Bash(gh pr edit *)",
       "Bash(gh pr view *)",

@@ -302,7 +302,7 @@ Every property and metric the vCommunity Management Pack pushes to VCF Operation
 
 ## Content Library
 
-A Content Library of the vCenter, local or subscribed. Its parent is the vCenter object. Read from vCenter's REST API at most once an hour. See [Templates and Content Libraries](../concepts/templates-and-content-libraries.md).
+A Content Library of the vCenter, local or subscribed. Its parent is the vCenter object. Read from vCenter's REST API in every collection cycle, with one call per item. See [Templates and Content Libraries](../concepts/templates-and-content-libraries.md).
 
 | Type | Path | Description |
 | :--- | :--- | :--- |
