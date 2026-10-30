@@ -4,7 +4,7 @@ Temporary note for the Build Laptop. Delete this file once 0.7.0 is released and
 
 ## Why
 
-The engineering review (`docs/development-guide/engineering-review.md`) found bugs, security gaps and repository gaps in
+The engineering review (`docs/development-guide/engineering-review/2026-10-29-review.md`) found bugs, security gaps and repository gaps in
 version 0.6.12. The fixes for 0.7.0 are written, and their unit tests pass on Python 3.13. They are not yet built,
 installed or checked on the test instance. This note is for that part.
 
