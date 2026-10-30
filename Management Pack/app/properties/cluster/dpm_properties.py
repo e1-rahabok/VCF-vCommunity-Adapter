@@ -13,7 +13,7 @@ def collect_dpm_properties(cluster_obj, cluster_name, prop_dict):
         dpmConfig = getattr(configurationEx, "dpmConfigInfo", None)
 
         if dpmConfig is not None:
-            hostPowerActionRateValue = getattr(dpmConfig, "hostPowerActionRate")
+            hostPowerActionRateValue = dpmConfig.hostPowerActionRate
             cluster_obj.with_property(hostPowerActionRate, str(hostPowerActionRateValue))
             logger.debug(f"Successfully collected vSphere Cluster DPM properties for : {cluster_name}")
         else:

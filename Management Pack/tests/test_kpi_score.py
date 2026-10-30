@@ -144,8 +144,8 @@ def test_limits_of_every_sub_metric_go_one_way_only():
         for metric in kpi.METRICS:
             limits = [metric.best, metric.green, metric.yellow, metric.orange, metric.zero_at]
             # best and green may be equal: green is then a single value. The other limits must differ.
-            going_up = limits[0] <= limits[1] and all(a < b for a, b in zip(limits[1:], limits[2:]))
-            going_down = limits[0] >= limits[1] and all(a > b for a, b in zip(limits[1:], limits[2:]))
+            going_up = limits[0] <= limits[1] and all(a < b for a, b in zip(limits[1:], limits[2:], strict=False))
+            going_down = limits[0] >= limits[1] and all(a > b for a, b in zip(limits[1:], limits[2:], strict=False))
             assert going_up or going_down, f"{kpi.KPI_NAME}: {metric.name}"
 
 

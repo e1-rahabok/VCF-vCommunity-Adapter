@@ -167,7 +167,7 @@ def _query_stats(
                 samples = stat.get("data") or []
                 timestamps = stat.get("timestamps") or []
                 if oldest_ms is not None and len(timestamps) == len(samples):
-                    samples = [sample for sample, ts in zip(samples, timestamps) if ts >= oldest_ms]
+                    samples = [sample for sample, ts in zip(samples, timestamps, strict=False) if ts >= oldest_ms]
                 # VCF Operations also returns every instance of a requested stat, such as
                 # "cpu:26|utilization_average" for CPU thread 26. Only the requested keys are kept,
                 # and their instances when keep_instances is set.

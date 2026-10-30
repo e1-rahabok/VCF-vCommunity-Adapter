@@ -118,7 +118,7 @@ def _score(metric: Metric, value: float) -> float:
         return 100.0
 
     # Find the tier the value is in. Red is the last tier, so it also takes every value beyond zero-at.
-    for (tier_name, score_at_start), tier_end in zip(TIERS, limits[1:]):
+    for (tier_name, score_at_start), tier_end in zip(TIERS, limits[1:], strict=False):
         # A tier with no width, such as green when it is a single value, holds no value. Go to the next one.
         if tier_end == tier_start:
             continue

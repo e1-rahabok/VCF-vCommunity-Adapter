@@ -181,7 +181,8 @@ def _posts(server):
 
 def test_pinned_with_the_right_thumbprint_reaches_the_server(server):
     from tls_server import thumbprint
-    with pytest.raises(Exception):  # the fake server is not a vCenter: it answers the call with an error
+    from pyVmomi import vim
+    with pytest.raises(vim.fault.HostConnectFault):  # the fake server is not a vCenter: it answers the call with an error
         _connect(server, "Pinned", thumbprint(server.der, colons=True, upper=True))
     assert _posts(server) == ["/sdk"]
 
@@ -199,8 +200,9 @@ def test_pinned_with_the_thumbprint_of_another_certificate_is_refused(server, tm
     from tls_server import TlsServer, thumbprint
     other_directory = tmp_path / "other"
     other_directory.mkdir()
+    from pyVmomi import vim
     with TlsServer(other_directory) as other:
-        with pytest.raises(Exception):
+        with pytest.raises(vim.fault.HostConnectFault):
             _connect(server, "Pinned", thumbprint(other.der))
     assert _posts(server) == []
 
@@ -212,7 +214,8 @@ def test_enabled_refuses_a_self_signed_certificate_before_any_request(server):
 
 
 def test_trust_on_first_use_connects_to_a_self_signed_certificate(server):
-    with pytest.raises(Exception):  # reaches the fake server, which is not a vCenter
+    from pyVmomi import vim
+    with pytest.raises(vim.fault.HostConnectFault):  # reaches the fake server, which is not a vCenter
         _connect(server, "Trust on First Use", None)
     assert _posts(server) == ["/sdk"]
 

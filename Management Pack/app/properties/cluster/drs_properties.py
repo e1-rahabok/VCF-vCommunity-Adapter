@@ -16,11 +16,11 @@ def collect_drs_properties(cluster_obj, cluster_name, prop_dict):
         cpuOverCommitmentValue = None
         drsEnabled = prop_dict.get("configuration.drsConfig.enabled")
         clusterConfigurationEx = prop_dict.get("configurationEx")
-        proactiveDrsConfig = getattr(clusterConfigurationEx, "proactiveDrsConfig")
-        proactiveDrsEnabledValue = getattr(proactiveDrsConfig, "enabled")
+        proactiveDrsConfig = clusterConfigurationEx.proactiveDrsConfig
+        proactiveDrsEnabledValue = proactiveDrsConfig.enabled
         enableVmBehaviorOverridesValue = prop_dict.get("configuration.drsConfig.enableVmBehaviorOverrides")
         scaleDescendantsSharesValue = prop_dict.get("configuration.drsConfig.scaleDescendantsShares")
-        drsConfig = getattr(clusterConfigurationEx, "drsConfig")
+        drsConfig = clusterConfigurationEx.drsConfig
         options = getattr(drsConfig, "option", None)
 
         if options:
