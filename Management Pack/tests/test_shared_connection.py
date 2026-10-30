@@ -15,7 +15,6 @@ from types import SimpleNamespace
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "app"))
 
-import pytest
 from pyVmomi import vim
 from utils import vi_property_collector
 
