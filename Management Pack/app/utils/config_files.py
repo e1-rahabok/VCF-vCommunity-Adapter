@@ -9,8 +9,9 @@ the collection goes on, so one bad file does not stop the others.
 Docs: docs/troubleshooting-guide/configuration-files.md
 """
 # Threat model (SEC-05): these files are written by VCF Operations administrators only, and are parsed, never executed.
-# The standard parser is kept, with the validation in this module. Bandit flags it (B314); that is accepted here.
-import xml.etree.ElementTree as ET  # nosec B314
+# The standard parser is kept, with the validation in this module. Bandit flags the import (B405) and the parse
+# calls (B314); that is accepted here for the same reason.
+import xml.etree.ElementTree as ET  # nosec B314 B405
 from typing import List, Optional
 
 
@@ -19,14 +20,14 @@ def parse_list(text: Optional[str]) -> List[str]:
     the text is not valid XML."""
     if not (text or "").strip():
         return []
-    root = ET.fromstring(text)
+    root = ET.fromstring(text)  # nosec B314 (SEC-05: administrator-written files only)
     return [item.strip() for item in (root.text or "").split(",") if item.strip()]
 
 
 def check_xml(text: Optional[str]) -> Optional[str]:
     """None when the text is valid XML, else the parser's reason. For a file that is passed on as it is."""
     try:
-        ET.fromstring(text or "")
+        ET.fromstring(text or "")  # nosec B314 (SEC-05: administrator-written files only)
         return None
     except ET.ParseError as e:
         return str(e)

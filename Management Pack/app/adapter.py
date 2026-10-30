@@ -5,7 +5,7 @@ import sys
 import time
 import json
 import atexit
-import xml.etree.ElementTree as ET
+import xml.etree.ElementTree as ET  # nosec B405 (SEC-05: only ParseError is used, nothing is parsed here)
 import concurrent.futures
 import constants.main
 import aria.ops.adapter_logging as logging
