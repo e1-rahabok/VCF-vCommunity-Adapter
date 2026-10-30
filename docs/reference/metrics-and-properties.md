@@ -16,6 +16,7 @@ Every property and metric the vCommunity Management Pack pushes to VCF Operation
 - [Content Library](#content-library) (8 items)
 - [Library Item](#library-item) (11 items)
 - [VM Template](#vm-template) (7 items)
+- [Business Application objects](#business-application-objects) (3 items)
 - [Super metrics replaced by built-in metrics](#super-metrics-replaced-by-built-in-metrics)
 
 ---
@@ -358,6 +359,20 @@ A virtual machine marked as a template in vCenter. Its parent is the Virtual Mac
 
 ---
 
+## Business Application objects
+
+These metrics are on the Container objects of the Tier, Business Application and Enterprise kinds, which the pack does not own. They are calculated from the VMs and namespaces of each object. See [Business Application Performance](metrics/business-application-performance.md).
+
+| Type | Path | Description |
+| :--- | :--- | :--- |
+| 🟢 Metric | `vCommunity\|Business Application\|Tier Performance` | On a Tier: the average of the VM Guest OS KPI of its VMs (0-100 %). Not published when no VM has a value. |
+| 🟢 Metric | `vCommunity\|Business Application\|Business Application Performance` | On a Business Application: the higher of its K8S Namespace performance and its lowest Tier Performance (0-100 %). Not published when neither has a value. |
+| 🟢 Metric | `vCommunity\|Business Application\|Business Applications Performance` | On an Enterprise: the average of its Business Applications (0-100 %). Not published when none has a value. |
+
+[⬆ Back to top](#metrics--properties-reference)
+
+---
+
 ## Super metrics replaced by built-in metrics
 
 These super metrics were removed from `content/supermetrics`. Their dashboards, reports and super metrics in this pack now use the built-in metric. If you built your own dashboards on them, replace them the same way.
@@ -389,10 +404,13 @@ These super metrics were removed from `content/supermetrics`. Their dashboards, 
 | Network Speed Degradation | Host | `vCommunity\|Network\|Network Speed Degradation` |
 | Total Network Speed Degradation | vSphere World, Datacenter | `vCommunity\|Network\|Total Network Speed Degradation` |
 | Worst Cluster Operational Availability | vSphere World, vCenter | `vCommunity\|Availability\|Worst Cluster Operational Availability`. No longer provided on Custom Datacenter. |
+| Business Application Tier Performance | Tier | `vCommunity\|Business Application\|Tier Performance` |
+| Business Application Performance | Business Application | `vCommunity\|Business Application\|Business Application Performance` |
+| Business Applications Performance | Enterprise | `vCommunity\|Business Application\|Business Applications Performance` |
 
 - The averages became a percentile, which a super metric cannot calculate: the 90th percentile of VM values, the 10th percentile of cluster scores.
 - The cluster totals became the worst or highest ESXi host, because one full host can hurt its VMs while the cluster total looks fine.
-- vSphere Clusters not Green and Business Application Tier Performance stay super metrics. They now read the built-in metrics.
+- vSphere Clusters not Green stays a super metric. It now reads the built-in metrics.
 
 [⬆ Back to top](#metrics--properties-reference)
 

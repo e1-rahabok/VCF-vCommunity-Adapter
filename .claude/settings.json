@@ -1,7 +1,13 @@
 {
   "permissions": {
     "allow": [
-      "Bash(gh pr merge *)"
+      "Bash(gh pr merge *)",
+      "Bash(pwsh tools/build/build.ps1*)",
+      "Bash(pwsh tools/install/install.ps1*)",
+      "Bash(pwsh tools/restart/restart.ps1*)",
+      "Bash(pwsh tools/validate/validate.ps1*)",
+      "Bash(pwsh tools/screenshot/screenshot.ps1*)",
+      "Bash(python -m pytest tests*)"
     ]
   }
 }

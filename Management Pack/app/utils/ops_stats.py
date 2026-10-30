@@ -206,6 +206,37 @@ def query_resources(
     return resources
 
 
+class Related(NamedTuple):
+    """One object related to another: its resource kind key and its VCF Operations id."""
+    kind: str
+    id: str
+
+
+def read_related(suite_api_client: SuiteApiClient, resource_id: str, relationship_type: str) -> List[Related]:
+    """The objects related to one resource by a relationship: "CHILD" or "PARENT".
+
+    Raises if the request fails. A caller that gets a partial list would publish a value built on part of the
+    objects, which is a wrong number, so no value is published instead.
+    """
+    response = suite_api_client.get(url=f"api/resources/{resource_id}/relationships?relationshipType={relationship_type}")
+    if response.status_code != 200:
+        raise RuntimeError(f"Relationships of {resource_id} could not be read: HTTP {response.status_code}")
+    related = []
+    for item in response.json().get("resourceList", []):
+        related_id = _related_id(item)
+        if related_id:
+            related.append(Related(item["resourceKey"]["resourceKindKey"], related_id))
+    return related
+
+
+def _related_id(item: dict) -> Optional[str]:
+    """The VCF Operations id of a related resource: the id in its SELF link."""
+    for link in item.get("links", []):
+        if link.get("rel") == "SELF" and "/resources/" in link.get("href", ""):
+            return link["href"].rsplit("/resources/", 1)[1].split("/")[0].split("?")[0]
+    return None
+
+
 def read_latest_properties(
     suite_api_client: SuiteApiClient, resource_ids: List[str], property_keys: List[str]
 ) -> Dict[str, Dict[str, str]]:

@@ -167,6 +167,26 @@ try {
         Add-Result $status $type $detail
     }
 
+    # --- Business Application performance on the Container objects -----------
+    # WARN, not FAIL, when no object has a value: a Tier whose VMs are all powered off has none, by design.
+    $BUSINESS = [ordered]@{
+        'Tier'            = 'vCommunity|Business Application|Tier Performance'
+        'BusinessService' = 'vCommunity|Business Application|Business Application Performance'
+        'Enterprise'      = 'vCommunity|Business Application|Business Applications Performance'
+    }
+    foreach ($kind in $BUSINESS.Keys) {
+        $key = $BUSINESS[$kind]
+        $objects = @((Get-Api "resources?adapterKind=Container&resourceKind=$kind&pageSize=5000").resourceList)
+        if (-not $objects.Count) { Add-Result 'WARN' "Business Application $kind" 'No objects of this kind on the instance'; continue }
+        $withValue = 0
+        foreach ($obj in $objects) {
+            $stat = @((Get-Api "resources/stats/latest?resourceId=$($obj.identifier)").values.'stat-list'.stat | Where-Object { $_.statKey.key -eq $key })
+            if ($stat.Count -and @($stat[0].data).Count) { $withValue++ }
+        }
+        $status = $withValue ? 'PASS' : 'WARN'
+        Add-Result $status "Business Application $kind" "$withValue of $($objects.Count) have $key"
+    }
+
     # --- Cluster KPIs and the Periodic Cluster Check -------------------------
     $KPI = [ordered]@{
         Performance = 'vCommunity|Cluster Performance|Cluster Performance Score'

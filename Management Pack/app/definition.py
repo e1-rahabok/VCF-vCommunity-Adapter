@@ -19,6 +19,7 @@ from properties.vm import vm_shares
 from metrics.world import cluster_summary_metrics, availability_summary_metrics, cluster_close_changes
 from metrics.world import port_group_counts, vm_tools_counts
 from metrics.vcenter import vcenter_port_groups, vcenter_availability
+from metrics.container import business_app_performance
 from metrics.datacenter import datacenter_network_degradation
 from utils import collection_health
 from utils import guest_http
@@ -577,6 +578,14 @@ def get_adapter_definition() -> AdapterDefinition:
         vCommunity.define_metric(port_group_counts.METRIC, port_group_counts.METRIC)
         vCommunity.define_metric(vm_tools_counts.WITHOUT_METRIC, vm_tools_counts.WITHOUT_METRIC)
         vCommunity.define_metric(vm_tools_counts.DOWN_METRIC, vm_tools_counts.DOWN_METRIC)
+
+        # Business Application performance on the Container objects, in percent. The object types are defined here so
+        # that VCF Operations shows the unit. See metrics/container/business_app_performance.py.
+        for kind, label, metric in business_app_performance.DEFINED_ON:
+            container_object = definition.define_object_type(kind, label)
+            vCommunity = container_object.define_group("vCommunity", "vCommunity")
+            group = vCommunity.define_group(business_app_performance.GROUP, business_app_performance.GROUP)
+            group.define_metric(metric, metric, unit=Units.RATIO.PERCENT)
 
         # Datacenter: the number of hosts with Network Speed Degradation.
         datacenter = definition.define_object_type("Datacenter", "Datacenter")

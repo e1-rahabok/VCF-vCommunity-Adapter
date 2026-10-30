@@ -17,6 +17,7 @@ Other metrics:
 - [Network Speed Degradation](network-speed-degradation.md)
 - [Operational Availability](operational-availability.md)
 - [VM Shares](vm-shares.md)
+- [Business Application Performance](business-application-performance.md)
 - [vSphere World Cluster Metrics](vsphere-world-metrics.md)
 
 Each page has its Known Limitations. The formula images the KPIs are built from are in [formula/](formula/).
