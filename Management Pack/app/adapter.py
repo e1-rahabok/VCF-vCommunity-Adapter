@@ -354,7 +354,7 @@ def _run_object_jobs(
             adapter_instance.get_credential_value(constants.main.PASSWORD_CREDENTIAL),
             adapter_instance.get_identifier_value(constants.main.VCENTER_TLS_VALIDATION),
             adapter_instance.get_identifier_value(constants.main.VCENTER_THUMBPRINT),
-            client, adapter_instance_id, getattr(content.about, "instanceUuid", "") or "", result,
+            result,
         )
 
         # 9. Business Applications: Tier, Business Application and Enterprise performance, on the Container objects.
