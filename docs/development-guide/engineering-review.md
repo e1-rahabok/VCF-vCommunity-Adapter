@@ -8,6 +8,11 @@ It reviews the state of the repository at version 0.6.12 (`Management Pack/manif
 Where a finding was checked against the code, this page gives the file and line. Findings that were only read, and
 not reproduced, say so.
 
+> **Latest update (2026-10-30):** version 0.7.0 is built, installed on the test instance, and passes the standard live
+> validation (16 pass, 4 warn, 0 fail). The fixes are on the `0.7.0-review-fixes` branch and are not released yet. The
+> log checks, the lint findings and the release are still open. See [Verification](#verification-done-for-this-change)
+> and [Prioritised plan](#prioritised-plan).
+
 ---
 
 ## Verdict
@@ -140,7 +145,7 @@ Not done:
 | SEC-02 | Medium | `collectors/library/collectLibraryData.py:83-97`, `:43`, `:46` | In Pinned mode, the thumbprint is checked on a separate TLS connection. The REST login then runs on a new connection with no pin. | Make the REST login use the same pinned trust model, or state the difference in the design. |
 | SEC-03 | Medium | `utils/guest_http.py:52-53` | ESXi thumbprints are SHA-1 (40 hex). SHA-1 is not collision-resistant. | Accepted as a limit of what vCenter provides. Keep it documented. Do not change the trust model without a migration plan. |
 | SEC-04 | Low | `utils/guest_http.py:208` | A pin mismatch is detected by searching the error text for `"ingerprint"`. The text depends on the urllib3 version. | Match the exception type or a stable error pattern. |
-| SEC-05 | Low | `utils/config_files.py:20`, `adapter.py:102`, `adapter.py:195` | Configuration files use the standard XML parser. Bandit flags it (B314). The files are editable only by VCF Operations administrators. | Document the threat model. Keep the validation. |
+| SEC-05 | Low | `utils/config_files.py:13,22,29`, `adapter.py:8`, `adapter.py:117` | Configuration files use the standard XML parser. Bandit flags it (B314, B405). The files are editable only by VCF Operations administrators. | Document the threat model. Keep the validation. **Decision (0.7.0):** done as documented. Each XML call in `utils/config_files.py`, and the import in `adapter.py`, carries a `nosec` marker that gives the SEC-05 reason. The alternative, `defusedxml`, was considered and not adopted: the input is written only by administrators, and a new runtime dependency would need its own audit and an install on the test instance. Revisit if anyone other than an administrator can write these files. |
 | SEC-06 | Low | `tools/install/install.ps1`, `tools/restart/restart.ps1`, `tools/validate/review.ps1`, `tools/screenshot/screenshot.ps1` | Tooling uses `SkipCertificateCheck`. That suits internal lab use only. | Keep it for lab use. Say in the docs that it is lab-only. Do not use it in production steps. |
 | SEC-07 | Low | `adapter.py:151` | `test()` logs the whole `ServiceContent` object at info level. Confirmed. | Log only the product name and version. |
 | SEC-08 | Low | `.claude/settings.json:4` | The project allow-list lets an agent merge pull requests without a prompt (`Bash(gh pr merge *)`). Confirmed. | Remove the entry, or make the merge a deliberate human action. |
@@ -241,8 +246,9 @@ There is no performance benchmark. Collection time in large estates is not measu
 | TST-06 | Info | KPI formulas are tested with worked examples. | Keep this practice. It is a strength. |
 
 The pack's own documents disagree on the Python version. [CONTRIBUTING.md](../../CONTRIBUTING.md) says 3.12. The
-earlier review says the SDK does not install on 3.13. The test virtual environment runs on 3.13.16 and the tests pass.
-Decide which version is supported, then state it once and use it in CI.
+earlier review says the SDK does not install on 3.13. The test virtual environment runs on 3.13.16 and the tests pass. On Python 3.12.10, the 0.7.0 unit tests also pass
+(476 passed), and the 0.7.0 build ran on 3.12. Decide which version is supported, then state it once and use it in CI
+(issue #66).
 
 ---
 
@@ -288,8 +294,9 @@ Decide which version is supported, then state it once and use it in CI.
 
 ## Prioritised plan
 
-Status after the 0.7.0 change. "Done" means the code, tests and docs are in the working tree. It is not installed or
-validated on the test instance yet, so each item still needs the live validation in the release steps.
+Status after the 0.7.0 change. "Done" means the code, tests and docs are on the `0.7.0-review-fixes` branch. The 0.7.0
+build is installed on the test instance, and the standard validation passed (see Verification). Items that need the log
+checks are still open.
 
 ### 0.7.0: done in the code
 
@@ -327,20 +334,28 @@ validated on the test instance yet, so each item still needs the live validation
 ### 0.7.0: open, and why
 
 - [ ] BUG-08 (issue #60): callers do not skip the resources of a failed batch. There are 42 call sites in 19 files. Each one needs its own rule for a partial total.
-- [ ] MNT-06, TST-05: ruff was not run in this change, because the package host was not reachable from the working environment. The CI workflow runs it on the first pull request. Expect to fix any findings it reports.
+- [ ] MNT-06, TST-05: ruff runs on 0.7.0. The unused imports are fixed, and 12 findings remain: B009 (5), B905 (4) and B017 (3). Each needs a decision. B905 and B017 change behaviour or test strictness, so they are not mechanical fixes.
 - [ ] GOV-04: tag `v0.7.0` when it is released. No changelog file: release notes on GitHub instead.
 - [ ] SCL-02, SCL-01 (the job count), CON-01 (live test), GOV-05, GOV-06, GOV-03 (secret scanning and CodeQL), MNT-01 (the definition): on the To Do project, one line each.
 - [ ] Python version (issue #66): the decision is open, so CI uses 3.12 for now.
-- [ ] Live validation of 0.7.0 on the test instance (issue #2, `verify-live`).
+- [ ] Live checks of 0.7.0 on the test instance (issue #2, `verify-live`). The standard validation passed on 2026-10-30. The log checks are still to do: the TLS message, the Windows guest properties and event counts, the content libraries, and the failure paths.
 
 ### Verification done for this change
 
-- Unit tests: 476 passed on Python 3.13.16 in `Management Pack/.venv-test`, with no skips. They include the docs link check.
+- Unit tests: 476 passed on Python 3.12.10 (Build Laptop, 2026-10-30), with no skips. They include the docs link check.
+  The same count was reported on Python 3.13.16 in `Management Pack/.venv-test` earlier.
 - Adapter definition: dumped before and after the change. The same 3,439 paths. The only difference is the description of
   vCenter TLS Validation, which now carries the warning.
-- The Integration SDK 1.3.1 build tool was not run. It needs Python 3.12 or older, and the package host was not reachable
-  to install it. The build laptop runs `tools/build/build.ps1`, which runs `mp-build` and its validation.
-- Python 3.12 unit tests were not run here, for the same reason.
+- Build: `tools/build/build.ps1` succeeded on Python 3.12.10 and produced `vCommunity_0.7.0.pak`. The build log has no
+  SDK validation messages.
+- Static analysis: `pip-audit` reports no known vulnerabilities. `bandit` reports one finding, the B105 `"password"`
+  field name, which is a false positive. The XML findings are suppressed with the SEC-05 reason. `ruff` reports 12
+  findings, listed under the open items.
+- Install and restart: the pack installed on the test instance in 2 min 49 s. The adapter instance returned to
+  `DATA_RECEIVING` after the restart.
+- Live validation (`tools/validate/validate.ps1`): 16 pass, 4 warn, 0 fail. The warnings are the three Business
+  Application checks, where no object carries the metric yet, and one 45-minute collection gap on 29 October, which is
+  before this install. The log checks in the release steps are not done.
 
 ### Project rule for these items
 
