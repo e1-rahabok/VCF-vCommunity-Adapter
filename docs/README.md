@@ -73,7 +73,9 @@ For contributors: how the code is organised, what each part does, and how to cha
 9. [Tests](development-guide/tests.md): the three test layers and the test files.
 10. [Template and Content Library Design](development-guide/template-and-library-design.md): the design for showing templates and content libraries in VCF Operations. Built in the code, not yet verified on the test instance.
 11. [Future Enhancements](development-guide/future-enhancements.md): metric ideas noted for later, not designed.
-12. [Engineering Review](development-guide/engineering-review.md): security, reliability, maintainability, repository and VCF Operations 9 review of the pack at version 0.6.12, with a tracked list of findings and the plan for 0.7.0.
+12. [29 Oct 2026 Review](development-guide/engineering-review/2026-10-29-review.md): the engineering review of the pack at version 0.6.12, with the scorecard and the findings.
+13. [29 Oct 2026 Completed](development-guide/engineering-review/2026-10-29-completed.md): the response to the review, and the decision and action for each finding.
+14. [30 Oct 2026 Review](development-guide/engineering-review/2026-10-30-review.md): placeholder for the re-score, after the implementation is seen.
 13. [To Do project](https://github.com/users/e1-rahabok/projects/1): the enhancements still to do, one line each. Broken things are GitHub issues.
 
 Planned work is tracked in [GitHub Issues](https://github.com/e1-rahabok/VCF-vCommunity-Adapter/issues?q=is%3Aissue+is%3Aopen+label%3Aenhancement), not here.
