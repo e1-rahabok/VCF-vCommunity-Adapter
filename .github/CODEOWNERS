@@ -1,0 +1,4 @@
+# Reviews are requested from the owner for the code that talks to vCenter and to the ESXi hosts, and for the tooling.
+/Management Pack/app/ @e1-rahabok
+/tools/ @e1-rahabok
+/.github/ @e1-rahabok

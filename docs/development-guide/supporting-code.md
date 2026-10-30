@@ -53,6 +53,14 @@ Turns the TLS setting of the Adapter Instance into the arguments of the vCenter 
 
 The HTTPS calls of the vSphere Guest API file transfers, which copy a script into a Windows VM and run it. The ESXi host certificate is checked, unless the Adapter Instance says otherwise.
 
+### utils/guest_ops.py
+
+The GuestAPI steps that the three Windows guest collectors share: `transfer_file`, `run_powershell`, `file_exists`, `read_guest_output`, `create_temp_file` and `remove_temp_dir`. Each collector (`properties/vm/vmService.py`, `properties/vm/vmOSInformation.py`, `events/vm/collect_windows_event_logs.py`) keeps only its own parsing and its own properties.
+
+- `run_powershell` waits for the script with a poll that backs off from 1 to 10 seconds. After 5 minutes it stops the process, and raises `GuestProcessTimeout`. The VM is then skipped for the cycle, and no other VM waits for it.
+- `read_guest_output` returns `None` when the download fails. The caller must check it, so that a failed download is never read as an empty file.
+- `GuestBudget` limits the guest work of one cycle to 30 minutes. The VM collector asks it before the guest steps of each VM.
+
 ### utils/guest_args.py
 
 Values from the configuration files end up in PowerShell commands run inside a Windows guest. This module checks them first. For example, `safe_service_names()` keeps only the service names that are safe to put in a command.

@@ -67,3 +67,7 @@ python tools/check-docs/check_links.py
 It prints the broken links and exits `1`, or prints `0 broken link(s)` and exits `0`. The unit tests run it too (`Management Pack/tests/test_docs_links.py`), so a broken link also fails `pytest`.
 
 A new Markdown file is only checked once git tracks it. Run `git add` first, or `git add -N` to include it without staging its content.
+
+## Certificates
+
+Several scripts pass `-SkipCertificateCheck` to reach the VCF Operations test instance, whose certificate is not trusted by this machine. That is for a test instance on a trusted network. Do not use these scripts against a production instance without checking its certificate first. See [TLS and Security Settings](../docs/configuration-guide/tls-and-security.md).

@@ -1,10 +1,14 @@
 #  Copyright 2026 VCF Operations vCommunity Management Pack
 #  Author: Onur Yuzseven onur.yuzseven@broadcom.com
 
+import csv
 import os
 import logging
+from io import StringIO
+from typing import List, NamedTuple, Optional
+
 from utils import guest_args
-from utils import guest_http
+from utils import guest_ops
 from pyVmomi import vim
 
 logger = logging.getLogger(__name__)
@@ -15,112 +19,52 @@ current_directory = os.path.dirname(os.path.abspath(__file__))
 serviceLogScript = "getWindowsServices.ps1"
 serviceScriptPath = os.path.join(current_directory, "getWindowsServices.ps1")
 
-
-def fileTransfer(vm, creds, content, scriptPath, tempDir, script):
-    try:
-        with open(scriptPath, "rb") as f:
-            data = f.read()
-
-        remotePath = f"{tempDir}\\{script}"
-        fileManager = content.guestOperationsManager.fileManager
-        fileAttr = vim.vm.guest.FileManager.FileAttributes()
-
-        url = fileManager.InitiateFileTransferToGuest(
-            vm=vm,
-            auth=creds,
-            guestFilePath=remotePath,
-            fileAttributes=fileAttr,
-            fileSize=len(data),
-            overwrite=True
-        )
-
-        response = guest_http.put(vm, url, data)
-        if response.status_code == 200:
-            logger.info(f"Successfully transferred the {remotePath} file to {vm.name}")
-            return True
-        else:
-            logger.error(f"File transfer failed to {vm.name}: {response.status_code} - {response.text}")
-            return False
-    except Exception as e:
-        logger.exception(f"Exception during file transfer to {vm.name}: {e}")
-        return False
+SERVICES_CSV = "Services.csv"
+COLUMNS = ("Name", "DisplayName", "Status", "StartType")
 
 
-def executeProgram(powershellPath, command, processManager, vm, creds):
-    programSpec = vim.vm.guest.ProcessManager.ProgramSpec(
-        programPath=powershellPath,
-        arguments=f"-Command \"{command}\""
-    )
-    pid = processManager.StartProgram(vm, creds, programSpec)
-    if pid <= 0:
-        raise RuntimeError(f"Command execution failed on {vm.name}")
-    else:   
-        logger.info(f"Powershell command has been executed by command: {command} , PID: {pid}")
-        while True:
-            processInfo = processManager.ListProcessesInGuest(vm, creds, [pid]).pop()
-            if processInfo.exitCode is not None:
-                logger.info(f"Code execution finished, exit code: {processInfo.exitCode}")
-                break
+class ServiceRow(NamedTuple):
+    name: str
+    display_name: str
+    status: str
+    start_type: str
 
 
-def checkFile(fileManager, vm, creds, tempDir, fileName):
-    try:
-        fileInfo = fileManager.ListFilesInGuest(
-            vm=vm,
-            auth=creds,
-            filePath=tempDir,
-            index=0,
-            maxResults=100
-        )
+def parse_services(text: str) -> Optional[List[ServiceRow]]:
+    """The services of the CSV that the PowerShell script writes. None when a column is missing.
 
-        if fileInfo.files:
-            for file in fileInfo.files:
-                if file.path.lower() == fileName.lower():
-                    logger.info(f"{fileName} file found in {tempDir} on {vm.name}")
-                    return True
-        return False
-   
-    except vim.fault.FileNotFound:
-        logger.info(f"Couldn't find the {fileName} in {vm.name}")
-        return False
-    except Exception as e:
-        logger.error(f"There was an error during file check. {e}")
-        return False
+    The CSV is parsed with the csv module, so a display name with a comma in it stays in one field.
+    """
+    if not text.strip():
+        return []
+    rows = list(csv.reader(StringIO(text)))
+    header = rows[0]
+    if any(column not in header for column in COLUMNS):
+        return None
+    index = {column: header.index(column) for column in COLUMNS}
+    services = []
+    for row in rows[1:]:
+        if len(row) < len(header):
+            logger.warning(f"Skipping a Windows Service row with {len(row)} fields, expected {len(header)}.")
+            continue
+        services.append(ServiceRow(*(row[index[column]] for column in COLUMNS)))
+    return services
 
 
-def readOutput(fileManager, vm, creds, filePath):
-    readFile = fileManager.InitiateFileTransferFromGuest(vm, creds, filePath)
-    response = guest_http.get(vm, readFile.url)
-    if response.status_code == 200:
-        logger.info(f"Successfuly downloaded the file: {filePath} from {vm.name}")
-        return response.text
-    else:
-        logger.error(f"Can not download powershell output from {vm.name}. Expected file is: {filePath}")
+def publish_services(vm_obj, vm_name: str, text: str) -> None:
+    services = parse_services(text)
+    if services is None:
+        logger.error(f"The Windows Service CSV on {vm_name} has no {', '.join(COLUMNS)} column.")
+        return
+    if not services:
+        logger.info(f"Can not find Windows Service details on {vm_name}")
+        return
+    for service in services:
+        vm_obj.with_property(f"vCommunity|Guest OS|Services:{service.display_name}|Service Name", service.name)
+        vm_obj.with_property(f"vCommunity|Guest OS|Services:{service.display_name}|Service Status", service.status)
+        vm_obj.with_property(f"vCommunity|Guest OS|Services:{service.display_name}|Service Start Type", service.start_type)
+        logger.info(f"Sending Windows Service details for {vm_name}")
 
-
-def createTempFile(fileManager, vm, creds, filePath, data):
-    try:
-        tempFile = fileManager.CreateTemporaryFileInGuest(vm, creds, prefix="events", suffix=".xml", directoryPath=filePath)
-        fileAttr = vim.vm.guest.FileManager.FileAttributes()
-        url = fileManager.InitiateFileTransferToGuest(
-            vm=vm,
-            auth=creds,
-            guestFilePath=tempFile,
-            fileAttributes=fileAttr,
-            fileSize=len(data),
-            overwrite=True
-        )
-
-        response = guest_http.put(vm, url, data)
-        if response.status_code == 200:
-            logger.info(f"XML data successfully written to {tempFile} on {vm.name}")
-            return True, tempFile
-        else:
-            logger.error(f"Failed to write file. HTTP status: {response.status_code} on {vm.name}")
-            return False, None
-    except Exception as e:
-        logger.error(f"Exception during file creation on {vm.name}: {e}")
-        return False, None
 
 def collect_vm_service_properties(vm_obj, vm, content, winUser, winPassword, winServiceConfigFile):
     processManager = content.guestOperationsManager.processManager
@@ -129,53 +73,31 @@ def collect_vm_service_properties(vm_obj, vm, content, winUser, winPassword, win
 
     toolsStatus = vm.guest.toolsStatus
     guestOSFamily = vm.guest.guestFamily
-    if toolsStatus == "toolsOk" and guestOSFamily == "windowsGuest":
-        logger.info(f"Started Windows Service monitoring for {vm.name}")
-        systemRootPath = "C:\\Windows"
-        tempDirPath = systemRootPath + "\\Temp"
-        powershellPath = systemRootPath + "\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
-        try:
-            tempDir = fileManager.CreateTemporaryDirectory(vm, creds, prefix, suffix, tempDirPath)
-
-            serviceList = guest_args.powershell_string_array(winServiceConfigFile)
-            command = f"\"& '{tempDir}\\{serviceLogScript}' @({serviceList}) | Export-Csv -Path '{tempDir}\\Services.csv' -NoTypeInformation -Encoding UTF8\""
-            fileTransferStatus = fileTransfer(vm, creds, content, serviceScriptPath, tempDir, serviceLogScript)
-            if fileTransferStatus:
-                executeProgram(powershellPath, command, processManager, vm, creds)
-                servicesOutputPath = f"{tempDir}\\Services.csv"
-                serviceResult = readOutput(fileManager, vm, creds, servicesOutputPath)
-                lines = serviceResult.splitlines()
-                if serviceResult.strip():
-                    header = lines[0].split(',')
-                    serviceNameIndex = header.index('"Name"')
-                    serviceDisplayNameIndex = header.index('"DisplayName"')
-                    serviceStatusIndex = header.index('"Status"')
-                    serviceStartTypeIndex = header.index('"StartType"')
-                    for line in lines[1:]:
-                        columns = line.split(',')
-                        serviceName = columns[serviceNameIndex].strip('"')
-                        serviceDisplayName = columns[serviceDisplayNameIndex].strip('"')
-                        serviceStatus = columns[serviceStatusIndex].strip('"')
-                        serviceStartType = columns[serviceStartTypeIndex].strip('"')
-                        vm_obj.with_property(f"vCommunity|Guest OS|Services:{serviceDisplayName}|Service Name", serviceName)
-                        vm_obj.with_property(f"vCommunity|Guest OS|Services:{serviceDisplayName}|Service Status", serviceStatus)
-                        vm_obj.with_property(f"vCommunity|Guest OS|Services:{serviceDisplayName}|Service Start Type", serviceStartType)
-
-                        logger.info(f"Sending Windows Service details for {vm.name}")
-                else:
-                    logger.info(f"Can not find Windows Service details on {vm.name}")
-            else:
-                logger.error(f"Cannot find the Windows Service CSV file on {vm.name}")
-
-        except Exception as e:
-            logger.error(f"Failed to create temporary directory on {vm.name}: {e}")
-            return
-        
-        finally:
-            try:
-                if tempDir:
-                    fileManager.DeleteDirectoryInGuest(vm, creds, tempDir, True)
-            except:
-                pass
-    else:
+    if toolsStatus != "toolsOk" or guestOSFamily != "windowsGuest":
         logger.info(f"Skipping {vm.name} is not a Windows Guest.")
+        return
+
+    logger.info(f"Started Windows Service monitoring for {vm.name}")
+    tempDir = None
+    try:
+        tempDir = fileManager.CreateTemporaryDirectory(vm, creds, prefix, suffix, guest_ops.TEMP_DIR_PATH)
+
+        serviceList = guest_args.powershell_string_array(winServiceConfigFile)
+        command = f"\"& '{tempDir}\\{serviceLogScript}' @({serviceList}) | Export-Csv -Path '{tempDir}\\{SERVICES_CSV}' -NoTypeInformation -Encoding UTF8\""
+        if not guest_ops.transfer_file(vm, creds, content, serviceScriptPath, tempDir, serviceLogScript):
+            logger.error(f"Cannot find the Windows Service CSV file on {vm.name}")
+            return
+
+        guest_ops.run_powershell(processManager, vm, creds, command)
+        serviceResult = guest_ops.read_guest_output(fileManager, vm, creds, f"{tempDir}\\{SERVICES_CSV}")
+        if serviceResult is None:
+            logger.error(f"No Windows Service details were read from {vm.name}.")
+            return
+        publish_services(vm_obj, vm.name, serviceResult)
+
+    except guest_ops.GuestProcessTimeout as e:
+        logger.warning(f"Windows Service monitoring skipped for {vm.name}: {e}")
+    except Exception as e:
+        logger.error(f"Windows Service monitoring failed on {vm.name}: {e}")
+    finally:
+        guest_ops.remove_temp_dir(fileManager, vm, creds, tempDir)

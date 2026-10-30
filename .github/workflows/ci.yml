@@ -1,0 +1,44 @@
+name: CI
+
+# Runs on every pull request and on every push to main. The checks are the ones CONTRIBUTING.md asks for:
+# unit tests (which also run the docs link check), lint, security scan of the adapter code, and the runtime
+# dependency audit. Live validation needs the VCF Operations test instance, so it is not run here.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Management Pack
+    steps:
+      - uses: actions/checkout@v4
+
+      # 3.12: the version CONTRIBUTING.md names. The Integration SDK build tool (mp-build) requires 3.9 to 3.12.
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install the pack's requirements and the check tools
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt pytest ruff bandit pip-audit
+
+      - name: Unit tests and docs link check
+        run: python -m pytest tests -q
+
+      - name: Lint (ruff, rules in ruff.toml)
+        run: python -m ruff check app tests
+
+      - name: Security scan of the adapter code (bandit)
+        run: python -m bandit -r app -q
+
+      - name: Audit the runtime dependencies (pip-audit)
+        run: python -m pip_audit -r adapter_requirements.txt

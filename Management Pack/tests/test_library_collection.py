@@ -84,35 +84,34 @@ def test_item_properties_and_size():
     assert item.get_last_metric_value(f"vCommunity|{lib.ITEM_KIND}|Size (GB)") == 2.0
 
 
-def test_cache_reads_at_most_once_an_hour_and_keeps_the_last_values():
-    calls = []
-
-    def read():
-        calls.append(1)
-        return {"libraries": [], "items": {}, "n": len(calls)}
-
-    lib._cache.update(read_at=None, data=None)
-    first = lib.cached_read(read, now=1000.0)
-    again = lib.cached_read(read, now=1000.0 + lib.READ_INTERVAL_SECONDS - 1)
-    assert first is again and len(calls) == 1
-
-    def failing():
-        raise ConnectionError("vCenter down")
-
-    kept = lib.cached_read(failing, now=1000.0 + lib.READ_INTERVAL_SECONDS + 1)
-    assert kept is first
-    assert len(calls) == 1
-
-
-def test_no_read_yet_publishes_nothing():
-    lib._cache.update(read_at=None, data=None)
-
-    def failing():
-        raise ConnectionError("vCenter down")
-
+def test_the_libraries_are_published_from_the_read_of_this_cycle():
     result = CollectResult()
-    lib.collect_library_data(failing, None, result, now=5000.0)
+    lib.collect_library_data(sample_data(), None, result)
+    assert any(o.get_key().object_kind == lib.LIBRARY_KIND for o in result.objects.values())
+    assert any(o.get_key().object_kind == lib.ITEM_KIND for o in result.objects.values())
+
+
+def test_there_is_no_cache_between_cycles():
+    """Each collection cycle is a new process, so a module-level cache never survives to the next cycle. The
+    libraries are read in every cycle, and nothing is kept in the module."""
+    assert not hasattr(lib, "_cache")
+    assert not hasattr(lib, "cached_read")
+
+
+def test_a_failed_library_read_publishes_nothing_and_logs_a_warning(monkeypatch, caplog):
+    class FailingReader:
+        def __init__(self, *args, **kwargs):
+            raise ConnectionError("vCenter down")
+
+    class NoVCenterApi:
+        def query_for_resources(self, query):
+            return []
+
+    monkeypatch.setattr(lib, "LibraryReader", FailingReader)
+    result = CollectResult()
+    lib.run_library_collection("vc", 443, "user", "pw", None, None, NoVCenterApi(), "ai", "uuid", result)
     assert len(result.objects) == 0
+    assert "Content library collection failed" in caplog.text
 
 
 def test_read_follows_the_items_of_each_library():
@@ -139,14 +138,44 @@ def test_read_follows_the_items_of_each_library():
     assert len(reader.paths) == 4
 
 
-def test_tls_modes_for_the_rest_connection(monkeypatch):
-    assert lib.verify_for(tls.ENABLED, "vc", 443, None) is True
-    assert lib.verify_for(tls.TRUST_ON_FIRST_USE, "vc", 443, None) is False
+def test_tls_modes_for_the_rest_connection():
+    assert lib.verify_for(tls.ENABLED, None) == (True, None)
+    assert lib.verify_for(tls.TRUST_ON_FIRST_USE, None) == (False, None)
+    sha256 = "aa" * 32
+    assert lib.verify_for(tls.PINNED, sha256) == (False, sha256)
+    assert lib.verify_for(tls.PINNED, "AA:" * 31 + "AA") == (False, "aa" * 32)
 
-    pinned = "AA:" * 31 + "AA"
-    monkeypatch.setattr(tls, "presented_thumbprint", lambda host, port: "bb" * 32)
-    with pytest.raises(ConnectionError):
-        lib.verify_for(tls.PINNED, "vc", 443, pinned)
 
-    monkeypatch.setattr(tls, "presented_thumbprint", lambda host, port: "aa" * 32)
-    assert lib.verify_for(tls.PINNED, "vc", 443, pinned) is False
+@pytest.mark.parametrize("thumbprint", ["", None, "aa" * 20, "aa" * 64 + "bb" * 64])
+def test_pinned_needs_a_sha256_thumbprint(thumbprint):
+    """A missing, SHA-1 or SHA-512 thumbprint is refused before any connection is made. urllib3 pins SHA-256 here."""
+    with pytest.raises(tls.TlsConfigError):
+        lib.verify_for(tls.PINNED, thumbprint)
+
+
+def test_pinned_rest_login_sends_nothing_to_a_server_with_another_certificate(tmp_path):
+    pytest.importorskip("cryptography")
+    from tls_server import TlsServer
+    import requests
+
+    with TlsServer(tmp_path) as server:
+        reader = lib.LibraryReader("127.0.0.1", "user", "pw", False, server.port, "bb" * 32)
+        with pytest.raises(requests.exceptions.SSLError, match=tls.FINGERPRINT_MISMATCH):
+            with reader:
+                pass
+        assert server.requests == []
+
+
+def test_pinned_rest_login_reaches_a_server_with_the_pinned_certificate(tmp_path):
+    pytest.importorskip("cryptography")
+    from tls_server import TlsServer, thumbprint
+    import requests
+
+    with TlsServer(tmp_path) as server:
+        reader = lib.LibraryReader("127.0.0.1", "user", "pw", False, server.port, thumbprint(server.der))
+        # The test server answers the login with HTTP 500, so the login is refused. What matters is that the
+        # login request arrived: the certificate matched during the handshake.
+        with pytest.raises(requests.HTTPError):
+            with reader:
+                pass
+        assert [method for method, _, _ in server.requests] == ["POST"]

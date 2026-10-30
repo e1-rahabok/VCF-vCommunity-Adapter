@@ -1,0 +1,5 @@
+# Lint rules for the adapter code and the tests. E9 is syntax errors, F is pyflakes (unused imports and names),
+# B is flake8-bugbear (likely bugs). Kept at the repository root, outside the pack folder, so the pak does not carry it.
+# Run from the "Management Pack" folder: python -m ruff check app tests (ruff finds this file in the parent folder).
+[lint]
+select = ["E9", "F", "B"]

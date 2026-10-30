@@ -57,7 +57,7 @@ You can expand the adapter configuration by clicking **Advanced Settings**.
 | Advanced Setting | Default Value | Description |
 | :--- | :--- | :--- |
 | **Port** | `443` | The port used to connect to vCenter Server. |
-| **vCenter TLS Validation** | `Trust on First Use` | `Trust on First Use` connects whatever the certificate, and reports on the vCenter object when it changes. `Enabled` (the Cloud Proxy must trust it) and `Pinned` (it must match the thumbprint below) refuse the connection when the check fails. See [TLS and Security Settings](tls-and-security.md#vcenter-tls-validation). |
+| **vCenter TLS Validation** | `Trust on First Use` | `Trust on First Use` connects whatever the certificate, and reports on the vCenter object when it changes. It sends the user name and password before the certificate is checked, so use `Pinned` or `Enabled` on a network you do not fully trust. `Enabled` (the Cloud Proxy must trust it) and `Pinned` (it must match the thumbprint below) refuse the connection when the check fails. See [TLS and Security Settings](tls-and-security.md#vcenter-tls-validation). |
 | **vCenter Thumbprint (SHA-256)** | *(empty)* | The certificate thumbprint to accept. Used only when vCenter TLS Validation is `Pinned`. |
 | **Cluster Check Period (hours)** | `24` | Length of each [Periodic Cluster Check](../reference/metrics/periodic-cluster-check.md#settings) window, and how often it is calculated: 1, 2, 4, 6, 8, 12 or 24 hours. |
 | **Cluster Check Time (UTC)** | `00:00` | Time of day, as HH:MM in UTC, when a Periodic Cluster Check window ends. With a shorter period, the other windows end every period from it. An empty or invalid value uses `00:00`. |

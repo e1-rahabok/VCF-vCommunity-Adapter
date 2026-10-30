@@ -37,8 +37,8 @@ import warnings
 from typing import Dict, Optional, Set
 
 import requests
-from requests.adapters import HTTPAdapter
 from urllib3.exceptions import InsecureRequestWarning
+from utils import tls
 
 logger = logging.getLogger(__name__)
 
@@ -157,26 +157,13 @@ def _host_key(vm) -> str:
         return f"host of {getattr(vm, 'name', 'a VM')}"
 
 
-class _PinnedAdapter(HTTPAdapter):
-    """Accepts only a server certificate with this fingerprint. urllib3 compares it during the TLS handshake,
-    before any request is sent, and it replaces the chain check."""
-
-    def __init__(self, fingerprint: str, **kwargs):
-        self._fingerprint = fingerprint
-        super().__init__(**kwargs)
-
-    def init_poolmanager(self, connections, maxsize, block=False, **pool_kwargs):
-        pool_kwargs["assert_fingerprint"] = self._fingerprint
-        super().init_poolmanager(connections, maxsize, block=block, **pool_kwargs)
-
-
 def _session(vm):
     """(a new session for one transfer, whether it is pinned). Never shared, so a pin cannot carry over to another
     host."""
     session = requests.Session()
     fingerprint = _pin_for(vm)
     if fingerprint:
-        session.mount("https://", _PinnedAdapter(fingerprint))
+        session.mount("https://", tls.PinnedAdapter(fingerprint))
     return session, bool(fingerprint)
 
 
@@ -205,7 +192,7 @@ def _send(session: requests.Session, pinned: bool, method: str, url: str, **kwar
                 warnings.simplefilter("ignore", InsecureRequestWarning)
             return session.request(method, url, timeout=_TIMEOUT, verify=False, **kwargs)
     except requests.exceptions.SSLError as exc:
-        if pinned and "ingerprint" in str(exc):
+        if pinned and tls.FINGERPRINT_MISMATCH in str(exc):
             raise GuestTlsError(
                 "The certificate of the ESXi host does not match the thumbprint that vCenter records for it, "
                 f"so nothing was sent: {exc}"

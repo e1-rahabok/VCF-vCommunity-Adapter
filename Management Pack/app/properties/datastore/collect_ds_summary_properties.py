@@ -2,7 +2,7 @@
 #  Author: Onur Yuzseven onur.yuzseven@broadcom.com
 
 import logging
-#from pyVmomi import vim
+
 
 logger = logging.getLogger(__name__)
 
@@ -15,7 +15,7 @@ def collect_datastore_summary_properties(datastore_obj, ds_name, prop_dict, ds_m
         dsInfo = prop_dict.get("info")
         vmfsData = getattr(dsInfo, "vmfs", None) if dsInfo else None
 
-        datastore_obj.with_property(f"vCommunity|Summary|MOID", str(ds_moid))
+        datastore_obj.with_property("vCommunity|Summary|MOID", str(ds_moid))
 
         if vmfsData:
             block_size_mb = getattr(vmfsData, "blockSizeMb", None)

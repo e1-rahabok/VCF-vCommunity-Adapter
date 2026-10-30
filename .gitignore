@@ -3,3 +3,7 @@
 .lab/
 __pycache__/
 *.pyc
+
+# macOS folder metadata, and the local Python environments of the pack.
+.DS_Store
+.venv*/

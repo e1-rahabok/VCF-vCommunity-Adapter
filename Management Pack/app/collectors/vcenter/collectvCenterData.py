@@ -9,7 +9,6 @@ from aria.ops.object import Object
 from aria.ops.result import CollectResult
 from aria.ops.suite_api_client import SuiteApiClient
 from constants.main import VCENTER_ADAPTER_KIND
-from pyVmomi import vim
 from properties.vcenter.collect_vcenter_properties import collect_vcenter_properties
 from properties.vcenter import certificate
 from metrics.vcenter.vcenter_port_groups import collect_port_group_count

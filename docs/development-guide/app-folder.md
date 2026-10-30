@@ -38,7 +38,7 @@ The input of each call, such as the Adapter Instance and its credentials, is rea
 
 ## One collection cycle
 
-The `collect` method, in `adapter.py`, runs these steps:
+The `collect` method, in `adapter.py`, runs these steps. Steps 1 to 4 are in `_collect_cycle`, and step 5 is in `_run_object_jobs`:
 
 1. Read the Adapter Instance settings, and the configuration files that choose what is collected. These are read from VCF Operations, under `SolutionConfig`. See [Content Folder](content-folder.md).
 2. Connect to the vCenter, once.
@@ -58,6 +58,12 @@ Logs go to `adapter.log` in the container, rotated at each run.
 - **Shared inputs read once.** Availability and network speed are read once per vCenter, not once per collector. Stats are read in batches of many objects, not one request per object. See [Supporting Code](supporting-code.md).
 - **Failures stay local.** Each object catches its own errors and writes a warning. A failing collector is logged as an error by `collect`, and the others still run and publish. One failing cluster, host or collector does not stop the others. The result of a failed part is missing, not a wrong number.
 - **Missing is not zero.** A value that could not be read is not published, so a chart shows a gap rather than a false 0.
+
+## Conventions
+
+- **Errors.** Raise when the code is wrong, or a setting is wrong. Return a value only where the caller expects a fallback, such as `None` for a file that could not be read. A failed read of vCenter or VCF Operations is never returned as an empty list: it raises, so the caller cannot publish "no objects" for a read that did not happen.
+- **Names.** New files are `snake_case.py`. Existing `camelCase` files keep their names, so the history stays readable.
+- **Failure isolation.** A failed step is logged as a warning or an error, and counted in the Collection Warnings of the cycle. It never stops another object.
 
 ## Limitations
 

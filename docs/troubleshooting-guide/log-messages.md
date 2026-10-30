@@ -28,6 +28,8 @@ Read [First Steps](first-steps.md#5-read-the-adapter-log) for how to get the log
 | `No vCenter Adapter Instance found matching vCenter Server '<address>'` | Error, on the account | The vCenter address does not match the native vCenter Adapter Instance. Nothing is published. | See [Symptoms](symptoms.md#the-account-is-collecting-but-the-vcenter-has-no-vcommunity-values). |
 | `Could not read the certificate of vCenter <host>:<port>, so it is not compared: <reason>` | Warning | The certificate could not be read this time. The check is skipped for this cycle. | Check the network between the Cloud Proxy and vCenter. |
 | `vCenter <host>:<port> presented no certificate, so it is not compared.` | Warning | vCenter sent no certificate. | Check the address and port. |
+| `vCenter TLS Validation is Trust on First Use: the certificate of vCenter is not checked before the user name and password are sent, ...` | Info | Written at each connection, in the default mode. It is information, not a warning, so the Collection Warnings alert does not fire for it. | Set `Pinned` or `Enabled` if the network is not fully trusted. See [TLS and Security Settings](../configuration-guide/tls-and-security.md). |
+| `The vCenter certificate does not match the pinned thumbprint; the libraries were not read.` | Warning | `Pinned` refused the REST connection that reads the Content Libraries. Nothing was sent. The other data of the vCenter is published. | Compare the certificate with vCenter, as for a changed certificate. |
 | `Could not read the recorded vCenter certificate, so it is not compared this time: <reason>` | Warning | The thumbprint recorded on the vCenter object could not be read. | Usually temporary. If it repeats, send the log. |
 | `The certificate of vCenter <host> has changed: SHA-256 thumbprint <old> before, <new> now. Collection continues.` | Warning | The vCenter certificate is different from the one recorded. Both thumbprints are in the line. | See [Symptoms](symptoms.md#the-certificate-of-vcenter-changed). |
 
@@ -52,6 +54,8 @@ Read [First Steps](first-steps.md#5-read-the-adapter-log) for how to get the log
 | `Cluster Check Time '<text>' is not HH:MM. Using 00:00 UTC.` | Warning | The time on the account is not valid. The default is used. | Correct the setting. See [Adapter Instance](../configuration-guide/adapter-instance.md#2-advanced-settings-optional). |
 | `Cluster Check Period '<text>' is not one of 01, 02, 04, 06, 08, 12, 24. Using 24 hours.` | Warning | The period on the account is not valid. The default is used. | Correct the setting. |
 | `Cluster Check Worst Percent '<text>' is not a whole number from 0 to 50. Using 5.` | Warning | The worst percent on the account is not valid. The default is used. | Correct the setting. |
+| `Stats query <path> failed with HTTP <code>: <n> resources have no stats this cycle` / `Properties query failed with HTTP <code>: <n> resources have no properties this cycle` | Warning | One batch of the VCF Operations read failed. Those resources have no value this cycle, and the totals built on them (for example a cluster or the vSphere World) are partial for this cycle. | Usually temporary. If it repeats, check VCF Operations itself. |
+| `Failed to read <type> objects from the vCenter: <reason>. Nothing is published for them this cycle.` | Error | A vCenter read of one object type failed. It used to look like "no objects". Now it is an error, and the other object types still publish. | Read the reason. Usually a lost connection or an expired session: the next cycle retries. |
 
 ## Objects
 
@@ -71,6 +75,7 @@ These messages are about one object. The rest of the cycle is published.
 | :--- | :--- | :--- | :--- |
 | `Configuration file '<name>.xml' could not be read from VCF Operations (HTTP <code>). Nothing is collected from it.` | Warning | The file is not there, or could not be read. The same text is the event on the vCenter object. | See [Configuration files](configuration-files.md). |
 | `Configuration file '<name>.xml' is not valid XML (<reason>). Nothing is collected from it until it is corrected.` | Error | The file has an XML error. The reason is the parser's. The same text is the event on the vCenter object. | See [Configuration files](configuration-files.md). |
+| `Configuration file '<name>.xml' could not be read from VCF Operations (<reason>). Nothing is collected from it this cycle.` | Error | The read of the file raised an error, such as a lost connection to VCF Operations. The other files are still read. | Usually temporary. The next cycle reads it again. |
 | `Windows Service names left out because they contain characters that are not allowed (letters, digits, space and _ . $ # @ ( ) + - only): <names>` | Warning | Some service names have characters the pack does not accept. The others are checked. | See [Symptoms](symptoms.md#windows-service-names-are-left-out). |
 
 ## Windows guests
@@ -91,6 +96,12 @@ These messages are about one object. The rest of the cycle is published.
 | `Sending Windows Event details for <vm>` | Info | Events were found and sent to VCF Operations. | Nothing. |
 | `Failed to write file. HTTP status: <code> on <vm>` | Error | The script could not be copied into the guest. | As for `File transfer failed`. |
 | `Failed to retrieve Guest OS Performance metrics for : <vm> - <reason>` | Warning | The Guest OS KPI of one VM failed. | Read the reason. |
+| `The PowerShell step on <vm> did not finish in 300 seconds, so it was stopped.` | Warning | A script in the guest hung, so it was stopped, and the guest data of this VM is skipped for this cycle. Other VMs are not affected. | Check the VM for a hung service or a blocked PowerShell session. If it repeats, the VM is the cause. |
+| `Windows Service monitoring skipped for <vm>: ...` / `Windows Event Log reading skipped for <vm>: ...` / `Windows OS information skipped for <vm>: ...` | Warning | The step was stopped by the timeout above. | As above. |
+| `The guest time budget of 30 minutes for this collection is spent. Windows guest monitoring is skipped for the remaining VMs until the next cycle.` | Warning | The guest work of this cycle took longer than its budget. The VMs after this point are not read this cycle. | Reduce the Windows guests, or the event and service lists. The next cycle starts again from the first VM. |
+| `Windows Service monitoring failed on <vm>: <reason>` / `Windows OS information failed on <vm>: <reason>` | Error | A step failed for one VM. The other VMs go on. | Read the reason. |
+| `<vm> has <n> Windows events. Only the first 100 are sent this cycle.` | Warning | More events were in the event list than one cycle sends for a VM. | Narrow the event list in the configuration file. |
+| `The Windows Service CSV on <vm> has no Name, DisplayName, Status, StartType column.` / `The Windows Operating System CSV on <vm> has no ...` / `The Windows Event CSV on <vm> has no Level or Event column.` | Error | The script's output does not have the expected columns. | Check the script is the one in this version of the pack. |
 
 ---
 

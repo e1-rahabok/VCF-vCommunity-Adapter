@@ -22,15 +22,23 @@ foreach ($log in $config.Events.Log) {
 
         foreach ($eventID in $eventIDs) {
             try {
+                # -MaxEvents 1: only the newest event is sent, and Get-WinEvent returns the newest first, so the
+                # output is the same as before, without reading every event of a noisy log.
                 $events = Get-WinEvent -FilterHashtable @{
                     LogName   = $logName
                     Id        = $eventID
                     StartTime = $startTime
-                } -ErrorAction SilentlyContinue
+                } -MaxEvents 1 -ErrorAction Stop
             }
             catch {
-                Write-Host "Failed to read event details (Log=$logName, EventID=$eventID)"
-                continue
+                # "No events were found" is the normal answer for a quiet log, not an error.
+                if ($_.FullyQualifiedErrorId -like 'NoMatchingEventsFound*') {
+                    $events = @()
+                }
+                else {
+                    Write-Host "Failed to read event details (Log=$logName, EventID=$eventID): $($_.Exception.Message)"
+                    continue
+                }
             }
 
             $eventCount = $events.Count

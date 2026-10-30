@@ -96,7 +96,7 @@ A template VM cannot run, so it has no performance statistics and no KPI is prop
 
 - **VM Template: no new call.** `summary|config|isTemplate` is added to the property list that the pack already reads in one batched call for all VMs (`read_vms`). The cost is one object per template.
 - **Content library: one request per item.** The item list returns IDs only, so the state, size and compliance of each item need one get call each. In the lab that is 145 get calls per full read. This cannot be avoided if those fields are needed.
-- **Read on a long window.** Libraries change rarely. Read them once an hour, like the Periodic Cluster Check, and keep the last values between reads, so the cycle does not make these calls. The interval is a design choice. Measure one full read before fixing it.
+- **Read in every cycle.** The libraries are read once per collection cycle, and the calls above are made each time. Each cycle runs in a new process, so nothing is kept from one cycle to the next: a read on a longer window would need state that survives the process, which the pack does not have. For a large library this is the cost to watch. A longer window, or a cheap check that the library changed, is an enhancement on the To Do project, and it needs one full read measured first.
 - **A second session.** The vSphere Automation API has its own session, separate from the pyVmomi connection, and uses the same account as the Adapter Instance.
 
 ## Verification

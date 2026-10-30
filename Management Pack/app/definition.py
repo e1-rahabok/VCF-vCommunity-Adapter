@@ -132,6 +132,9 @@ def get_adapter_definition() -> AdapterDefinition:
             label="vCenter TLS Validation",
             description="Trust on First Use (the default) connects whatever the certificate, records its "
                         "thumbprint on the vCenter object, and reports when it changes, without stopping. "
+                        "WARNING: it sends the user name and password before the certificate is checked, so an "
+                        "impostor on the first connection receives them. Use Pinned or Enabled on a network you do not "
+                        "fully trust. "
                         "Enabled: the certificate must be trusted by the Cloud Proxy, or the adapter does not "
                         "connect. Pinned: the certificate must match the vCenter Thumbprint below, or the adapter "
                         "does not connect.",

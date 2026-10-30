@@ -4,12 +4,11 @@
 
 The objects are Content Library (one per library) and Library Item (one per item, of every type). The design and
 its decisions are in docs/development-guide/template-and-library-design.md. The read makes one REST call per item,
-so it runs at most once an hour; the last values are kept between reads.
+and it runs in every collection cycle. Each cycle is a new process, so nothing is kept from one cycle to the next.
 """
 
 import logging
-import time
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 import requests
 from aria.ops.object import Identifier, Key, Object
@@ -24,7 +23,6 @@ LIBRARY_KIND = "Content Library"
 ITEM_KIND = "Library Item"
 LIBRARY_ID_KEY = "Library ID"
 ITEM_ID_KEY = "Item ID"
-READ_INTERVAL_SECONDS = 3600
 GIB = 1024 ** 3
 
 
@@ -33,14 +31,20 @@ class LibraryReader:
 
     verify: True checks the certificate against the trust store. False connects whatever the certificate is,
     as the pyVmomi connection does in Trust on First Use mode.
+    fingerprint: when set, the server certificate must have this SHA-256 fingerprint. It is checked during the TLS
+    handshake, before the login, as in Pinned mode for pyVmomi.
     """
 
-    def __init__(self, host: str, user: str, password: str, verify: bool, port: int = 443) -> None:
+    def __init__(
+        self, host: str, user: str, password: str, verify: bool, port: int = 443, fingerprint: Optional[str] = None
+    ) -> None:
         self.base = f"https://{host}:{port}/api"
         self.user = user
         self.password = password
         self.session = requests.Session()
         self.session.verify = verify
+        if fingerprint:
+            self.session.mount("https://", tls.PinnedAdapter(fingerprint))
 
     def __enter__(self) -> "LibraryReader":
         response = self.session.post(f"{self.base}/session", auth=(self.user, self.password), timeout=60)
@@ -80,42 +84,25 @@ def read_libraries(reader: LibraryReader) -> Dict[str, Any]:
     return {"libraries": libraries, "items": items}
 
 
-def verify_for(mode: Optional[str], host: str, port: int, thumbprint: Optional[str]) -> bool:
+def verify_for(mode: Optional[str], thumbprint: Optional[str]) -> Tuple[bool, Optional[str]]:
     """The certificate check for the REST connection, in the same mode as the pyVmomi connection.
 
-    Enabled: the trust store is checked. Pinned: the certificate must match the thumbprint, checked before the
-    login, and the trust store is not used. Trust on First Use: nothing is checked here, as in pyVmomi, and the
+    Returns (verify, fingerprint), for LibraryReader.
+    Enabled: the trust store is checked. Pinned: the certificate must match the SHA-256 thumbprint, during the TLS
+    handshake, and the trust store is not used. Trust on First Use: nothing is checked here, as in pyVmomi, and the
     certificate is watched separately (properties/vcenter/certificate.py).
     """
     resolved = tls.vcenter_mode(mode)
     if resolved == tls.ENABLED:
-        return True
+        return True, None
     if resolved == tls.PINNED:
         pinned = tls.normalize_thumbprint(thumbprint)
-        if tls.presented_thumbprint(host, port) != pinned:
-            raise ConnectionError("The vCenter certificate does not match the pinned thumbprint; the libraries were not read.")
-    return False
-
-
-_cache: Dict[str, Any] = {"read_at": None, "data": None}
-
-
-def cached_read(read: Callable[[], Dict[str, Any]], now: Optional[float] = None) -> Optional[Dict[str, Any]]:
-    """The libraries, read at most once an hour. A failed read keeps the last values, and returns them.
-
-    Returns None when no read has ever succeeded.
-    """
-    now = time.time() if now is None else now
-    if _cache["data"] is not None and now - _cache["read_at"] < READ_INTERVAL_SECONDS:
-        return _cache["data"]
-    try:
-        data = read()
-    except Exception as exc:
-        logger.warning(f"Content library read failed, keeping the last values - {repr(exc)}")
-        return _cache["data"]
-    _cache["read_at"] = now
-    _cache["data"] = data
-    return data
+        if len(pinned) != 64:
+            raise tls.TlsConfigError(
+                "The REST connection to vCenter needs a SHA-256 vCenter Thumbprint (64 hex characters) in Pinned mode."
+            )
+        return False, pinned
+    return False, None
 
 
 def _gib(value: Any) -> float:
@@ -169,16 +156,8 @@ def publish_item(item: Dict[str, Any], library_obj: Object, result: CollectResul
     result.add_object(item_obj)
 
 
-def collect_library_data(
-    read: Callable[[], Dict[str, Any]],
-    vcenter_obj: Optional[Object],
-    result: CollectResult,
-    now: Optional[float] = None,
-) -> None:
-    """Publishes the libraries and items from the cached read. Does nothing when no read has succeeded yet."""
-    data = cached_read(read, now)
-    if data is None:
-        return
+def collect_library_data(data: Dict[str, Any], vcenter_obj: Optional[Object], result: CollectResult) -> None:
+    """Publishes the libraries and items read in this cycle."""
     publish_libraries(data, vcenter_obj, result)
 
 
@@ -210,12 +189,12 @@ def run_library_collection(
     so it cannot stop the rest of the collection."""
     try:
         vcenter_obj = find_vcenter_object(suite_api_client, adapter_instance_id, vcenter_uuid)
-
-        def read() -> Dict[str, Any]:
-            verify = verify_for(mode, host, port, thumbprint)
-            with LibraryReader(host, user, password, verify, port) as reader:
-                return read_libraries(reader)
-
-        collect_library_data(read, vcenter_obj, result)
+        verify, fingerprint = verify_for(mode, thumbprint)
+        with LibraryReader(host, user, password, verify, port, fingerprint) as reader:
+            data = read_libraries(reader)
+        collect_library_data(data, vcenter_obj, result)
     except Exception as exc:
-        logger.warning(f"Content library collection failed - {repr(exc)}")
+        if tls.FINGERPRINT_MISMATCH in str(exc):
+            logger.warning("The vCenter certificate does not match the pinned thumbprint; the libraries were not read.")
+        else:
+            logger.warning(f"Content library collection failed - {repr(exc)}")
