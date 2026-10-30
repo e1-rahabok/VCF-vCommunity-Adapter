@@ -110,7 +110,7 @@ Done with a read-only probe, before any build:
 Done with a build on the test instance, after an approved install:
 
 4. Whether a pack-created object of its own kind shows in VCF Operations, with a parent link to an existing VirtualMachine or Datastore object.
-5. Whether a pack-created object survives a collection cycle, and what happens to an object the pack stops reporting. The parent link is a separate test.
+5. Whether a pack-created object survives a collection cycle, and what happens to an object the pack stops reporting. The Tier probe answered the first half: a metric from the pack shows on another adapter kind's Tier objects (42 on all four). The Business Application metrics now publish their calculated values there; their live check is still to be done. The parent link is a separate test.
 
 ## Not in this design
 

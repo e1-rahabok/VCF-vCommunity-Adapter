@@ -11,7 +11,7 @@ Code: [`Management Pack/content/`](../../Management%20Pack/content/)
 | `files/solutionconfig/` | 6 XML | The configuration files that choose what is collected. See below. | **Yes**, at every collection |
 | `dashboards/` | 12 JSON, one in a subfolder | Dashboards for VCF Operations, such as vSphere Cluster Performance 2.0 and vSphere Cluster Capacity 2.0. The subfolder "To be used in reports" holds input dashboards for reports. | No, imported when the pack is installed |
 | `reports/` | 36 XML | Reports and views, such as ESXi Host Details, Inventory and the Executive Summary. | No, imported when the pack is installed |
-| `supermetrics/` | 10 JSON | Super metrics. Some are replaced by the built-in metrics, see [Super metrics replaced by built-in metrics](../reference/metrics-and-properties.md#super-metrics-replaced-by-built-in-metrics). | No, imported when the pack is installed |
+| `supermetrics/` | 2 JSON | Super metrics. Some are replaced by the built-in metrics, see [Super metrics replaced by built-in metrics](../reference/metrics-and-properties.md#super-metrics-replaced-by-built-in-metrics). | No, imported when the pack is installed |
 | `alertdefs/` | 3 XML and a schema | Alert definitions, such as ESXi Host License Expiring and Windows Service Down. | No, imported when the pack is installed |
 | `symptomdefs/` | 2 XML | The symptoms that the alert definitions use. | No, imported when the pack is installed |
 | `resources/` | 1 XML | Views of the VIBs in a cluster, such as "nfnic VIB Vendor Distribution". | No |

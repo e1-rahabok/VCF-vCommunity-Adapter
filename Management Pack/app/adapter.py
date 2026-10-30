@@ -36,6 +36,7 @@ from collectors.vm.collectVMData import collect_vm_data
 from collectors.datastore.collectDatastoreData import collect_datastore_data
 from collectors.vcenter.collectvCenterData import collect_vcenter_data
 from collectors.world.collectWorldData import collect_world_data
+from metrics.container.business_app_performance import collect_business_applications
 from collectors.datacenter.collectDatacenterData import collect_datacenter_data
 from collectors.library.collectLibraryData import run_library_collection
 from metrics.cluster import cluster_risk_metrics, periodic_cluster_check
@@ -307,8 +308,12 @@ def collect(adapter_instance: AdapterInstance) -> CollectResult:
                         client, adapter_instance_id, getattr(content.about, "instanceUuid", "") or "", result,
                     )
 
+                    # 9. Business Applications: Tier, Business Application and Enterprise performance, on the Container objects.
+                    start_times["collect_business_applications"] = time.perf_counter()
+                    future_business = data_executor.submit(collect_business_applications, client, result)
+
                     # Define main futures
-                    main_futures = [future_cls, future_host, future_vm, future_ds, future_vc, future_world, future_dc, future_lib]
+                    main_futures = [future_cls, future_host, future_vm, future_ds, future_vc, future_world, future_dc, future_lib, future_business]
     
                     for future in concurrent.futures.as_completed(main_futures):
                         # Check future function
@@ -326,6 +331,8 @@ def collect(adapter_instance: AdapterInstance) -> CollectResult:
                             func_name = "collect_datacenter_data"
                         elif future == future_lib:
                             func_name = "collect_content_libraries"
+                        elif future == future_business:
+                            func_name = "collect_business_applications"
                         else:
                             func_name = "collect_vm_data"
 
