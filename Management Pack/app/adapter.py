@@ -20,6 +20,7 @@ from aria.ops.definition.adapter_definition import AdapterDefinition
 from aria.ops.object import Object
 from aria.ops.result import CollectResult
 from aria.ops.result import EndpointResult
+from aria.ops.result import RelationshipUpdateModes
 from aria.ops.result import TestResult
 from aria.ops.suite_api_client import key_to_object
 from aria.ops.suite_api_client import SuiteApiClient
@@ -208,6 +209,9 @@ def test(adapter_instance: AdapterInstance) -> TestResult:
 def collect(adapter_instance: AdapterInstance) -> CollectResult:
     with Timer(logger, "Collection"):
         result = CollectResult()
+        # PER_OBJECT: only objects that get a parent or child in this result have their links replaced. The default (AUTO)
+        # removes the Business Application links the pack does not return, as soon as the result has any relationship.
+        result.update_relationships = RelationshipUpdateModes.PER_OBJECT
         # Counts the warnings and errors of this cycle, for the Collection Warnings alert. See utils/collection_health.py.
         warnings = collection_health.start()
         try:
