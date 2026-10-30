@@ -130,8 +130,6 @@ def publish_libraries(data: Dict[str, Any], vcenter_obj: Optional[Object], resul
         library_obj.with_metric(f"vCommunity|{LIBRARY_KIND}|Items Not Stored Locally", sum(1 for item in items if not item.get("cached")))
         library_obj.with_metric(f"vCommunity|{LIBRARY_KIND}|Items Not Security Compliant", sum(1 for item in items if not item.get("security_compliance")))
         library_obj.with_metric(f"vCommunity|{LIBRARY_KIND}|Total Size (GB)", _gib(sum(float(item.get("size") or 0) for item in items)))
-        if vcenter_obj is not None:
-            library_obj.add_parent(vcenter_obj)
         result.add_object(library_obj)
 
         for item in items:

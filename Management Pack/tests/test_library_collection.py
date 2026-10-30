@@ -42,7 +42,8 @@ def vcenter_object():
     return Object(Key("VMWARE", "VMwareAdapter Instance", "vc", []))
 
 
-def test_objects_have_parents_and_children():
+def test_items_are_children_of_their_library_and_the_library_has_no_parent_link():
+    # The vCenter is not in the result, so with PER_OBJECT its child list is never sent. Linking it would be a no-op.
     result = CollectResult()
     vc = vcenter_object()
     lib.publish_libraries(sample_data(), vc, result)
@@ -50,7 +51,7 @@ def test_objects_have_parents_and_children():
     library = next(o for o in result.objects.values() if o.get_key().object_kind == "Content Library")
     items = [o for o in result.objects.values() if o.get_key().object_kind == "Library Item"]
     assert len(items) == 2
-    assert library.get_parents() == {vc.get_key()}
+    assert library.get_parents() == set()
     assert {item.get_key() for item in items} == library.get_children()
     for item in items:
         assert item.get_parents() == {library.get_key()}

@@ -39,6 +39,16 @@ An Enterprise or Business Application value is not published when one of the rel
 - **Tier and namespace structure.** The Business Application uses the K8S Namespaces within two levels, and the Tiers as its direct children. If the topology of a business application differs, its value differs as well.
 - **Business Applications with only namespaces** (modern applications, with no Tiers) use the namespace value alone.
 
+## Membership is kept
+
+The membership of a Business Application (its Tiers), of a Tier (its VMs) and of the Enterprise (its Business Applications) is set by hand in the Business Applications editor. The pack reads it, and never writes it.
+
+Before version 0.7.3, the pack sent its relationships of Content Library and VM Template objects with the platform's default mode. That mode removes every relationship the result does not contain, so each collection cycle removed the memberships of the Business Applications. The removal was silent: nothing in the logs, and the UI still showed the memberships, while the API did not.
+
+From 0.7.3 the pack sends with the `PER_OBJECT` mode. Only the objects it returns have their child lists replaced, so memberships are kept. The cost is that the Content Library → vCenter link and the VM Template → folder link are no longer written. See [Template and Content Library Design](../../development-guide/template-and-library-design.md#parent-and-child-relationships).
+
+If a membership ever disappears, check first whether the pack version is 0.7.3 or later.
+
 ## Replaces
 
 | Removed super metric | Replaced by |

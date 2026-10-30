@@ -60,13 +60,14 @@ def test_a_template_gets_its_properties_and_disk_metric():
     assert template.get_last_metric_value(f"vCommunity|{tpl.TEMPLATE_KIND}|Disk Used (GB)") == 20.0
 
 
-def test_the_template_is_a_child_of_its_vm_folder():
+def test_the_template_has_no_parent_link_even_when_its_vm_folder_is_known():
+    # The folder is not in the result, so with PER_OBJECT its child list is never sent. Linking it would be a no-op.
     result = CollectResult()
     folder = folder_object("group-v3")
     template = tpl.publish_vm_template(
         fake_vm(), template_props(), "rhel-template", "uuid-1", {"group-v3": folder}, result
     )
-    assert template.get_parents() == {folder.get_key()}
+    assert template.get_parents() == set()
 
 
 def test_no_folder_found_means_no_parent_but_the_template_is_still_published():

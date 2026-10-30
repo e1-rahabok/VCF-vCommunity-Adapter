@@ -52,10 +52,10 @@ The SDK has `add_parent` and `add_child`, so a pack object can be a child of an 
 
 | Object | Parent | Children |
 | :--- | :--- | :--- |
-| vCenter object (existing) | none | `Content Library` |
-| `Content Library` | the vCenter object (existing, kind `vCenter`) | `Library Item` |
+| vCenter object (existing) | none | none written by the pack (see below) |
+| `Content Library` | none written by the pack (see below) | `Library Item` |
 | `Library Item` | its `Content Library` | none |
-| `VM Template` | the `VMFolder` object (existing, "Virtual Machine Folder") that the template VM is in. VCF Operations already lists it as the parent of the template VM. The Datastore is a child in the relation list, not a parent. | the VMs (existing VirtualMachine objects) cloned from it |
+| `VM Template` | none written by the pack (see below). The `VMFolder` the template VM is in is still its parent in VCF Operations, as the platform already lists it. | none written by the pack |
 | VM (existing) | the `VM Template` it came from, if the source is known | none |
 
 Notes:
@@ -63,7 +63,8 @@ Notes:
 - **Cardinality:** one `VM Template` has many VMs, and a VM has at most one `VM Template`. In the SDK, the template is the parent, so the template calls `add_child` for each of its VMs.
 - A library item has no link in the API to the inventory template it came from, so no relationship is made between a `Library Item` and a `VM Template`. The library is the parent of the item.
 - **Subscription:** a subscribed `Content Library` is linked to a published library on the internet, through its subscription URL. That published library is not an object in VCF Operations, so it is not a parent or child. It is a property of the `Content Library`. A `Library Item` links to its published item through `source_id`, which is a property too.
-- Whether VCF Operations accepts a link from a pack object to an existing object that is not in the same result is not verified. It is a check in the first build (see [Verification](#verification)).
+- **The pack sends its relationships with `PER_OBJECT`** (`result.update_relationships` in `adapter.py`). Only the child list of an object that is in the result is sent. The vCenter object and the VM folders are not in the result, so the pack cannot write a link to them without replacing their other children. The Content Library → vCenter link and the VM Template → folder link are therefore not written. The Content Library → Library Item links are written, and checked to match the items on the test instance.
+- **Why not the default.** With the default (`AUTO`), any relationship in the result makes the platform remove every relationship that is not in the result, including the manual memberships of Business Applications. See [Business Application Performance](../reference/metrics/business-application-performance.md#membership-is-kept).
 
 ## Properties
 

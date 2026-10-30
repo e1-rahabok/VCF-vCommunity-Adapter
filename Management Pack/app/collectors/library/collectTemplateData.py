@@ -73,8 +73,5 @@ def publish_vm_template(
     template.with_property(f"vCommunity|{TEMPLATE_KIND}|VM Folder", vm_ref.parent.name if vm_ref.parent is not None else "")
     template.with_metric(f"vCommunity|{TEMPLATE_KIND}|Disk Used (GB)", round(float(prop_dict.get("summary.storage.committed") or 0) / GIB, 2))
 
-    parent_folder = folders.get(vm_ref.parent._moId) if vm_ref.parent is not None else None
-    if parent_folder is not None:
-        template.add_parent(parent_folder)
     result.add_object(template)
     return template

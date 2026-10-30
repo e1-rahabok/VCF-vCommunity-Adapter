@@ -302,7 +302,7 @@ Every property and metric the vCommunity Management Pack pushes to VCF Operation
 
 ## Content Library
 
-A Content Library of the vCenter, local or subscribed. Its parent is the vCenter object. Read from vCenter's REST API in every collection cycle, with one call per item. See [Templates and Content Libraries](../concepts/templates-and-content-libraries.md).
+A Content Library of the vCenter, local or subscribed. It has no parent link in VCF Operations (the link to the vCenter object is not written; see [Template and Content Library Design](../development-guide/template-and-library-design.md#parent-and-child-relationships)). Read from vCenter's REST API in every collection cycle, with one call per item. See [Templates and Content Libraries](../concepts/templates-and-content-libraries.md).
 
 | Type | Path | Description |
 | :--- | :--- | :--- |
@@ -343,7 +343,7 @@ One item of a Content Library, of every type (OVF, OVA, VM template, ISO and oth
 
 ## VM Template
 
-A virtual machine marked as a template in vCenter. Its parent is the Virtual Machine Folder it sits in. It has no children yet: the VMs cloned from it are not linked, because VCF Operations does not store that link. See [Template and Content Library Design](../development-guide/template-and-library-design.md).
+A virtual machine marked as a template in vCenter. Its parent in VCF Operations is the Virtual Machine Folder it sits in, as the platform already lists it; the pack does not write that link. It has no children yet: the VMs cloned from it are not linked, because VCF Operations does not store that link. See [Template and Content Library Design](../development-guide/template-and-library-design.md).
 
 | Type | Path | Description |
 | :--- | :--- | :--- |
