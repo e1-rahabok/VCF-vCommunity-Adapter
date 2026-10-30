@@ -24,6 +24,8 @@ They need the Python requirements of the repository (`requirements.txt`). The fa
 
 The CI workflow (`.github/workflows/ci.yml`) runs the same unit tests on every pull request, with the lint (`ruff`, the rules in `ruff.toml` at the root), a security scan of `app` (`bandit`) and an audit of the runtime dependencies (`pip-audit`). Python 3.12 is used there, the version in [CONTRIBUTING.md](../../CONTRIBUTING.md), which the Integration SDK build tool supports.
 
+**Known gap: the lint does not cover `tools/`.** CI runs `ruff` on `app` and `tests` only. Running `ruff check .` from the repository root reports six findings in the tools, which are not fixed yet: `tools/equivalence/planned_cases.py` has four `zip()` calls without `strict=` (B905), and `tools/importer/importer.py` has an unused `dataclasses.field` import (F401) and a `raise` inside an `except` without `from` (B904). They are not in the pack, so they do not change the adapter. Fix them, then extend the CI lint to `tools`.
+
 | Test file | What it checks |
 | :--- | :--- |
 | `test_kpi_score.py` | The scoring, the batching of the stats requests, and the tables of every KPI. It also checks that each KPI calculates exactly the sub-metrics in its table, so a misspelt name cannot slip through. |
@@ -53,6 +55,9 @@ The CI workflow (`.github/workflows/ci.yml`) runs the same unit tests on every p
 | `test_vcenter_certificate.py` | The Trust on First Use check of the vCenter certificate, and the report when it changes. |
 | `test_config_files.py` | The lists read from the configuration files, the refusal of invalid XML, and the problem texts that name the file. |
 | `test_importer.py` | The bulk Adapter Instance importer, see [Importer](../../tools/importer/importer.md). |
+| `test_relationship_update_mode.py` | The collection result uses the `PER_OBJECT` relationship mode, so the Business Application memberships are kept. See [Business Application Performance](../reference/metrics/business-application-performance.md#membership-is-kept). |
+| `test_library_collection.py` | Content Library and Library Item: the items are children of their library, and the library has no parent link. A failed read publishes nothing and logs a warning. |
+| `test_vm_template.py` | VM Template: built only for a VM marked as a template, with no parent link. |
 | `test_docs_links.py` | Every link and image in the Markdown files resolves. It runs [`check_links.py`](../../tools/check-docs/check_links.py). |
 | `test_submodule_imports.py` | The app code imports `concurrent.futures` by its full name. See [Submodule imports](#submodule-imports). |
 

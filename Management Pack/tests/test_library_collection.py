@@ -9,7 +9,6 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "app"))
 
 import pytest
-from aria.ops.object import Key, Object
 from aria.ops.result import CollectResult
 from collectors.library import collectLibraryData as lib
 from utils import tls
@@ -38,15 +37,10 @@ def sample_data():
     return {"libraries": libraries, "items": items}
 
 
-def vcenter_object():
-    return Object(Key("VMWARE", "VMwareAdapter Instance", "vc", []))
-
-
 def test_items_are_children_of_their_library_and_the_library_has_no_parent_link():
     # The vCenter is not in the result, so with PER_OBJECT its child list is never sent. Linking it would be a no-op.
     result = CollectResult()
-    vc = vcenter_object()
-    lib.publish_libraries(sample_data(), vc, result)
+    lib.publish_libraries(sample_data(), result)
 
     library = next(o for o in result.objects.values() if o.get_key().object_kind == "Content Library")
     items = [o for o in result.objects.values() if o.get_key().object_kind == "Library Item"]
@@ -59,7 +53,7 @@ def test_items_are_children_of_their_library_and_the_library_has_no_parent_link(
 
 def test_library_metrics_count_its_items():
     result = CollectResult()
-    lib.publish_libraries(sample_data(), None, result)
+    lib.publish_libraries(sample_data(), result)
     library = next(o for o in result.objects.values() if o.get_key().object_kind == "Content Library")
     assert library.get_last_metric_value(f"vCommunity|{lib.LIBRARY_KIND}|Items") == 2
     assert library.get_last_metric_value(f"vCommunity|{lib.LIBRARY_KIND}|Items Not Stored Locally") == 1
@@ -69,7 +63,7 @@ def test_library_metrics_count_its_items():
 
 def test_library_properties_show_the_subscription():
     result = CollectResult()
-    lib.publish_libraries(sample_data(), None, result)
+    lib.publish_libraries(sample_data(), result)
     library = next(o for o in result.objects.values() if o.get_key().object_kind == "Content Library")
     assert library.get_last_property_value(f"vCommunity|{lib.LIBRARY_KIND}|Type") == "SUBSCRIBED"
     assert library.get_last_property_value(f"vCommunity|{lib.LIBRARY_KIND}|Subscription URL") == "https://example.test/lib.json"
@@ -78,7 +72,7 @@ def test_library_properties_show_the_subscription():
 
 def test_item_properties_and_size():
     result = CollectResult()
-    lib.publish_libraries(sample_data(), None, result)
+    lib.publish_libraries(sample_data(), result)
     item = next(o for o in result.objects.values() if o.get_key().name == "ubuntu")
     assert item.get_last_property_value(f"vCommunity|{lib.ITEM_KIND}|Certificate Verification") == "SUCCEEDED"
     assert item.get_last_property_value(f"vCommunity|{lib.ITEM_KIND}|Stored Locally") == "True"
@@ -87,7 +81,7 @@ def test_item_properties_and_size():
 
 def test_the_libraries_are_published_from_the_read_of_this_cycle():
     result = CollectResult()
-    lib.collect_library_data(sample_data(), None, result)
+    lib.collect_library_data(sample_data(), result)
     assert any(o.get_key().object_kind == lib.LIBRARY_KIND for o in result.objects.values())
     assert any(o.get_key().object_kind == lib.ITEM_KIND for o in result.objects.values())
 
@@ -104,13 +98,9 @@ def test_a_failed_library_read_publishes_nothing_and_logs_a_warning(monkeypatch,
         def __init__(self, *args, **kwargs):
             raise ConnectionError("vCenter down")
 
-    class NoVCenterApi:
-        def query_for_resources(self, query):
-            return []
-
     monkeypatch.setattr(lib, "LibraryReader", FailingReader)
     result = CollectResult()
-    lib.run_library_collection("vc", 443, "user", "pw", None, None, NoVCenterApi(), "ai", "uuid", result)
+    lib.run_library_collection("vc", 443, "user", "pw", None, None, result)
     assert len(result.objects) == 0
     assert "Content library collection failed" in caplog.text
 

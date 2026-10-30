@@ -2,13 +2,13 @@
 
 """VM Template: a virtual machine that is marked as a template in vCenter, published as an object of its own.
 
-It is built from the VM data the VM collector already reads, so it costs no extra call. Its parent is the
-Virtual Machine Folder object (VMFolder) the template sits in. The parent link is checked by a build on the test
-instance: see docs/development-guide/template-and-library-design.md. The children, the VMs cloned from the
-template, are not built yet: VCF Operations does not store that link.
+It is built from the VM data the VM collector already reads, so it costs no extra call. It has no parent link: the
+Virtual Machine Folder it sits in is not part of the result, and under the PER_OBJECT relationship mode its links
+cannot be written without replacing the folder's other children. See docs/development-guide/template-and-library-design.md.
+The children, the VMs cloned from the template, are not built yet: VCF Operations does not store that link.
 """
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
 from aria.ops.object import Identifier, Key, Object
 from aria.ops.result import CollectResult
@@ -29,30 +29,16 @@ PROPERTY_PATHS = [
 ]
 
 
-def folders_by_moid(suite_api_client: Any, adapter_instance_id: str) -> Dict[str, Object]:
-    """The Virtual Machine Folder objects of this Adapter Instance, by their VMEntityObjectID (the folder MoRef)."""
-    folders: List[Object] = suite_api_client.query_for_resources(
-        {
-            "adapterKind": ["VMWARE"],
-            "resourceKind": ["VMFolder"],
-            "adapterInstanceId": [adapter_instance_id],
-        }
-    )
-    return {folder.get_identifier_value("VMEntityObjectID"): folder for folder in folders}
-
-
 def publish_vm_template(
     vm_ref: Any,
     prop_dict: Dict[str, Any],
     vm_name: str,
     vcenter_uuid: str,
-    folders: Dict[str, Object],
     result: CollectResult,
 ) -> Optional[Object]:
     """Adds a VM Template object for a VM that is marked as a template. Returns None for any other VM.
 
     vm_ref: the vim.VirtualMachine. prop_dict: its property values, by path, from PROPERTY_PATHS.
-    folders: the Virtual Machine Folder objects, from folders_by_moid.
     """
     if not prop_dict.get("config.template"):
         return None

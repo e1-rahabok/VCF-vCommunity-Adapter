@@ -24,7 +24,7 @@ from utils.guest_ops import GuestBudget
 from utils.vi_property_collector import retrieve_properties
 from utils.ops_inventory import read_vms
 from collectors.library.collectTemplateData import PROPERTY_PATHS as TEMPLATE_PROPERTY_PATHS
-from collectors.library.collectTemplateData import folders_by_moid, publish_vm_template
+from collectors.library.collectTemplateData import publish_vm_template
 from pyVmomi import vim
 
 logger = logging.getLogger(__name__)
@@ -123,7 +123,6 @@ def collect_vm_data(
     vm_shares = read_vm_shares(suite_api_client, [vm.id for vm in ops_vms_by_moid.values()])
 
     vcenter_uuid = getattr(getattr(content, "about", None), "instanceUuid", "") or ""
-    template_folders = None
     guest_budget = GuestBudget()
 
     for vm_data in vm_props:
@@ -175,12 +174,9 @@ def collect_vm_data(
 
             result.add_object(vm_obj)
 
-            # A VM marked as a template also gets its own VM Template object. The folder objects are read once, and only
-            # when a template is found.
+            # A VM marked as a template also gets its own VM Template object.
             if prop_dict.get("config.template"):
-                if template_folders is None:
-                    template_folders = folders_by_moid(suite_api_client, adapter_instance_id)
-                publish_vm_template(vm_ref, prop_dict, vm_name, vcenter_uuid, template_folders, result)
+                publish_vm_template(vm_ref, prop_dict, vm_name, vcenter_uuid, result)
 
         except Exception as e:
             logger.warning(f"Skipping VM data collection on {vm_name} due to error: {repr(e)}")

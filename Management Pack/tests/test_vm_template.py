@@ -1,5 +1,5 @@
 #  Copyright 2026 VCF Operations vCommunity Management Pack
-"""VM Template: built only for a VM marked as a template, with its folder as the parent.
+"""VM Template: built only for a VM marked as a template. It has no parent link (see the design page).
 
 Run from the "Management Pack" folder:  python -m pytest tests
 """
@@ -9,7 +9,6 @@ from types import SimpleNamespace
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "app"))
 
-from aria.ops.object import Key, Object
 from aria.ops.result import CollectResult
 from collectors.library import collectTemplateData as tpl
 
@@ -34,21 +33,16 @@ def template_props(**overrides):
     return props
 
 
-def folder_object(moid="group-v3"):
-    folder = Object(Key("VMWARE", "VMFolder", "ocp-cl01", []))
-    return folder
-
-
 def test_a_vm_that_is_not_a_template_gets_no_object():
     result = CollectResult()
-    out = tpl.publish_vm_template(fake_vm(), template_props(**{"config.template": False}), "vm", "uuid-1", {}, result)
+    out = tpl.publish_vm_template(fake_vm(), template_props(**{"config.template": False}), "vm", "uuid-1", result)
     assert out is None
     assert len(result.objects) == 0
 
 
 def test_a_template_gets_its_properties_and_disk_metric():
     result = CollectResult()
-    template = tpl.publish_vm_template(fake_vm(), template_props(), "rhel-template", "uuid-1", {}, result)
+    template = tpl.publish_vm_template(fake_vm(), template_props(), "rhel-template", "uuid-1", result)
     assert template is not None
     assert template.get_key().object_kind == "VM Template"
     assert template.get_last_property_value(f"vCommunity|{tpl.TEMPLATE_KIND}|Guest OS") == "Red Hat Enterprise Linux 9 (64-bit)"
@@ -60,25 +54,16 @@ def test_a_template_gets_its_properties_and_disk_metric():
     assert template.get_last_metric_value(f"vCommunity|{tpl.TEMPLATE_KIND}|Disk Used (GB)") == 20.0
 
 
-def test_the_template_has_no_parent_link_even_when_its_vm_folder_is_known():
-    # The folder is not in the result, so with PER_OBJECT its child list is never sent. Linking it would be a no-op.
+def test_the_template_has_no_parent_link_and_is_still_published():
+    # The VM folder is not in the result, so with PER_OBJECT its child list is never sent. No link is written.
     result = CollectResult()
-    folder = folder_object("group-v3")
-    template = tpl.publish_vm_template(
-        fake_vm(), template_props(), "rhel-template", "uuid-1", {"group-v3": folder}, result
-    )
-    assert template.get_parents() == set()
-
-
-def test_no_folder_found_means_no_parent_but_the_template_is_still_published():
-    result = CollectResult()
-    template = tpl.publish_vm_template(fake_vm(), template_props(), "rhel-template", "uuid-1", {}, result)
+    template = tpl.publish_vm_template(fake_vm(), template_props(), "rhel-template", "uuid-1", result)
     assert template.get_parents() == set()
     assert len(result.objects) == 1
 
 
 def test_identifiers_include_the_vcenter_so_two_vcenters_do_not_clash():
     result = CollectResult()
-    a = tpl.publish_vm_template(fake_vm(), template_props(), "rhel-template", "uuid-A", {}, result)
-    b = tpl.publish_vm_template(fake_vm(), template_props(), "rhel-template", "uuid-B", {}, result)
+    a = tpl.publish_vm_template(fake_vm(), template_props(), "rhel-template", "uuid-A", result)
+    b = tpl.publish_vm_template(fake_vm(), template_props(), "rhel-template", "uuid-B", result)
     assert a.get_key() != b.get_key()

@@ -13,7 +13,6 @@ from typing import Any, Dict, List, Optional, Tuple
 import requests
 from aria.ops.object import Identifier, Key, Object
 from aria.ops.result import CollectResult
-import constants.main
 from constants.main import ADAPTER_KIND
 from utils import tls
 
@@ -113,11 +112,8 @@ def _text(value: Any) -> str:
     return "" if value is None else str(value)
 
 
-def publish_libraries(data: Dict[str, Any], vcenter_obj: Optional[Object], result: CollectResult) -> None:
-    """Adds the Content Library objects, and their Library Item objects, to the result.
-
-    vcenter_obj: the vCenter object of this vCenter, the parent of each library. None when it is not found.
-    """
+def publish_libraries(data: Dict[str, Any], result: CollectResult) -> None:
+    """Adds the Content Library objects, and their Library Item objects, to the result."""
     for library in data["libraries"]:
         library_obj = Object(Key(ADAPTER_KIND, LIBRARY_KIND, library["name"], [Identifier(LIBRARY_ID_KEY, library["id"])]))
         items = data["items"].get(library["id"], [])
@@ -154,21 +150,9 @@ def publish_item(item: Dict[str, Any], library_obj: Object, result: CollectResul
     result.add_object(item_obj)
 
 
-def collect_library_data(data: Dict[str, Any], vcenter_obj: Optional[Object], result: CollectResult) -> None:
+def collect_library_data(data: Dict[str, Any], result: CollectResult) -> None:
     """Publishes the libraries and items read in this cycle."""
-    publish_libraries(data, vcenter_obj, result)
-
-
-def find_vcenter_object(suite_api_client: Any, adapter_instance_id: str, vcenter_uuid: str) -> Optional[Object]:
-    """The vCenter object of this Adapter Instance, the one matched by its VMEntityVCID (as collectvCenterData does)."""
-    vcenters: List[Object] = suite_api_client.query_for_resources(
-        {
-            "adapterKind": [constants.main.VCENTER_ADAPTER_KIND],
-            "resourceKind": ["VMwareAdapter Instance"],
-            "adapterInstanceId": [adapter_instance_id],
-        }
-    )
-    return next((vc for vc in vcenters if vc.get_identifier_value("VMEntityVCID") == vcenter_uuid), None)
+    publish_libraries(data, result)
 
 
 def run_library_collection(
@@ -178,19 +162,15 @@ def run_library_collection(
     password: str,
     mode: Optional[str],
     thumbprint: Optional[str],
-    suite_api_client: Any,
-    adapter_instance_id: str,
-    vcenter_uuid: str,
     result: CollectResult,
 ) -> None:
     """The library collection of one cycle, for the adapter's thread pool. A failure is logged, never raised,
     so it cannot stop the rest of the collection."""
     try:
-        vcenter_obj = find_vcenter_object(suite_api_client, adapter_instance_id, vcenter_uuid)
         verify, fingerprint = verify_for(mode, thumbprint)
         with LibraryReader(host, user, password, verify, port, fingerprint) as reader:
             data = read_libraries(reader)
-        collect_library_data(data, vcenter_obj, result)
+        collect_library_data(data, result)
     except Exception as exc:
         if tls.FINGERPRINT_MISMATCH in str(exc):
             logger.warning("The vCenter certificate does not match the pinned thumbprint; the libraries were not read.")
