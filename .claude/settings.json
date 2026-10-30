@@ -2,12 +2,35 @@
   "permissions": {
     "allow": [
       "Bash(gh pr merge *)",
+      "Bash(gh pr create *)",
+      "Bash(gh pr edit *)",
+      "Bash(gh pr view *)",
+      "Bash(gh issue create *)",
+      "Bash(gh label list *)",
+      "Bash(gh release create *)",
+      "Bash(gh release view *)",
+      "Bash(python -m pytest *)",
+      "Bash(python tools/check-docs/check_links.py*)",
+      "Bash(git fetch *)",
+      "Bash(git pull *)",
+      "Bash(git checkout *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(git tag *)",
+      "Bash(git branch *)",
+      "Bash(git ls-remote *)",
+      "Bash(git log *)",
+      "Bash(git status *)",
       "Bash(pwsh tools/build/build.ps1*)",
       "Bash(pwsh tools/install/install.ps1*)",
       "Bash(pwsh tools/restart/restart.ps1*)",
       "Bash(pwsh tools/validate/validate.ps1*)",
       "Bash(pwsh tools/screenshot/screenshot.ps1*)",
-      "Bash(python -m pytest tests*)"
+      "PowerShell(pwsh tools/build/build.ps1*)",
+      "PowerShell(pwsh tools/install/install.ps1*)",
+      "PowerShell(pwsh tools/restart/restart.ps1*)",
+      "PowerShell(pwsh tools/validate/validate.ps1*)"
     ]
   }
 }
