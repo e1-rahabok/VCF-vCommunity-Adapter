@@ -271,14 +271,14 @@ Every property and metric the vCommunity Management Pack pushes to VCF Operation
 
 | Type | Path | Description |
 | :--- | :--- | :--- |
-| 🟢 Metric | `vCommunity\|Bottom 10 Percent Cluster Performance` | The Cluster Performance score that 90 % of all clusters, of all vCenters, are at or above. Can be up to one collection cycle old. See [vSphere World Cluster Metrics](metrics/vsphere-world-metrics.md#known-limitations). |
+| 🟢 Metric | `vCommunity\|Worst 10 Percent Cluster Performance` | The Cluster Performance score that 90 % of all clusters, of all vCenters, are at or above. Can be up to one collection cycle old. See [vSphere World Cluster Metrics](metrics/vsphere-world-metrics.md#known-limitations). |
 | 🟢 Metric | `vCommunity\|Worst Cluster Performance` | The lowest Cluster Performance score of all clusters. Same limitation. |
-| 🟢 Metric | `vCommunity\|Bottom 10 Percent Cluster Risk` | The Cluster Risk that 90 % of all clusters are at or below (Cluster Risk is higher-is-worse). Same limitation. |
+| 🟢 Metric | `vCommunity\|Worst 10 Percent Cluster Risk` | The Cluster Risk that 90 % of all clusters are at or below (Cluster Risk is higher-is-worse). Same limitation. |
 | 🟢 Metric | `vCommunity\|Availability\|Worst Cluster Operational Availability` | The lowest Cluster Operational Availability of all clusters, of all vCenters. Can be up to one collection cycle old. See [Operational Availability](metrics/operational-availability.md#known-limitations). |
 | 🟢 Metric | `vCommunity\|Availability\|ESXi Hosts Operational Availability` | The average ESXi Host Operational Availability of all hosts, of all vCenters. Same limitation. |
 | 🟢 Metric | `vCommunity\|Network\|Total Network Speed Degradation` | The number of hosts below 100 % Network Speed Degradation, of all vCenters. Can be up to one collection cycle old. See [Network Speed Degradation](metrics/network-speed-degradation.md#known-limitations). |
 | 🟢 Metric | `vCommunity\|Worst Cluster Risk` | The highest Cluster Risk of all clusters. Same limitation. |
-| 🟢 Metric | `vCommunity\|Top 10 Percent Cluster Utilization` | The Cluster Consumption score that 10 % of all clusters are at or above (Cluster Consumption is higher-is-worse). Same limitation. |
+| 🟢 Metric | `vCommunity\|Highest 10 Percent Cluster Utilization` | The Cluster Consumption score that 10 % of all clusters are at or above (Cluster Consumption is higher-is-worse). Same limitation. |
 | 🟢 Metric | `vCommunity\|Highest Cluster Utilization` | The highest Cluster Consumption score of all clusters. Same limitation. |
 | 🟢 Metric | `vCommunity\|Cluster Delta Close Count` | The number of clusters whose Close for Business changed from 0 to 1 since the previous Periodic Cluster Check window. Once per window. See [Close for Business changes](metrics/vsphere-world-metrics.md#close-for-business-changes). |
 | 🟢 Metric | `vCommunity\|Cluster Delta Open Count` | The number of clusters whose Close for Business changed from 1 to 0 since the previous window. Once per window. Same section. |
@@ -395,7 +395,7 @@ These super metrics were removed from `content/supermetrics`. Their dashboards, 
 | ESXi Bad Network Packets | Host | `vCommunity\|ESXi Performance\|ESXi Bad Network Packets` |
 | vSphere VM Memory Zip Swap | VM | `vCommunity\|VM Performance\|Memory Zip Swap` |
 | vSphere VM Performance | VM | `vCommunity\|VM Guest OS KPI` |
-| vSphere Clusters Performance (average of all clusters) | vSphere World | `vCommunity\|Bottom 10 Percent Cluster Performance` |
+| vSphere Clusters Performance (average of all clusters) | vSphere World | `vCommunity\|Worst 10 Percent Cluster Performance` |
 | ESXi Host Operational Availability ("ESXi Host Availability") | Host | `vCommunity\|Availability\|ESXi Host Operational Availability` |
 | ESXi Hosts Operational Availability ("ESXi Hosts Average Availability") | vSphere World | `vCommunity\|Availability\|ESXi Hosts Operational Availability` |
 | Cluster Operational Availability | Cluster | `vCommunity\|Availability\|Cluster Operational Availability` |

@@ -41,7 +41,7 @@ The CI workflow (`.github/workflows/ci.yml`) runs the same unit tests on every p
 | `test_periodic_cluster_check.py` | Periodic Cluster Check: the schedule, the worst percent, the Close for Business rule, and which clusters are due. |
 | `test_cluster_close_changes.py` | Cluster Delta Close and Open Count: the direction of each change, blank values not counted, and the window. |
 | `test_port_group_and_tools_counts.py` | Port groups per Datacenter (distributed and standard), the vSphere World sum, the 15-minute limit used only by the port group count, and the VMware Tools counts, including powered-off VMs. |
-| `test_cluster_summary_metrics.py` | vSphere World: Bottom 10 Percent and worst cluster scores, over the clusters of all vCenters. |
+| `test_cluster_summary_metrics.py` | vSphere World: Worst 10 Percent and worst cluster scores, over the clusters of all vCenters. |
 | `test_guest_collectors.py` | The Windows guest collectors with fakes for the GuestAPI: the 5-minute timeout that stops a hung script, the back-off, the guest budget, a failed download, a service name with a comma, the event levels, the event cap, and a failed temporary file. |
 | `test_collection_steps.py` | A failed vCenter read raises instead of returning no objects, a bad VM does not stop the VM loop, an unreadable configuration file does not discard the cycle, and the TLS warnings. |
 | `test_shared_connection.py` | Five threads read one shared vCenter content object: each call gets its own objects, and each view is released. It is a fake, not a live vCenter. |

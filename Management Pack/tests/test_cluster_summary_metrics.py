@@ -37,11 +37,11 @@ def test_summary_of_all_clusters():
         "cl-3": {PERFORMANCE: 50.0},                 # no Risk or Consumption score this cycle: left out of them
     }
     assert cs.summary_values(scores) == {
-        "Bottom 10 Percent Cluster Performance": 50.0,
+        "Worst 10 Percent Cluster Performance": 50.0,
         "Worst Cluster Performance": 50.0,
-        "Bottom 10 Percent Cluster Risk": 75.0,      # Risk is higher-is-worse: the high end
+        "Worst 10 Percent Cluster Risk": 75.0,      # Risk is higher-is-worse: the high end
         "Worst Cluster Risk": 75.0,
-        "Top 10 Percent Cluster Utilization": 60.0,  # Consumption is higher-is-worse: the high end
+        "Highest 10 Percent Cluster Utilization": 60.0,  # Consumption is higher-is-worse: the high end
         "Highest Cluster Utilization": 60.0,
     }
 
@@ -61,11 +61,11 @@ def test_reads_the_clusters_of_all_vcenters_and_publishes_on_vsphere_world():
     # No adapter instance filter: the clusters of every vCenter.
     assert "adapterInstanceId" not in api.resource_queries[0]
     assert world.metrics == {
-        "vCommunity|Bottom 10 Percent Cluster Performance": 86.35,
+        "vCommunity|Worst 10 Percent Cluster Performance": 86.35,
         "vCommunity|Worst Cluster Performance": 86.35,
-        "vCommunity|Bottom 10 Percent Cluster Risk": 75.0,
+        "vCommunity|Worst 10 Percent Cluster Risk": 75.0,
         "vCommunity|Worst Cluster Risk": 75.0,
-        "vCommunity|Top 10 Percent Cluster Utilization": 60.0,
+        "vCommunity|Highest 10 Percent Cluster Utilization": 60.0,
         "vCommunity|Highest Cluster Utilization": 60.0,
     }
 

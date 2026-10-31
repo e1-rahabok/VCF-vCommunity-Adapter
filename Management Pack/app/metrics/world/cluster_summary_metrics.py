@@ -6,11 +6,11 @@ What they are
 Six numbers that summarise the Cluster Performance, Cluster Risk and Cluster Consumption scores of every cluster in
 VCF Operations, across all vCenters. They are published on the vSphere World object, under vCommunity:
 
-    Bottom 10 Percent Cluster Performance   90 % of the clusters score at or above it
+    Worst 10 Percent Cluster Performance   90 % of the clusters score at or above it
     Worst Cluster Performance               the lowest Cluster Performance score
-    Bottom 10 Percent Cluster Risk          90 % of the clusters are at or below it
+    Worst 10 Percent Cluster Risk          90 % of the clusters are at or below it
     Worst Cluster Risk                      the highest Cluster Risk
-    Top 10 Percent Cluster Utilization      10 % of the clusters are at or above it
+    Highest 10 Percent Cluster Utilization      10 % of the clusters are at or above it
     Highest Cluster Utilization             the highest Cluster Consumption score
 
 Each takes the bad end. Cluster Performance is "higher is better", so the bad end is the low end: the 10th
@@ -60,11 +60,11 @@ def percentile_10(numbers: List[float]) -> Optional[float]:
 # Metric name -> (cluster score it summarises, function that takes the scores of all clusters).
 # To add a metric, add a row. The functions are shared: percentile_10, percentile_90, min and max.
 METRICS = {
-    "Bottom 10 Percent Cluster Performance": (CLUSTER_PERFORMANCE_SCORE, percentile_10),
+    "Worst 10 Percent Cluster Performance": (CLUSTER_PERFORMANCE_SCORE, percentile_10),
     "Worst Cluster Performance":             (CLUSTER_PERFORMANCE_SCORE, min),
-    "Bottom 10 Percent Cluster Risk":        (CLUSTER_RISK_SCORE, percentile_90),
+    "Worst 10 Percent Cluster Risk":        (CLUSTER_RISK_SCORE, percentile_90),
     "Worst Cluster Risk":                    (CLUSTER_RISK_SCORE, max),
-    "Top 10 Percent Cluster Utilization":    (CLUSTER_CONSUMPTION_SCORE, percentile_90),
+    "Highest 10 Percent Cluster Utilization":    (CLUSTER_CONSUMPTION_SCORE, percentile_90),
     "Highest Cluster Utilization":           (CLUSTER_CONSUMPTION_SCORE, max),
 }
 
