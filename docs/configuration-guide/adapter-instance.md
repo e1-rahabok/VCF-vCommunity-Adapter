@@ -30,6 +30,13 @@ Provide the required information in the fields:
 | **Credential** | Select your vCenter credential and, if needed, your Windows credential. | The Windows credential is only required if you are collecting **Windows Services** and/or **Windows Event Logs**. |
 | **Collector/Group** | Select a **Cloud Proxy** (or Collector Group) from the dropdown. | Ensure the Cloud Proxy has connectivity to the vCenter Server. Data collection should begin within 5 minutes. |
 
+> #### Before you create the instance
+> - **Activate the [policy](policy.md) first.** The metrics the pack needs are off by default.
+> - **The vCenter name must resolve from the Cloud Proxy, not from your workstation.** A name can fail in your browser or on your PC and still work on the Cloud Proxy, so test from the Cloud Proxy's side.
+> - **Pick a Cloud Proxy yourself if automatic placement fails.** On the test instance, leaving the collector on automatic failed with `Could not find any compatible and up collector in the collector group`. Choosing a Cloud Proxy that is up and can reach vCenter fixed it.
+>
+> Example values used in this page: vCenter `vcenter.example.com`, account `svc-vcfops@vsphere.local`, Cloud Proxy `cloud-proxy-01.example.com`. Use your own names.
+
 ### 1.2. Configuration File Selection
 
 The Management Pack uses customizable XML configuration files to define what data to collect. These default files are located under **Infrastructure Operations** → **Configurations** → **Management Pack Configuration** → **System Defined**.
