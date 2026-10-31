@@ -24,8 +24,9 @@ It is built with the [VCF Operations Integration SDK](https://github.com/vmware/
 1. [Policy](configuration-guide/policy.md): activate the metrics the pack needs. They are off by default.
 2. [Adapter Instance](configuration-guide/adapter-instance.md): connect to a vCenter, advanced settings.
 3. [Customization](configuration-guide/customization.md): choose what each Adapter Instance collects.
-4. [TLS and Security Settings](configuration-guide/tls-and-security.md): certificate checks, what runs inside Windows VMs, registry, accounts.
-5. [Bulk Adapter Instance Importer](../tools/importer/importer.md): create many Adapter Instances from a CSV file.
+4. [Summary Dashboards](configuration-guide/summary-dashboards.md): replace the built-in Summary page of an object type with your own dashboard, for every object type, including the five folder types.
+5. [TLS and Security Settings](configuration-guide/tls-and-security.md): certificate checks, what runs inside Windows VMs, registry, accounts.
+6. [Bulk Adapter Instance Importer](../tools/importer/importer.md): create many Adapter Instances from a CSV file.
 
 **User Guide**
 
@@ -57,6 +58,7 @@ For administrators who use the pack: what can go wrong while it runs, and how to
 2. [Symptoms](troubleshooting-guide/symptoms.md): what you see, why it happens, and what to do.
 3. [Configuration Files](troubleshooting-guide/configuration-files.md): what a bad configuration file looks like, and how to fix it.
 4. [Log Messages](troubleshooting-guide/log-messages.md): what each message in the adapter log means.
+5. [Dashboards After an Install](troubleshooting-guide/dashboards-after-install.md): why a dashboard shows `Section` or empty widgets for a while, and what to do.
 
 **Development Guide**
 
@@ -76,6 +78,7 @@ For contributors: how the code is organised, what each part does, and how to cha
 12. [29 Oct 2026 Review](development-guide/engineering-review/2026-10-29-review.md): the engineering review of the pack at version 0.6.12, with the scorecard and the findings.
 13. [29 Oct 2026 Completed](development-guide/engineering-review/2026-10-29-completed.md): the response to the review, and the decision and action for each finding.
 14. [30 Oct 2026 Review](development-guide/engineering-review/2026-10-30-review.md): placeholder for the re-score, after the implementation is seen.
+15. [Pak Summary Binding](development-guide/pak-summary-binding.md): binding a dashboard to an object type's Summary tab from the pak, what `mp-build` allows, and what was tested.
 13. [To Do project](https://github.com/users/e1-rahabok/projects/1): the enhancements still to do, one line each. Broken things are GitHub issues.
 
 Planned work is tracked in [GitHub Issues](https://github.com/e1-rahabok/VCF-vCommunity-Adapter/issues?q=is%3Aissue+is%3Aopen+label%3Aenhancement), not here.

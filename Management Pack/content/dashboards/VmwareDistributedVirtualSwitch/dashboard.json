@@ -1,0 +1,157 @@
+{
+   "entries": {},
+   "dashboards": [
+      {
+         "shared": false,
+         "hidden": false,
+         "creationTime": 1793417477753,
+         "autoswitchEnabled": false,
+         "importAttempts": 0,
+         "lastUpdateUserId": "936105f8-faa4-48cb-b268-0eec2ea9e205",
+         "columnProportion": "1",
+         "importComplete": true,
+         "description": "",
+         "columnCount": 0,
+         "widgets": [
+            {
+               "tabId": "4a295d27-a93d-4011-bf18-0bb70b0cbe86",
+               "collapsed": false,
+               "id": "36ed7df3-7c86-4742-a880-4344330d082c",
+               "gridsterCoords": {
+                  "w": 6,
+                  "x": 1,
+                  "h": 9,
+                  "y": 1
+               },
+               "state": "",
+               "type": "View",
+               "title": "Port Groups",
+               "config": {
+                  "refreshInterval": 300,
+                  "resource": null,
+                  "widgetId": "36ed7df3-7c86-4742-a880-4344330d082c",
+                  "traversalSpecId": "",
+                  "refreshContent": {
+                     "refreshContent": false
+                  },
+                  "description": "",
+                  "isUpdatedView": true,
+                  "title": "Port Groups",
+                  "viewDefinitionId": "f60469d1-57d0-4dd2-84d0-7ffc36d9d86b",
+                  "titleLocalized": "Port Groups",
+                  "viewType": "LIST",
+                  "chartViewItems": [],
+                  "selectFirstRow": {
+                     "selectFirstRow": false
+                  },
+                  "viewDetails": "",
+                  "selfProvider": {
+                     "selfProvider": false
+                  }
+               },
+               "height": 0
+            },
+            {
+               "tabId": "4a295d27-a93d-4011-bf18-0bb70b0cbe86",
+               "collapsed": false,
+               "id": "629684ce-4241-4a9f-9e4c-b924103408b6",
+               "gridsterCoords": {
+                  "w": 12,
+                  "x": 1,
+                  "h": 7,
+                  "y": 10
+               },
+               "state": "",
+               "type": "View",
+               "title": "VM",
+               "config": {
+                  "refreshInterval": 300,
+                  "resource": null,
+                  "widgetId": "629684ce-4241-4a9f-9e4c-b924103408b6",
+                  "traversalSpecId": "",
+                  "refreshContent": {
+                     "refreshContent": false
+                  },
+                  "description": "",
+                  "isUpdatedView": true,
+                  "title": "VM",
+                  "viewDefinitionId": "f982ee15-5502-49e2-8efc-0a405b5bfa83",
+                  "titleLocalized": "VM",
+                  "viewType": "LIST",
+                  "chartViewItems": [],
+                  "selectFirstRow": {
+                     "selectFirstRow": false
+                  },
+                  "viewDetails": "",
+                  "selfProvider": {
+                     "selfProvider": false
+                  }
+               },
+               "height": 0
+            },
+            {
+               "tabId": "4a295d27-a93d-4011-bf18-0bb70b0cbe86",
+               "collapsed": false,
+               "id": "b723b0d0-e151-4aea-b7b1-6d166b752d9c",
+               "gridsterCoords": {
+                  "w": 6,
+                  "x": 7,
+                  "h": 9,
+                  "y": 1
+               },
+               "state": "",
+               "type": "View",
+               "title": "ESXi Hosts",
+               "config": {
+                  "refreshInterval": 300,
+                  "resource": null,
+                  "widgetId": "b723b0d0-e151-4aea-b7b1-6d166b752d9c",
+                  "traversalSpecId": "",
+                  "refreshContent": {
+                     "refreshContent": false
+                  },
+                  "description": "",
+                  "isUpdatedView": true,
+                  "title": "ESXi Hosts",
+                  "viewDefinitionId": "e3321b7e-033e-4a5e-820f-796d38b268f5",
+                  "viewType": "LIST",
+                  "chartViewItems": [],
+                  "selectFirstRow": {
+                     "selectFirstRow": false
+                  },
+                  "viewDetails": "",
+                  "selfProvider": {
+                     "selfProvider": false
+                  }
+               },
+               "height": 0
+            }
+         ],
+         "userId": "936105f8-faa4-48cb-b268-0eec2ea9e205",
+         "states": [],
+         "editAllowed": true,
+         "homeTab": false,
+         "name": ". Object Summary Page for Distributed Switch",
+         "gridsterMaxColumns": 12,
+         "rank": 0,
+         "disabled": true,
+         "id": "4a295d27-a93d-4011-bf18-0bb70b0cbe86",
+         "locked": false,
+         "dashboardNavigations": {},
+         "widgetInteractions": [
+            {
+               "widgetIdProvider": "36ed7df3-7c86-4742-a880-4344330d082c",
+               "type": "resourceId",
+               "widgetIdReceiver": "629684ce-4241-4a9f-9e4c-b924103408b6"
+            },
+            {
+               "widgetIdProvider": "b723b0d0-e151-4aea-b7b1-6d166b752d9c",
+               "type": "resourceId",
+               "widgetIdReceiver": "629684ce-4241-4a9f-9e4c-b924103408b6"
+            }
+         ],
+         "lastUpdateTime": 1793425153837
+      }
+   ],
+   "uuid": "badcb072-6cee-4f69-b85a-1b8e5ae090ad"
+}

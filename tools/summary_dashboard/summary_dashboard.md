@@ -19,7 +19,7 @@ This tool would not exist without Scott Bowe's work. He mapped the VCF Operation
 
 - Python 3 with the `requests` library.
 - An account that can manage dashboards on the instance. The script logs in with the same username and password as the UI, so the local `admin` account works.
-- The dashboard must already be on the instance, because the script binds it by name and UUID. It does not import it.
+- A dashboard on the instance, which can be new: create it in the UI, or import its JSON file. The script binds an existing dashboard by name and UUID. It does not create or import dashboards.
 
 ## Running it
 

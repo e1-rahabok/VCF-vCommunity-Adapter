@@ -1,0 +1,163 @@
+{
+   "entries": {},
+   "dashboards": [
+      {
+         "shared": false,
+         "hidden": false,
+         "creationTime": 1793417496065,
+         "autoswitchEnabled": false,
+         "importAttempts": 0,
+         "lastUpdateUserId": "936105f8-faa4-48cb-b268-0eec2ea9e205",
+         "columnProportion": "1",
+         "importComplete": true,
+         "description": "",
+         "columnCount": 0,
+         "widgets": [
+            {
+               "tabId": "f0a8e1da-6b23-4cc7-8392-37a44162db52",
+               "collapsed": false,
+               "id": "c581d98f-3b3f-4cc9-9513-d3f1f295a2dd",
+               "gridsterCoords": {
+                  "w": 10,
+                  "x": 1,
+                  "h": 12,
+                  "y": 1
+               },
+               "state": "",
+               "type": "View",
+               "title": "Virtual Machines",
+               "config": {
+                  "refreshInterval": 300,
+                  "resource": null,
+                  "widgetId": "c581d98f-3b3f-4cc9-9513-d3f1f295a2dd",
+                  "traversalSpecId": "",
+                  "refreshContent": {
+                     "refreshContent": false
+                  },
+                  "description": "",
+                  "isUpdatedView": true,
+                  "title": "Virtual Machines",
+                  "viewDefinitionId": "f982ee15-5502-49e2-8efc-0a405b5bfa83",
+                  "viewType": "LIST",
+                  "chartViewItems": [],
+                  "selectFirstRow": {
+                     "selectFirstRow": false
+                  },
+                  "viewDetails": "",
+                  "selfProvider": {
+                     "selfProvider": false
+                  }
+               },
+               "height": 0
+            },
+            {
+               "tabId": "f0a8e1da-6b23-4cc7-8392-37a44162db52",
+               "collapsed": false,
+               "id": "a71d02ae-63d7-43f6-bfd0-fbb202894c74",
+               "gridsterCoords": {
+                  "w": 12,
+                  "x": 1,
+                  "h": 9,
+                  "y": 13
+               },
+               "state": "",
+               "type": "View",
+               "title": "vNIC of selected VM",
+               "config": {
+                  "refreshInterval": 300,
+                  "resource": null,
+                  "widgetId": "a71d02ae-63d7-43f6-bfd0-fbb202894c74",
+                  "traversalSpecId": "",
+                  "refreshContent": {
+                     "refreshContent": false
+                  },
+                  "description": "",
+                  "isUpdatedView": true,
+                  "title": "vNIC of selected VM",
+                  "viewDefinitionId": "f129ab04-a919-4b80-b0ad-39783db28adf",
+                  "viewType": "LIST",
+                  "chartViewItems": [],
+                  "selectFirstRow": {
+                     "selectFirstRow": false
+                  },
+                  "viewDetails": "",
+                  "selfProvider": {
+                     "selfProvider": false
+                  }
+               },
+               "height": 0
+            },
+            {
+               "tabId": "f0a8e1da-6b23-4cc7-8392-37a44162db52",
+               "collapsed": false,
+               "id": "c74fbb6c-b395-401d-a087-79abf5ad24e5",
+               "gridsterCoords": {
+                  "w": 2,
+                  "x": 11,
+                  "h": 12,
+                  "y": 1
+               },
+               "state": "",
+               "type": "ResourceRelationshipAdvanced",
+               "title": "Relationship",
+               "config": {
+                  "visualTheme": false,
+                  "resourceId": null,
+                  "refreshInterval": 300,
+                  "widgetId": "c74fbb6c-b395-401d-a087-79abf5ad24e5",
+                  "traversalSpecId": "",
+                  "refreshContent": {
+                     "refreshContent": false
+                  },
+                  "relationshipMode": "",
+                  "description": "",
+                  "resourceName": null,
+                  "title": "Relationship",
+                  "filterMode": "tagPicker",
+                  "tagFilter": null,
+                  "paginationNumber": 5,
+                  "depth": "3,1",
+                  "customFilter": {
+                     "filter": [],
+                     "excludedResources": null,
+                     "includedResources": null
+                  },
+                  "selectFirstRow": {
+                     "selectFirstRow": true
+                  },
+                  "viewDetails": "",
+                  "selfProvider": {
+                     "selfProvider": false
+                  }
+               },
+               "height": 0
+            }
+         ],
+         "userId": "936105f8-faa4-48cb-b268-0eec2ea9e205",
+         "states": [],
+         "editAllowed": true,
+         "homeTab": false,
+         "name": ". Object Summary Page for Distributed Port Groups",
+         "gridsterMaxColumns": 12,
+         "rank": 0,
+         "disabled": true,
+         "id": "f0a8e1da-6b23-4cc7-8392-37a44162db52",
+         "locked": false,
+         "dashboardNavigations": {},
+         "widgetInteractions": [
+            {
+               "widgetIdProvider": "c581d98f-3b3f-4cc9-9513-d3f1f295a2dd",
+               "type": "resourceId",
+               "widgetIdReceiver": "a71d02ae-63d7-43f6-bfd0-fbb202894c74"
+            },
+            {
+               "widgetIdProvider": "c581d98f-3b3f-4cc9-9513-d3f1f295a2dd",
+               "type": "resourceId",
+               "widgetIdReceiver": "c74fbb6c-b395-401d-a087-79abf5ad24e5"
+            }
+         ],
+         "lastUpdateTime": 1793425006763
+      }
+   ],
+   "uuid": "c14cbb43-c663-45a6-9cd4-c73d84f72066"
+}

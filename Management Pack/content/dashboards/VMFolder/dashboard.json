@@ -1,0 +1,155 @@
+{
+   "entries": {},
+   "dashboards": [
+      {
+         "shared": false,
+         "hidden": false,
+         "creationTime": 0,
+         "autoswitchEnabled": false,
+         "importAttempts": 0,
+         "lastUpdateUserId": "936105f8-faa4-48cb-b268-0eec2ea9e205",
+         "columnProportion": "1",
+         "importComplete": true,
+         "description": "",
+         "columnCount": 0,
+         "widgets": [
+            {
+               "tabId": "d22b04d0-1eb2-496e-8944-a143e94187d5",
+               "collapsed": false,
+               "id": "f3a60529-f45e-43cc-87ea-c54774974642",
+               "gridsterCoords": {
+                  "w": 6,
+                  "x": 1,
+                  "h": 6,
+                  "y": 10
+               },
+               "state": "",
+               "type": "View",
+               "title": "Virtual Disks",
+               "config": {
+                  "refreshInterval": 300,
+                  "resource": null,
+                  "widgetId": "f3a60529-f45e-43cc-87ea-c54774974642",
+                  "traversalSpecId": "",
+                  "refreshContent": {
+                     "refreshContent": false
+                  },
+                  "description": "",
+                  "isUpdatedView": true,
+                  "title": "Virtual Disks",
+                  "viewDefinitionId": "56abf797-0534-4b73-bc27-693317a206ac",
+                  "viewType": "LIST",
+                  "chartViewItems": [],
+                  "selectFirstRow": {
+                     "selectFirstRow": false
+                  },
+                  "viewDetails": "",
+                  "selfProvider": {
+                     "selfProvider": false
+                  }
+               },
+               "height": 0
+            },
+            {
+               "tabId": "d22b04d0-1eb2-496e-8944-a143e94187d5",
+               "collapsed": false,
+               "id": "493d2a9a-d320-4ad5-a06c-2122d1828a3d",
+               "gridsterCoords": {
+                  "w": 12,
+                  "x": 1,
+                  "h": 9,
+                  "y": 1
+               },
+               "state": "",
+               "type": "View",
+               "title": "Virtual Machines",
+               "config": {
+                  "refreshInterval": 300,
+                  "resource": null,
+                  "widgetId": "493d2a9a-d320-4ad5-a06c-2122d1828a3d",
+                  "traversalSpecId": "",
+                  "refreshContent": {
+                     "refreshContent": false
+                  },
+                  "description": "",
+                  "isUpdatedView": true,
+                  "title": "Virtual Machines",
+                  "viewDefinitionId": "9a77a4b5-0329-459c-9f42-7087f0d911a6",
+                  "viewType": "LIST",
+                  "chartViewItems": [],
+                  "selectFirstRow": {
+                     "selectFirstRow": false
+                  },
+                  "viewDetails": "",
+                  "selfProvider": {
+                     "selfProvider": false
+                  }
+               },
+               "height": 0
+            },
+            {
+               "tabId": "d22b04d0-1eb2-496e-8944-a143e94187d5",
+               "collapsed": false,
+               "id": "8d521b32-caac-4377-b17d-07c5bd023299",
+               "gridsterCoords": {
+                  "w": 6,
+                  "x": 7,
+                  "h": 6,
+                  "y": 10
+               },
+               "state": "",
+               "type": "View",
+               "title": "Virtual Network",
+               "config": {
+                  "refreshInterval": 300,
+                  "resource": null,
+                  "widgetId": "8d521b32-caac-4377-b17d-07c5bd023299",
+                  "traversalSpecId": "",
+                  "refreshContent": {
+                     "refreshContent": false
+                  },
+                  "description": "",
+                  "isUpdatedView": true,
+                  "title": "Virtual Network",
+                  "viewDefinitionId": "f129ab04-a919-4b80-b0ad-39783db28adf",
+                  "viewType": "LIST",
+                  "chartViewItems": [],
+                  "selectFirstRow": {
+                     "selectFirstRow": false
+                  },
+                  "viewDetails": "",
+                  "selfProvider": {
+                     "selfProvider": false
+                  }
+               },
+               "height": 0
+            }
+         ],
+         "userId": "936105f8-faa4-48cb-b268-0eec2ea9e205",
+         "states": [],
+         "editAllowed": true,
+         "homeTab": false,
+         "name": ". Object Summary Page for VM Folder",
+         "gridsterMaxColumns": 12,
+         "rank": 0,
+         "disabled": true,
+         "id": "d22b04d0-1eb2-496e-8944-a143e94187d5",
+         "locked": false,
+         "dashboardNavigations": {},
+         "widgetInteractions": [
+            {
+               "widgetIdProvider": "493d2a9a-d320-4ad5-a06c-2122d1828a3d",
+               "type": "resourceId",
+               "widgetIdReceiver": "f3a60529-f45e-43cc-87ea-c54774974642"
+            },
+            {
+               "widgetIdProvider": "493d2a9a-d320-4ad5-a06c-2122d1828a3d",
+               "type": "resourceId",
+               "widgetIdReceiver": "8d521b32-caac-4377-b17d-07c5bd023299"
+            }
+         ],
+         "lastUpdateTime": 1793424637938
+      }
+   ],
+   "uuid": "e7be893b-276c-44ec-8dc2-17dac59b38e6"
+}
