@@ -2,7 +2,7 @@
 
 Six metrics on the **vSphere World** object summarise the [Cluster Performance](cluster-performance.md), [Cluster Risk](cluster-risk.md) and [Cluster Consumption](cluster-consumption.md) scores of every cluster, across all vCenters. Use them to watch the whole estate in one place.
 
-Bottom 10 Percent Cluster Performance replaces the "vSphere Clusters Performance" super metric, which was the average of all clusters.
+Worst 10 Percent Cluster Performance replaces the "vSphere Clusters Performance" super metric, which was the average of all clusters.
 
 The vSphere World object also has two Operational Availability metrics. See [Operational Availability](operational-availability.md).
 
@@ -28,14 +28,14 @@ All are published on the vSphere World object under `vCommunity`, in %.
 
 | Metric | Calculation |
 | :--- | :--- |
-| `vCommunity\|Bottom 10 Percent Cluster Performance` | The Cluster Performance score that 90 % of the clusters are at or above. |
+| `vCommunity\|Worst 10 Percent Cluster Performance` | The Cluster Performance score that 90 % of the clusters are at or above. |
 | `vCommunity\|Worst Cluster Performance` | The lowest Cluster Performance score of any cluster. |
-| `vCommunity\|Bottom 10 Percent Cluster Risk` | The Cluster Risk that 90 % of the clusters are at or below. |
+| `vCommunity\|Worst 10 Percent Cluster Risk` | The Cluster Risk that 90 % of the clusters are at or below. |
 | `vCommunity\|Worst Cluster Risk` | The highest Cluster Risk of any cluster. |
-| `vCommunity\|Top 10 Percent Cluster Utilization` | The Cluster Consumption score that 10 % of the clusters are at or above. |
+| `vCommunity\|Highest 10 Percent Cluster Utilization` | The Cluster Consumption score that 10 % of the clusters are at or above. |
 | `vCommunity\|Highest Cluster Utilization` | The highest Cluster Consumption score of any cluster. |
 
-Each metric takes the bad end. **Bottom 10 Percent** and **Top 10 Percent** are the boundary of the worst 10 % of the clusters, whichever direction is worse, so the name means the same for each KPI:
+Each metric takes the bad end. **Worst 10 Percent** and **Highest 10 Percent** mark the boundary of the worst 10 % of the clusters, whichever direction is worse:
 
 - Cluster Performance is "higher is better", so the bad end is the low end: the 10th percentile and the lowest.
 - Cluster Risk and Cluster Consumption are "higher is worse" (100 = maximum), so the bad end is the high end: the 90th percentile and the highest. Cluster Utilization is the Cluster Consumption score: the share of the usable capacity consumed.

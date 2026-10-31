@@ -50,7 +50,7 @@ Each KPI's source limits are shown in its page under [Reference](../reference/me
 | `datacenter/datacenter_network_degradation.py` | Total Network Speed Degradation per Datacenter: the number of its hosts below 100 %. |
 | `vcenter/vcenter_availability.py` | Availability of one vCenter's hosts and clusters, read together. Publishes its Worst Cluster Operational Availability. |
 | `vcenter/vcenter_network_speed.py` | Network speeds of one vCenter's hosts, and their count per Datacenter. |
-| `world/cluster_summary_metrics.py` | Bottom 10 Percent and worst Cluster Performance and Cluster Risk, over all clusters of all vCenters. |
+| `world/cluster_summary_metrics.py` | Worst 10 Percent and worst Cluster Performance and Cluster Risk, over all clusters of all vCenters. |
 | `world/availability_summary_metrics.py` | Worst Cluster and average ESXi Host Operational Availability, over all vCenters. |
 | `world/vsphere_network_degradation.py` | Total Network Speed Degradation, over all vCenters. |
 | `world/cluster_close_changes.py` | Cluster Delta Close and Open Count: clusters whose Close for Business changed between two windows. |
