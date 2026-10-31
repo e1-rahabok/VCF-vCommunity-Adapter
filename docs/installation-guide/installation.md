@@ -43,6 +43,10 @@ You can review the VCF Operations vCommunity Management Pack under the **Reposit
 
 ---
 
+## Create the Adapter Instance
+
+Installing the pack does not create an Adapter Instance. Create one for each vCenter, following [Adapter Instance](../configuration-guide/adapter-instance.md). The instance is what starts collection.
+
 ## After an Upgrade: Restart Collection
 
 When you install a new version over an existing one, the existing Adapter Instances can stop collecting. The install itself reports success, but under **Administration** → **Integrations** → **Accounts**, the instance under **VCF vCommunity Adapter** shows **Warning**. Its state is `Failed`, and it does not collect again by itself.
