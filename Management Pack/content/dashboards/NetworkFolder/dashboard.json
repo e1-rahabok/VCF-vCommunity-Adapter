@@ -1,0 +1,113 @@
+{
+   "entries": {},
+   "dashboards": [
+      {
+         "shared": false,
+         "hidden": false,
+         "creationTime": 1793416580063,
+         "autoswitchEnabled": false,
+         "importAttempts": 0,
+         "lastUpdateUserId": "936105f8-faa4-48cb-b268-0eec2ea9e205",
+         "columnProportion": "1",
+         "importComplete": true,
+         "description": "",
+         "columnCount": 0,
+         "widgets": [
+            {
+               "tabId": "6740d93c-c8c3-4189-8bcb-7436da044fff",
+               "collapsed": false,
+               "id": "ec6fb054-d304-4e2d-9dff-7309aeb8d70f",
+               "gridsterCoords": {
+                  "w": 12,
+                  "x": 1,
+                  "h": 7,
+                  "y": 1
+               },
+               "state": "",
+               "type": "View",
+               "title": "Distributed Switch",
+               "config": {
+                  "refreshInterval": 300,
+                  "resource": null,
+                  "widgetId": "ec6fb054-d304-4e2d-9dff-7309aeb8d70f",
+                  "traversalSpecId": "",
+                  "refreshContent": {
+                     "refreshContent": false
+                  },
+                  "description": "",
+                  "isUpdatedView": true,
+                  "title": "Distributed Switch",
+                  "viewDefinitionId": "8d497409-b506-4027-bc22-27cda696116e",
+                  "viewType": "LIST",
+                  "chartViewItems": [],
+                  "selectFirstRow": {
+                     "selectFirstRow": false
+                  },
+                  "viewDetails": "",
+                  "selfProvider": {
+                     "selfProvider": false
+                  }
+               },
+               "height": 0
+            },
+            {
+               "tabId": "6740d93c-c8c3-4189-8bcb-7436da044fff",
+               "collapsed": false,
+               "id": "ab74a6d3-013b-456f-a130-7aaf0bc50436",
+               "gridsterCoords": {
+                  "w": 12,
+                  "x": 1,
+                  "h": 9,
+                  "y": 8
+               },
+               "state": "",
+               "type": "View",
+               "title": "Port Groups in selected Switch",
+               "config": {
+                  "refreshInterval": 300,
+                  "resource": null,
+                  "widgetId": "ab74a6d3-013b-456f-a130-7aaf0bc50436",
+                  "traversalSpecId": "",
+                  "refreshContent": {
+                     "refreshContent": false
+                  },
+                  "description": "",
+                  "isUpdatedView": true,
+                  "title": "Port Groups in selected Switch",
+                  "viewDefinitionId": "f60469d1-57d0-4dd2-84d0-7ffc36d9d86b",
+                  "viewType": "LIST",
+                  "chartViewItems": [],
+                  "selectFirstRow": {
+                     "selectFirstRow": false
+                  },
+                  "viewDetails": "",
+                  "selfProvider": {
+                     "selfProvider": false
+                  }
+               },
+               "height": 0
+            }
+         ],
+         "userId": "936105f8-faa4-48cb-b268-0eec2ea9e205",
+         "states": [],
+         "editAllowed": true,
+         "homeTab": false,
+         "name": ". Object Summary Page for Network Folder",
+         "gridsterMaxColumns": 12,
+         "rank": 0,
+         "disabled": true,
+         "id": "6740d93c-c8c3-4189-8bcb-7436da044fff",
+         "locked": false,
+         "dashboardNavigations": {},
+         "widgetInteractions": [
+            {
+               "widgetIdProvider": "ec6fb054-d304-4e2d-9dff-7309aeb8d70f",
+               "type": "resourceId",
+               "widgetIdReceiver": "ab74a6d3-013b-456f-a130-7aaf0bc50436"
+            }
+         ],
+         "lastUpdateTime": 1793425237513
+      }
+   ],
+   "uuid": "76f08302-8b9f-4839-88fa-e9cee54dc609"
+}

@@ -1,0 +1,115 @@
+{
+   "entries": {},
+   "dashboards": [
+      {
+         "shared": false,
+         "hidden": false,
+         "creationTime": 1793416568720,
+         "autoswitchEnabled": false,
+         "importAttempts": 0,
+         "lastUpdateUserId": "936105f8-faa4-48cb-b268-0eec2ea9e205",
+         "columnProportion": "1",
+         "importComplete": true,
+         "description": "",
+         "columnCount": 0,
+         "widgets": [
+            {
+               "tabId": "9c6b664a-04af-4271-a2ac-23795bfe0365",
+               "collapsed": false,
+               "id": "aff51984-7ed7-470b-8018-90ff98161318",
+               "gridsterCoords": {
+                  "w": 12,
+                  "x": 1,
+                  "h": 7,
+                  "y": 1
+               },
+               "state": "",
+               "type": "View",
+               "title": "Inventory",
+               "config": {
+                  "refreshInterval": 300,
+                  "resource": null,
+                  "widgetId": "aff51984-7ed7-470b-8018-90ff98161318",
+                  "traversalSpecId": "",
+                  "refreshContent": {
+                     "refreshContent": false
+                  },
+                  "description": "",
+                  "isUpdatedView": true,
+                  "title": "Inventory",
+                  "viewDefinitionId": "867d0405-3f05-49ee-9466-ede29a147aff",
+                  "titleLocalized": "Inventory",
+                  "viewType": "LIST",
+                  "chartViewItems": [],
+                  "selectFirstRow": {
+                     "selectFirstRow": false
+                  },
+                  "viewDetails": "",
+                  "selfProvider": {
+                     "selfProvider": false
+                  }
+               },
+               "height": 0
+            },
+            {
+               "tabId": "9c6b664a-04af-4271-a2ac-23795bfe0365",
+               "collapsed": false,
+               "id": "ceae7790-34f0-413a-96ae-2938ae30dea7",
+               "gridsterCoords": {
+                  "w": 12,
+                  "x": 1,
+                  "h": 9,
+                  "y": 8
+               },
+               "state": "",
+               "type": "View",
+               "title": "New List view",
+               "config": {
+                  "refreshInterval": 300,
+                  "resource": null,
+                  "widgetId": "493d2a9a-d320-4ad5-a06c-2122d1828a3d",
+                  "traversalSpecId": "",
+                  "refreshContent": {
+                     "refreshContent": false
+                  },
+                  "description": "",
+                  "isUpdatedView": true,
+                  "title": "New List view",
+                  "viewDefinitionId": "9a77a4b5-0329-459c-9f42-7087f0d911a6",
+                  "titleLocalized": "New List view",
+                  "viewType": "LIST",
+                  "chartViewItems": [],
+                  "selectFirstRow": {
+                     "selectFirstRow": false
+                  },
+                  "viewDetails": "",
+                  "selfProvider": {
+                     "selfProvider": false
+                  }
+               },
+               "height": 0
+            }
+         ],
+         "userId": "936105f8-faa4-48cb-b268-0eec2ea9e205",
+         "states": [],
+         "editAllowed": true,
+         "homeTab": false,
+         "name": ". Object Summary Page for Storage Folder",
+         "gridsterMaxColumns": 12,
+         "rank": 0,
+         "disabled": true,
+         "id": "9c6b664a-04af-4271-a2ac-23795bfe0365",
+         "locked": false,
+         "dashboardNavigations": {},
+         "widgetInteractions": [
+            {
+               "widgetIdProvider": "aff51984-7ed7-470b-8018-90ff98161318",
+               "type": "resourceId",
+               "widgetIdReceiver": "ceae7790-34f0-413a-96ae-2938ae30dea7"
+            }
+         ],
+         "lastUpdateTime": 1793424804770
+      }
+   ],
+   "uuid": "9f6e9625-671a-4fac-b84f-b9265454fb61"
+}

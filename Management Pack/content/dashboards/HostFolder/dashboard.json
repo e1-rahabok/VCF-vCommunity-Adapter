@@ -1,0 +1,114 @@
+{
+   "entries": {},
+   "dashboards": [
+      {
+         "shared": false,
+         "hidden": false,
+         "creationTime": 1793416559243,
+         "autoswitchEnabled": false,
+         "importAttempts": 0,
+         "lastUpdateUserId": "936105f8-faa4-48cb-b268-0eec2ea9e205",
+         "columnProportion": "1",
+         "importComplete": true,
+         "description": "",
+         "columnCount": 0,
+         "widgets": [
+            {
+               "tabId": "7e3e9266-b325-4225-b2ad-9198b801ff43",
+               "collapsed": false,
+               "id": "5983ec80-e3bc-4f6a-9b71-5aab03012967",
+               "gridsterCoords": {
+                  "w": 12,
+                  "x": 1,
+                  "h": 7,
+                  "y": 1
+               },
+               "state": "",
+               "type": "View",
+               "title": "Clusters",
+               "config": {
+                  "refreshInterval": 300,
+                  "resource": null,
+                  "widgetId": "5983ec80-e3bc-4f6a-9b71-5aab03012967",
+                  "traversalSpecId": "",
+                  "refreshContent": {
+                     "refreshContent": false
+                  },
+                  "description": "",
+                  "isUpdatedView": true,
+                  "title": "Clusters",
+                  "viewDefinitionId": "d3487e74-223e-402c-9e90-6b6d5987a541",
+                  "viewType": "LIST",
+                  "chartViewItems": [],
+                  "selectFirstRow": {
+                     "selectFirstRow": false
+                  },
+                  "viewDetails": "",
+                  "selfProvider": {
+                     "selfProvider": false
+                  }
+               },
+               "height": 0
+            },
+            {
+               "tabId": "7e3e9266-b325-4225-b2ad-9198b801ff43",
+               "collapsed": false,
+               "id": "bf226c29-348d-4a00-8676-1c6870533705",
+               "gridsterCoords": {
+                  "w": 12,
+                  "x": 1,
+                  "h": 9,
+                  "y": 8
+               },
+               "state": "",
+               "type": "View",
+               "title": "ESXi Hosts",
+               "config": {
+                  "refreshInterval": 300,
+                  "resource": null,
+                  "widgetId": "bf226c29-348d-4a00-8676-1c6870533705",
+                  "traversalSpecId": "",
+                  "refreshContent": {
+                     "refreshContent": false
+                  },
+                  "description": "",
+                  "isUpdatedView": true,
+                  "title": "ESXi Hosts",
+                  "viewDefinitionId": "e3321b7e-033e-4a5e-820f-796d38b268f5",
+                  "titleLocalized": "ESXi Hosts",
+                  "viewType": "LIST",
+                  "chartViewItems": [],
+                  "selectFirstRow": {
+                     "selectFirstRow": false
+                  },
+                  "viewDetails": "",
+                  "selfProvider": {
+                     "selfProvider": false
+                  }
+               },
+               "height": 0
+            }
+         ],
+         "userId": "936105f8-faa4-48cb-b268-0eec2ea9e205",
+         "states": [],
+         "editAllowed": true,
+         "homeTab": false,
+         "name": ". Object Summary Page for Compute Folder",
+         "gridsterMaxColumns": 12,
+         "rank": 0,
+         "disabled": true,
+         "id": "7e3e9266-b325-4225-b2ad-9198b801ff43",
+         "locked": false,
+         "dashboardNavigations": {},
+         "widgetInteractions": [
+            {
+               "widgetIdProvider": "5983ec80-e3bc-4f6a-9b71-5aab03012967",
+               "type": "resourceId",
+               "widgetIdReceiver": "bf226c29-348d-4a00-8676-1c6870533705"
+            }
+         ],
+         "lastUpdateTime": 1793424745336
+      }
+   ],
+   "uuid": "4dad44f9-228b-45dc-a36a-beaca5d837d0"
+}
