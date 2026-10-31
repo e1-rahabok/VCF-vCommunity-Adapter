@@ -91,6 +91,12 @@ IDENTIFIER_WIN_EVENT_MONITORING = "winEventMonitoring"
 IDENTIFIER_VCENTER_TLS_VALIDATION = "vcenter_tls_validation"
 IDENTIFIER_VCENTER_THUMBPRINT = "vcenter_thumbprint"
 IDENTIFIER_GUEST_TLS_VALIDATION = "guest_tls_validation"
+IDENTIFIER_CLUSTER_CHECK_PERIOD = "cluster_check_period_hours"
+IDENTIFIER_CLUSTER_CHECK_TIME = "periodic_cluster_check_time"
+IDENTIFIER_CLUSTER_CHECK_WORST_PERCENT = "cluster_check_worst_percent"
+IDENTIFIER_MONSTER_CPU_PERCENT = "monster_vm_cpu_percent_of_cores"
+IDENTIFIER_MONSTER_MEMORY_PERCENT = "monster_vm_memory_percent_of_dram"
+IDENTIFIER_MONSTER_MEMORY_MIN_GB = "monster_vm_memory_min_gb"
 
 CREDENTIAL_FIELD_USER = "user"
 CREDENTIAL_FIELD_PASSWORD = "password"
@@ -110,6 +116,12 @@ DEFAULTS = {
     "win_event_monitoring": "Disabled",
     "vcenter_tls_validation": "Trust on First Use",
     "guest_tls_validation": "Pinned",
+    "cluster_check_period_hours": "24",
+    "periodic_cluster_check_time": "00:00",
+    "cluster_check_worst_percent": "5",
+    "monster_vm_cpu_percent_of_cores": "50",
+    "monster_vm_memory_percent_of_dram": "40",
+    "monster_vm_memory_min_gb": "256",
 }
 
 # Same values as the enum parameters in adapter.py (utils/tls.py and utils/guest_http.py).
@@ -382,6 +394,16 @@ def build_resource_identifiers(row: VCenterRow) -> list[dict]:
         {"name": IDENTIFIER_WIN_EVENT_MONITORING, "value": row.win_event_monitoring},
         {"name": IDENTIFIER_VCENTER_TLS_VALIDATION, "value": row.vcenter_tls_validation},
         {"name": IDENTIFIER_GUEST_TLS_VALIDATION, "value": row.guest_tls_validation},
+    ]
+    # The advanced settings the UI would fill with their defaults: send them too, or the instance
+    # shows them blank. The adapter falls back to the same defaults when a value is missing.
+    identifiers += [
+        {"name": IDENTIFIER_CLUSTER_CHECK_PERIOD, "value": DEFAULTS["cluster_check_period_hours"]},
+        {"name": IDENTIFIER_CLUSTER_CHECK_TIME, "value": DEFAULTS["periodic_cluster_check_time"]},
+        {"name": IDENTIFIER_CLUSTER_CHECK_WORST_PERCENT, "value": DEFAULTS["cluster_check_worst_percent"]},
+        {"name": IDENTIFIER_MONSTER_CPU_PERCENT, "value": DEFAULTS["monster_vm_cpu_percent_of_cores"]},
+        {"name": IDENTIFIER_MONSTER_MEMORY_PERCENT, "value": DEFAULTS["monster_vm_memory_percent_of_dram"]},
+        {"name": IDENTIFIER_MONSTER_MEMORY_MIN_GB, "value": DEFAULTS["monster_vm_memory_min_gb"]},
     ]
     if row.vcenter_thumbprint:  # an empty value is not sent: the identifier is optional
         identifiers.append({"name": IDENTIFIER_VCENTER_THUMBPRINT, "value": row.vcenter_thumbprint})

@@ -85,3 +85,35 @@ def test_the_importer_and_the_adapter_agree_on_the_names_and_values():
     assert importer.GUEST_TLS_MODES == tuple(guest_http.GUEST_MODES)
     assert importer.DEFAULTS["vcenter_tls_validation"] == tls.DEFAULT_VCENTER_MODE
     assert importer.DEFAULTS["guest_tls_validation"] == guest_http.DEFAULT_GUEST_MODE
+
+
+def test_every_advanced_setting_is_sent_with_its_default(tmp_path):
+    """A row that leaves the advanced settings out still sends them, so the UI shows their defaults."""
+    path = tmp_path / "vcenters.csv"
+    path.write_text("vcenter_host,vcenter_user,vcenter_password\nvc01,svc,pw\n", encoding="utf-8")
+    ids = identifiers(importer.read_csv(str(path))[0])
+    assert ids["cluster_check_period_hours"] == "24"
+    assert ids["periodic_cluster_check_time"] == "00:00"
+    assert ids["cluster_check_worst_percent"] == "5"
+    assert ids["monster_vm_cpu_percent_of_cores"] == "50"
+    assert ids["monster_vm_memory_percent_of_dram"] == "40"
+    assert ids["monster_vm_memory_min_gb"] == "256"
+
+
+def test_the_advanced_setting_defaults_match_the_adapter():
+    """The importer's defaults and names are the adapter's: a change in one must show here."""
+    import sys
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "app"))
+    from metrics.cluster import cluster_risk_metrics, periodic_cluster_check
+    assert importer.IDENTIFIER_CLUSTER_CHECK_PERIOD == periodic_cluster_check.PERIOD_SETTING
+    assert importer.IDENTIFIER_CLUSTER_CHECK_TIME == periodic_cluster_check.TIME_SETTING
+    assert importer.IDENTIFIER_CLUSTER_CHECK_WORST_PERCENT == periodic_cluster_check.WORST_PERCENT_SETTING
+    assert importer.IDENTIFIER_MONSTER_CPU_PERCENT == cluster_risk_metrics.MONSTER_CPU_SETTING
+    assert importer.IDENTIFIER_MONSTER_MEMORY_PERCENT == cluster_risk_metrics.MONSTER_MEMORY_SETTING
+    assert importer.IDENTIFIER_MONSTER_MEMORY_MIN_GB == cluster_risk_metrics.MONSTER_MEMORY_MIN_SETTING
+    assert importer.DEFAULTS["cluster_check_period_hours"] == periodic_cluster_check.DEFAULT_PERIOD
+    assert importer.DEFAULTS["periodic_cluster_check_time"] == periodic_cluster_check.DEFAULT_TIME
+    assert importer.DEFAULTS["cluster_check_worst_percent"] == str(periodic_cluster_check.DEFAULT_WORST_PERCENT)
+    assert importer.DEFAULTS["monster_vm_cpu_percent_of_cores"] == str(cluster_risk_metrics.DEFAULT_MONSTER_CPU_PERCENT)
+    assert importer.DEFAULTS["monster_vm_memory_percent_of_dram"] == str(cluster_risk_metrics.DEFAULT_MONSTER_MEMORY_PERCENT)
+    assert importer.DEFAULTS["monster_vm_memory_min_gb"] == str(cluster_risk_metrics.DEFAULT_MONSTER_MEMORY_MIN_GB)
