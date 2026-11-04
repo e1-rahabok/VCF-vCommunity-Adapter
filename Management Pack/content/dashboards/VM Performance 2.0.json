@@ -1,44 +1,35 @@
 {
-   "entries": {
-      "resourceKind": [
-         {
-            "resourceKindKey": "HostSystem",
-            "internalId": "resourceKind:id:3_::_",
-            "adapterKindKey": "VMWARE"
-         },
-         {
-            "resourceKindKey": "VirtualMachine",
-            "internalId": "resourceKind:id:0_::_",
-            "adapterKindKey": "VMWARE"
-         },
-         {
-            "resourceKindKey": "ClusterComputeResource",
-            "internalId": "resourceKind:id:1_::_",
-            "adapterKindKey": "VMWARE"
-         },
-         {
-            "resourceKindKey": "ResourcePool",
-            "internalId": "resourceKind:id:4_::_",
-            "adapterKindKey": "VMWARE"
-         },
-         {
-            "resourceKindKey": "Datastore",
-            "internalId": "resourceKind:id:2_::_",
-            "adapterKindKey": "VMWARE"
-         }
-      ],
-      "resource": [{
-         "resourceKindKey": "vSphere World",
-         "internalId": "resource:id:0_::_",
-         "adapterKindKey": "VMWARE",
-         "identifiers": [],
-         "name": "vSphere World"
-      }]
-   },
+   "entries": {"resourceKind": [
+      {
+         "resourceKindKey": "HostSystem",
+         "internalId": "resourceKind:id:3_::_",
+         "adapterKindKey": "VMWARE"
+      },
+      {
+         "resourceKindKey": "VirtualMachine",
+         "internalId": "resourceKind:id:0_::_",
+         "adapterKindKey": "VMWARE"
+      },
+      {
+         "resourceKindKey": "ClusterComputeResource",
+         "internalId": "resourceKind:id:1_::_",
+         "adapterKindKey": "VMWARE"
+      },
+      {
+         "resourceKindKey": "ResourcePool",
+         "internalId": "resourceKind:id:4_::_",
+         "adapterKindKey": "VMWARE"
+      },
+      {
+         "resourceKindKey": "Datastore",
+         "internalId": "resourceKind:id:2_::_",
+         "adapterKindKey": "VMWARE"
+      }
+   ]},
    "dashboards": [{
       "shared": true,
       "hidden": true,
-      "creationTime": 1793028706732,
+      "creationTime": 1793453303702,
       "autoswitchEnabled": false,
       "importAttempts": 0,
       "columnProportion": "1",
@@ -48,124 +39,48 @@
          {
             "tabId": "4439d7b2-c758-4eca-ad49-42f3e0280d35",
             "collapsed": false,
-            "id": "4f878842-0e35-4e7a-8763-70cf9e11d7a0",
+            "id": "1f885c55-ea9c-4acd-aa77-b6c3f2633af3",
             "gridsterCoords": {
-               "w": 3,
+               "w": 4,
                "x": 1,
-               "h": 6,
+               "h": 20,
                "y": 1
             },
             "state": "",
             "type": "View",
-            "title": "Datacenters",
+            "title": "VMs Performance in selected Datacenter",
             "config": {
                "refreshInterval": 300,
-               "resource": {
-                  "resourceId": "resource:id:0_::_",
-                  "traversalSpecId": "vSphere Hosts and Clusters-VMWARE-vSphere World",
-                  "resourceName": "vSphere World",
-                  "resourceKindId": "002006VMWAREvSphere World",
-                  "id": "Ext.vcops.chrome.model.Resource-27"
-               },
-               "titleLocalized": "Datacenters",
-               "traversalSpecId": null,
+               "resource": null,
+               "widgetId": "1f885c55-ea9c-4acd-aa77-b6c3f2633af3",
+               "traversalSpecId": "",
                "refreshContent": {"refreshContent": false},
+               "description": "",
                "isUpdatedView": true,
+               "title": "VMs Performance in selected Datacenter",
+               "viewDefinitionId": "3c32ba9d-e71c-4f2c-bf46-844d1b07857f",
                "chartViewItems": [],
                "selectFirstRow": {"selectFirstRow": false},
-               "selfProvider": {"selfProvider": true},
-               "title": "Datacenters",
-               "viewDefinitionId": "3a88e1a7-511c-440d-868b-65df4a2c7898"
+               "viewDetails": "",
+               "selfProvider": {"selfProvider": false}
             },
             "height": 0,
             "states": [
                {
                   "value": "b%3A0",
-                  "key": "perm_isDashboardTime_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_4f878842-0e35-4e7a-8763-70cf9e11d7a0"
+                  "key": "perm_isDashboardTime_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_1f885c55-ea9c-4acd-aa77-b6c3f2633af3"
                },
                {
-                  "value": "b%3A0",
-                  "key": "perm_toolbarVisible_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_4f878842-0e35-4e7a-8763-70cf9e11d7a0"
+                  "value": "s%3A%7B%22minType%22%3A%22.TimeIntervalControl%22%2C%22advancedTimeMode%22%3Afalse%2C%22fromTime%22%3Anull%2C%22unit%22%3A%22HOURS%22%2C%22count%22%3A12%2C%22priorUnit%22%3Anull%2C%22priorCount%22%3Anull%2C%22startSubUnit%22%3Anull%2C%22startPeriod%22%3Anull%2C%22toTime%22%3Anull%2C%22endUnit%22%3Anull%2C%22endCount%22%3Anull%2C%22endSubUnit%22%3Anull%2C%22endPeriod%22%3Anull%2C%22mondayHours%22%3Anull%2C%22tuesdayHours%22%3Anull%2C%22wednesdayHours%22%3Anull%2C%22thursdayHours%22%3Anull%2C%22fridayHours%22%3Anull%2C%22saturdayHours%22%3Anull%2C%22sundayHours%22%3Anull%7D",
+                  "key": "permSelectedDate_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_1f885c55-ea9c-4acd-aa77-b6c3f2633af3"
                },
                {
-                  "value": "o%3Acolumns%3Da%253Ao%25253Aid%25253Ds%2525253ApermTableView_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_4f878842-0e35-4e7a-8763-70cf9e11d7a0-column-0%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_4f878842-0e35-4e7a-8763-70cf9e11d7a0-column-summary%2525257Ctotal_number_clusters1%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_4f878842-0e35-4e7a-8763-70cf9e11d7a0-column-summary%2525257Ctotal_number_hosts2%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_4f878842-0e35-4e7a-8763-70cf9e11d7a0-column-summary%2525257Ctotal_number_datastores3%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_4f878842-0e35-4e7a-8763-70cf9e11d7a0-column-summary%2525257Ctotal_number_vms4%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_4f878842-0e35-4e7a-8763-70cf9e11d7a0-column-summary%2525257CparentVcenter5%25255Ehidden%25253Db%2525253A0",
-                  "key": "permTableView_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_4f878842-0e35-4e7a-8763-70cf9e11d7a0"
-               }
-            ]
-         },
-         {
-            "tabId": "4439d7b2-c758-4eca-ad49-42f3e0280d35",
-            "collapsed": false,
-            "id": "eda7eca0-8a63-403d-8c39-4cf20dee4584",
-            "gridsterCoords": {
-               "w": 3,
-               "x": 4,
-               "h": 6,
-               "y": 1
-            },
-            "state": "",
-            "type": "View",
-            "title": "Are VMs facing CPU Ready?",
-            "config": {
-               "refreshInterval": 300,
-               "resource": null,
-               "titleLocalized": "Are VMs facing CPU Ready?",
-               "traversalSpecId": "",
-               "refreshContent": {"refreshContent": false},
-               "isUpdatedView": true,
-               "chartViewItems": ["labels"],
-               "selectFirstRow": {"selectFirstRow": false},
-               "selfProvider": {"selfProvider": false},
-               "title": "Are VMs facing CPU Ready?",
-               "viewDefinitionId": "3b0e097b-b3f1-453f-adc9-ad47c9c5ca4c"
-            },
-            "height": 0,
-            "states": [
-               {
-                  "value": "b%3A0",
-                  "key": "perm_isDashboardTime_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_eda7eca0-8a63-403d-8c39-4cf20dee4584"
+                  "value": "o%3Acolumns%3Da%253Ao%25253Aid%25253Ds%2525253ApermTableView_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_1f885c55-ea9c-4acd-aa77-b6c3f2633af3-column-0%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_1f885c55-ea9c-4acd-aa77-b6c3f2633af3-column-summary%2525257Cguest%2525257ChostName1%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_1f885c55-ea9c-4acd-aa77-b6c3f2633af3-column-vCommunity%2525257CVM%25252520Guest%25252520OS%25252520KPI2%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_1f885c55-ea9c-4acd-aa77-b6c3f2633af3-column-vCommunity%2525257CGuest%25252520OS%25252520Performance%2525257CGuest%25252520OS%25252520Performance%25252520Score3%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_1f885c55-ea9c-4acd-aa77-b6c3f2633af3-column-vCommunity%2525257CVM%25252520Performance%2525257CVM%25252520Performance%25252520Score4%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_1f885c55-ea9c-4acd-aa77-b6c3f2633af3-column-guest%2525257C20_sec_peak_cpu_queue5%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_1f885c55-ea9c-4acd-aa77-b6c3f2633af3-column-cpu%2525257C20_sec_peak_readyPct6%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_1f885c55-ea9c-4acd-aa77-b6c3f2633af3-column-mem%2525257C20_sec_peak_host_contentionPct7%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_1f885c55-ea9c-4acd-aa77-b6c3f2633af3-column-guest%2525257C20_sec_peak_disk_queue8%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_1f885c55-ea9c-4acd-aa77-b6c3f2633af3-column-virtualDisk%2525257C20_sec_peak_totalLatency_average9%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_1f885c55-ea9c-4acd-aa77-b6c3f2633af3-column-net%2525257CdroppedTxPct_max10%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_1f885c55-ea9c-4acd-aa77-b6c3f2633af3-column-config%2525257Chardware%2525257CnumCpu11%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_1f885c55-ea9c-4acd-aa77-b6c3f2633af3-column-config%2525257Chardware%2525257CmemoryKB12%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_1f885c55-ea9c-4acd-aa77-b6c3f2633af3-column-config%2525257CnumVMDKs13%25255Ehidden%25253Db%2525253A0",
+                  "key": "permTableView_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_1f885c55-ea9c-4acd-aa77-b6c3f2633af3"
                },
                {
-                  "value": "b%3A0",
-                  "key": "perm_toolbarVisible_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_eda7eca0-8a63-403d-8c39-4cf20dee4584"
-               }
-            ]
-         },
-         {
-            "tabId": "4439d7b2-c758-4eca-ad49-42f3e0280d35",
-            "collapsed": false,
-            "id": "bb5f1457-c0ea-479a-9b28-a8dc4778fd0d",
-            "gridsterCoords": {
-               "w": 3,
-               "x": 7,
-               "h": 6,
-               "y": 1
-            },
-            "state": "",
-            "type": "View",
-            "title": "Are VMs facing Memory Contention?",
-            "config": {
-               "refreshInterval": 300,
-               "resource": null,
-               "titleLocalized": "Are VMs facing Memory Contention?",
-               "traversalSpecId": "",
-               "refreshContent": {"refreshContent": false},
-               "isUpdatedView": true,
-               "chartViewItems": ["labels"],
-               "selectFirstRow": {"selectFirstRow": false},
-               "selfProvider": {"selfProvider": false},
-               "title": "Are VMs facing Memory Contention?",
-               "viewDefinitionId": "de1ff68b-1a78-4939-996d-600b0abef33e"
-            },
-            "height": 0,
-            "states": [
-               {
-                  "value": "b%3A0",
-                  "key": "perm_toolbarVisible_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_bb5f1457-c0ea-479a-9b28-a8dc4778fd0d"
-               },
-               {
-                  "value": "b%3A0",
-                  "key": "perm_isDashboardTime_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_bb5f1457-c0ea-479a-9b28-a8dc4778fd0d"
+                  "value": "b%3A1",
+                  "key": "perm_toolbarVisible_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_1f885c55-ea9c-4acd-aa77-b6c3f2633af3"
                }
             ]
          },
@@ -175,9 +90,9 @@
             "id": "01d79c20-9b30-4612-805b-a3715a401361",
             "gridsterCoords": {
                "w": 4,
-               "x": 9,
+               "x": 1,
                "h": 5,
-               "y": 32
+               "y": 28
             },
             "state": "",
             "type": "View",
@@ -210,110 +125,20 @@
          {
             "tabId": "4439d7b2-c758-4eca-ad49-42f3e0280d35",
             "collapsed": false,
-            "id": "d90d4914-c64a-443d-80b4-939a7677bcc7",
-            "gridsterCoords": {
-               "w": 3,
-               "x": 10,
-               "h": 6,
-               "y": 1
-            },
-            "state": "",
-            "type": "View",
-            "title": "Are VMs facing Disk Latency?",
-            "config": {
-               "refreshInterval": 300,
-               "resource": null,
-               "titleLocalized": "Are VMs facing Disk Latency?",
-               "traversalSpecId": "",
-               "refreshContent": {"refreshContent": false},
-               "isUpdatedView": true,
-               "chartViewItems": ["labels"],
-               "selectFirstRow": {"selectFirstRow": false},
-               "selfProvider": {"selfProvider": false},
-               "title": "Are VMs facing Disk Latency?",
-               "viewDefinitionId": "0ef97d2c-770b-4c74-9c82-28a766164a39"
-            },
-            "height": 0,
-            "states": [
-               {
-                  "value": "s%3A%7B%22minType%22%3A%22.TimeIntervalControl%22%2C%22dashboardTime%22%3Atrue%7D",
-                  "key": "permSelectedDate_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_d90d4914-c64a-443d-80b4-939a7677bcc7"
-               },
-               {
-                  "value": "b%3A0",
-                  "key": "perm_toolbarVisible_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_d90d4914-c64a-443d-80b4-939a7677bcc7"
-               },
-               {
-                  "value": "b%3A0",
-                  "key": "perm_isDashboardTime_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_d90d4914-c64a-443d-80b4-939a7677bcc7"
-               }
-            ]
-         },
-         {
-            "tabId": "4439d7b2-c758-4eca-ad49-42f3e0280d35",
-            "collapsed": false,
-            "id": "1f885c55-ea9c-4acd-aa77-b6c3f2633af3",
-            "gridsterCoords": {
-               "w": 4,
-               "x": 1,
-               "h": 21,
-               "y": 7
-            },
-            "state": "",
-            "type": "View",
-            "title": "VMs Performance in selected Datacenter",
-            "config": {
-               "refreshInterval": 300,
-               "resource": null,
-               "widgetId": "1f885c55-ea9c-4acd-aa77-b6c3f2633af3",
-               "traversalSpecId": "",
-               "refreshContent": {"refreshContent": false},
-               "description": "",
-               "isUpdatedView": true,
-               "title": "VMs Performance in selected Datacenter",
-               "viewDefinitionId": "3c32ba9d-e71c-4f2c-bf46-844d1b07857f",
-               "chartViewItems": [],
-               "selectFirstRow": {"selectFirstRow": false},
-               "viewDetails": "",
-               "selfProvider": {"selfProvider": false}
-            },
-            "height": 0,
-            "states": [
-               {
-                  "value": "b%3A0",
-                  "key": "perm_isDashboardTime_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_1f885c55-ea9c-4acd-aa77-b6c3f2633af3"
-               },
-               {
-                  "value": "s%3A%7B%22minType%22%3A%22.TimeIntervalControl%22%2C%22advancedTimeMode%22%3Afalse%2C%22fromTime%22%3Anull%2C%22unit%22%3A%22HOURS%22%2C%22count%22%3A12%2C%22priorUnit%22%3Anull%2C%22priorCount%22%3Anull%2C%22startSubUnit%22%3Anull%2C%22startPeriod%22%3Anull%2C%22toTime%22%3Anull%2C%22endUnit%22%3Anull%2C%22endCount%22%3Anull%2C%22endSubUnit%22%3Anull%2C%22endPeriod%22%3Anull%2C%22isRealTimeData%22%3Anull%2C%22mondayHours%22%3Anull%2C%22tuesdayHours%22%3Anull%2C%22wednesdayHours%22%3Anull%2C%22thursdayHours%22%3Anull%2C%22fridayHours%22%3Anull%2C%22saturdayHours%22%3Anull%2C%22sundayHours%22%3Anull%7D",
-                  "key": "permSelectedDate_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_1f885c55-ea9c-4acd-aa77-b6c3f2633af3"
-               },
-               {
-                  "value": "o%3Acolumns%3Da%253Ao%25253Aid%25253Ds%2525253ApermTableView_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_1f885c55-ea9c-4acd-aa77-b6c3f2633af3-column-0%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_1f885c55-ea9c-4acd-aa77-b6c3f2633af3-column-summary%2525257Cguest%2525257ChostName1%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_1f885c55-ea9c-4acd-aa77-b6c3f2633af3-column-vCommunity%2525257CVM%25252520Guest%25252520OS%25252520KPI2%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_1f885c55-ea9c-4acd-aa77-b6c3f2633af3-column-vCommunity%2525257CVM%25252520Performance%2525257CVM%25252520Performance%25252520Score3%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_1f885c55-ea9c-4acd-aa77-b6c3f2633af3-column-guest%2525257C20_sec_peak_cpu_queue4%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_1f885c55-ea9c-4acd-aa77-b6c3f2633af3-column-cpu%2525257C20_sec_peak_readyPct5%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_1f885c55-ea9c-4acd-aa77-b6c3f2633af3-column-mem%2525257C20_sec_peak_host_contentionPct6%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_1f885c55-ea9c-4acd-aa77-b6c3f2633af3-column-guest%2525257C20_sec_peak_disk_queue7%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_1f885c55-ea9c-4acd-aa77-b6c3f2633af3-column-virtualDisk%2525257C20_sec_peak_totalLatency_average8%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_1f885c55-ea9c-4acd-aa77-b6c3f2633af3-column-net%2525257CdroppedTxPct_max9%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_1f885c55-ea9c-4acd-aa77-b6c3f2633af3-column-config%2525257Chardware%2525257CnumCpu10%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_1f885c55-ea9c-4acd-aa77-b6c3f2633af3-column-config%2525257Chardware%2525257CmemoryKB11%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_1f885c55-ea9c-4acd-aa77-b6c3f2633af3-column-config%2525257CnumVMDKs12%25255Ehidden%25253Db%2525253A0",
-                  "key": "permTableView_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_1f885c55-ea9c-4acd-aa77-b6c3f2633af3"
-               },
-               {
-                  "value": "b%3A1",
-                  "key": "perm_toolbarVisible_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_1f885c55-ea9c-4acd-aa77-b6c3f2633af3"
-               }
-            ]
-         },
-         {
-            "tabId": "4439d7b2-c758-4eca-ad49-42f3e0280d35",
-            "collapsed": false,
             "id": "1a473266-8376-4492-8c30-b53fc291a536",
             "gridsterCoords": {
                "w": 8,
                "x": 5,
                "h": 4,
-               "y": 7
+               "y": 1
             },
             "state": "",
             "type": "HealthChart",
             "title": "Guest OS Performance (%)",
             "config": {
                "yellowBound": 75,
-               "metricName": "vCommunity|VM Guest OS KPI",
-               "metricKey": "vCommunity|VM Guest OS KPI",
+               "metricName": "vCommunity|Guest OS Performance|Guest OS Performance Score",
+               "metricKey": "vCommunity|Guest OS Performance|Guest OS Performance Score",
                "relationshipMode": {"relationshipMode": 0},
                "description": "",
                "sortByDir": {"orderByDir": "asc"},
@@ -346,7 +171,7 @@
                "refreshContent": {"refreshContent": false},
                "resourceKindId": "resourceKind:id:0_::_",
                "orangeBound": 50,
-               "metricFullName": "vCommunity|VM Guest OS KPI",
+               "metricFullName": "vCommunity|Guest OS Performance|Guest OS Performance Score",
                "showMetricLabel": {"showMetricLabel": false},
                "depth": 1,
                "metricLabel": "",
@@ -367,12 +192,73 @@
          {
             "tabId": "4439d7b2-c758-4eca-ad49-42f3e0280d35",
             "collapsed": false,
+            "id": "571f460b-8dc4-43fa-8dd2-d7df6776968c",
+            "gridsterCoords": {
+               "w": 8,
+               "x": 5,
+               "h": 4,
+               "y": 5
+            },
+            "state": "",
+            "type": "HealthChart",
+            "title": "Virtual Motherboard Performance (%)",
+            "config": {
+               "yellowBound": 75,
+               "metricName": "vCommunity|VM Performance|VM Performance Score",
+               "metricKey": "vCommunity|VM Performance|VM Performance Score",
+               "relationshipMode": {"relationshipMode": 0},
+               "description": "",
+               "sortByDir": {"orderByDir": "asc"},
+               "title": "Virtual Motherboard Performance (%)",
+               "showResourceName": {"showResourceName": true},
+               "chartHeight": 135,
+               "metricUnit": {
+                  "metricUnitId": -1,
+                  "metricUnitName": "Default Unit"
+               },
+               "undefined": [],
+               "mode": "all",
+               "metricType": {"metricType": "custom"},
+               "filterMode": "tagPicker",
+               "tagFilter": null,
+               "paginationNumber": 15,
+               "customFilter": {
+                  "filter": [],
+                  "filterMode": "tagPicker",
+                  "excludedResources": null,
+                  "includedResources": null
+               },
+               "selectFirstRow": {"selectFirstRow": false},
+               "sortBy": "metricValue",
+               "viewDetails": "",
+               "selfProvider": {"selfProvider": false},
+               "refreshInterval": 300,
+               "resource": [],
+               "widgetId": "571f460b-8dc4-43fa-8dd2-d7df6776968c",
+               "refreshContent": {"refreshContent": false},
+               "resourceKindId": "resourceKind:id:0_::_",
+               "orangeBound": 50,
+               "metricFullName": "vCommunity|VM Performance|VM Performance Score",
+               "showMetricLabel": {"showMetricLabel": false},
+               "depth": 1,
+               "metricLabel": "",
+               "redBound": 25
+            },
+            "height": 0,
+            "states": [{
+               "value": "s%3A%7B%22dateRange%22%3A%22dashboardTime%22%2C%22dateFrom%22%3Anull%2C%22dateTo%22%3Anull%2C%22timeFrom%22%3Anull%2C%22timeTo%22%3Anull%7D",
+               "key": "permDateRange_HealthChart_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_571f460b-8dc4-43fa-8dd2-d7df6776968c"
+            }]
+         },
+         {
+            "tabId": "4439d7b2-c758-4eca-ad49-42f3e0280d35",
+            "collapsed": false,
             "id": "be75c6df-e5ba-494c-be20-c78da16138d8",
             "gridsterCoords": {
                "w": 8,
                "x": 5,
                "h": 3,
-               "y": 15
+               "y": 9
             },
             "state": "",
             "type": "Scoreboard",
@@ -594,7 +480,7 @@
                "w": 8,
                "x": 5,
                "h": 3,
-               "y": 18
+               "y": 12
             },
             "state": "",
             "type": "Scoreboard",
@@ -807,7 +693,7 @@
                "w": 8,
                "x": 5,
                "h": 3,
-               "y": 21
+               "y": 15
             },
             "state": "",
             "type": "Scoreboard",
@@ -1014,7 +900,7 @@
                "w": 8,
                "x": 5,
                "h": 3,
-               "y": 24
+               "y": 18
             },
             "state": "",
             "type": "Scoreboard",
@@ -1209,8 +1095,8 @@
             "gridsterCoords": {
                "w": 8,
                "x": 5,
-               "h": 4,
-               "y": 27
+               "h": 7,
+               "y": 21
             },
             "state": "",
             "type": "AlertList",
@@ -1269,20 +1155,20 @@
                   "key": "permDateFilter_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_b10e6971-abc6-4dea-a0dd-2dd9b4434aec"
                },
                {
-                  "value": "o%3Acolumns%3Da%253Ao%25253Aid%25253Ds%2525253Ah1%25255Ehidden%25253Db%2525253A1%25255Ewidth%25253Dn%2525253A100%255Eo%25253Aid%25253Ds%2525253Ah2%255Eo%25253Aid%25253Ds%2525253Ah3%255Eo%25253Aid%25253Ds%2525253Ah4%255Eo%25253Aid%25253Ds%2525253Ah5%255Eo%25253Aid%25253Ds%2525253Ah6%255Eo%25253Aid%25253Ds%2525253Ah7%25255Ehidden%25253Db%2525253A1%255Eo%25253Aid%25253Ds%2525253Ah8%25255Ehidden%25253Db%2525253A1%255Eo%25253Aid%25253Ds%2525253Ah9%25255Ehidden%25253Db%2525253A1%255Eo%25253Aid%25253Ds%2525253Ah10%25255Ehidden%25253Db%2525253A1%255Eo%25253Aid%25253Ds%2525253Ah11%255Eo%25253Aid%25253Ds%2525253Ah12%255Eo%25253Aid%25253Ds%2525253Ah13%25255Ehidden%25253Db%2525253A1%255Eo%25253Aid%25253Ds%2525253Ah14%25255Ehidden%25253Db%2525253A1%255Eo%25253Aid%25253Ds%2525253Ah15%25255Ehidden%25253Db%2525253A0%5EstoreState%3Do%253Asorters%253Da%25253Ao%2525253Aroot%2525253Ds%252525253Adata%2525255Eproperty%2525253Ds%252525253AstartTimeUtc%2525255Edirection%2525253Ds%252525253ADESC%2525255Eid%2525253Ds%252525253AstartTimeUtc",
+                  "value": "o%3Acolumns%3Da%253Ao%25253Aid%25253Ds%2525253Ah16%255Eo%25253Aid%25253Ds%2525253Ah1%25255Ehidden%25253Db%2525253A1%25255Ewidth%25253Dn%2525253A100%255Eo%25253Aid%25253Ds%2525253Ah2%255Eo%25253Aid%25253Ds%2525253Ah3%255Eo%25253Aid%25253Ds%2525253Ah4%255Eo%25253Aid%25253Ds%2525253Ah5%255Eo%25253Aid%25253Ds%2525253Ah6%255Eo%25253Aid%25253Ds%2525253Ah7%25255Ehidden%25253Db%2525253A1%255Eo%25253Aid%25253Ds%2525253Ah8%25255Ehidden%25253Db%2525253A1%255Eo%25253Aid%25253Ds%2525253Ah9%25255Ehidden%25253Db%2525253A1%255Eo%25253Aid%25253Ds%2525253Ah10%25255Ehidden%25253Db%2525253A1%255Eo%25253Aid%25253Ds%2525253Ah11%255Eo%25253Aid%25253Ds%2525253Ah12%255Eo%25253Aid%25253Ds%2525253Ah13%25255Ehidden%25253Db%2525253A1%255Eo%25253Aid%25253Ds%2525253Ah14%25255Ehidden%25253Db%2525253A1%255Eo%25253Aid%25253Ds%2525253Ah15%25255Ehidden%25253Db%2525253A0%5EstoreState%3Do%253Asorters%253Da%25253Ao%2525253Aroot%2525253Ds%252525253Adata%2525255Eproperty%2525253Ds%252525253AstartTimeUtc%2525255Edirection%2525253Ds%252525253ADESC%2525255Eid%2525253Ds%252525253AstartTimeUtc",
                   "key": "permAlertGrid_perm_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_b10e6971-abc6-4dea-a0dd-2dd9b4434aec"
                }
             ]
          },
          {
             "tabId": "4439d7b2-c758-4eca-ad49-42f3e0280d35",
-            "collapsed": true,
+            "collapsed": false,
             "id": "1119e157-da66-40ce-a837-2cfddb5d9175",
             "gridsterCoords": {
-               "w": 8,
-               "x": 5,
-               "h": 1,
-               "y": 31
+               "w": 4,
+               "x": 1,
+               "h": 7,
+               "y": 21
             },
             "state": "",
             "type": "Scoreboard",
@@ -1330,6 +1216,7 @@
                         "label": "vCPU",
                         "resourceKindId": "resourceKind:id:0_::_",
                         "orangeBound": 32,
+                        "metricUnit": "",
                         "labelOrig": "vCPU",
                         "unit": "",
                         "labelLocalized": "vCPU",
@@ -1349,6 +1236,7 @@
                         "label": "CPU cores per socket",
                         "resourceKindId": "resourceKind:id:0_::_",
                         "orangeBound": null,
+                        "metricUnit": "",
                         "labelOrig": "CPU cores per socket",
                         "unit": "",
                         "labelLocalized": "CPU cores per socket",
@@ -1368,6 +1256,7 @@
                         "label": "CPU Limit",
                         "resourceKindId": "resourceKind:id:0_::_",
                         "orangeBound": 0.2,
+                        "metricUnit": "GHz",
                         "labelOrig": "CPU Limit",
                         "unit": "GHz",
                         "labelLocalized": "CPU Limit",
@@ -1387,6 +1276,7 @@
                         "label": "CPU Share",
                         "resourceKindId": "resourceKind:id:0_::_",
                         "orangeBound": null,
+                        "metricUnit": "",
                         "labelOrig": "CPU Share",
                         "unit": "",
                         "labelLocalized": "CPU Share",
@@ -1406,6 +1296,7 @@
                         "label": "",
                         "resourceKindId": "resourceKind:id:0_::_",
                         "orangeBound": null,
+                        "metricUnit": "GB",
                         "labelOrig": "",
                         "unit": "GB",
                         "labelLocalized": "",
@@ -1425,6 +1316,7 @@
                         "label": "Memory Limit",
                         "resourceKindId": "resourceKind:id:0_::_",
                         "orangeBound": 0.2,
+                        "metricUnit": "GB",
                         "labelOrig": "Memory Limit",
                         "unit": "GB",
                         "labelLocalized": "Memory Limit",
@@ -1444,6 +1336,7 @@
                         "label": "Memory Share",
                         "resourceKindId": "resourceKind:id:0_::_",
                         "orangeBound": null,
+                        "metricUnit": "",
                         "labelOrig": "Memory Share",
                         "unit": "",
                         "labelLocalized": "Memory Share",
@@ -1480,6 +1373,7 @@
                         "label": "Snapshot Age",
                         "resourceKindId": "resourceKind:id:0_::_",
                         "orangeBound": 5,
+                        "metricUnit": "",
                         "labelOrig": "Snapshot Age",
                         "unit": "",
                         "labelLocalized": "Snapshot Age",
@@ -1550,6 +1444,7 @@
                         "label": "Hardware Version",
                         "resourceKindId": "resourceKind:id:0_::_",
                         "orangeBound": null,
+                        "metricUnit": "",
                         "labelOrig": "Hardware Version",
                         "unit": "",
                         "labelLocalized": "Hardware Version",
@@ -1569,6 +1464,7 @@
                         "label": "No of Disks",
                         "resourceKindId": "resourceKind:id:0_::_",
                         "orangeBound": 8,
+                        "metricUnit": "",
                         "labelOrig": "No of Disks",
                         "unit": "",
                         "labelLocalized": "No of Disks",
@@ -1643,9 +1539,9 @@
             "id": "54c44fd4-ffef-4bab-8dd8-7b164d70d804",
             "gridsterCoords": {
                "w": 8,
-               "x": 1,
+               "x": 5,
                "h": 5,
-               "y": 32
+               "y": 28
             },
             "state": "",
             "type": "ResourceRelationshipAdvanced",
@@ -1707,65 +1603,6 @@
                   "key": "perm_toolbarVisible_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_54c44fd4-ffef-4bab-8dd8-7b164d70d804"
                }
             ]
-         },
-         {
-            "tabId": "4439d7b2-c758-4eca-ad49-42f3e0280d35",
-            "collapsed": false,
-            "id": "571f460b-8dc4-43fa-8dd2-d7df6776968c",
-            "gridsterCoords": {
-               "w": 8,
-               "x": 5,
-               "h": 4,
-               "y": 11
-            },
-            "state": "",
-            "type": "HealthChart",
-            "title": "VM Performance (%)",
-            "config": {
-               "yellowBound": 75,
-               "metricName": "vCommunity|VM Performance|VM Performance Score",
-               "metricKey": "vCommunity|VM Performance|VM Performance Score",
-               "relationshipMode": {"relationshipMode": 0},
-               "description": "",
-               "sortByDir": {"orderByDir": "asc"},
-               "title": "VM Performance (%)",
-               "showResourceName": {"showResourceName": true},
-               "chartHeight": 135,
-               "metricUnit": {
-                  "metricUnitId": -1,
-                  "metricUnitName": "Default Unit"
-               },
-               "mode": "all",
-               "metricType": {"metricType": "custom"},
-               "filterMode": "tagPicker",
-               "tagFilter": null,
-               "paginationNumber": 15,
-               "customFilter": {
-                  "filter": [],
-                  "excludedResources": null,
-                  "includedResources": null
-               },
-               "selectFirstRow": {"selectFirstRow": false},
-               "sortBy": "metricValue",
-               "viewDetails": "",
-               "selfProvider": {"selfProvider": false},
-               "refreshInterval": 300,
-               "resource": [],
-               "widgetId": "571f460b-8dc4-43fa-8dd2-d7df6776968c",
-               "refreshContent": {"refreshContent": false},
-               "resourceKindId": "resourceKind:id:0_::_",
-               "orangeBound": 50,
-               "metricFullName": "vCommunity|VM Performance|VM Performance Score",
-               "showMetricLabel": {"showMetricLabel": false},
-               "depth": 1,
-               "metricLabel": "",
-               "redBound": 25
-            },
-            "height": 0,
-            "states": [{
-               "value": "s%3A%7B%22dateRange%22%3A%22dashboardTime%22%2C%22dateFrom%22%3Anull%2C%22dateTo%22%3Anull%2C%22timeFrom%22%3Anull%2C%22timeTo%22%3Anull%7D",
-               "key": "permDateRange_HealthChart_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_571f460b-8dc4-43fa-8dd2-d7df6776968c"
-            }]
          }
       ],
       "states": [{
@@ -1806,26 +1643,6 @@
          ]
       },
       "widgetInteractions": [
-         {
-            "widgetIdProvider": "4f878842-0e35-4e7a-8763-70cf9e11d7a0",
-            "type": "resourceId",
-            "widgetIdReceiver": "1f885c55-ea9c-4acd-aa77-b6c3f2633af3"
-         },
-         {
-            "widgetIdProvider": "4f878842-0e35-4e7a-8763-70cf9e11d7a0",
-            "type": "resourceId",
-            "widgetIdReceiver": "eda7eca0-8a63-403d-8c39-4cf20dee4584"
-         },
-         {
-            "widgetIdProvider": "4f878842-0e35-4e7a-8763-70cf9e11d7a0",
-            "type": "resourceId",
-            "widgetIdReceiver": "bb5f1457-c0ea-479a-9b28-a8dc4778fd0d"
-         },
-         {
-            "widgetIdProvider": "4f878842-0e35-4e7a-8763-70cf9e11d7a0",
-            "type": "resourceId",
-            "widgetIdReceiver": "d90d4914-c64a-443d-80b4-939a7677bcc7"
-         },
          {
             "widgetIdProvider": "1f885c55-ea9c-4acd-aa77-b6c3f2633af3",
             "type": "resourceId",
@@ -1884,7 +1701,7 @@
       "userId": "936105f8-faa4-48cb-b268-0eec2ea9e205",
       "name": "vCommunity/VM Performance 2.0",
       "gridsterMaxColumns": 12,
-      "lastUpdateTime": 1793264374812
+      "lastUpdateTime": 1793767343701
    }],
-   "uuid": "7a381f03-e07e-4fe2-8cc9-fb3e5f5d918f"
+   "uuid": "a78ac817-b8ed-40f5-9b62-96ccbc5bbff6"
 }

@@ -4597,13 +4597,11 @@ Source: vSphere Adapter</Description>
                         
             <Usage>report</Usage>
                         
-            <Usage>details</Usage>
-                        
             <Usage>content</Usage>
                         
             <Controls>
                                 
-                <Control id="time-interval-selector_id_318" type="time-interval-selector" visible="false">
+                <Control id="time-interval-selector_id_1866" type="time-interval-selector" visible="false">
                                         
                     <Property name="advancedTimeMode" value="false"/>
                                         
@@ -4613,44 +4611,46 @@ Source: vSphere Adapter</Description>
                                     
                 </Control>
                                 
-                <Control id="attributes-selector_id_319" type="attributes-selector" visible="false">
+                <Control id="attributes-selector_id_1867" type="attributes-selector" visible="false">
                                         
                     <Property name="attributeInfos">
                                                 
                         <List>
                                                         
                             <Item>
-                                
+                                                                
                                 <Value>
-                                        
+                                                                        
                                     <Property name="objectType" value="RESOURCE"/>
-                                        
+                                                                        
                                     <Property name="attributeKey" value="vCommunity|Configuration|Share per vCPU"/>
-                                        
+                                                                        
                                     <Property name="isStringAttribute" value="false"/>
-                                        
+                                                                        
                                     <Property name="adapterKind" value="VMWARE"/>
-                                        
+                                                                        
                                     <Property name="resourceKind" value="VirtualMachine"/>
-                                        
+                                                                        
                                     <Property name="rollUpCount" value="0"/>
-                                        
+                                                                        
                                     <Property name="transformations">
-                                                
+                                                                                
                                         <List>
-                                                        
+                                                                                        
                                             <Item value="CURRENT"/>
-                                                    
+                                                                                    
                                         </List>
-                                            
+                                                                            
                                     </Property>
-                                        
+                                                                        
+                                    <Property name="sortCriteria" value="true"/>
+                                                                        
                                     <Property name="isProperty" value="true"/>
-                                        
+                                                                        
                                     <Property name="displayName" value="Share per vCPU"/>
-                                        
+                                                                        
                                     <Property name="isShowRelativeTimestamp" value="false"/>
-                                    
+                                                                    
                                 </Value>
                                                             
                             </Item>
@@ -4661,7 +4661,7 @@ Source: vSphere Adapter</Description>
                                     
                 </Control>
                                 
-                <Control id="buckets-control_id_320" type="buckets-control" visible="false">
+                <Control id="buckets-control_id_1868" type="buckets-control" visible="false">
                                         
                     <Property name="dynamicCalcFunction" value="DISCRETE"/>
                                         
@@ -4671,9 +4671,11 @@ Source: vSphere Adapter</Description>
                                     
                 </Control>
                                 
-                <Control id="metadata_id_321" type="metadata" visible="false">
+                <Control id="metadata_id_1869" type="metadata" visible="false">
                                         
                     <Property name="maxPointsCount" value="5000"/>
+                                        
+                    <Property name="distributionColor" value="0099DB"/>
                                         
                     <Property name="hideObjectNameColumn" value="false"/>
                                         
@@ -4685,7 +4687,7 @@ Source: vSphere Adapter</Description>
                         
             <DataProviders>
                                 
-                <DataProvider dataType="distribution-view" id="distribution-view_id_317"/>
+                <DataProvider dataType="distribution-view" id="distribution-view_id_1865"/>
                             
             </DataProviders>
                         
@@ -6424,13 +6426,11 @@ The properties exclude storage, as there is a separate dashboard for storage rel
                         
             <Usage>report</Usage>
                         
-            <Usage>details</Usage>
-                        
             <Usage>content</Usage>
                         
             <Controls>
                                 
-                <Control id="time-interval-selector_id_333" type="time-interval-selector" visible="false">
+                <Control id="time-interval-selector_id_1886" type="time-interval-selector" visible="false">
                                         
                     <Property name="advancedTimeMode" value="false"/>
                                         
@@ -6440,44 +6440,46 @@ The properties exclude storage, as there is a separate dashboard for storage rel
                                     
                 </Control>
                                 
-                <Control id="attributes-selector_id_334" type="attributes-selector" visible="false">
+                <Control id="attributes-selector_id_1887" type="attributes-selector" visible="false">
                                         
                     <Property name="attributeInfos">
                                                 
                         <List>
                                                         
                             <Item>
-                                
+                                                                
                                 <Value>
-                                        
+                                                                        
                                     <Property name="objectType" value="RESOURCE"/>
-                                        
+                                                                        
                                     <Property name="attributeKey" value="vCommunity|Configuration|Share per MB of Memory"/>
-                                        
+                                                                        
                                     <Property name="isStringAttribute" value="false"/>
-                                        
+                                                                        
                                     <Property name="adapterKind" value="VMWARE"/>
-                                        
+                                                                        
                                     <Property name="resourceKind" value="VirtualMachine"/>
-                                        
+                                                                        
                                     <Property name="rollUpCount" value="0"/>
-                                        
+                                                                        
                                     <Property name="transformations">
-                                                
+                                                                                
                                         <List>
-                                                        
+                                                                                        
                                             <Item value="CURRENT"/>
-                                                    
+                                                                                    
                                         </List>
-                                            
+                                                                            
                                     </Property>
-                                        
+                                                                        
+                                    <Property name="sortCriteria" value="true"/>
+                                                                        
                                     <Property name="isProperty" value="true"/>
-                                        
+                                                                        
                                     <Property name="displayName" value="Share per MB of Memory"/>
-                                        
+                                                                        
                                     <Property name="isShowRelativeTimestamp" value="false"/>
-                                    
+                                                                    
                                 </Value>
                                                             
                             </Item>
@@ -6488,7 +6490,7 @@ The properties exclude storage, as there is a separate dashboard for storage rel
                                     
                 </Control>
                                 
-                <Control id="buckets-control_id_335" type="buckets-control" visible="false">
+                <Control id="buckets-control_id_1888" type="buckets-control" visible="false">
                                         
                     <Property name="dynamicCalcFunction" value="DISCRETE"/>
                                         
@@ -6498,9 +6500,11 @@ The properties exclude storage, as there is a separate dashboard for storage rel
                                     
                 </Control>
                                 
-                <Control id="metadata_id_336" type="metadata" visible="false">
+                <Control id="metadata_id_1889" type="metadata" visible="false">
                                         
                     <Property name="maxPointsCount" value="5000"/>
+                                        
+                    <Property name="distributionColor" value="0099DB"/>
                                         
                     <Property name="hideObjectNameColumn" value="false"/>
                                         
@@ -6512,7 +6516,7 @@ The properties exclude storage, as there is a separate dashboard for storage rel
                         
             <DataProviders>
                                 
-                <DataProvider dataType="distribution-view" id="distribution-view_id_332"/>
+                <DataProvider dataType="distribution-view" id="distribution-view_id_1885"/>
                             
             </DataProviders>
                         
