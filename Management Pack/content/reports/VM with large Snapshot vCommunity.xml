@@ -7,8 +7,7 @@
                         
             <Title>VM with large Snapshot</Title>
                         
-            <Description>Distribution of VM by their snapshots size. Snapshots are temporary protection, so a large one indicates unexpected result. Investigates the age too. If it's old, then it could be a forgotten snapshot. It's showing snapshot that is older than 1 day, as daily back up typically creates a snapshot.
-		</Description>
+            <Description>Count of VM with large snapshots. Configure the threshold. Snapshots are temporary protection, so a large one indicates unexpected result. </Description>
                         
             <SubjectType adapterKind="VMWARE" filter="[[{&quot;filterType&quot;:&quot;metrics&quot;,&quot;metricKey&quot;:&quot;diskspace|snapshot&quot;,&quot;condition&quot;:&quot;GREATER_THAN&quot;,&quot;metricValue&quot;:{&quot;value&quot;:10,&quot;isStringMetric&quot;:false},&quot;transform&quot;:&quot;CURRENT&quot;}]]" resourceKind="VirtualMachine" type="descendant"/>
                         
@@ -20,7 +19,7 @@
                         
             <Controls>
                                 
-                <Control id="time-interval-selector_id_944" type="time-interval-selector" visible="false">
+                <Control id="time-interval-selector_id_1776" type="time-interval-selector" visible="false">
                                         
                     <Property name="advancedTimeMode" value="false"/>
                                         
@@ -30,7 +29,7 @@
                                     
                 </Control>
                                 
-                <Control id="attributes-selector_id_945" type="attributes-selector" visible="false">
+                <Control id="attributes-selector_id_1777" type="attributes-selector" visible="false">
                                         
                     <Property name="attributeInfos">
                                                 
@@ -68,7 +67,7 @@
                                                                         
                                     <Property name="isProperty" value="false"/>
                                                                         
-                                    <Property name="displayName" value="Snapshot size"/>
+                                    <Property name="displayName" value="."/>
                                                                         
                                     <Property name="isShowRelativeTimestamp" value="false"/>
                                                                     
@@ -82,9 +81,9 @@
                                     
                 </Control>
                                 
-                <Control id="buckets-control_id_946" type="buckets-control" visible="false">
+                <Control id="buckets-control_id_1778" type="buckets-control" visible="false">
                                         
-                    <Property name="bucketCount" value="10"/>
+                    <Property name="bucketCount" value="1"/>
                                         
                     <Property name="maxValue" value="100"/>
                                         
@@ -98,11 +97,11 @@
                                     
                 </Control>
                                 
-                <Control id="metadata_id_947" type="metadata" visible="false">
+                <Control id="metadata_id_1779" type="metadata" visible="false">
                                         
                     <Property name="maxPointsCount" value="5000"/>
                                         
-                    <Property name="distributionColor" value="D23292"/>
+                    <Property name="distributionColor" value="0099DB"/>
                                         
                     <Property name="hideObjectNameColumn" value="false"/>
                                         
@@ -114,11 +113,11 @@
                         
             <DataProviders>
                                 
-                <DataProvider dataType="distribution-view" id="distribution-view_id_943"/>
+                <DataProvider dataType="distribution-view" id="distribution-view_id_1775"/>
                             
             </DataProviders>
                         
-            <Presentation type="pie-chart"/>
+            <Presentation type="bar-chart"/>
                     
         </ViewDef>
             

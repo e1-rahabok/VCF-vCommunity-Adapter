@@ -22,7 +22,7 @@ A blank status means the VMware Tools are not even installed.
                         
             <Controls>
                                 
-                <Control id="time-interval-selector_id_999" type="time-interval-selector" visible="false">
+                <Control id="time-interval-selector_id_1796" type="time-interval-selector" visible="false">
                                         
                     <Property name="advancedTimeMode" value="false"/>
                                         
@@ -32,7 +32,7 @@ A blank status means the VMware Tools are not even installed.
                                     
                 </Control>
                                 
-                <Control id="attributes-selector_id_1000" type="attributes-selector" visible="false">
+                <Control id="attributes-selector_id_1797" type="attributes-selector" visible="false">
                                         
                     <Property name="attributeInfos">
                                                 
@@ -55,6 +55,8 @@ A blank status means the VMware Tools are not even installed.
                                     <Property name="rollUpCount" value="0"/>
                                                                         
                                     <Property name="isProperty" value="true"/>
+                                                                        
+                                    <Property name="displayName" value="."/>
                                                                     
                                 </Value>
                                                             
@@ -66,7 +68,7 @@ A blank status means the VMware Tools are not even installed.
                                     
                 </Control>
                                 
-                <Control id="buckets-control_id_1001" type="buckets-control" visible="false">
+                <Control id="buckets-control_id_1798" type="buckets-control" visible="false">
                                         
                     <Property name="bucketCount" value="1"/>
                                         
@@ -78,11 +80,11 @@ A blank status means the VMware Tools are not even installed.
                                     
                 </Control>
                                 
-                <Control id="metadata_id_1002" type="metadata" visible="false">
+                <Control id="metadata_id_1799" type="metadata" visible="false">
                                         
                     <Property name="maxPointsCount" value="5000"/>
                                         
-                    <Property name="distributionColor" value="D23292"/>
+                    <Property name="distributionColor" value="0099DB"/>
                                         
                     <Property name="hideObjectNameColumn" value="false"/>
                                         
@@ -94,11 +96,11 @@ A blank status means the VMware Tools are not even installed.
                         
             <DataProviders>
                                 
-                <DataProvider dataType="distribution-view" id="distribution-view_id_998"/>
+                <DataProvider dataType="distribution-view" id="distribution-view_id_1795"/>
                             
             </DataProviders>
                         
-            <Presentation type="pie-chart"/>
+            <Presentation type="bar-chart"/>
                     
         </ViewDef>
             
