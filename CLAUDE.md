@@ -22,6 +22,10 @@ pwsh tools/install/install.ps1
 
 Uploads and installs the newest pak for the `manifest.txt` version (unsigned, signature checking ignored). Run it directly, as part of one end-to-end process. Do not ask the user to type or run anything for the install. If the platform blocks the script, report the block and stop. Do not work around it. Then run `pwsh tools/restart/restart.ps1` (the pack's Adapter Instances often stop collecting after an upgrade), wait one collection cycle, and run the live validation. Details: [tools/install/install.md](tools/install/install.md), [tools/restart/restart.md](tools/restart/restart.md).
 
+## Releasing
+
+A release is its pak. Every GitHub release gets the validated `vCommunity_<version>.pak` attached, after the sign-off in [tools/validate/validate.md](tools/validate/validate.md#release-sign-off) passes (`validate.ps1 -ExpectedVersion <version> -Release`).
+
 ## Screenshots
 
 ```
