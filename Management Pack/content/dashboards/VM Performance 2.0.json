@@ -1,31 +1,40 @@
 {
-   "entries": {"resourceKind": [
-      {
-         "resourceKindKey": "HostSystem",
-         "internalId": "resourceKind:id:3_::_",
-         "adapterKindKey": "VMWARE"
-      },
-      {
-         "resourceKindKey": "VirtualMachine",
-         "internalId": "resourceKind:id:0_::_",
-         "adapterKindKey": "VMWARE"
-      },
-      {
-         "resourceKindKey": "ClusterComputeResource",
-         "internalId": "resourceKind:id:1_::_",
-         "adapterKindKey": "VMWARE"
-      },
-      {
-         "resourceKindKey": "ResourcePool",
-         "internalId": "resourceKind:id:4_::_",
-         "adapterKindKey": "VMWARE"
-      },
-      {
-         "resourceKindKey": "Datastore",
-         "internalId": "resourceKind:id:2_::_",
-         "adapterKindKey": "VMWARE"
-      }
-   ]},
+   "entries": {
+      "resourceKind": [
+         {
+            "resourceKindKey": "HostSystem",
+            "internalId": "resourceKind:id:3_::_",
+            "adapterKindKey": "VMWARE"
+         },
+         {
+            "resourceKindKey": "VirtualMachine",
+            "internalId": "resourceKind:id:0_::_",
+            "adapterKindKey": "VMWARE"
+         },
+         {
+            "resourceKindKey": "ClusterComputeResource",
+            "internalId": "resourceKind:id:1_::_",
+            "adapterKindKey": "VMWARE"
+         },
+         {
+            "resourceKindKey": "ResourcePool",
+            "internalId": "resourceKind:id:4_::_",
+            "adapterKindKey": "VMWARE"
+         },
+         {
+            "resourceKindKey": "Datastore",
+            "internalId": "resourceKind:id:2_::_",
+            "adapterKindKey": "VMWARE"
+         }
+      ],
+      "resource": [{
+         "resourceKindKey": "vSphere World",
+         "internalId": "resource:id:0_::_",
+         "adapterKindKey": "VMWARE",
+         "identifiers": [],
+         "name": "vSphere World"
+      }]
+   },
    "dashboards": [{
       "shared": true,
       "hidden": true,
@@ -43,8 +52,8 @@
             "gridsterCoords": {
                "w": 4,
                "x": 1,
-               "h": 20,
-               "y": 1
+               "h": 14,
+               "y": 7
             },
             "state": "",
             "type": "View",
@@ -59,6 +68,7 @@
                "isUpdatedView": true,
                "title": "VMs Performance in selected Datacenter",
                "viewDefinitionId": "3c32ba9d-e71c-4f2c-bf46-844d1b07857f",
+               "titleLocalized": "VMs Performance in selected Datacenter",
                "chartViewItems": [],
                "selectFirstRow": {"selectFirstRow": false},
                "viewDetails": "",
@@ -83,6 +93,522 @@
                   "key": "perm_toolbarVisible_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_1f885c55-ea9c-4acd-aa77-b6c3f2633af3"
                }
             ]
+         },
+         {
+            "tabId": "4439d7b2-c758-4eca-ad49-42f3e0280d35",
+            "collapsed": false,
+            "id": "241672cf-d3ee-49c7-acd2-7fe1e4bf5919",
+            "gridsterCoords": {
+               "w": 4,
+               "x": 1,
+               "h": 6,
+               "y": 1
+            },
+            "state": "",
+            "type": "View",
+            "title": "Datacenters",
+            "config": {
+               "refreshInterval": 300,
+               "resource": {
+                  "resourceId": "resource:id:0_::_",
+                  "traversalSpecId": "vSphere Hosts and Clusters-VMWARE-vSphere World",
+                  "resourceName": "vSphere World",
+                  "resourceKindId": "002006VMWAREvSphere World",
+                  "id": "Ext.vcops.chrome.model.Resource-4"
+               },
+               "widgetId": "241672cf-d3ee-49c7-acd2-7fe1e4bf5919",
+               "traversalSpecId": null,
+               "refreshContent": {"refreshContent": false},
+               "description": "Choose World if you want to see the whole environment",
+               "isUpdatedView": true,
+               "title": "Datacenters",
+               "viewDefinitionId": "3a88e1a7-511c-440d-868b-65df4a2c7898",
+               "viewType": "LIST",
+               "chartViewItems": [],
+               "selectFirstRow": {"selectFirstRow": false},
+               "viewDetails": "",
+               "selfProvider": {"selfProvider": true}
+            },
+            "height": 0,
+            "states": [{
+               "value": "o%3Acolumns%3Da%253Ao%25253Aid%25253Ds%2525253ApermTableView_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_241672cf-d3ee-49c7-acd2-7fe1e4bf5919-column-0%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_241672cf-d3ee-49c7-acd2-7fe1e4bf5919-column-summary%2525257Ctotal_number_clusters1%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_241672cf-d3ee-49c7-acd2-7fe1e4bf5919-column-summary%2525257Ctotal_number_hosts2%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_241672cf-d3ee-49c7-acd2-7fe1e4bf5919-column-summary%2525257Ctotal_number_datastores3%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_241672cf-d3ee-49c7-acd2-7fe1e4bf5919-column-summary%2525257Ctotal_number_vms4%25255Ehidden%25253Db%2525253A0%255Eo%25253Aid%25253Ds%2525253ApermTableView_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_241672cf-d3ee-49c7-acd2-7fe1e4bf5919-column-summary%2525257CparentVcenter5%25255Ehidden%25253Db%2525253A0",
+               "key": "permTableView_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_241672cf-d3ee-49c7-acd2-7fe1e4bf5919"
+            }]
+         },
+         {
+            "tabId": "4439d7b2-c758-4eca-ad49-42f3e0280d35",
+            "collapsed": false,
+            "id": "98cbe6fb-aca4-4df6-898b-025f15314425",
+            "gridsterCoords": {
+               "w": 8,
+               "x": 5,
+               "h": 3,
+               "y": 18
+            },
+            "state": "",
+            "type": "Scoreboard",
+            "title": "Network Performance",
+            "config": {
+               "maxCellCount": 100,
+               "oldMetricValues": false,
+               "relationshipMode": {"relationshipMode": 0},
+               "valueSize": 24,
+               "title": "Network Performance",
+               "boxHeight": null,
+               "showResourceName": {"showResourceName": false},
+               "roundDecimals": 0,
+               "mode": {"layoutMode": "fixedView"},
+               "labelSize": 16,
+               "titleLocalized": "Network Performance",
+               "customFilter": {
+                  "filter": [],
+                  "excludedResources": null,
+                  "includedResources": null
+               },
+               "selfProvider": {"selfProvider": false},
+               "resInteractionMode": null,
+               "visualTheme": 8,
+               "showMetricName": {"showMetricName": true},
+               "refreshInterval": 300,
+               "resource": [],
+               "showDT": {"showDT": false},
+               "refreshContent": {"refreshContent": false},
+               "showMetricUnit": {"showMetricUnit": true},
+               "depth": 1,
+               "metric": {
+                  "mode": "resourceKind",
+                  "resourceMetrics": [],
+                  "resourceKindMetrics": [
+                     {
+                        "yellowBound": 1,
+                        "metricUnitId": -1,
+                        "metricName": "Network:Aggregate of all instances|Packets Dropped",
+                        "metricKey": "net:Aggregate of all instances|droppedPct",
+                        "handleOldColoring": false,
+                        "maxValue": "",
+                        "link": "",
+                        "isStringMetric": false,
+                        "resourceKindName": "Virtual Machine",
+                        "label": "",
+                        "resourceKindId": "resourceKind:id:0_::_",
+                        "orangeBound": 2,
+                        "metricUnit": "Auto",
+                        "labelOrig": "",
+                        "unit": "Auto",
+                        "labelLocalized": "",
+                        "id": "extModel97229-1",
+                        "redBound": 4,
+                        "colorMethod": 0
+                     },
+                     {
+                        "yellowBound": 25,
+                        "metricUnitId": "packets",
+                        "metricName": "Network|Total Transmitted Packets Dropped",
+                        "metricKey": "net|droppedTx_summation_sum",
+                        "handleOldColoring": false,
+                        "maxValue": "",
+                        "link": "",
+                        "isStringMetric": false,
+                        "resourceKindName": "Virtual Machine",
+                        "label": "TX Packets Dropped",
+                        "resourceKindId": "resourceKind:id:0_::_",
+                        "orangeBound": 100,
+                        "metricUnit": "packets",
+                        "labelOrig": "TX Packets Dropped",
+                        "unit": "packets",
+                        "labelLocalized": "TX Packets Dropped",
+                        "id": "extModel97229-4",
+                        "redBound": 400,
+                        "colorMethod": 0
+                     },
+                     {
+                        "yellowBound": null,
+                        "metricUnitId": "mbitsps",
+                        "metricName": "Network|Peak Usage Rate within collection cycle",
+                        "metricKey": "net|20_sec_peak_usage_average",
+                        "handleOldColoring": false,
+                        "maxValue": "",
+                        "link": "",
+                        "isStringMetric": false,
+                        "resourceKindName": "Virtual Machine",
+                        "label": "Peak Throughput",
+                        "resourceKindId": "resourceKind:id:0_::_",
+                        "orangeBound": null,
+                        "metricUnit": "Mbps",
+                        "labelOrig": "Peak Throughput",
+                        "unit": "Mbps",
+                        "labelLocalized": "Peak Throughput",
+                        "id": "extModel39279-1",
+                        "redBound": null,
+                        "colorMethod": 2
+                     },
+                     {
+                        "yellowBound": null,
+                        "metricUnitId": "mbitsps",
+                        "metricName": "Network|Data Receive Rate",
+                        "metricKey": "net|received_average",
+                        "handleOldColoring": false,
+                        "link": "",
+                        "isStringMetric": false,
+                        "resourceKindName": "Virtual Machine",
+                        "label": "Receive Rate",
+                        "resourceKindId": "resourceKind:id:0_::_",
+                        "orangeBound": null,
+                        "metricUnit": "Mbps",
+                        "labelOrig": "Receive Rate",
+                        "unit": "Mbps",
+                        "labelLocalized": "Receive Rate",
+                        "id": "extModel6215-1",
+                        "redBound": null,
+                        "colorMethod": 2
+                     },
+                     {
+                        "yellowBound": null,
+                        "metricUnitId": "mbitsps",
+                        "metricName": "Network|Data Transmit Rate",
+                        "metricKey": "net|transmitted_average",
+                        "handleOldColoring": false,
+                        "link": "",
+                        "isStringMetric": false,
+                        "resourceKindName": "Virtual Machine",
+                        "label": "Transmit Rate",
+                        "resourceKindId": "resourceKind:id:0_::_",
+                        "orangeBound": null,
+                        "metricUnit": "Mbps",
+                        "labelOrig": "Transmit Rate",
+                        "unit": "Mbps",
+                        "labelLocalized": "Transmit Rate",
+                        "id": "extModel6215-2",
+                        "redBound": null,
+                        "colorMethod": 2
+                     },
+                     {
+                        "yellowBound": null,
+                        "metricUnitId": "packets",
+                        "metricName": "Network|Total Broadcast Packets Transmitted",
+                        "metricKey": "net|broadcastTx_summation_sum",
+                        "handleOldColoring": false,
+                        "link": "",
+                        "isStringMetric": false,
+                        "resourceKindName": "Virtual Machine",
+                        "label": "TX Broadcast Packets",
+                        "resourceKindId": "resourceKind:id:0_::_",
+                        "orangeBound": null,
+                        "metricUnit": "packets",
+                        "labelOrig": "TX Broadcast Packets",
+                        "unit": "packets",
+                        "labelLocalized": "TX Broadcast Packets",
+                        "id": "extModel97229-2",
+                        "redBound": null,
+                        "colorMethod": 2
+                     },
+                     {
+                        "yellowBound": null,
+                        "metricUnitId": "packets",
+                        "metricName": "Network|Total Multicast Packets Transmitted",
+                        "metricKey": "net|multicastTx_summation_sum",
+                        "handleOldColoring": false,
+                        "link": "",
+                        "isStringMetric": false,
+                        "resourceKindName": "Virtual Machine",
+                        "label": "TX Multicast Packets",
+                        "resourceKindId": "resourceKind:id:0_::_",
+                        "orangeBound": null,
+                        "metricUnit": "packets",
+                        "labelOrig": "TX Multicast Packets",
+                        "unit": "packets",
+                        "labelLocalized": "TX Multicast Packets",
+                        "id": "extModel97229-3",
+                        "redBound": null,
+                        "colorMethod": 2
+                     }
+                  ],
+                  "subMode": "resourceKindAll"
+               },
+               "showSparkline": {"showSparkline": true},
+               "boxColumns": 7,
+               "periodLength": "dashboardTime"
+            },
+            "height": 0
+         },
+         {
+            "tabId": "4439d7b2-c758-4eca-ad49-42f3e0280d35",
+            "collapsed": false,
+            "id": "b10e6971-abc6-4dea-a0dd-2dd9b4434aec",
+            "gridsterCoords": {
+               "w": 8,
+               "x": 5,
+               "h": 7,
+               "y": 21
+            },
+            "state": "",
+            "type": "AlertList",
+            "title": "Performance Alerts",
+            "config": {
+               "alertImpact": [],
+               "alertAction": [],
+               "refreshInterval": 300,
+               "resource": [],
+               "refreshContent": {"refreshContent": false},
+               "relationshipMode": {"relationshipMode": [
+                  -1,
+                  0
+               ]},
+               "criticalityLevel": [
+                  2,
+                  3,
+                  4
+               ],
+               "title": "Performance Alerts",
+               "type": [
+                  "15_19",
+                  "16_19",
+                  "17_19",
+                  "18_19",
+                  "19_19",
+                  "20_19"
+               ],
+               "mode": "all",
+               "filterMode": "tagPicker",
+               "tagFilter": null,
+               "depth": 1,
+               "titleLocalized": "Performance Alerts",
+               "customFilter": {
+                  "filter": [],
+                  "filterMode": "tagPicker",
+                  "excludedResources": null,
+                  "includedResources": null
+               },
+               "selfProvider": {"selfProvider": false},
+               "state": [],
+               "status": []
+            },
+            "height": 0,
+            "states": [
+               {
+                  "value": "b%3A0",
+                  "key": "perm_toolbarVisible_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_b10e6971-abc6-4dea-a0dd-2dd9b4434aec"
+               },
+               {
+                  "value": "s%3ADEFINITION",
+                  "key": "permViewMode_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_b10e6971-abc6-4dea-a0dd-2dd9b4434aec"
+               },
+               {
+                  "value": "s%3A%7B%22dateRange%22%3A%22last30Days%22%2C%22dateFrom%22%3Anull%2C%22dateTo%22%3Anull%2C%22timeFrom%22%3Anull%2C%22timeTo%22%3Anull%7D",
+                  "key": "permDateFilter_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_b10e6971-abc6-4dea-a0dd-2dd9b4434aec"
+               },
+               {
+                  "value": "o%3Acolumns%3Da%253Ao%25253Aid%25253Ds%2525253Ah16%255Eo%25253Aid%25253Ds%2525253Ah1%25255Ehidden%25253Db%2525253A1%25255Ewidth%25253Dn%2525253A100%255Eo%25253Aid%25253Ds%2525253Ah2%255Eo%25253Aid%25253Ds%2525253Ah3%255Eo%25253Aid%25253Ds%2525253Ah4%255Eo%25253Aid%25253Ds%2525253Ah5%255Eo%25253Aid%25253Ds%2525253Ah6%255Eo%25253Aid%25253Ds%2525253Ah7%25255Ehidden%25253Db%2525253A1%255Eo%25253Aid%25253Ds%2525253Ah8%25255Ehidden%25253Db%2525253A1%255Eo%25253Aid%25253Ds%2525253Ah9%25255Ehidden%25253Db%2525253A1%255Eo%25253Aid%25253Ds%2525253Ah10%25255Ehidden%25253Db%2525253A1%255Eo%25253Aid%25253Ds%2525253Ah11%255Eo%25253Aid%25253Ds%2525253Ah12%255Eo%25253Aid%25253Ds%2525253Ah13%25255Ehidden%25253Db%2525253A1%255Eo%25253Aid%25253Ds%2525253Ah14%25255Ehidden%25253Db%2525253A1%255Eo%25253Aid%25253Ds%2525253Ah15%25255Ehidden%25253Db%2525253A0%5EstoreState%3Do%253Asorters%253Da%25253Ao%2525253Aroot%2525253Ds%252525253Adata%2525255Eproperty%2525253Ds%252525253AstartTimeUtc%2525255Edirection%2525253Ds%252525253ADESC%2525255Eid%2525253Ds%252525253AstartTimeUtc",
+                  "key": "permAlertGrid_perm_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_b10e6971-abc6-4dea-a0dd-2dd9b4434aec"
+               }
+            ]
+         },
+         {
+            "tabId": "4439d7b2-c758-4eca-ad49-42f3e0280d35",
+            "collapsed": false,
+            "id": "e32d5268-fbfd-4b8c-9a90-99893947c605",
+            "gridsterCoords": {
+               "w": 8,
+               "x": 5,
+               "h": 3,
+               "y": 15
+            },
+            "state": "",
+            "type": "Scoreboard",
+            "title": "Disk Performance",
+            "config": {
+               "maxCellCount": 100,
+               "oldMetricValues": false,
+               "relationshipMode": {"relationshipMode": 0},
+               "valueSize": 24,
+               "boxHeight": null,
+               "title": "Disk Performance",
+               "showResourceName": {"showResourceName": false},
+               "roundDecimals": 0,
+               "mode": {"layoutMode": "fixedView"},
+               "labelSize": 16,
+               "titleLocalized": "Disk Performance",
+               "customFilter": {
+                  "filter": [],
+                  "excludedResources": null,
+                  "includedResources": null
+               },
+               "selfProvider": {"selfProvider": false},
+               "resInteractionMode": null,
+               "visualTheme": 8,
+               "showMetricName": {"showMetricName": true},
+               "refreshInterval": 300,
+               "resource": [],
+               "showDT": {"showDT": false},
+               "refreshContent": {"refreshContent": false},
+               "showMetricUnit": {"showMetricUnit": true},
+               "depth": 1,
+               "metric": {
+                  "mode": "resourceKind",
+                  "resourceMetrics": [],
+                  "resourceKindMetrics": [
+                     {
+                        "yellowBound": 20,
+                        "metricUnitId": null,
+                        "metricName": "Guest|Peak Disk Queue within collection cycle",
+                        "metricKey": "guest|20_sec_peak_disk_queue",
+                        "handleOldColoring": false,
+                        "link": "",
+                        "isStringMetric": false,
+                        "resourceKindName": "Virtual Machine",
+                        "label": "Queue",
+                        "resourceKindId": "resourceKind:id:0_::_",
+                        "orangeBound": 40,
+                        "metricUnit": "",
+                        "labelOrig": "Queue",
+                        "unit": "",
+                        "labelLocalized": "Queue",
+                        "id": "extModel35281-1",
+                        "redBound": 80,
+                        "colorMethod": 0
+                     },
+                     {
+                        "yellowBound": 10,
+                        "metricUnitId": "msec",
+                        "metricName": "Virtual Disk|Peak Latency within collection cycle",
+                        "metricKey": "virtualDisk|20_sec_peak_totalLatency_average",
+                        "handleOldColoring": false,
+                        "link": "",
+                        "isStringMetric": false,
+                        "resourceKindName": "Virtual Machine",
+                        "label": "Peak Latency",
+                        "resourceKindId": "resourceKind:id:0_::_",
+                        "orangeBound": 20,
+                        "metricUnit": "ms",
+                        "labelOrig": "Peak Latency",
+                        "unit": "ms",
+                        "labelLocalized": "Peak Latency",
+                        "id": "extModel14772-1",
+                        "redBound": 40,
+                        "colorMethod": 0
+                     },
+                     {
+                        "yellowBound": 10,
+                        "metricUnitId": "msec",
+                        "metricName": "Virtual Disk|Highest Read Latency of all instances",
+                        "metricKey": "virtualDisk|peak_vDisk_readLatency",
+                        "handleOldColoring": false,
+                        "link": "",
+                        "isStringMetric": false,
+                        "resourceKindName": "Virtual Machine",
+                        "label": "Read Latency ",
+                        "resourceKindId": "resourceKind:id:0_::_",
+                        "orangeBound": 20,
+                        "metricUnit": "ms",
+                        "labelOrig": "Read Latency ",
+                        "unit": "ms",
+                        "labelLocalized": "Read Latency ",
+                        "id": "extModel96450-2",
+                        "redBound": 40,
+                        "colorMethod": 0
+                     },
+                     {
+                        "yellowBound": 10,
+                        "metricUnitId": "msec",
+                        "metricName": "Virtual Disk|Highest Write Latency of all instances",
+                        "metricKey": "virtualDisk|peak_vDisk_writeLatency",
+                        "handleOldColoring": false,
+                        "link": "",
+                        "isStringMetric": false,
+                        "resourceKindName": "Virtual Machine",
+                        "label": "Write Latency ",
+                        "resourceKindId": "resourceKind:id:0_::_",
+                        "orangeBound": 20,
+                        "metricUnit": "ms",
+                        "labelOrig": "Write Latency ",
+                        "unit": "ms",
+                        "labelLocalized": "Write Latency ",
+                        "id": "extModel96450-3",
+                        "redBound": 40,
+                        "colorMethod": 0
+                     },
+                     {
+                        "yellowBound": null,
+                        "metricName": "Virtual Disk:Aggregate of all instances|Write IOPS",
+                        "metricKey": "virtualDisk:Aggregate of all instances|numberWriteAveraged_average",
+                        "handleOldColoring": false,
+                        "link": "",
+                        "isStringMetric": false,
+                        "resourceKindName": "Virtual Machine",
+                        "label": "",
+                        "resourceKindId": "resourceKind:id:0_::_",
+                        "orangeBound": null,
+                        "labelOrig": "",
+                        "labelLocalized": "",
+                        "id": "extModel96450-7",
+                        "redBound": null,
+                        "colorMethod": 2
+                     },
+                     {
+                        "yellowBound": null,
+                        "metricName": "Virtual Disk:Aggregate of all instances|Read IOPS",
+                        "metricKey": "virtualDisk:Aggregate of all instances|numberReadAveraged_average",
+                        "handleOldColoring": false,
+                        "link": "",
+                        "isStringMetric": false,
+                        "resourceKindName": "Virtual Machine",
+                        "label": "",
+                        "resourceKindId": "resourceKind:id:0_::_",
+                        "orangeBound": null,
+                        "labelOrig": "",
+                        "labelLocalized": "",
+                        "id": "extModel96450-6",
+                        "redBound": null,
+                        "colorMethod": 2
+                     },
+                     {
+                        "yellowBound": null,
+                        "metricUnitId": "mbps",
+                        "metricName": "Virtual Disk|Write Throughput",
+                        "metricKey": "virtualDisk|write_average",
+                        "handleOldColoring": false,
+                        "link": "",
+                        "isStringMetric": false,
+                        "resourceKindName": "Virtual Machine",
+                        "label": "",
+                        "resourceKindId": "resourceKind:id:0_::_",
+                        "orangeBound": null,
+                        "metricUnit": "MBps",
+                        "labelOrig": "",
+                        "unit": "MBps",
+                        "labelLocalized": "",
+                        "id": "extModel96450-5",
+                        "redBound": null,
+                        "colorMethod": 2
+                     },
+                     {
+                        "yellowBound": null,
+                        "metricUnitId": "mbps",
+                        "metricName": "Virtual Disk|Read Throughput",
+                        "metricKey": "virtualDisk|read_average",
+                        "handleOldColoring": false,
+                        "link": "",
+                        "isStringMetric": false,
+                        "resourceKindName": "Virtual Machine",
+                        "label": "",
+                        "resourceKindId": "resourceKind:id:0_::_",
+                        "orangeBound": null,
+                        "metricUnit": "MBps",
+                        "labelOrig": "",
+                        "unit": "MBps",
+                        "labelLocalized": "",
+                        "id": "extModel96450-4",
+                        "redBound": null,
+                        "colorMethod": 2
+                     }
+                  ],
+                  "subMode": "resourceKindAll"
+               },
+               "showSparkline": {"showSparkline": true},
+               "boxColumns": 8,
+               "periodLength": "dashboardTime"
+            },
+            "height": 0
          },
          {
             "tabId": "4439d7b2-c758-4eca-ad49-42f3e0280d35",
@@ -155,6 +681,7 @@
                "filterMode": "tagPicker",
                "tagFilter": null,
                "paginationNumber": 15,
+               "titleLocalized": "Guest OS Performance (%)",
                "customFilter": {
                   "filter": [],
                   "filterMode": "tagPicker",
@@ -222,6 +749,7 @@
                "filterMode": "tagPicker",
                "tagFilter": null,
                "paginationNumber": 15,
+               "titleLocalized": "Virtual Motherboard Performance (%)",
                "customFilter": {
                   "filter": [],
                   "filterMode": "tagPicker",
@@ -684,481 +1212,6 @@
                "periodLength": "dashboardTime"
             },
             "height": 0
-         },
-         {
-            "tabId": "4439d7b2-c758-4eca-ad49-42f3e0280d35",
-            "collapsed": false,
-            "id": "e32d5268-fbfd-4b8c-9a90-99893947c605",
-            "gridsterCoords": {
-               "w": 8,
-               "x": 5,
-               "h": 3,
-               "y": 15
-            },
-            "state": "",
-            "type": "Scoreboard",
-            "title": "Disk Performance",
-            "config": {
-               "maxCellCount": 100,
-               "oldMetricValues": false,
-               "relationshipMode": {"relationshipMode": 0},
-               "valueSize": 24,
-               "boxHeight": null,
-               "title": "Disk Performance",
-               "showResourceName": {"showResourceName": false},
-               "roundDecimals": 0,
-               "mode": {"layoutMode": "fixedView"},
-               "labelSize": 16,
-               "titleLocalized": "Disk Performance",
-               "customFilter": {
-                  "filter": [],
-                  "excludedResources": null,
-                  "includedResources": null
-               },
-               "selfProvider": {"selfProvider": false},
-               "resInteractionMode": null,
-               "visualTheme": 8,
-               "showMetricName": {"showMetricName": true},
-               "refreshInterval": 300,
-               "resource": [],
-               "showDT": {"showDT": false},
-               "refreshContent": {"refreshContent": false},
-               "showMetricUnit": {"showMetricUnit": true},
-               "depth": 1,
-               "metric": {
-                  "mode": "resourceKind",
-                  "resourceMetrics": [],
-                  "resourceKindMetrics": [
-                     {
-                        "yellowBound": 20,
-                        "metricUnitId": null,
-                        "metricName": "Guest|Peak Disk Queue within collection cycle",
-                        "metricKey": "guest|20_sec_peak_disk_queue",
-                        "handleOldColoring": false,
-                        "link": "",
-                        "isStringMetric": false,
-                        "resourceKindName": "Virtual Machine",
-                        "label": "Queue",
-                        "resourceKindId": "resourceKind:id:0_::_",
-                        "orangeBound": 40,
-                        "metricUnit": "",
-                        "labelOrig": "Queue",
-                        "unit": "",
-                        "labelLocalized": "Queue",
-                        "id": "extModel35281-1",
-                        "redBound": 80,
-                        "colorMethod": 0
-                     },
-                     {
-                        "yellowBound": 10,
-                        "metricUnitId": "msec",
-                        "metricName": "Virtual Disk|Peak Latency within collection cycle",
-                        "metricKey": "virtualDisk|20_sec_peak_totalLatency_average",
-                        "handleOldColoring": false,
-                        "link": "",
-                        "isStringMetric": false,
-                        "resourceKindName": "Virtual Machine",
-                        "label": "Peak Latency",
-                        "resourceKindId": "resourceKind:id:0_::_",
-                        "orangeBound": 20,
-                        "metricUnit": "ms",
-                        "labelOrig": "Peak Latency",
-                        "unit": "ms",
-                        "labelLocalized": "Peak Latency",
-                        "id": "extModel14772-1",
-                        "redBound": 40,
-                        "colorMethod": 0
-                     },
-                     {
-                        "yellowBound": 10,
-                        "metricUnitId": "msec",
-                        "metricName": "Virtual Disk|Highest Read Latency of all instances",
-                        "metricKey": "virtualDisk|peak_vDisk_readLatency",
-                        "handleOldColoring": false,
-                        "link": "",
-                        "isStringMetric": false,
-                        "resourceKindName": "Virtual Machine",
-                        "label": "Read Latency ",
-                        "resourceKindId": "resourceKind:id:0_::_",
-                        "orangeBound": 20,
-                        "metricUnit": "ms",
-                        "labelOrig": "Read Latency ",
-                        "unit": "ms",
-                        "labelLocalized": "Read Latency ",
-                        "id": "extModel96450-2",
-                        "redBound": 40,
-                        "colorMethod": 0
-                     },
-                     {
-                        "yellowBound": 10,
-                        "metricUnitId": "msec",
-                        "metricName": "Virtual Disk|Highest Write Latency of all instances",
-                        "metricKey": "virtualDisk|peak_vDisk_writeLatency",
-                        "handleOldColoring": false,
-                        "link": "",
-                        "isStringMetric": false,
-                        "resourceKindName": "Virtual Machine",
-                        "label": "Write Latency ",
-                        "resourceKindId": "resourceKind:id:0_::_",
-                        "orangeBound": 20,
-                        "metricUnit": "ms",
-                        "labelOrig": "Write Latency ",
-                        "unit": "ms",
-                        "labelLocalized": "Write Latency ",
-                        "id": "extModel96450-3",
-                        "redBound": 40,
-                        "colorMethod": 0
-                     },
-                     {
-                        "yellowBound": null,
-                        "metricName": "Virtual Disk:Aggregate of all instances|Write IOPS",
-                        "metricKey": "virtualDisk:Aggregate of all instances|numberWriteAveraged_average",
-                        "handleOldColoring": false,
-                        "link": "",
-                        "isStringMetric": false,
-                        "resourceKindName": "Virtual Machine",
-                        "label": "",
-                        "resourceKindId": "resourceKind:id:0_::_",
-                        "orangeBound": null,
-                        "labelOrig": "",
-                        "labelLocalized": "",
-                        "id": "extModel96450-7",
-                        "redBound": null,
-                        "colorMethod": 2
-                     },
-                     {
-                        "yellowBound": null,
-                        "metricName": "Virtual Disk:Aggregate of all instances|Read IOPS",
-                        "metricKey": "virtualDisk:Aggregate of all instances|numberReadAveraged_average",
-                        "handleOldColoring": false,
-                        "link": "",
-                        "isStringMetric": false,
-                        "resourceKindName": "Virtual Machine",
-                        "label": "",
-                        "resourceKindId": "resourceKind:id:0_::_",
-                        "orangeBound": null,
-                        "labelOrig": "",
-                        "labelLocalized": "",
-                        "id": "extModel96450-6",
-                        "redBound": null,
-                        "colorMethod": 2
-                     },
-                     {
-                        "yellowBound": null,
-                        "metricUnitId": "mbps",
-                        "metricName": "Virtual Disk|Write Throughput",
-                        "metricKey": "virtualDisk|write_average",
-                        "handleOldColoring": false,
-                        "link": "",
-                        "isStringMetric": false,
-                        "resourceKindName": "Virtual Machine",
-                        "label": "",
-                        "resourceKindId": "resourceKind:id:0_::_",
-                        "orangeBound": null,
-                        "metricUnit": "MBps",
-                        "labelOrig": "",
-                        "unit": "MBps",
-                        "labelLocalized": "",
-                        "id": "extModel96450-5",
-                        "redBound": null,
-                        "colorMethod": 2
-                     },
-                     {
-                        "yellowBound": null,
-                        "metricUnitId": "mbps",
-                        "metricName": "Virtual Disk|Read Throughput",
-                        "metricKey": "virtualDisk|read_average",
-                        "handleOldColoring": false,
-                        "link": "",
-                        "isStringMetric": false,
-                        "resourceKindName": "Virtual Machine",
-                        "label": "",
-                        "resourceKindId": "resourceKind:id:0_::_",
-                        "orangeBound": null,
-                        "metricUnit": "MBps",
-                        "labelOrig": "",
-                        "unit": "MBps",
-                        "labelLocalized": "",
-                        "id": "extModel96450-4",
-                        "redBound": null,
-                        "colorMethod": 2
-                     }
-                  ],
-                  "subMode": "resourceKindAll"
-               },
-               "showSparkline": {"showSparkline": true},
-               "boxColumns": 8,
-               "periodLength": "dashboardTime"
-            },
-            "height": 0
-         },
-         {
-            "tabId": "4439d7b2-c758-4eca-ad49-42f3e0280d35",
-            "collapsed": false,
-            "id": "98cbe6fb-aca4-4df6-898b-025f15314425",
-            "gridsterCoords": {
-               "w": 8,
-               "x": 5,
-               "h": 3,
-               "y": 18
-            },
-            "state": "",
-            "type": "Scoreboard",
-            "title": "Network Performance",
-            "config": {
-               "maxCellCount": 100,
-               "oldMetricValues": false,
-               "relationshipMode": {"relationshipMode": 0},
-               "valueSize": 24,
-               "title": "Network Performance",
-               "boxHeight": null,
-               "showResourceName": {"showResourceName": false},
-               "roundDecimals": 0,
-               "mode": {"layoutMode": "fixedView"},
-               "labelSize": 16,
-               "titleLocalized": "Network Performance",
-               "customFilter": {
-                  "filter": [],
-                  "excludedResources": null,
-                  "includedResources": null
-               },
-               "selfProvider": {"selfProvider": false},
-               "resInteractionMode": null,
-               "visualTheme": 8,
-               "showMetricName": {"showMetricName": true},
-               "refreshInterval": 300,
-               "resource": [],
-               "showDT": {"showDT": false},
-               "refreshContent": {"refreshContent": false},
-               "showMetricUnit": {"showMetricUnit": true},
-               "depth": 1,
-               "metric": {
-                  "mode": "resourceKind",
-                  "resourceMetrics": [],
-                  "resourceKindMetrics": [
-                     {
-                        "yellowBound": 1,
-                        "metricUnitId": -1,
-                        "metricName": "Network:Aggregate of all instances|Packets Dropped",
-                        "metricKey": "net:Aggregate of all instances|droppedPct",
-                        "handleOldColoring": false,
-                        "maxValue": "",
-                        "link": "",
-                        "isStringMetric": false,
-                        "resourceKindName": "Virtual Machine",
-                        "label": "",
-                        "resourceKindId": "resourceKind:id:0_::_",
-                        "orangeBound": 2,
-                        "metricUnit": "Auto",
-                        "labelOrig": "",
-                        "unit": "Auto",
-                        "labelLocalized": "",
-                        "id": "extModel97229-1",
-                        "redBound": 4,
-                        "colorMethod": 0
-                     },
-                     {
-                        "yellowBound": 25,
-                        "metricUnitId": "packets",
-                        "metricName": "Network|Total Transmitted Packets Dropped",
-                        "metricKey": "net|droppedTx_summation_sum",
-                        "handleOldColoring": false,
-                        "maxValue": "",
-                        "link": "",
-                        "isStringMetric": false,
-                        "resourceKindName": "Virtual Machine",
-                        "label": "TX Packets Dropped",
-                        "resourceKindId": "resourceKind:id:0_::_",
-                        "orangeBound": 100,
-                        "metricUnit": "packets",
-                        "labelOrig": "TX Packets Dropped",
-                        "unit": "packets",
-                        "labelLocalized": "TX Packets Dropped",
-                        "id": "extModel97229-4",
-                        "redBound": 400,
-                        "colorMethod": 0
-                     },
-                     {
-                        "yellowBound": null,
-                        "metricUnitId": "mbitsps",
-                        "metricName": "Network|Peak Usage Rate within collection cycle",
-                        "metricKey": "net|20_sec_peak_usage_average",
-                        "handleOldColoring": false,
-                        "maxValue": "",
-                        "link": "",
-                        "isStringMetric": false,
-                        "resourceKindName": "Virtual Machine",
-                        "label": "Peak Throughput",
-                        "resourceKindId": "resourceKind:id:0_::_",
-                        "orangeBound": null,
-                        "metricUnit": "Mbps",
-                        "labelOrig": "Peak Throughput",
-                        "unit": "Mbps",
-                        "labelLocalized": "Peak Throughput",
-                        "id": "extModel39279-1",
-                        "redBound": null,
-                        "colorMethod": 2
-                     },
-                     {
-                        "yellowBound": null,
-                        "metricUnitId": "mbitsps",
-                        "metricName": "Network|Data Receive Rate",
-                        "metricKey": "net|received_average",
-                        "handleOldColoring": false,
-                        "link": "",
-                        "isStringMetric": false,
-                        "resourceKindName": "Virtual Machine",
-                        "label": "Receive Rate",
-                        "resourceKindId": "resourceKind:id:0_::_",
-                        "orangeBound": null,
-                        "metricUnit": "Mbps",
-                        "labelOrig": "Receive Rate",
-                        "unit": "Mbps",
-                        "labelLocalized": "Receive Rate",
-                        "id": "extModel6215-1",
-                        "redBound": null,
-                        "colorMethod": 2
-                     },
-                     {
-                        "yellowBound": null,
-                        "metricUnitId": "mbitsps",
-                        "metricName": "Network|Data Transmit Rate",
-                        "metricKey": "net|transmitted_average",
-                        "handleOldColoring": false,
-                        "link": "",
-                        "isStringMetric": false,
-                        "resourceKindName": "Virtual Machine",
-                        "label": "Transmit Rate",
-                        "resourceKindId": "resourceKind:id:0_::_",
-                        "orangeBound": null,
-                        "metricUnit": "Mbps",
-                        "labelOrig": "Transmit Rate",
-                        "unit": "Mbps",
-                        "labelLocalized": "Transmit Rate",
-                        "id": "extModel6215-2",
-                        "redBound": null,
-                        "colorMethod": 2
-                     },
-                     {
-                        "yellowBound": null,
-                        "metricUnitId": "packets",
-                        "metricName": "Network|Total Broadcast Packets Transmitted",
-                        "metricKey": "net|broadcastTx_summation_sum",
-                        "handleOldColoring": false,
-                        "link": "",
-                        "isStringMetric": false,
-                        "resourceKindName": "Virtual Machine",
-                        "label": "TX Broadcast Packets",
-                        "resourceKindId": "resourceKind:id:0_::_",
-                        "orangeBound": null,
-                        "metricUnit": "packets",
-                        "labelOrig": "TX Broadcast Packets",
-                        "unit": "packets",
-                        "labelLocalized": "TX Broadcast Packets",
-                        "id": "extModel97229-2",
-                        "redBound": null,
-                        "colorMethod": 2
-                     },
-                     {
-                        "yellowBound": null,
-                        "metricUnitId": "packets",
-                        "metricName": "Network|Total Multicast Packets Transmitted",
-                        "metricKey": "net|multicastTx_summation_sum",
-                        "handleOldColoring": false,
-                        "link": "",
-                        "isStringMetric": false,
-                        "resourceKindName": "Virtual Machine",
-                        "label": "TX Multicast Packets",
-                        "resourceKindId": "resourceKind:id:0_::_",
-                        "orangeBound": null,
-                        "metricUnit": "packets",
-                        "labelOrig": "TX Multicast Packets",
-                        "unit": "packets",
-                        "labelLocalized": "TX Multicast Packets",
-                        "id": "extModel97229-3",
-                        "redBound": null,
-                        "colorMethod": 2
-                     }
-                  ],
-                  "subMode": "resourceKindAll"
-               },
-               "showSparkline": {"showSparkline": true},
-               "boxColumns": 7,
-               "periodLength": "dashboardTime"
-            },
-            "height": 0
-         },
-         {
-            "tabId": "4439d7b2-c758-4eca-ad49-42f3e0280d35",
-            "collapsed": false,
-            "id": "b10e6971-abc6-4dea-a0dd-2dd9b4434aec",
-            "gridsterCoords": {
-               "w": 8,
-               "x": 5,
-               "h": 7,
-               "y": 21
-            },
-            "state": "",
-            "type": "AlertList",
-            "title": "Performance Alerts",
-            "config": {
-               "alertImpact": [],
-               "alertAction": [],
-               "refreshInterval": 300,
-               "resource": [],
-               "refreshContent": {"refreshContent": false},
-               "relationshipMode": {"relationshipMode": [
-                  -1,
-                  0
-               ]},
-               "criticalityLevel": [
-                  2,
-                  3,
-                  4
-               ],
-               "title": "Performance Alerts",
-               "type": [
-                  "15_19",
-                  "16_19",
-                  "17_19",
-                  "18_19",
-                  "19_19",
-                  "20_19"
-               ],
-               "mode": "all",
-               "filterMode": "tagPicker",
-               "tagFilter": null,
-               "depth": 1,
-               "titleLocalized": "Performance Alerts",
-               "customFilter": {
-                  "filter": [],
-                  "filterMode": "tagPicker",
-                  "excludedResources": null,
-                  "includedResources": null
-               },
-               "selfProvider": {"selfProvider": false},
-               "state": [],
-               "status": []
-            },
-            "height": 0,
-            "states": [
-               {
-                  "value": "b%3A0",
-                  "key": "perm_toolbarVisible_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_b10e6971-abc6-4dea-a0dd-2dd9b4434aec"
-               },
-               {
-                  "value": "s%3ADEFINITION",
-                  "key": "permViewMode_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_b10e6971-abc6-4dea-a0dd-2dd9b4434aec"
-               },
-               {
-                  "value": "s%3A%7B%22dateRange%22%3A%22last30Days%22%2C%22dateFrom%22%3Anull%2C%22dateTo%22%3Anull%2C%22timeFrom%22%3Anull%2C%22timeTo%22%3Anull%7D",
-                  "key": "permDateFilter_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_b10e6971-abc6-4dea-a0dd-2dd9b4434aec"
-               },
-               {
-                  "value": "o%3Acolumns%3Da%253Ao%25253Aid%25253Ds%2525253Ah16%255Eo%25253Aid%25253Ds%2525253Ah1%25255Ehidden%25253Db%2525253A1%25255Ewidth%25253Dn%2525253A100%255Eo%25253Aid%25253Ds%2525253Ah2%255Eo%25253Aid%25253Ds%2525253Ah3%255Eo%25253Aid%25253Ds%2525253Ah4%255Eo%25253Aid%25253Ds%2525253Ah5%255Eo%25253Aid%25253Ds%2525253Ah6%255Eo%25253Aid%25253Ds%2525253Ah7%25255Ehidden%25253Db%2525253A1%255Eo%25253Aid%25253Ds%2525253Ah8%25255Ehidden%25253Db%2525253A1%255Eo%25253Aid%25253Ds%2525253Ah9%25255Ehidden%25253Db%2525253A1%255Eo%25253Aid%25253Ds%2525253Ah10%25255Ehidden%25253Db%2525253A1%255Eo%25253Aid%25253Ds%2525253Ah11%255Eo%25253Aid%25253Ds%2525253Ah12%255Eo%25253Aid%25253Ds%2525253Ah13%25255Ehidden%25253Db%2525253A1%255Eo%25253Aid%25253Ds%2525253Ah14%25255Ehidden%25253Db%2525253A1%255Eo%25253Aid%25253Ds%2525253Ah15%25255Ehidden%25253Db%2525253A0%5EstoreState%3Do%253Asorters%253Da%25253Ao%2525253Aroot%2525253Ds%252525253Adata%2525255Eproperty%2525253Ds%252525253AstartTimeUtc%2525255Edirection%2525253Ds%252525253ADESC%2525255Eid%2525253Ds%252525253AstartTimeUtc",
-                  "key": "permAlertGrid_perm_widget_4439d7b2-c758-4eca-ad49-42f3e0280d35_b10e6971-abc6-4dea-a0dd-2dd9b4434aec"
-               }
-            ]
          },
          {
             "tabId": "4439d7b2-c758-4eca-ad49-42f3e0280d35",
@@ -1692,6 +1745,11 @@
             "widgetIdProvider": "1f885c55-ea9c-4acd-aa77-b6c3f2633af3",
             "type": "resourceId",
             "widgetIdReceiver": "571f460b-8dc4-43fa-8dd2-d7df6776968c"
+         },
+         {
+            "widgetIdProvider": "241672cf-d3ee-49c7-acd2-7fe1e4bf5919",
+            "type": "resourceId",
+            "widgetIdReceiver": "1f885c55-ea9c-4acd-aa77-b6c3f2633af3"
          }
       ],
       "namePath": "vCommunity",
@@ -1701,7 +1759,7 @@
       "userId": "936105f8-faa4-48cb-b268-0eec2ea9e205",
       "name": "vCommunity/VM Performance 2.0",
       "gridsterMaxColumns": 12,
-      "lastUpdateTime": 1793767343701
+      "lastUpdateTime": 1793780519830
    }],
-   "uuid": "a78ac817-b8ed-40f5-9b62-96ccbc5bbff6"
+   "uuid": "45a71644-94bd-45d9-9609-2cd6f69fc14a"
 }
