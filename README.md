@@ -71,7 +71,6 @@ The site is built by three people:
 
 - [Contributing](CONTRIBUTING.md): how to help, with or without writing code.
 - [Support](SUPPORT.md): what support is, and what is not.
-- [License](LICENSE).
 
 This is a free community project from the vCommunity (VMUG, vExpert, VCP). It is not an official VMware or Broadcom product, and it has no VMware GSS support. Deploy it at your own risk, or ask your VMware TAM or PSO for a custom solution.
 
