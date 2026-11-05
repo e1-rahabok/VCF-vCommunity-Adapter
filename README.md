@@ -79,6 +79,6 @@ Built on the work of [Onur Yuzseven](https://www.linkedin.com/in/oyuzseven/), as
 
 The blog series that explains the pack, and its use cases, is by [Brock Peterson](https://www.linkedin.com/in/brockpetersonbdcvmw/): [part 1](https://www.brockpeterson.com/post/vcommunity-management-pack-for-vcf-operations), [part 2](https://www.brockpeterson.com/post/vcommunity-management-pack-for-vcf-operations-part-2) (Windows checks) and [part 3](https://www.brockpeterson.com/post/vcommunity-management-pack-for-vcf-operations-part-3).
 
-The dashboards, reports, super metrics and the pack's design are by [Iwan Rahabok](https://www.linkedin.com/in/e1ang/). His books are available [here](https://broadcom.box.com/v/OpsYourWorld).
+The dashboards, reports, and the pack's design are by [Iwan Rahabok](https://www.linkedin.com/in/e1ang/). His books are available [here](https://broadcom.box.com/v/OpsYourWorld).
 
 Want to try it first? [Abhijit Timble](https://www.linkedin.com/in/abhijit-timble-75878514/) has installed it on the VMware Hands-on Lab: [test drive this MP](https://labs.hol.vmware.com/HOL/catalog/lab/26848).
