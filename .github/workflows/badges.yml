@@ -1,0 +1,33 @@
+name: badges
+
+# Counts tracked files and lines on main and publishes shields.io
+# endpoint JSON to the `badges` branch, read by the README badges.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  badges:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Count files and lines
+        run: |
+          files=$(git ls-files | wc -l)
+          lines=$(git ls-files -z | xargs -0 grep -I -c '' 2>/dev/null | awk -F: '{s+=$NF} END {print s+0}')
+          mkdir -p /tmp/badges
+          printf '{"schemaVersion":1,"label":"files","message":"%s","color":"blue"}\n' "$files" > /tmp/badges/files.json
+          printf '{"schemaVersion":1,"label":"lines","message":"%s","color":"blue"}\n' "$lines" > /tmp/badges/lines.json
+          cat /tmp/badges/*.json
+      - name: Publish to badges branch
+        run: |
+          cd /tmp/badges
+          git init -q -b badges
+          git config user.name "github-actions[bot]"
+          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          git add . && git commit -qm "Update badges"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" badges
