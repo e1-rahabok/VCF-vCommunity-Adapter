@@ -119,6 +119,11 @@ Before publishing a release:
 2. The release pak is installed on the test instance, and at least one collection has run since.
 3. `pwsh tools/validate/validate.ps1 -ExpectedVersion <version> -Release` exits `0`.
 4. Any WARN lines are explained in the release notes or fixed.
+5. The pak that passed step 3 is attached to the GitHub release. The pak is what gets installed, so a release without it is not a release:
+
+   ```
+   gh release upload v<version> "Management Pack/build/vCommunity_<version>.pak" --repo e1-rahabok/VCF-vCommunity-Adapter
+   ```
 
 If an Adapter Instance is `FAILED` right after the install, restart its collection as described in [After an Upgrade: Restart Collection](../../docs/installation-guide/installation.md#after-an-upgrade-restart-collection), wait one collection cycle, and run the script again.
 
