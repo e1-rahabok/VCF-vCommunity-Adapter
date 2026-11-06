@@ -15,7 +15,6 @@ This page maps the repository: what each folder and file is, why it is there, an
 | `.github/` | Issue and pull request templates, the CI workflow (`workflows/ci.yml`: the unit tests, the lint and the security checks on every pull request), Dependabot, and CODEOWNERS. | GitHub runs and uses them. |
 | `ruff.toml` | The lint rules the CI workflow applies to `app` and `tests`. Kept outside the pack folder, so it is not packed. | Keeps the code to the same rules everywhere. |
 | `.claude/` | Settings of the AI coding assistant. | Not used by the pack. |
-| `LICENSE` | The license of the repository: the terms on which the code can be used. | Says how others may use and change the code. |
 | `.gitignore` (root) | Files that are not committed. | Keeps local and generated files out of the repository. |
 
 ## Inside Management Pack/
