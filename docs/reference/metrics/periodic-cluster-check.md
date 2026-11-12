@@ -89,7 +89,7 @@ Close for Business is **1** when either rule matches, and **0** otherwise:
 
 Risk never closes a cluster on its own. It is a leading indicator, so it decides only when Consumption and Performance are both orange. The threshold is orange for every cluster, which is the lower Risk threshold that the capacity model uses for a critical cluster. See [Closing the cluster](../../concepts/capacity-management.md#closing-the-cluster).
 
-| Worst Performance | Worst Risk | Worst Consumption | Close for Business |
+| Performance | Risk | Consumption | Close for Business |
 | :--- | :--- | :--- | :--- |
 | 20 | 10 | 30 | 1 (rule 1: Performance red) |
 | 90 | 10 | 80 | 1 (rule 1: Consumption red) |
