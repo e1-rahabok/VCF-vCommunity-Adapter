@@ -27,7 +27,7 @@ It does not suit VMware Cloud Foundation operations. The colors in the source ta
 
 **What the operator sees.** A KPI that reflects both how bad and how widespread a problem is. A cluster with one bad sub-metric and many good ones scores better than a cluster where several are bad. A sub-metric's weight rises smoothly as its score falls, from 1 at its best to 16 at its worst (see [How the pack scores a KPI](#how-the-pack-scores-a-kpi)). The KPI moves smoothly and rarely reaches 0 or 100, so it is good for ranking many clusters. vSphere World uses it this way for the worst cluster and the Worst 10 Percent (the 10th or 90th percentile, depending on the direction of the KPI). See [vSphere World](../reference/metrics/vsphere-world-metrics.md).
 
-**Where it fails.** When the KPI is already bad, a sub-metric that gets worse can make the KPI look better. In Cluster Risk, a leading indicator that turns yellow or orange lowers the KPI if other indicators are worse. This matters for decisions: the Close for Business rule checks Risk at orange, so a cluster just inside orange can drop to yellow after more VMs are deployed, and open again.
+**Where it fails.** When the KPI is already bad, a sub-metric that gets worse can make the KPI look better. In Cluster Risk, a leading indicator that turns yellow or orange lowers the KPI if other indicators are worse. This matters for decisions: the Close for Business rule checks Risk at its orange closure level, above 60, so a cluster just above 60 can drop below it after more VMs are deployed, and open again.
 
 **Best fit.** Watching trends and ranking clusters, where a small error in direction is acceptable.
 

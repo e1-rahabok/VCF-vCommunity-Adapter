@@ -5,7 +5,7 @@ The **Periodic Cluster Check** sets **Close for Business** on every vSphere clus
 - **1, closed for business.** The cluster is full. Do not place new VMs on it.
 - **0, open.** The cluster can take new VMs.
 
-The decision uses the worst part of the last period of the three cluster KPIs: [Cluster Performance](cluster-performance.md), [Cluster Risk](cluster-risk.md) and [Cluster Consumption](cluster-consumption.md). See [The rule](#the-rule).
+The decision uses the worst part of the last period of the three cluster KPIs, and closes only on values clearly inside the red or orange band: [Cluster Performance](cluster-performance.md), [Cluster Risk](cluster-risk.md) and [Cluster Consumption](cluster-consumption.md). See [The rule](#the-rule).
 
 Code: [`Management Pack/app/metrics/cluster/periodic_cluster_check.py`](../../../Management%20Pack/app/metrics/cluster/periodic_cluster_check.py)
 
@@ -69,7 +69,7 @@ Each KPI is summarized by its worst end: the value that only **Worst Percent** o
 
 ## The rule
 
-Each of the three values gets the color of its KPI band:
+Each of the three values has the color of its KPI band. This is the color shown on screen:
 
 | Band | Cluster Performance (higher is better) | Cluster Risk, Cluster Consumption (higher is worse) |
 | :--- | :--- | :--- |
@@ -78,9 +78,16 @@ Each of the three values gets the color of its KPI band:
 | Orange | 25 – 50 | 50 – 75 |
 | **Red** | **0 – 25** | **75 – 100** |
 
-A value on a limit belongs to the better band: a Performance of exactly 25 is orange, and a Risk of exactly 75 is orange.
+Closing a cluster needs more than a value just across a band limit. The closure levels sit inside the bands, so a value must be clearly red or clearly orange:
 
-Close for Business is **1** when either rule matches, and **0** otherwise:
+| Closure level | Cluster Performance | Cluster Risk, Cluster Consumption |
+| :--- | :--- | :--- |
+| Red | below 20 (red on screen starts below 25) | above 80 (red on screen starts above 75) |
+| Orange | below 40 (orange on screen starts below 50) | above 60 (orange on screen starts above 50) |
+
+A value on a closure level does not reach it: a Performance of exactly 20 is orange for closure, and a Consumption of exactly 80 is orange.
+
+Close for Business is **1** when either rule matches, and **0** otherwise. Red and orange here are the closure levels:
 
 | Rule | Condition | Meaning |
 | :--- | :--- | :--- |
@@ -91,17 +98,18 @@ Risk never closes a cluster on its own. It is a leading indicator, so it decides
 
 | Performance | Risk | Consumption | Close for Business |
 | :--- | :--- | :--- | :--- |
-| 20 | 10 | 30 | 1 (rule 1: Performance red) |
-| 90 | 10 | 80 | 1 (rule 1: Consumption red) |
-| 40 | 60 | 60 | 1 (rule 2: both orange, Risk orange) |
-| 40 | 90 | 60 | 1 (rule 2: both orange, Risk red) |
-| 40 | 40 | 60 | 0 (both orange, but Risk is yellow) |
+| 15 | 10 | 30 | 1 (rule 1: Performance red) |
+| 90 | 10 | 85 | 1 (rule 1: Consumption red) |
+| 35 | 65 | 65 | 1 (rule 2: both orange, Risk orange) |
+| 35 | 90 | 65 | 1 (rule 2: both orange, Risk red) |
+| 35 | 55 | 65 | 0 (both orange, but Risk is not above 60) |
 | 90 | 90 | 30 | 0 (Risk red on its own does not close) |
-| 40 | 90 | 40 | 0 (Consumption is yellow, so Risk is not used) |
-| 25 | 10 | 10 | 0 (25 is orange, not red) |
+| 35 | 90 | 45 | 0 (Consumption is not above 60, so Risk is not used) |
+| 22 | 10 | 10 | 0 (22 shows red on screen, but closure red is below 20) |
+| 90 | 10 | 78 | 0 (78 shows red on screen, but closure red is above 80) |
 | 90 | 10 | 30 | 0 (healthy) |
 
-The rule is in `decide()` and `band()` in the code.
+The rule is in `decide()` and `closure_level()` in the code.
 
 The inputs all come from VCF Operations: the 5-minute history of the three KPI scores. Nothing is read from vCenter.
 
@@ -117,6 +125,7 @@ The inputs all come from VCF Operations: the 5-minute history of the three KPI s
 ## Design considerations
 
 - **Three KPIs on the same 0 to 100 scale.** Performance, Risk and Consumption use the same bands, so the rule reads the same colors for all three.
+- **Closure levels inside the bands.** A value just across a band limit can cross back after a few VMs move. Closing needs a value clearly inside the band, so a cluster does not flip between open and closed on a small change.
 - **The worst end of the window is used.** An average would hide a problem: a cluster that is in trouble for an hour every day should not take new VMs. The Worst Percent ignores short spikes, but not a sustained problem.
 - **The percentile is calculated in code.** VCF Operations roll-ups offer AVG, MAX, MIN and SUM, but no percentile. An estimate from Max and Avg is driven by the Max, so one spike in a quiet day would decide, and with a 0 or 1 result that is a wrong answer rather than a small error.
 - **Windows end at fixed times.** The end does not depend on when the calculation runs, so every cluster has the same window, even when it is calculated a few cycles later.
@@ -127,8 +136,8 @@ The inputs all come from VCF Operations: the 5-minute history of the three KPI s
 
 ## Example
 
-A cluster has a quiet 24-hour window with Cluster Performance at 90 %, and one 5-minute dip to 20 %. With the default of 5 %, the dip is one of the 14 ignored samples, so Worst Cluster Performance is 90 %, green. Cluster Risk is 80 % (red) and Cluster Consumption 60 % (orange) all day. Only Risk is red, and Performance is not orange, so Close for Business is 0.
+A cluster has a quiet 24-hour window with Cluster Performance at 90 %, and one 5-minute dip to 15 %. With the default of 5 %, the dip is one of the 14 ignored samples, so Worst Cluster Performance is 90 %, green. Cluster Risk is 85 % (red) and Cluster Consumption 65 % (orange for closure) all day. Only Risk is red, and Performance is not orange, so Close for Business is 0.
 
-With Worst Percent set to 0, the dip decides: Worst Cluster Performance is 20 %, red, and Close for Business is 1.
+With Worst Percent set to 0, the dip decides: Worst Cluster Performance is 15 %, red for closure, and Close for Business is 1. A dip to 22 % would show red on screen but would not close the cluster, because closure red is below 20.
 
 The tests in [`Management Pack/tests/test_periodic_cluster_check.py`](../../../Management%20Pack/tests/test_periodic_cluster_check.py) check the same cases.

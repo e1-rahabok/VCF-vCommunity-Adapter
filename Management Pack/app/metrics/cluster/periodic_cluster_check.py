@@ -98,6 +98,12 @@ RED_BELOW = 25.0
 ORANGE_BELOW = 50.0
 YELLOW_BELOW = 75.0
 
+# The closure levels, on the same health, sit inside the display bands, not on their limits: closing a cluster
+# needs a value clearly red or clearly orange, not one just across a band limit. A value on a level does not
+# reach it: Performance of exactly 20 is orange for closure, Consumption of exactly 80 is orange.
+CLOSE_RED_BELOW = 20.0
+CLOSE_ORANGE_BELOW = 40.0
+
 # Load on VCF Operations. A day of 5-minute samples is 288 per stat, 3 stats per cluster.
 MAX_CLUSTERS_PER_CYCLE = 500
 CLUSTERS_PER_REQUEST = 100
@@ -244,6 +250,16 @@ def band(value: float, higher_is_worse: bool) -> str:
     return "green"
 
 
+def closure_level(value: float, higher_is_worse: bool) -> str:
+    """"red", "orange" or "open": the closure level of the value's health (CLOSE_RED_BELOW and below)."""
+    health = 100.0 - value if higher_is_worse else value
+    if health < CLOSE_RED_BELOW:
+        return "red"
+    if health < CLOSE_ORANGE_BELOW:
+        return "orange"
+    return "open"
+
+
 def decide(performance: float, risk: float, consumption: float) -> int:
     """Close for Business: 1 when the cluster is full for new VMs, else 0.
 
@@ -252,13 +268,16 @@ def decide(performance: float, risk: float, consumption: float) -> int:
 
     Risk is a leading indicator: it never closes a cluster on its own. Orange is the Risk threshold of a
     critical (production) cluster, used for every cluster.
+
+    Red and orange are the closure levels, not the display bands: red is Performance below 20 or a higher-is-worse
+    score above 80, orange is below 40 or above 60.
     """
-    performance_band = band(performance, higher_is_worse=False)
-    risk_band = band(risk, cluster_risk_metrics.HIGHER_IS_WORSE)
-    consumption_band = band(consumption, cluster_consumption_metrics.HIGHER_IS_WORSE)
-    if "red" in (performance_band, consumption_band):
+    performance_level = closure_level(performance, higher_is_worse=False)
+    risk_level = closure_level(risk, cluster_risk_metrics.HIGHER_IS_WORSE)
+    consumption_level = closure_level(consumption, cluster_consumption_metrics.HIGHER_IS_WORSE)
+    if "red" in (performance_level, consumption_level):
         return 1
-    if performance_band == consumption_band == "orange" and risk_band in ("orange", "red"):
+    if performance_level == consumption_level == "orange" and risk_level in ("orange", "red"):
         return 1
     return 0
 
