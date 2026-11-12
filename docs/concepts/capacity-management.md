@@ -96,6 +96,7 @@ The pack implements the overcommit path in the [Periodic Cluster Check](../refer
 
 - The three KPIs use the same 0-100 % scale and the same four bands, so one rule covers all three. Performance is higher-is-better. Risk and Consumption are higher-is-worse.
 - **Close for Business** is 1 when Consumption or Contention is red, or when both are orange and Risk is orange or red. Risk alone never closes a cluster.
+- Closing needs a value clearly inside the band, not one just across its limit. The closure levels are red above 80 and orange above 60 for Consumption and Risk, and red below 20 and orange below 40 for Performance. A Consumption of 78 shows red and leaves the cluster open. See [The rule](../reference/metrics/periodic-cluster-check.md#the-rule).
 - Every cluster uses the lower Risk threshold from the diagram, orange, which is the one for critical clusters.
 - Cluster Consumption is measured against usable capacity: Total − HA − Buffer, as VCF Operations calculates it from the cluster's HA admission control and the Capacity Buffer (Demand) in its policy.
 - Cluster Risk is measured against each host's physical capacity. Besides the four leading indicators in the diagram, it also scores the busiest host's utilization and memory saturation.

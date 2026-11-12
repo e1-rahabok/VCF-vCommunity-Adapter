@@ -95,34 +95,64 @@ def test_a_value_on_a_limit_belongs_to_the_better_band():
     assert pc.band(50.0, True) == "yellow"
 
 
+def test_closure_levels_sit_inside_the_display_bands():
+    # Performance, higher is better: closure red below 20, orange below 40.
+    assert [pc.closure_level(value, False) for value in (15.0, 30.0, 45.0, 90.0)] == ["red", "orange", "open", "open"]
+    # Risk and Consumption, higher is worse: closure red above 80, orange above 60.
+    assert [pc.closure_level(value, True) for value in (85.0, 70.0, 55.0, 10.0)] == ["red", "orange", "open", "open"]
+
+
+def test_a_value_on_a_closure_level_does_not_reach_it():
+    assert pc.closure_level(20.0, False) == "orange"    # Performance 20 is not red for closure
+    assert pc.closure_level(80.0, True) == "orange"     # Consumption 80 is not red for closure
+    assert pc.closure_level(40.0, False) == "open"
+    assert pc.closure_level(60.0, True) == "open"
+
+
 def test_close_for_business_when_consumption_or_contention_is_red():
     # decide(performance, risk, consumption)
-    assert pc.decide(24.0, 0.0, 0.0) == 1       # Performance red: the VMs already suffer
-    assert pc.decide(99.0, 0.0, 76.0) == 1      # Consumption red: the cluster is full
+    assert pc.decide(15.0, 10.0, 30.0) == 1     # Performance red: the VMs already suffer
+    assert pc.decide(90.0, 10.0, 85.0) == 1     # Consumption red: the cluster is full
+    assert pc.decide(19.99, 0.0, 0.0) == 1
+    assert pc.decide(99.0, 0.0, 80.01) == 1
+
+
+def test_a_value_just_across_a_display_limit_does_not_close():
+    # Red on screen, but not clearly red: the cluster stays open.
+    assert pc.decide(22.0, 10.0, 10.0) == 0     # Performance 22 shows red; closure red is below 20
+    assert pc.decide(90.0, 10.0, 78.0) == 0     # Consumption 78 shows red; closure red is above 80
+    assert pc.decide(20.0, 0.0, 0.0) == 0       # on the level: orange for closure
+    assert pc.decide(99.0, 0.0, 80.0) == 0
+    # Orange on screen, but not clearly orange: Rule 2 does not match.
+    assert pc.decide(45.0, 65.0, 65.0) == 0     # Performance 45 shows orange; closure orange is below 40
+    assert pc.decide(35.0, 65.0, 55.0) == 0     # Consumption 55 shows orange; closure orange is above 60
+    assert pc.decide(49.99, 50.01, 50.01) == 0
 
 
 def test_risk_never_closes_a_cluster_on_its_own():
     # Risk is a leading indicator. Red Risk with healthy Consumption and Performance stays open.
+    assert pc.decide(90.0, 90.0, 30.0) == 0
     assert pc.decide(99.0, 99.0, 0.0) == 0
     # Only one of Consumption and Performance orange: Risk is not looked at.
-    assert pc.decide(40.0, 99.0, 40.0) == 0
-    assert pc.decide(60.0, 99.0, 60.0) == 0
+    assert pc.decide(35.0, 90.0, 45.0) == 0
+    assert pc.decide(60.0, 99.0, 65.0) == 0
 
 
 def test_risk_decides_when_consumption_and_contention_are_both_orange():
-    assert pc.decide(40.0, 60.0, 60.0) == 1     # Risk orange: the threshold of a critical cluster
-    assert pc.decide(40.0, 90.0, 60.0) == 1     # Risk red
-    assert pc.decide(40.0, 40.0, 60.0) == 0     # Risk yellow
-    assert pc.decide(40.0, 10.0, 60.0) == 0     # Risk green
-    # Limits: Performance 50 is yellow, so not both orange.
-    assert pc.decide(50.0, 60.0, 60.0) == 0
-    assert pc.decide(49.99, 50.01, 50.01) == 1
+    assert pc.decide(35.0, 65.0, 65.0) == 1     # Risk orange: the threshold of a critical cluster
+    assert pc.decide(35.0, 90.0, 65.0) == 1     # Risk red
+    assert pc.decide(35.0, 55.0, 65.0) == 0     # Risk not above 60
+    assert pc.decide(35.0, 10.0, 65.0) == 0     # Risk green
+    # Levels: a value on a level does not reach it.
+    assert pc.decide(40.0, 65.0, 65.0) == 0
+    assert pc.decide(35.0, 60.0, 65.0) == 0
+    assert pc.decide(39.99, 60.01, 60.01) == 1
 
 
-def test_open_when_healthy_or_on_the_red_limit():
-    assert pc.decide(95.0, 10.0, 30.0) == 0
-    assert pc.decide(25.0, 75.0, 75.0) == 1     # not red, but all three orange
-    assert pc.decide(25.0, 0.0, 0.0) == 0       # Performance 25 is orange, Consumption green
+def test_open_when_healthy():
+    assert pc.decide(90.0, 10.0, 30.0) == 0
+    assert pc.decide(25.0, 75.0, 75.0) == 1     # not red for closure, but all three clearly orange
+    assert pc.decide(25.0, 0.0, 0.0) == 0       # Performance 25 is orange for closure, Consumption open
 
 
 def samples(performance, risk, consumption):
@@ -250,7 +280,7 @@ def test_publish():
         f"{group}|Worst Cluster Performance": 20.0,
         f"{group}|Worst Cluster Risk": 80.0,
         f"{group}|Worst Cluster Consumption": 40.0,
-        f"{group}|Close for Business": 1,               # Performance 20 is red
+        f"{group}|Close for Business": 0,               # Performance 20 shows red, but is on the closure red level
     }
     # No properties: the metrics' own timestamps say the cluster was calculated for this window.
     assert cluster.properties == {}

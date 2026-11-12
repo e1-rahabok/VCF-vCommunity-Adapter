@@ -196,7 +196,7 @@ From 1.125 to 2.5 the overcommit ratio rises, but Cluster Risk stays below 67.89
 
 ### What it affects
 
-- **Close for Business.** The [Periodic Cluster Check](periodic-cluster-check.md) reads Cluster Risk from orange, 50. A cluster just above 50 can drop into yellow after VMs are deployed, and open again.
+- **Close for Business.** The [Periodic Cluster Check](periodic-cluster-check.md) reads Cluster Risk from its orange closure level, above 60. A cluster just above 60 can drop below it after VMs are deployed, and open again.
 - **Trends.** A falling Cluster Risk does not always mean less risk. Check the sub-metrics.
 - **Every KPI.** All KPIs use this scoring. [Cluster Consumption](cluster-consumption.md) has only the smooth case, because it has no Excluded sub-metrics. In the higher-is-better KPIs, such as [Cluster Performance](cluster-performance.md), a worse sub-metric can raise the score.
 
