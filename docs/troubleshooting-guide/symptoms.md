@@ -174,11 +174,11 @@ The log tells you which one:
 
 ## Built-in views are missing or duplicated after an upgrade
 
-**What you see:** after you upgrade from version 0.8.1 or earlier, built-in views are gone on VCF Operations 9.0.2 or 9.1.1, and dashboards or reports that use them show "The view does not exist". On 8.18.7, views of the pack appear twice with the same title.
+**What you see:** after you upgrade from version 0.8.1 or earlier (0.1.5 to 0.8.1), built-in views are gone on VCF Operations 9.0.2 or 9.1.1, and dashboards or reports that use them show "The view does not exist". That includes widgets in the pack's own dashboards that use one of the 19 views that are no longer shipped. On 8.18.7, views of the pack appear twice with the same title (the second one has " 1" added), and the built-in views are still replaced by the pack's old copies.
 
-**Cause:** those versions shipped 117 views under the ids of built-in views. See [Upgrade From a Version That Shipped Built-in View Ids](../installation-guide/installation.md#upgrade-from-a-version-that-shipped-built-in-view-ids).
+**Cause:** those versions shipped views under the ids of built-in views: 41 in 0.1.5, 117 in 0.1.6 to 0.3.1, and 120 in 0.4.2 to 0.8.1 (three more). See [Upgrade From a Version That Shipped Built-in View Ids](../installation-guide/installation.md#upgrade-from-a-version-that-shipped-built-in-view-ids).
 
-**What to do:** on 9.0.2 and 9.1.1, import the views from a content export of a clean instance of the same version. On 8.18.7 the duplicates are the old copies, and they are deleted when the pack is uninstalled.
+**What to do:** on every version, import the views from a content export of a clean instance of the same version, one that never had the pack. Do not uninstall the pack to remove the duplicates on 8.18.7: that deletes the views under the built-in ids. Importing a full view export overwrites your edits to built-in views. After a later uninstall, check the built-in views again and import them again if they are gone.
 
 ## Collection is slow
 

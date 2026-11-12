@@ -9,15 +9,19 @@ this repository (the VCF Management Services views, which are built-in views of 
 See "Upgrade from a version that shipped built-in view ids" in
 docs/installation-guide/installation.md.
 
+Every viewDefinitionId in a dashboard must name a view the pack ships, or a built-in view on the allowlist below.
+The 19 views that are no longer shipped stay on the allowlist so that nothing re-adds them or points a widget at an id
+that no longer exists.
+
 Run from the "Management Pack" folder:  python -m pytest tests
 """
+import re
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
 CONTENT = Path(__file__).resolve().parents[1] / "content"
 
-BUILT_IN_VIEW_IDS = frozenset(
-    (
+BUILT_IN_VIEW_IDS = frozenset({
     "02230501-23d6-4512-858e-381d60876e73",
     "0a898851-197b-4e82-baf6-a2a89acd600a",
     "0ef97d2c-770b-4c74-9c82-28a766164a39",
@@ -139,8 +143,50 @@ BUILT_IN_VIEW_IDS = frozenset(
     "4747af30-e22c-44b8-b2cf-e206e7310f12",  # VCF Management Services Nodes View
     "cadb4cc0-aba9-4ca1-a035-64a0d0cae5c1",  # VCF Management Services Volumes View
     "df8479d3-45c0-4e1a-9cb3-9c3412f93579",  # VCF Management Services Components View
-    )
-)
+})
+
+# Built-in views that the pack's dashboards name in viewDefinitionId on purpose, and does not ship.
+# The first 19 are views that earlier versions shipped as copies of the built-in view and that are no longer shipped.
+# The rest are built-in views that the dashboards already used.
+REFERENCED_BUILT_IN_VIEW_IDS = frozenset({
+    # No longer shipped: the dashboards use the built-in view.
+    "0a898851-197b-4e82-baf6-a2a89acd600a",
+    "11dd432d-6c6f-4872-8c0a-2d9975856f66",
+    "3b33a0a0-d830-4640-8635-f1857bcb5ffd",
+    "40152c12-1d12-440c-b79e-e9d172deb9a1",
+    "42f8a97e-048a-4cb2-82cc-db121958722c",
+    "4d1155bd-cb97-41b3-896f-843db27775fe",
+    "653ba701-c9df-4f98-9dd1-8b1d6b57612e",
+    "6dbbe2bc-2593-4288-9d4c-23995e28009d",
+    "7bcdb50d-c015-4237-9014-832a74f07f91",
+    "90f20c54-20c2-499c-8fb2-c609e65c325c",
+    "a62de769-9b4b-462e-906c-b4a27457ec88",
+    "acb921e6-525a-41b6-bcd7-4a8e972f2acc",
+    "b963d4b9-12ba-41a2-86df-9e294a1c5f66",
+    "c0b7e702-f550-4223-808c-aa14b35117a9",
+    "c9fe7a11-79e3-4e98-9cba-8d732b15d150",
+    "d5b58361-bd8e-4102-969a-e4d9f887bcc0",
+    "d975edde-111b-4e32-b63d-49df26a65cb1",
+    "e95aa10d-43c8-4d8a-bfda-2e4eb97996da",
+    "ed44775e-bdbb-4342-a077-3d98f0250cf9",
+    # Built-in views that the dashboards already used before this change.
+    "12fd58e7-82bf-402d-a173-60702566a124",
+    "421ac1e1-91a0-4752-a0fd-5cebad574041",
+    "4c335172-0eb4-4b8e-b019-7bdf51f5ed57",
+    "55bbf293-771b-470d-be60-0c678c96fcd8",
+    "75f7a278-6dd9-425c-abce-b1fbb75fc82b",
+    "80fd0aba-ee23-4247-b020-c35c4ac3d73b",
+    "867d0405-3f05-49ee-9466-ede29a147aff",
+    "a245c324-5359-4255-9762-3edd16ab9f30",
+    "d3487e74-223e-402c-9e90-6b6d5987a541",
+    "d8a3767e-9d5e-4bf2-b613-9e3bef977502",
+    "da47d6b5-ea3f-44cc-aea4-fb7e51c77d93",
+    "e3321b7e-033e-4a5e-820f-796d38b268f5",
+    "e6cd13d9-02af-4252-af46-1f8402cc3296",
+    "f2a01570-7335-4e0f-b203-4999052658c3",
+    "f60469d1-57d0-4dd2-84d0-7ffc36d9d86b",
+    "ff9f60e3-65a7-4b3d-a41f-842517aee5b0",
+})
 
 
 def _shipped_views():
@@ -178,3 +224,25 @@ def test_a_view_defined_in_several_files_is_the_same_view_in_each():
         copies.setdefault(view.get("id"), {}).setdefault(_same_view(view), []).append(name)
     differing = {view_id: sorted(sum(versions.values(), [])) for view_id, versions in copies.items() if len(versions) > 1}
     assert differing == {}
+
+
+def _referenced_view_ids():
+    """Every viewDefinitionId in the dashboards, as (file name, id)."""
+    references = []
+    for path in sorted(CONTENT.rglob("*.json")):
+        for view_id in re.findall(r'"viewDefinitionId"\s*:\s*"([^"]+)"', path.read_text(encoding="utf-8")):
+            references.append((path.name, view_id))
+    return references
+
+
+def test_the_allowlist_holds_built_in_views_the_pack_does_not_ship():
+    shipped = {view.get("id") for _, view in _shipped_views()}
+    assert sorted(shipped & REFERENCED_BUILT_IN_VIEW_IDS) == []
+    dropped = REFERENCED_BUILT_IN_VIEW_IDS & BUILT_IN_VIEW_IDS
+    assert len(dropped) == 19
+
+
+def test_every_view_a_dashboard_uses_is_shipped_or_an_allowed_built_in_view():
+    known = {view.get("id") for _, view in _shipped_views()} | REFERENCED_BUILT_IN_VIEW_IDS
+    unknown = sorted({(name, view_id) for name, view_id in _referenced_view_ids() if view_id not in known})
+    assert unknown == []
