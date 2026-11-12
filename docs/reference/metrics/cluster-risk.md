@@ -15,7 +15,7 @@ Code: [`Management Pack/app/metrics/cluster/cluster_risk_metrics.py`](../../../M
 
 Source of the limits: [`formula/cluster-risk.png`](formula/cluster-risk.png)
 
-## The 12 sub-metrics and their limits
+## Thresholds
 
 Every sub-metric is "lower is better".
 
