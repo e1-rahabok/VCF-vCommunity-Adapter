@@ -74,6 +74,7 @@ Versions up to 0.8.1 shipped 117 views under the ids of views that are built int
 
 - 19 views that were identical to the built-in view, or differed only in title or description, are no longer shipped. The pack's dashboards use the built-in view.
 - The other 98 views have new ids. They are the pack's own views, and they keep their names.
+- Three more views, VCF Management Services Nodes View, Volumes View and Components View, were added in this repository, and are not among the 117, with the ids of views that are built into VCF Operations 9.1.1. They are not present in an 8.18.7 content export. They have new ids too. Components View is identical to the built-in view of 9.1.1, but it is not dropped, so the pack's dashboard keeps its own copy of it on every version.
 
 The built-in views are no longer overwritten. What happens to the built-in views when you upgrade from an affected version depends on the VCF Operations version:
 

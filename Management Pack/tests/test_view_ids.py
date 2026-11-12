@@ -4,7 +4,9 @@
 VCF Operations imports a view by id. A view in the pack with a built-in id replaces the built-in view when the pack is
 installed, and the built-in view is deleted when the pack is uninstalled or when an upgrade no longer ships it. The ids
 below are the built-in views that earlier versions of the pack shipped, found by comparing the pack with content exports
-of VCF Operations 8.18.7 and 9.1.1. See "Upgrade from a version that shipped built-in view ids" in
+of VCF Operations 8.18.7 and 9.1.1. There are 120: 117 that the upstream pack shipped, and three more that were added in
+this repository (the VCF Management Services views, which are built-in views of 9.1.1 and are not in the 8.18.7 export).
+See "Upgrade from a version that shipped built-in view ids" in
 docs/installation-guide/installation.md.
 
 Run from the "Management Pack" folder:  python -m pytest tests
@@ -133,6 +135,10 @@ BUILT_IN_VIEW_IDS = frozenset(
     "fc20d8a6-9f74-4b78-9022-7441c6d877e9",
     "fc64c67a-d5b0-4a03-a10b-767b9b247120",
     "fcab0100-1881-48b6-bd07-aaeaa3ee669e",
+    # Added in this repository, not in the upstream 117: built-in views of 9.1.1, absent from an 8.18.7 export.
+    "4747af30-e22c-44b8-b2cf-e206e7310f12",  # VCF Management Services Nodes View
+    "cadb4cc0-aba9-4ca1-a035-64a0d0cae5c1",  # VCF Management Services Volumes View
+    "df8479d3-45c0-4e1a-9cb3-9c3412f93579",  # VCF Management Services Components View
     )
 )
 
@@ -157,8 +163,8 @@ def _same_view(view):
     return tuple(parts)
 
 
-def test_the_list_is_117_distinct_ids():
-    assert len(BUILT_IN_VIEW_IDS) == 117
+def test_the_list_is_120_distinct_ids():
+    assert len(BUILT_IN_VIEW_IDS) == 120
 
 
 def test_no_shipped_view_has_the_id_of_a_built_in_view():

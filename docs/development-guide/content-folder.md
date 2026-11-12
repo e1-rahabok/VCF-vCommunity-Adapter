@@ -49,7 +49,7 @@ Which settings to check is each company's decision. Keeping them in files lets o
 
 VCF Operations identifies a view by its id. A view in the pack that has the id of a built-in view replaces the built-in view at install, and deletes it at uninstall. When you add a view, build it as a new view, or export a copy and give it a new id (any UUID version 4). Never keep the id of an exported built-in view. When a view is defined in more than one file, such as the `View - Set` files and `View - Collection01.xml`, every copy has the same id and the same content.
 
-A dashboard that should show an unchanged built-in view names the built-in view's id in `viewDefinitionId` and the pack ships no `ViewDef` for it. `tests/test_view_ids.py` fails if a `ViewDef` has one of the 117 built-in ids that earlier versions shipped, or if copies of one view differ. The history is in [Upgrade From a Version That Shipped Built-in View Ids](../installation-guide/installation.md#upgrade-from-a-version-that-shipped-built-in-view-ids).
+A dashboard that should show an unchanged built-in view names the built-in view's id in `viewDefinitionId` and the pack ships no `ViewDef` for it. `tests/test_view_ids.py` fails if a `ViewDef` has one of the 120 built-in ids (the 117 that earlier versions shipped, and three that this repository added), or if copies of one view differ. The history is in [Upgrade From a Version That Shipped Built-in View Ids](../installation-guide/installation.md#upgrade-from-a-version-that-shipped-built-in-view-ids).
 
 ## How it is packaged
 

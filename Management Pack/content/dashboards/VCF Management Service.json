@@ -136,7 +136,7 @@
                   "description": "",
                   "isUpdatedView": true,
                   "title": "K8 Nodes",
-                  "viewDefinitionId": "4747af30-e22c-44b8-b2cf-e206e7310f12",
+                  "viewDefinitionId": "5950ce2d-c619-49de-b854-06c4110e9197",
                   "viewType": "LIST",
                   "chartViewItems": [],
                   "selectFirstRow": {
@@ -179,7 +179,7 @@
                   "description": "VCF Management Services storage volume",
                   "isUpdatedView": true,
                   "title": "Volumes",
-                  "viewDefinitionId": "cadb4cc0-aba9-4ca1-a035-64a0d0cae5c1",
+                  "viewDefinitionId": "1a7a6700-bdfe-4918-9600-16adcccf063a",
                   "viewType": "LIST",
                   "chartViewItems": [],
                   "selectFirstRow": {
@@ -222,7 +222,7 @@
                   "description": "VCF Services Runtime Component",
                   "isUpdatedView": true,
                   "title": "Services",
-                  "viewDefinitionId": "df8479d3-45c0-4e1a-9cb3-9c3412f93579",
+                  "viewDefinitionId": "181c5479-8b1b-40e7-ae36-9aee36746eda",
                   "titleLocalized": "Services",
                   "viewType": "LIST",
                   "chartViewItems": [],
