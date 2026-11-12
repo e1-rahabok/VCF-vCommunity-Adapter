@@ -7,6 +7,7 @@
 - [Install the Management Pack](#install-the-management-pack)
 - [Create the Adapter Instance](#create-the-adapter-instance)
 - [After an Upgrade: Restart Collection](#after-an-upgrade-restart-collection)
+- [Upgrade From a Version That Shipped Built-in View Ids](#upgrade-from-a-version-that-shipped-built-in-view-ids)
 
 ---
 
@@ -66,6 +67,24 @@ To fix it, do this for each Adapter Instance of the pack:
 Data collected before the upgrade is kept. The time between the install and the restart is a gap in the metrics.
 
 Contributors can restart every Adapter Instance of the pack with one script: see [Restart Script](../../tools/restart/restart.md).
+
+## Upgrade From a Version That Shipped Built-in View Ids
+
+Versions up to 0.8.1 shipped 117 views under the ids of views that are built into VCF Operations. VCF Operations matches a view by its id, so installing the pack replaced the built-in view with the pack's copy, and uninstalling the pack deleted the view. Stock dashboards and reports that use a built-in view then showed "The view does not exist". This version does not ship those ids:
+
+- 19 views that were identical to the built-in view, or differed only in title or description, are no longer shipped. The pack's dashboards use the built-in view.
+- The other 98 views have new ids. They are the pack's own views, and they keep their names.
+
+The built-in views are no longer overwritten. What happens to the built-in views when you upgrade from an affected version depends on the VCF Operations version:
+
+| VCF Operations | What the upgrade does |
+| :--- | :--- |
+| 9.0.2 and 9.1.1 | The platform removes content that the new version no longer ships, so **the upgrade deletes the 117 built-in views** that the old version had overwritten. The pack's views with the new ids are added. |
+| 8.18.7 | The old copies stay. Each of the 98 views then appears twice with the same title, once under the old id and once under the new id. The old copies are deleted when the pack is uninstalled. |
+
+These results were measured with the 0.3.1 release of the original pack, which shipped the same 117 ids, not with a `.pak` file built from this repository.
+
+To restore the built-in views after an upgrade on 9.0.2 or 9.1.1, import them from a content export of a clean instance of the same VCF Operations version, one that never had the pack installed. Export the views from that instance, then import the file into your instance.
 
 ---
 

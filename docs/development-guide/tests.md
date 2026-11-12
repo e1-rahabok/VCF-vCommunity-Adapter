@@ -75,6 +75,7 @@ The CI workflow (`.github/workflows/ci.yml`) runs on every pull request and on e
 | `test_relationship_update_mode.py` | The collection result uses the `PER_OBJECT` relationship mode, so Business Application memberships are kept. See [Business Application Performance](../reference/metrics/business-application-performance.md#membership-is-kept). |
 | `test_library_collection.py` | Content Library and Library Item: items are children of their library, the library has no parent link, the metrics and properties, a failed read publishes nothing and logs a warning, the TLS mode of the REST connection, and the pinned login against a local HTTPS server. |
 | `test_vm_template.py` | VM Template: built only for a VM marked as a template, with no parent link. |
+| `test_view_ids.py` | No view in the content folder has the id of a built-in view of VCF Operations (the 117 ids that earlier versions shipped), and a view defined in several files is the same view in each. |
 | `test_docs_links.py` | Every link and image in the Markdown files resolves. It runs [`check_links.py`](../../tools/check-docs/check_links.py). |
 | `test_submodule_imports.py` | The app code imports `concurrent.futures` by its full name. See [Submodule imports](#submodule-imports). |
 
