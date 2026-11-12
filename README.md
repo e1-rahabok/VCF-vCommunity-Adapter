@@ -3,9 +3,9 @@
 [![Lines](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fe1-rahabok%2FVCF-vCommunity-Adapter%2Fbadges%2Flines.json)](https://github.com/e1-rahabok/VCF-vCommunity-Adapter)
 [![Repo size](https://img.shields.io/github/repo-size/e1-rahabok/VCF-vCommunity-Adapter)](https://github.com/e1-rahabok/VCF-vCommunity-Adapter)
 
-# VCF Operations vCommunity Management Pack
+# VCF Operations vCommunity MP
 
-A free Management Pack for VCF Operations. It collects ESXi, VM and vCenter settings that VCF Operations does not collect by default, and it calculates capacity and performance scores for clusters, hosts and VMs. Everything it publishes appears on the vCenter objects you already monitor, under the `vCommunity|` prefix.
+A free management pack for VCF Operations. It collects ESXi, VM and vCenter settings that VCF Operations does not collect by default, and it calculates capacity and performance scores for clusters, hosts and VMs. Everything it publishes appears on the vCenter objects you already monitor, under the `vCommunity|` prefix.
 
 The documentation starts at [docs/README.md](docs/README.md).
 
