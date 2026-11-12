@@ -46,9 +46,9 @@ Each sub-metric is scored from its limits in the table under [Limits per sub-met
 
 The nine scores are combined as a weighted average, where each sub-metric's weight depends on its score. The formula, the weights and the reason for them are in [Combining the sub-metrics](../../concepts/kpi-scoring-models.md#combining-the-sub-metrics).
 
-- **Known limitation.** Because the weight grows as the score falls, a sub-metric that gets worse can raise the KPI. This happens when the sub-metric moves into a heavier tier while it is still better than the sub-metrics already pulling the KPI down. See [A worse sub-metric can lower Cluster Risk](cluster-risk.md#known-limitation-a-worse-sub-metric-can-lower-cluster-risk): it is the same scoring, mirrored.
+- **Known limitation.** Because the weight grows as the score falls, a sub-metric that gets worse can raise the KPI. This happens when the sub-metric moves into a heavier tier while it is still better than the sub-metrics already pulling the KPI down. See [A worse sub-metric can lower Cluster Risk](cluster-risk.md#known-limitation-a-worse-sub-metric-can-lower-cluster-risk): it is the same scoring, mirrored.s
 
-## Limits per sub-metric
+## Thresholds 
 
 | Sub-metric | Unit | Green ends at | Yellow ends at | Orange ends at | Score hits 0 at |
 | :--- | :--- | :--- | :--- | :--- | :--- |
