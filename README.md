@@ -71,6 +71,10 @@ The site is built by:
 - [Samir Roshan](https://www.linkedin.com/in/samirroshan/)
 - [Vincent Han](https://www.linkedin.com/in/vincent-han-11298424/)
 
+## Agent E2
+
+(https://github.com/e1-rahabok/agent-e2/tree/main)) complements
+
 ## Community and support
 
 - [Contributing](CONTRIBUTING.md): how to help, with or without writing code.
