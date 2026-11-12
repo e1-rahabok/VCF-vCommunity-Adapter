@@ -61,19 +61,21 @@ If something does not work, start with the [Troubleshooting Guide](docs/troubles
 
 The pack is written in Python with the [VCF Operations Integration SDK](https://github.com/vmware/vmware-vcf-operations-integration-sdk/tree/main/docs). It reads vCenter with pyVmomi and the vSphere Automation API, and reads VCF Operations through its REST API. The [Development Guide](docs/development-guide/repository-layout.md) explains the code and how to change it.
 
-## Companion site: isvara.io
+## Agent E2, isvara.io and this pack
 
-[isvara.io](https://isvara.io) complements this adapter. Its content (metrics, dashboards, alerts, properties and more) and this adapter are both documented in the **Private Cloud Management** book, 5th edition, which you can download from [isvara.io/download](https://isvara.io/download).
+Three projects share one body of knowledge about operating VMware Cloud Foundation:
 
-The site is built by:
+- [Agent E2](https://github.com/e1-rahabok/agent-e2) holds the knowledge. You can download it and deploy it privately.
+- [isvara.io](https://isvara.io) is where Agent E2 runs on the internet. Use it to try Agent E2 without installing anything.
+- The vCommunity Management Pack, this repository, implements that knowledge as a VCF Operations adapter: the metrics, KPIs, properties and dashboards run in your own VCF Operations.
+
+The isvara.io content (metrics, dashboards, alerts, properties and more) and this pack are both documented in the **Private Cloud Management** book, 5th edition, which you can download from [isvara.io/download](https://isvara.io/download).
+
+isvara.io is built by:
 
 - [Iwan Rahabok](https://www.linkedin.com/in/e1ang/)
 - [Samir Roshan](https://www.linkedin.com/in/samirroshan/)
 - [Vincent Han](https://www.linkedin.com/in/vincent-han-11298424/)
-
-## Agent E2
-
-(https://github.com/e1-rahabok/agent-e2/tree/main)) complements
 
 ## Community and support
 
