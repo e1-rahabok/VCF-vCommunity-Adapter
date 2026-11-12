@@ -1,22 +1,36 @@
 # Customization
 
-You can **tailor the monitoring scope** for different vCenter servers or environments (e.g., Production vs. Non-Production) by creating your own configuration files instead of using the system-defined defaults.
+Each Adapter Instance names the configuration files it uses, so different vCenters can collect different settings, for example production and non-production. The files that the pack installs are references: the four files for ESXi and VM settings have every entry commented out and collect nothing. To collect something, clone a file, edit the clone, and enter the clone's name in the Adapter Instance.
 
-The pack installs 6 system-defined configuration files. They are listed in its **Management Pack Details** (Administration → Integrations → Repository → VCF vCommunity Adapter), under **Content** → **Configuration Files**:
+The pack installs six configuration files. They are listed in its **Management Pack Details** (**Administration** > **Integrations** > **Repository** > **VCF vCommunity Adapter**), under **Content** > **Configuration Files**:
 
 ![The pack's configuration files in Management Pack Details](../installation-guide/images/management-pack-details-content.png)
 
-## Create a Custom Configuration File
+| File | What it lists |
+| :--- | :--- |
+| `esxi_advanced_system_settings` | ESXi advanced system settings |
+| `esxi_packages` | ESXi software packages (VIBs and drivers) |
+| `vm_advanced_parameters` | VM advanced parameters (`.vmx` settings) |
+| `vm_options` | VM option property paths, such as `config.flags.diskUuidEnabled` |
+| `windows_service_list` | Windows services to check |
+| `windows_event_list` | Windows event logs and event IDs to collect |
 
-1. **Duplicate the default file:** Navigate to **Infrastructure Operations** → **Configurations** → **Management Pack Configuration** → **System Defined**.
-2. Locate the desired file (e.g., `esxi_advanced_system_settings.xml`).
-3. Click the **Clone** icon to create a copy.
-   - **Name the new file** to reflect its purpose (e.g., `esxi_adv_settings_non_prod.xml`).
-4. **Edit the new file:** Modify the content of the cloned file to include only the settings or items you wish to monitor for the specific environment.
-5. **Reference it in a new Adapter Instance:** Create a new Adapter Instance ([Adapter Instance](adapter-instance.md#1-creating-the-adapter-instance)), but when you reach the **Configuration File Selection** fields, enter the **custom file name** you created (e.g., `esxi_adv_settings_non_prod.xml`).
+Don't edit the installed files. An upgrade of the pack overwrites them.
 
-This is also the right mechanism for scoping *what* gets monitored to match your organization's actual hardening guides, KBs, or internal best practices — see [Introduction](../README.md#the-problem) for why that matters.
+## Create a custom configuration file
+
+1. Go to **Infrastructure Operations** > **Configurations** > **Management Pack Configuration** > **System Defined**.
+2. Find the file, for example `esxi_advanced_system_settings`.
+3. Click the **Clone** icon, and give the copy a name that says what it is for, for example `esxi_adv_settings_non_prod`.
+4. Edit the copy. Uncomment or add only the settings you want to collect in that environment. Keep the file valid XML: [Configuration Files](../troubleshooting-guide/configuration-files.md) lists the common mistakes.
+5. Open the Adapter Instance ([Adapter Instance](adapter-instance.md#1-creating-the-adapter-instance)). In the matching **Configuration File Selection** field, enter the name of the copy **without** `.xml`, for example `esxi_adv_settings_non_prod`. The pack adds the extension. A name entered with `.xml` is not found, and the pack reports a configuration event on the vCenter object.
+
+The change takes effect at the next collection cycle.
+
+Collect only what you need. A property stays on an object once it has been collected, and each VM advanced parameter is read for every VM, so a long list adds to the collection time.
+
+Use these files to match the pack to your hardening guide, KB articles or internal standards. See [Why the pack exists](../README.md#why-the-pack-exists).
 
 ---
 
-**Next:** [Metrics and Properties](../reference/metrics-and-properties.md)
+**Next:** [Business Applications](business-applications.md)

@@ -1,6 +1,6 @@
 # Adapter Instance
 
-Once the **VCF Operations vCommunity Management Pack** has been installed and the [policy](policy.md) is set, create an Adapter Instance to connect to your vCenter Server(s).
+An Adapter Instance connects the pack to one vCenter Server. Create one for each vCenter after you have installed the pack and set the [policy](policy.md). To create many at once, use the [Bulk Adapter Instance Importer](../../tools/importer/importer.md).
 
 **On this page:**
 
@@ -12,86 +12,91 @@ Once the **VCF Operations vCommunity Management Pack** has been installed and th
 
 ## 1. Creating the Adapter Instance
 
-Follow these steps within VCF Operations:
+1. Go to **Administration** > **Integrations** > **Repository**.
+2. Click the **VCF vCommunity Adapter** tile.
+3. Click **Add Account**.
 
-1. Navigate to **Administration** → **Integrations** → **Repository** tab.
-2. Click on the **"VCF Operations vCommunity"** tile.
-3. Click **"Add Account"**.
+Before you start:
+
+- Activate the [policy](policy.md) first. The host network metrics the pack needs are off by default.
+- The vCenter name must resolve on the Cloud Proxy. A name that resolves on your workstation can still fail on the Cloud Proxy, and the reverse is also true.
+- If automatic collector placement fails with `Could not find any compatible and up collector in the collector group`, select a Cloud Proxy that is up and can reach the vCenter.
+
+The examples on this page use vCenter `vcenter.example.com`, account `svc-vcfops@vsphere.local` and Cloud Proxy `cloud-proxy-01.example.com`.
 
 ### 1.1. Account Details
 
-Provide the required information in the fields:
-
-| Field | Description | Important Note |
+| Field | Description | Note |
 | :--- | :--- | :--- |
-| **Name** | A descriptive name for your Adapter Instance. | E.g., `VCF-Ops-vCenter-Prod` |
-| **Description** | A brief description of this instance's purpose. | |
-| **vCenter Server** | The **FQDN** or **IP** of your target vCenter Server. | ⚠️ **This must be the exact same FQDN/IP used for your native vCenter Adapter Instance.** The Management Pack matches against it to link its collected objects to the native vSphere topology. |
-| **Credential** | Select your vCenter credential and, if needed, your Windows credential. | The Windows credential is only required if you are collecting **Windows Services** and/or **Windows Event Logs**. |
-| **Collector/Group** | Select a **Cloud Proxy** (or Collector Group) from the dropdown. | Ensure the Cloud Proxy has connectivity to the vCenter Server. Data collection should begin within 5 minutes. |
-
-> #### Before you create the instance
-> - **Activate the [policy](policy.md) first.** The metrics the pack needs are off by default.
-> - **The vCenter name must resolve from the Cloud Proxy, not from your workstation.** A name can fail in your browser or on your PC and still work on the Cloud Proxy, so test from the Cloud Proxy's side.
-> - **Pick a Cloud Proxy yourself if automatic placement fails.** On the test instance, leaving the collector on automatic failed with `Could not find any compatible and up collector in the collector group`. Choosing a Cloud Proxy that is up and can reach vCenter fixed it.
->
-> Example values used in this page: vCenter `vcenter.example.com`, account `svc-vcfops@vsphere.local`, Cloud Proxy `cloud-proxy-01.example.com`. Use your own names.
+| **Name** | A name for the Adapter Instance. | For example `VCF-Ops-vCenter-Prod`. |
+| **Description** | What this instance is for. | Optional. |
+| **vCenter Server** | The FQDN or IP address of the vCenter Server. | **Use exactly the same FQDN or IP as the vCenter's own (native) Adapter Instance.** The pack matches on this value to find the vCenter objects it publishes on. If it differs, nothing is published. |
+| **Credential** | A **vCenter Credential**: **vCenter User Name** and **vCenter Password**, plus the optional **Windows User Name** and **Windows Password**. | The Windows fields are needed only for Windows Service or Windows Event Log monitoring. See [User Account Requirements](../installation-guide/system-requirements.md#user-account-requirements). |
+| **Collector/Group** | The Cloud Proxy or collector group that runs the instance. | It must reach the vCenter Server. Collection starts within about 5 minutes. |
 
 ### 1.2. Configuration File Selection
 
-The Management Pack uses customizable XML configuration files to define what data to collect. These default files are located under **Infrastructure Operations** → **Configurations** → **Management Pack Configuration** → **System Defined**.
+Configuration files list what the pack collects. The pack installs six of them, under **Infrastructure Operations** > **Configurations** > **Management Pack Configuration** > **System Defined**. Enter a file's name **without** `.xml`. The pack adds the extension.
 
-| Field | Configuration File (Default) | Description of Collected Data |
+The four files below are references: every entry in them is commented out, so with the defaults the pack collects none of these settings. Clone a file, uncomment the entries you want, and enter the clone's name here. See [Customization](customization.md).
+
+| Field | Default | What is collected |
 | :--- | :--- | :--- |
-| **ESXi Advanced System Settings Config File** | `esxi_advanced_system_settings.xml` | ESXi Advanced System Settings — the specific settings listed in this file (as seen on a host's **Configure** tab in vCenter). |
-| **ESXi Software Packages Config File** | `esxi_packages.xml` | Installed VIB/software package details for the package names listed in this file (as seen on a host's **Configure** tab in vCenter). ⚠️ See the [performance note](#a-note-on-esxi-software-packages) below before enabling this in large environments. |
-| **VM Advanced Parameters Config File** | `vm_advanced_parameters.xml` | VM Advanced Parameters for the keys listed in this file — visible in the vCenter MOB UI under a VM's `config.extraConfig`. |
-| **VM Options Config File** | `vm_options.xml` | VM configuration fields for the property paths listed in this file (e.g. boot options, firmware type) — visible in the vCenter MOB UI under a VM's `config` object. |
+| **ESXi Advanced System Settings Config File** | `esxi_advanced_system_settings` | The ESXi advanced system settings listed in the file, as shown on a host's **Configure** tab in vCenter. |
+| **ESXi Software Packages Config File** | `esxi_packages` | Name, version, vendor and acceptance level of the software packages (VIBs and drivers) listed in the file. See the [note on software packages](#a-note-on-esxi-software-packages). |
+| **VM Advanced Parameters Config File** | `vm_advanced_parameters` | The VM advanced parameters (`.vmx` settings) listed in the file, as shown in the vCenter MOB under a VM's `config.extraConfig`. |
+| **VM Options Config File** | `vm_options` | The VM configuration fields listed in the file, as vSphere property paths such as `config.flags.diskUuidEnabled`, as shown in the vCenter MOB under a VM's `config` object. A path that does not exist stops the VM collection for the cycle, see [Configuration Files](../troubleshooting-guide/configuration-files.md). |
 
-> #### A note on ESXi Software Packages
-> Retrieving VIB/software package data requires a live RPC call to each host (`fetchSoftwarePackages()`), which is significantly slower than the Management Pack's other, property-collector-based data — this is inherent to how ESXi exposes this data, not something this Management Pack can bypass. In large environments (hundreds of hosts), enabling this can meaningfully add to the total collection time. It's still designed to complete well within a typical collection interval, but if you don't need VIB/driver tracking, leaving `esxi_packages.xml` empty avoids the extra cost entirely.
+#### A note on ESXi software packages
+
+Reading software packages takes one call per host (`fetchSoftwarePackages()`), which is slower than the batched reads the pack uses for everything else. With hundreds of hosts this adds to the collection time. If you don't track VIBs or drivers, leave `esxi_packages` with no active entries.
 
 ---
 
 ## 2. Advanced Settings (Optional)
 
-You can expand the adapter configuration by clicking **Advanced Settings**.
+Click **Advanced Settings** to see the settings below.
 
 ![The Advanced Settings of an Adapter Instance](images/adapter-instance-advanced-settings.png)
 
-*The settings of a lab's Adapter Instance. Some differ from the defaults: the table gives the defaults.*
+*Some values in the screenshot differ from the defaults. The table gives the defaults.*
 
-| Advanced Setting | Default Value | Description |
+| Advanced Setting | Default | Description |
 | :--- | :--- | :--- |
-| **Port** | `443` | The port used to connect to vCenter Server. |
-| **vCenter TLS Validation** | `Trust on First Use` | `Trust on First Use` connects whatever the certificate, and reports on the vCenter object when it changes. It sends the user name and password before the certificate is checked, so use `Pinned` or `Enabled` on a network you do not fully trust. `Enabled` (the Cloud Proxy must trust it) and `Pinned` (it must match the thumbprint below) refuse the connection when the check fails. See [TLS and Security Settings](tls-and-security.md#vcenter-tls-validation). |
+| **Port** | `443` | The HTTPS port of the vCenter Server. |
+| **vCenter TLS Validation** | `Trust on First Use` | `Trust on First Use` connects whatever certificate vCenter presents, and reports on the vCenter object when the certificate changes. It sends the user name and password before the certificate is checked, so use `Pinned` or `Enabled` on a network you don't fully trust. `Enabled` (the Cloud Proxy must trust the certificate) and `Pinned` (it must match the thumbprint below) refuse the connection when the check fails. See [TLS and Security Settings](tls-and-security.md#vcenter-tls-validation). |
 | **vCenter Thumbprint (SHA-256)** | *(empty)* | The certificate thumbprint to accept. Used only when vCenter TLS Validation is `Pinned`. |
-| **Cluster Check Period (hours)** | `24` | Length of each [Periodic Cluster Check](../reference/metrics/periodic-cluster-check.md#settings) window, and how often it is calculated: 1, 2, 4, 6, 8, 12 or 24 hours. |
-| **Cluster Check Time (UTC)** | `00:00` | Time of day, as HH:MM in UTC, when a Periodic Cluster Check window ends. With a shorter period, the other windows end every period from it. An empty or invalid value uses `00:00`. |
-| **Cluster Check Worst Percent** | `5` | Each [Periodic Cluster Check](../reference/metrics/periodic-cluster-check.md#worst) window is summarised by its worst end: this % of the worst samples is ignored. 0 is the single worst sample. 0 to 50. |
-| **Monster VM CPU (% of host cores)** | `50` | A VM is a CPU monster when its vCPUs are more than this % of its host's physical cores. Used by [Cluster Risk](../reference/metrics/cluster-risk.md#when-a-vm-is-a-monster). 1 to 100. |
-| **Monster VM Memory (% of host DRAM)** | `40` | A VM is a memory monster when its memory is more than this % of its host's DRAM, or the minimum below, whichever is smaller. 1 to 100. |
-| **Monster VM Memory Minimum (GB)** | `256` | The memory that qualifies a VM as a memory monster on any host, however large. On a host where the % of host DRAM is smaller, a smaller VM already qualifies. |
-| **Windows Service Configuration File** | `windows_service_list.xml` | File used to define which Windows Services to monitor. (Location: System Defined configurations) |
-| **Guest OS Service Monitoring Status** | `Disabled` | Toggles Windows Service monitoring using the `windows_service_list.xml` file. Set to `Enabled` to activate. |
-| **Windows Event Log Configuration File** | `windows_event_list.xml` | File used to define which Windows Event Log IDs to monitor. (Location: System Defined configurations) |
-| **Windows Event Log Monitoring Status** | `Disabled` | Toggles Windows Event Log monitoring using the `windows_event_list.xml` file. Set to `Enabled` to activate. |
-| **Guest File Transfer TLS Validation** | `Pinned` | How the ESXi host certificate is checked when a script is sent to a Windows VM: `Pinned` (it must match the thumbprint that vCenter records for the host; when vCenter has none, the transfer goes ahead and the log says so), `Strict` (a host with no thumbprint is skipped) or `Disabled` (not checked). See [TLS and Security Settings](tls-and-security.md#guest-file-transfer-tls-validation). |
+| **Cluster Check Period (hours)** | `24` | The length of each [Periodic Cluster Check](../reference/metrics/periodic-cluster-check.md#settings) window, and how often the check runs: 1, 2, 4, 6, 8, 12 or 24 hours. |
+| **Cluster Check Time (UTC)** | `00:00` | The time of day, as HH:MM in UTC, when a Periodic Cluster Check window ends. With a shorter period, the other windows end every period from this time. An empty or invalid value means `00:00`. |
+| **Cluster Check Worst Percent** | `5` | The share of the worst samples in each [Periodic Cluster Check](../reference/metrics/periodic-cluster-check.md#worst) window that is ignored. `0` uses the single worst sample. Range 0 to 50. |
+| **Monster VM CPU (% of host cores)** | `50` | A VM is a CPU monster when its vCPUs are more than this percentage of its host's physical cores. Used by [Cluster Risk](../reference/metrics/cluster-risk.md#when-a-vm-is-a-monster). Range 1 to 100. |
+| **Monster VM Memory (% of host DRAM)** | `40` | A VM is a memory monster when its memory is more than this percentage of its host's DRAM, or more than the minimum below, whichever is smaller. Range 1 to 100. |
+| **Monster VM Memory Minimum (GB)** | `256` | A VM with at least this much memory is a memory monster on any host. On a host where the percentage of DRAM gives a lower limit, smaller VMs already count. |
+| **Windows Service Configuration File** | `windows_service_list` | The configuration file that lists the Windows services to check. The default file has no active entries. |
+| **Guest OS Service Monitoring Status** | `Disabled` | `Enabled` checks the listed Windows services in every Windows VM and also reads OS information (name, version, build number, architecture, release ID and last boot time). |
+| **Windows Event Log Configuration File** | `windows_event_list` | The configuration file that lists the Windows event logs and event IDs to collect. The default file lists six event IDs in the `Application`, `Security`, `Setup` and `System` logs. |
+| **Windows Event Log Monitoring Status** | `Disabled` | `Enabled` collects the listed events from every Windows VM. |
+| **Guest File Transfer TLS Validation** | `Pinned` | How the ESXi host certificate is checked when a script is sent to a Windows VM. `Pinned`: it must match the thumbprint that vCenter records for the host. When vCenter has none, the transfer goes ahead and the log says so. `Strict`: as `Pinned`, but a host without a thumbprint is skipped. `Disabled`: no check. See [TLS and Security Settings](tls-and-security.md#guest-file-transfer-tls-validation). |
 
-> #### A note on Guest OS monitoring
-> Both Guest OS features are **agentless**, using GuestAPI with the credentials you provide — but they still add load to both VCF Operations and the target Windows guest, proportional to how many VMs you enable this for. Before enabling either of these across hundreds of Windows machines, evaluate the additional load in your environment and consider a targeted `vm_advanced_parameters`-style scoped rollout (see [Customization](customization.md)) rather than enabling it globally on day one.
+### Before you turn on Windows monitoring
+
+Both Windows features run a PowerShell script in each Windows VM through VMware Tools. They add load to VCF Operations and to each VM, and the load grows with the number of Windows VMs. The setting applies to every Windows VM the Adapter Instance collects: there is no per-VM scope. To limit the effect:
+
+- Keep the service and event lists short.
+- Test on an Adapter Instance for a small vCenter first.
+- Know the limits: each PowerShell step is stopped after 5 minutes, and all guest work in one cycle stops after 30 minutes. VMs that were not reached wait for the next cycle. See [TLS and Security Settings](tls-and-security.md#what-runs-inside-a-windows-vm).
 
 ---
 
 ## 3. Validate the Configuration
 
-1. Click **Validate Connection** to validate the Adapter Instance connection.
+Click **Validate Connection**. It connects to the vCenter with the instance's settings and reports what failed, if anything. Then save the instance.
 
-Once completed, your Management Pack will now be configured and will begin collecting data.
-
-After the first collection cycle, under **Administration** → **Integrations** → **Accounts**, the Adapter Instance shows **Collecting** under **VCF vCommunity Adapter**:
+After the first collection cycle, the Adapter Instance shows **Collecting** under **VCF vCommunity Adapter** in **Administration** > **Integrations** > **Accounts**:
 
 ![The Adapter Instance under Integrations, Accounts](images/integrations-accounts.png)
+
+If it does not, see [First Steps](../troubleshooting-guide/first-steps.md).
 
 ---
 

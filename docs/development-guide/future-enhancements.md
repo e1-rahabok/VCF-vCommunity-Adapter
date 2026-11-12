@@ -1,19 +1,20 @@
 # Future Enhancements
 
-**Status: notes only. Not designed, not built.** Each item is a metric idea to be designed later. The enhancements also belong on the [To Do project](https://github.com/users/e1-rahabok/projects/1), one line each.
+**Status: ideas only, not designed or built.** Each item is a metric to design later. Every item also belongs on the [To Do project](https://github.com/users/e1-rahabok/projects/1), as one line that links here.
 
 ## Guest OS does not match vCenter
 
 - **Object:** vSphere World
 - **Metric:** Count of OS Difference
-- **Description:** The number of virtual machines where the Guest OS seen by the guest does not match the Guest OS that vCenter shows. This can happen after a Guest OS upgrade or a reformat.
-- **How to compare:** the Guest OS from vCenter, against the Guest OS from VMware Tools.
-- **Note:** the names differ slightly between vCenter and the guest. Windows and Linux report themselves in their own words. The full list of names used by vCenter must be read first, to match them correctly.
-- **Recommended action:** update the value in vCenter, so the two agree.
+- **Description:** the number of VMs where the guest OS reported by the guest differs from the guest OS configured in vCenter. This can happen after a guest OS upgrade or a reinstall.
+- **How to compare:** the guest OS from vCenter against the guest OS from VMware Tools.
+- **Note:** vCenter and the guest name the OS slightly differently, because Windows and Linux describe themselves in their own words. Read the full list of names that vCenter uses first, to match them correctly.
+- **Recommended action:** update the guest OS in vCenter so the two agree.
 
 ## Outdated VM hardware
 
 - **Object:** vSphere World
 - **Metric:** Outdated VM Hardware
-- **Description:** The number of virtual machines whose VMX version is behind the minimum that Broadcom VMware supports. The count is absolute, not relative to each vCenter or ESXi host.
-- **Note:** the minimum version has to be stored in an advanced setting, since it changes over time.
+- **Description:** the number of VMs whose hardware (VMX) version is older than the minimum that Broadcom supports. The count is absolute, not relative to each vCenter or ESXi host.
+- **Note:** the minimum version changes over time, so store it in an Adapter Instance setting.
+- **Partly covered today:** the view **VM Outdated Hardware Version** ([`content/reports/VM Outdated Hardware Version vCommunity.xml`](../../Management%20Pack/content/reports/VM%20Outdated%20Hardware%20Version%20vCommunity.xml)) lists the VMs whose hardware version is not 21 or 22. The versions are fixed in the view, and there is no metric or count.

@@ -1,6 +1,6 @@
 # Content Folder
 
-`Management Pack/content/` holds the objects that VCF Operations imports from the pack: dashboards, reports, super metrics, alert and symptom definitions, and the configuration files that choose what the adapter collects. These are not Python. The pack's code does not build them, it only reads one of the folders at runtime.
+`Management Pack/content/` holds what VCF Operations imports from the pack: dashboards, reports and views, super metrics, alert and symptom definitions, and the configuration files that decide what the adapter collects. None of it is Python. The code reads only one folder, `files/solutionconfig/`, and only through VCF Operations.
 
 Code: [`Management Pack/content/`](../../Management%20Pack/content/)
 
@@ -8,56 +8,67 @@ Code: [`Management Pack/content/`](../../Management%20Pack/content/)
 
 | Folder | Files | What it is | Read by the code? |
 | :--- | :--- | :--- | :--- |
-| `files/solutionconfig/` | 6 XML | The configuration files that choose what is collected. See below. | **Yes**, at every collection |
-| `dashboards/` | 12 JSON, one in a subfolder | Dashboards for VCF Operations, such as vSphere Cluster Performance 2.0 and vSphere Cluster Capacity 2.0. The subfolder "To be used in reports" holds input dashboards for reports. | No, imported when the pack is installed |
-| `reports/` | 36 XML | Reports and views, such as ESXi Host Details, Inventory and the Executive Summary. | No, imported when the pack is installed |
-| `supermetrics/` | 2 JSON | Super metrics. Some are replaced by the built-in metrics, see [Super metrics replaced by built-in metrics](../reference/metrics-and-properties.md#super-metrics-replaced-by-built-in-metrics). | No, imported when the pack is installed |
-| `alertdefs/` | 3 XML and a schema | Alert definitions, such as ESXi Host License Expiring and Windows Service Down. | No, imported when the pack is installed |
-| `symptomdefs/` | 2 XML | The symptoms that the alert definitions use. | No, imported when the pack is installed |
+| `files/solutionconfig/` | 6 XML | The configuration files that decide what is collected. See below. | **Yes**, every collection cycle |
+| `dashboards/` | 19 JSON | 12 dashboards at the top level, such as vSphere Cluster Performance 2.0 and vSphere Cluster Capacity 2.0. `To be used in reports/` holds one file with the input dashboards of the VCF Optimization Assessment reports. Six folders named after an object type (`VMFolder`, `HostFolder`, `DatastoreFolder`, `NetworkFolder`, `DistributedVirtualPortgroup`, `VmwareDistributedVirtualSwitch`) hold the Summary dashboards for those object types. | No, imported at install |
+| `reports/` | 42 XML | Reports and views, such as ESXi Host Details, VM Outdated Hardware Version, and the VCF Optimization Assessment (VOA) reports. | No, imported at install |
+| `supermetrics/` | 2 JSON | CPU Usable Capacity Utilization and Number of VM. Other super metrics have been replaced by metrics in the code, see [Super metrics replaced by built-in metrics](../reference/metrics-and-properties.md#super-metrics-replaced-by-built-in-metrics). | No, imported at install |
+| `alertdefs/` | 4 XML and a schema | Collection Warnings, ESXi Host License Expiring, ESXi Host NIC Disconnected and Windows Service Down. Collection Warnings defines its symptom inline. | No, imported at install |
+| `symptomdefs/` | 2 XML | The symptoms used by the NIC Disconnected and Windows Service Down alerts. | No, imported at install |
 | `resources/` | 1 XML | Views of the VIBs in a cluster, such as "nfnic VIB Vendor Distribution". | No |
-| `traversalspecs/` | A schema | The schema for the traversal specs, the relations between objects. No traversal spec is shipped yet. | No |
-| `customgroups/`, `policies/`, `recommendations/` | none | Empty. Reserved for future content. | No |
+| `traversalspecs/` | A schema | The schema for traversal specs, which define relations between objects. The pack ships no traversal spec. | No |
+| `customgroups/`, `policies/`, `recommendations/` | none | Empty, kept for future content. | No |
 
-The schemas (`.xsd`) are the VCF Operations format of their files. They are kept next to the files they describe, so an edit can be checked against them.
+The schemas (`.xsd`) describe the VCF Operations format of the files next to them, so an edited file can be checked against its schema.
+
+Some content ships turned off:
+
+- **The four alerts** are deactivated in the base policy (`disableInBasePolicy="true"`). Activate them in the policy to use them.
+- **The six Summary dashboards** are disabled, and the install does not bind them to the Summary tab. Bind them with the script described in [Summary Dashboards](../configuration-guide/summary-dashboards.md). [Pak Summary Binding](pak-summary-binding.md) explains why the pak can't do this yet.
+- **The VOA input dashboards** are disabled. Some are also hidden. They exist to feed the reports.
 
 ## The configuration files
 
-The six files in `files/solutionconfig/` are the only content the code reads. Each is an XML file whose text is a comma-separated list, such as the names of the settings to collect. Each Adapter Instance names the file to use for each of six settings, and the adapter reads it from VCF Operations under `SolutionConfig/` at every collection:
+The six files in `files/solutionconfig/` are the only content the code reads. Each Adapter Instance names one file for each of six settings. At every collection the adapter reads the named file from VCF Operations, at `SolutionConfig/<name>.xml`. The setting holds the name without `.xml`.
 
-| Setting on the Adapter Instance | File | What it chooses |
-| :--- | :--- | :--- |
-| `esxi_adv_settings_config_file` | `esxi_advanced_system_settings.xml` | The ESXi advanced system settings to publish as properties. |
-| `esxi_vib_driver_config_file` | `esxi_packages.xml` | The ESXi software packages (VIBs) to publish. |
-| `vm_adv_settings_config_file` | `vm_advanced_parameters.xml` | The VM advanced parameters (`.vmx` settings) to publish. |
-| `vm_configuration_config_file` | `vm_options.xml` | The VM configuration values to publish. |
-| `win_event_config_file` | `windows_event_list.xml` | The Windows event logs to collect from the VMs. |
-| `win_service_config_file` | `windows_service_list.xml` | The Windows services to check in the VMs. |
+| Setting on the Adapter Instance | Default file | What it lists | Shipped content |
+| :--- | :--- | :--- | :--- |
+| `esxi_adv_settings_config_file` | `esxi_advanced_system_settings.xml` | ESXi advanced system settings to publish as properties | Every entry commented out |
+| `esxi_vib_driver_config_file` | `esxi_packages.xml` | ESXi software packages (VIBs) to publish | Every entry commented out |
+| `vm_adv_settings_config_file` | `vm_advanced_parameters.xml` | VM advanced parameters (`.vmx` settings) to publish | Every entry commented out |
+| `vm_configuration_config_file` | `vm_options.xml` | vSphere property paths of the VM to publish, such as `config.flags.diskUuidEnabled` | Every entry commented out |
+| `win_event_config_file` | `windows_event_list.xml` | Windows event logs and Event IDs to collect from the VMs | Six Event IDs in the Application, Security, Setup and System logs |
+| `win_service_config_file` | `windows_service_list.xml` | Windows services to check in the VMs | Every entry commented out |
 
-The file names above are the ones shipped in this folder. An Adapter Instance can name another file that is in VCF Operations, so one vCenter can collect a different standard from another. See [Customization](../configuration-guide/customization.md), which explains how to write and choose them.
+Five of the files are comma-separated lists inside one XML element. The event list is structured XML, passed to the guest as it is.
 
-**Why it is designed this way:** the standard of settings a company wants is a choice of the company, not of the code. Keeping it in files lets one pack serve many standards, and lets each Adapter Instance have its own, without a new release.
+An Adapter Instance can name any file that exists in VCF Operations, so each vCenter can collect its own standard. The usual way is to clone a default file and edit the clone. See [Customization](../configuration-guide/customization.md).
+
+Which settings to check is each company's decision. Keeping them in files lets one pack serve many standards, and gives each Adapter Instance its own list without a new release.
 
 ## How it is packaged
 
-The Management Pack Builder (`mp-build`, in the SDK) includes these folders in the `.pak` file when it builds it. When the pak is installed, VCF Operations imports the dashboards, reports, super metrics, alert and symptom definitions and resources. The configuration files stay in VCF Operations, where the code reads them. See [SDK](sdk.md).
+The Management Pack Builder (`mp-build`, part of the SDK) includes these folders in the `.pak` file. When the pak is installed, VCF Operations imports the dashboards, reports and views, super metrics, alert and symptom definitions, and resources. The configuration files are stored in VCF Operations, where the code reads them. See [The SDK](sdk.md).
+
+`mp-build` changes the layout of `dashboards/`: it moves each loose file into a subfolder of its own. See [Pak Summary Binding](pak-summary-binding.md#what-mp-build-does-with-contentdashboards).
 
 ## Where the pak's files sit on the appliance
 
-Found on the test appliance (`vcf-m02-ops01`) by listing its folders. The VCF Operations version of that appliance is not recorded here, so check the paths on another version before relying on them.
+These paths were seen on a VCF Operations appliance. Its version was not recorded, so check them on your version before you rely on them.
 
 | Path | What is there |
 | :--- | :--- |
 | `/usr/lib/vmware-vcops/tomcat-web-app/webapps/ui` | The VCF Operations UI web app. The pack's icons go under `images/adpknd/` and `images/resknd/custom/`, and its content pack under `ContentPack/`. |
 | `/usr/lib/vmware-vcops/user/plugins/inbound/vCommunity.conf` and `vCommunity/` | The pack's inbound plugin configuration and its adapter kind image. |
-| `/usr/lib/vmware-vcops/tomcat-enterprise/webapps` | Holds `ROOT`, `suite-api`, `telemetry` and `vrops-unicorn`. It does not hold the UI. |
+| `/usr/lib/vmware-vcops/tomcat-enterprise/webapps` | `ROOT`, `suite-api`, `telemetry` and `vrops-unicorn`. The UI is not here. |
 
-The path `/usr/lib/vmware-vcops/tomcat-enterprise/webapps/vcops-web-ent` that older documents give does not exist on this appliance. Text Widget Content entries are stored in the VCF Operations database, not in a folder, so no path holds them. See [Text Display Widget](../reference/text-display-widget.md).
+Older documents give `/usr/lib/vmware-vcops/tomcat-enterprise/webapps/vcops-web-ent` as a path, but it did not exist on that appliance. Text Widget Content entries are stored in the VCF Operations database, not in a folder. See [Text Display Widget](../reference/text-display-widget.md).
 
-Do not edit the files in these folders by hand. A manual change may be lost at the next install or upgrade.
+Don't edit files in these folders by hand. A manual change can be lost at the next install or upgrade.
 
 ## Limitations
 
-- **The content is exported from VCF Operations, so it is not hand-written.** Editing the JSON or XML by hand is fragile. The safe way is to change the object in the VCF Operations UI, export it, and replace the file.
-- **Installing a new version imports its content again.** Before an upgrade, check what the import replaces if you edited a copy of a dashboard or report in VCF Operations.
-- **A bad configuration file loses only its own data.** A file that is missing, or is not valid XML, gives nothing for that file. The rest of the collection goes on. The problem is shown as a warning event named "vCommunity configuration" on the vCenter object, and the event clears when the file is fixed. See [Configuration files](../troubleshooting-guide/configuration-files.md).
-- **The configuration files are read at each collection.** A change takes effect at the next cycle, with no restart.
+- **The content files are exports from VCF Operations.** Editing the JSON or XML directly is fragile. Change the object in the VCF Operations UI, export it, and replace the file.
+- **Installing a new version imports the content again.** If you edited a dashboard or report in VCF Operations, check what the import replaces before you upgrade.
+- **A bad configuration file loses only its own data.** A file that is missing, unreadable or not valid XML gives nothing for that file, and the rest of the collection goes on. The problem appears as a warning event starting with `vCommunity configuration:` on the vCenter object, and clears a few cycles after the file is fixed. See [Configuration files](../troubleshooting-guide/configuration-files.md).
+- **A misspelt path in `vm_options.xml` is worse.** Its entries are added to the VM collector's vSphere read, and an invalid path makes the whole read fail. No VM data is published for that cycle.
+- **The configuration files are read every cycle.** A change takes effect at the next cycle, with no restart.

@@ -1,32 +1,21 @@
 # How It Works
 
-**On this page:**
+## How the pack runs
 
-- [How the vCommunity Management Pack Works](#how-the-vcommunity-management-pack-works)
-- [How the Integration SDK Works](#how-the-integration-sdk-works)
+Management Packs built with the VCF Operations Integration SDK run their Adapter Instances on a **Cloud Proxy**, not on the VCF Operations cluster nodes.
 
----
-
-## How the vCommunity Management Pack Works
-
-Custom Management Packs created using the VCF Operations Integration SDK have some additional requirements. First, their Adapter Instances need to run on a **Cloud Proxy** for data collection.
-
-Once you've installed the Management Pack and created an Adapter Instance, the Cloud Proxy pulls the adapter's Docker image from the container registry. That image installs the files defined in its `Dockerfile`, and the PAK file is then initialized to begin the data collection process.
+When you install the `.pak` file and create an Adapter Instance, the Cloud Proxy pulls the adapter's container image from the registry. The image is built from the pack's `Dockerfile`: a base image from the SDK, the Python libraries, and the adapter code. The Cloud Proxy then starts the container, which collects from vCenter and from VCF Operations every collection cycle (5 minutes) and sends the results to VCF Operations.
 
 ![vCommunity Adapter Topology](images/adapter-topology.svg)
 
-If the Cloud Proxy has container registry access (i.e. access to the Internet), users can simply install the Management Pack and create Adapter Instances — no further modification is needed in VCF Operations.
+If the Cloud Proxy can reach the registry, nothing else is needed: install the pack and create the Adapter Instances. If it cannot, see [Dark Site Installation](dark-site.md).
 
-> If your Cloud Proxy does **not** have internet/registry access, see [Dark Site Installation](dark-site.md) instead.
+## How the Integration SDK works
 
----
-
-## How the Integration SDK Works
-
-A Cloud Proxy runs a collector process that manages adapter containers, one per Adapter Instance. Within each container is a REST server and the adapter process itself. The `Commands.cfg` file tells the REST server how to run the adapter process for each endpoint (`test`, `collect`, `adapter_definition`, etc.).
+A Cloud Proxy runs a collector process that manages one adapter container per Adapter Instance. Each container holds a REST server and the adapter. The `commands.cfg` file tells the REST server which command to run for each call (`test`, `collect`, `adapter_definition` and `endpoint_urls`). Each call starts a new adapter process, so nothing is kept in memory from one cycle to the next. [App Folder](../development-guide/app-folder.md) describes a collection cycle in detail.
 
 ![VCF Operations Integration SDK Topology](images/integration-sdk-topology.png)
 
 ---
 
-**Next:** [Metrics & Properties Reference](../reference/metrics-and-properties.md) · [Configuration](../configuration-guide/adapter-instance.md)
+**Next:** [Installation](installation.md)
