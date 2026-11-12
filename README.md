@@ -61,9 +61,9 @@ If something does not work, start with the [Troubleshooting Guide](docs/troubles
 
 The pack is written in Python with the [VCF Operations Integration SDK](https://github.com/vmware/vmware-vcf-operations-integration-sdk/tree/main/docs). It reads vCenter with pyVmomi and the vSphere Automation API, and reads VCF Operations through its REST API. The [Development Guide](docs/development-guide/repository-layout.md) explains the code and how to change it.
 
-## Agent E2, isvara.io and this pack
+## 3 in 1
 
-Three projects share one body of knowledge about operating VMware Cloud Foundation:
+Three projects share one body of knowledge about managing global private cloud based on VMware Cloud Foundation:
 
 - [Agent E2](https://github.com/e1-rahabok/agent-e2) holds the knowledge. You can download it and deploy it privately.
 - [isvara.io](https://isvara.io) is where Agent E2 runs on the internet. Use it to try Agent E2 without installing anything.
