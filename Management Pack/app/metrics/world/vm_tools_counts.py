@@ -52,6 +52,10 @@ def collect_vm_tools_counts(world_obj: Object, suite_api_client: SuiteApiClient)
         vms = query_resources(suite_api_client, VCENTER_ADAPTER_KIND, "VirtualMachine", None)
         values = read_latest_properties(suite_api_client, [vm.id for vm in vms],
                                         [RUNNING_KEY, VERSION_KEY, POWER_KEY])
+        if vms and not values:
+            # The properties read failed: leave a gap rather than publish two false zeros.
+            logger.info("No VMware Tools properties were read, so the Tools counts are not published on vSphere World")
+            return
         without, down = tools_counts(values.values())
         world_obj.with_metric(f"vCommunity|{WITHOUT_METRIC}", without)
         world_obj.with_metric(f"vCommunity|{DOWN_METRIC}", down)

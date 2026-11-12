@@ -32,6 +32,10 @@ def collect_port_group_count(world_obj: Object, suite_api_client: SuiteApiClient
         vcenters = query_resources(suite_api_client, VCENTER_ADAPTER_KIND, VCENTER_KIND, None)
         values = read_latest_stats(suite_api_client, [vc.id for vc in vcenters], [METRIC_KEY],
                                    max_age_minutes=CONFIGURATION_STALE_AFTER_MINUTES)
+        if not any(METRIC_KEY in v for v in values.values()):
+            # No vCenter has a recent value, or the read failed: leave a gap rather than publish a false 0.
+            logger.info(f"No vCenter has a recent {METRIC} value, so it is not published on vSphere World")
+            return
         world_obj.with_metric(f"vCommunity|{METRIC}", total(values))
     except Exception as e:
         # A failure here must not stop the rest of the collection.

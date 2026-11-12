@@ -293,7 +293,7 @@ These properties are read inside Windows VMs through the vSphere Guest API. They
 | Metric | `vCommunity\|Network\|Total Network Speed Degradation` | The number of hosts below 100 % Network Speed Degradation, of all vCenters. Can be one collection cycle old. See [Network Speed Degradation](metrics/network-speed-degradation.md#known-limitations). |
 | Metric | `vCommunity\|Cluster Delta Close Count` | The number of clusters whose Close for Business changed from 0 to 1 since the previous Periodic Cluster Check window. Published once per window. See [Close for Business changes](metrics/vsphere-world-metrics.md#close-for-business-changes). |
 | Metric | `vCommunity\|Cluster Delta Open Count` | The number of clusters whose Close for Business changed from 1 to 0 since the previous window. Published once per window. |
-| Metric | `vCommunity\|Number of Port Groups` | The sum of the vCenters' port group counts, using each vCenter's value for up to 15 minutes. Published as 0 when no vCenter has a value that recent. See [Port groups and VMware Tools](metrics/vsphere-world-metrics.md#port-groups-and-vmware-tools). |
+| Metric | `vCommunity\|Number of Port Groups` | The sum of the vCenters' port group counts, using each vCenter's value for up to 15 minutes. Not published when no vCenter has a value that recent. See [Port groups and VMware Tools](metrics/vsphere-world-metrics.md#port-groups-and-vmware-tools). |
 | Metric | `vCommunity\|Number of VM without Tools` | VMs whose VMware Tools are not installed, whatever their power state. |
 | Metric | `vCommunity\|Number of VMware Tools down` | Powered-on VMs whose VMware Tools are installed but not running. |
 

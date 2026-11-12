@@ -28,22 +28,22 @@
             </State>
         </SymptomDefinition>
         <SymptomDefinition adapterKind="VMWARE" disableInBasePolicy="true" id="SymptomDefinition-7a5c6ce4-9444-4cdd-a050-0fe3bca6e7c9" name="Condition_d2f954fc-3121-49db-bb9a-33c04afb8de2" resourceKind="HostSystem" symptomDefType="condition_self">
-            <State severity="warning">
+            <State severity="immediate">
                 <Condition key="vCommunity|Licensing:vSphere 8 Enterprise Plus for VCF|Remaining Days" operator="&gt;=" thresholdType="static" type="metric" value="30.0" valueType="numeric"/>
             </State>
         </SymptomDefinition>
         <SymptomDefinition adapterKind="VMWARE" disableInBasePolicy="true" id="SymptomDefinition-b0d54ebb-12df-464e-89a1-b3934a93072f" name="Condition_b8e3e3de-2a06-4dbd-9829-a12ffe048677" resourceKind="HostSystem" symptomDefType="condition_self">
-            <State severity="warning">
+            <State severity="immediate">
                 <Condition key="vCommunity|Licensing:vSphere 8 Enterprise Plus for VCF|Remaining Days" operator="&lt;" thresholdType="static" type="metric" value="60.0" valueType="numeric"/>
             </State>
         </SymptomDefinition>
         <SymptomDefinition adapterKind="VMWARE" disableInBasePolicy="true" id="SymptomDefinition-a3587501-0d08-4786-af15-feb353279e67" name="Condition_191895ee-451e-43f5-9237-3c24344ffe70" resourceKind="HostSystem" symptomDefType="condition_self">
-            <State severity="immediate">
+            <State severity="warning">
                 <Condition key="vCommunity|Licensing:vSphere 8 Enterprise Plus for VCF|Remaining Days" operator="&gt;=" thresholdType="static" type="metric" value="60.0" valueType="numeric"/>
             </State>
         </SymptomDefinition>
         <SymptomDefinition adapterKind="VMWARE" disableInBasePolicy="true" id="SymptomDefinition-ff8e08f4-5af5-4f93-bb5d-4bdb3ff07070" name="Condition_93e95c4e-63aa-4e04-b332-cc27317966e2" resourceKind="HostSystem" symptomDefType="condition_self">
-            <State severity="immediate">
+            <State severity="warning">
                 <Condition key="vCommunity|Licensing:vSphere 8 Enterprise Plus for VCF|Remaining Days" operator="&lt;" thresholdType="static" type="metric" value="90.0" valueType="numeric"/>
             </State>
         </SymptomDefinition>

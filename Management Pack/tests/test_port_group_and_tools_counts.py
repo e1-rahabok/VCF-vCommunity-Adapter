@@ -123,3 +123,31 @@ def test_installed_but_version_unknown_is_not_counted_as_down():
     # Without a version value, we do not know Tools are installed, so the VM is not counted as down.
     rows = [row(running="Guest Tools Not Running", power="Powered On")]
     assert tools.tools_counts(rows) == (0, 0)
+
+
+# --- No false zeros on vSphere World (issue #82) ------------------------------------------------------------------
+
+from fakes import FakeObject, FakeSuiteApi  # noqa: E402
+
+
+def test_world_port_groups_are_not_published_when_no_vcenter_has_a_value():
+    api = FakeSuiteApi(resources={pg.VCENTER_KIND: [("vc-a", "vc-a", "vc-a")]})
+    world = FakeObject("World")
+    pg.collect_port_group_count(world, api)
+    assert f"vCommunity|{pg.METRIC}" not in world.metrics
+
+
+def test_world_port_groups_are_published_when_a_vcenter_has_a_value():
+    api = FakeSuiteApi(resources={pg.VCENTER_KIND: [("vc-a", "vc-a", "vc-a")]},
+                       samples={"vc-a": {pg.METRIC_KEY: [12.0]}})
+    world = FakeObject("World")
+    pg.collect_port_group_count(world, api)
+    assert world.metrics[f"vCommunity|{pg.METRIC}"] == 12
+
+
+def test_world_tools_counts_are_not_published_when_the_properties_read_fails():
+    api = FakeSuiteApi(resources={"VirtualMachine": [("vm-1", "vm-1", "vm-1")]}, status_code=500)
+    world = FakeObject("World")
+    tools.collect_vm_tools_counts(world, api)
+    assert f"vCommunity|{tools.WITHOUT_METRIC}" not in world.metrics
+    assert f"vCommunity|{tools.DOWN_METRIC}" not in world.metrics

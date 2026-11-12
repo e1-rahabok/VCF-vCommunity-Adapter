@@ -135,7 +135,7 @@ A failure in one KPI doesn't stop the collection. Each entry point catches its o
 3. Write the formulas and the entry point.
 4. Call the entry point from the collector of that object type. Read the stats once, before the loop over the objects. See [Collectors](collectors.md).
 5. Add one line to `definition.py`, `define_kpi(vCommunity, <your module>)`, in the section of that object type. Every unit used in a KPI table must also be in `KPI_UNITS` there.
-6. Add the module to `KPI_MODULES` in `tests/test_kpi_score.py`. Its generic tests then check every row of your table. Cluster Consumption is not in this list yet, so its table is checked only by its own test file.
+6. Add the module to `KPI_MODULES` in `tests/test_kpi_score.py`. Its generic tests then check every row of your table.
 7. Add a test file with worked examples, and a page under `docs/reference/metrics/`. Add the page to the contents of `docs/README.md`.
 
 ## Limitations
