@@ -39,9 +39,9 @@ def collect_vm_disk(vm_obj, prop_dict, vm_name):
         ## new code-block for network card props
         vnics = [d for d in devices if isinstance(d, vim.vm.device.VirtualEthernetCard)]
         if not vnics:
+            # No return here: the virtual disks below are still published.
             logger.debug(f"No network adapters found on VM '{vm_name}'.")
-            return
-        
+
         for vnic in vnics:
             deviceInfo = getattr(vnic, "deviceInfo", None)
             vnicLabel = getattr(deviceInfo, "label", "Unknown Adapter").strip() if deviceInfo else "Unknown Adapter"

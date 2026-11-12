@@ -31,9 +31,9 @@ def collect_vm_configurations(vm_obj, prop_dict, vm_name):
         minRequiredEVCModeKey = prop_dict.get("runtime.minRequiredEVCModeKey")
         raw_timeout = prop_dict.get("config.vmOpNotificationTimeout")
         vmOpNotificationTimeout = max(0, int(raw_timeout)) if raw_timeout is not None else 0
-        tools_info = prop_dict.get("config.tools")
-        syncTimeWithHost = getattr(tools_info, "syncTimeWithHost", None) if tools_info else None
-        toolsUpgradePolicy = getattr(tools_info, "toolsUpgradePolicy", None) if tools_info else None
+        # The collector requests these two paths, and results are keyed by the requested path.
+        syncTimeWithHost = prop_dict.get("config.tools.syncTimeWithHost")
+        toolsUpgradePolicy = prop_dict.get("config.tools.toolsUpgradePolicy")
         vnumaOnCpuHotaddExposed = prop_dict.get("config.numaInfo.vnumaOnCpuHotaddExposed")
         cpuAllocationSharesLevel = prop_dict.get("config.cpuAllocation.shares.level")
         configStatus = prop_dict.get("configStatus", None)

@@ -11,7 +11,7 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "app"))
 
 from metrics.kpi_score import Metric, score_metric, kpi_score
-from metrics.cluster import cluster_performance_metrics, cluster_risk_metrics
+from metrics.cluster import cluster_performance_metrics, cluster_risk_metrics, cluster_consumption_metrics
 from metrics.host import esxi_performance_metrics
 from metrics.vm import vm_performance_metrics, guest_os_performance_metrics
 from utils import ops_stats
@@ -19,7 +19,7 @@ from fakes import FakeSuiteApi
 
 KPI_MODULES = [
     cluster_performance_metrics, vm_performance_metrics, guest_os_performance_metrics,
-    cluster_risk_metrics, esxi_performance_metrics,
+    cluster_risk_metrics, esxi_performance_metrics, cluster_consumption_metrics,
 ]
 
 #                    name                 unit   best    green  yellow  orange  zero-at
@@ -165,7 +165,7 @@ def test_no_metric_key_equals_a_group_key():
     from metrics.vm import vm_performance_metrics, guest_os_performance_metrics, vm_guest_os_kpi
     from metrics.host import host_availability
     kpis_by_object = [
-        [cluster_performance_metrics, cluster_risk_metrics],
+        [cluster_performance_metrics, cluster_risk_metrics, cluster_consumption_metrics],
         [esxi_performance_metrics],
         [vm_performance_metrics, guest_os_performance_metrics],
     ]

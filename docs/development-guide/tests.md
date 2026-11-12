@@ -43,7 +43,7 @@ The CI workflow (`.github/workflows/ci.yml`) runs on every pull request and on e
 
 | Test file | What it checks |
 | :--- | :--- |
-| `test_kpi_score.py` | The scoring, the batching of stats requests, and the tables of the KPIs in `KPI_MODULES`. It also checks that each of those KPIs calculates exactly the sub-metrics in its table, so a misspelt name fails. Cluster Consumption is not in `KPI_MODULES` yet. |
+| `test_kpi_score.py` | The scoring, the batching of stats requests, and the tables of all six KPIs in `KPI_MODULES`. It also checks that each KPI except Cluster Consumption calculates exactly the sub-metrics in its table, so a misspelt name fails. Cluster Consumption's calculation is checked in its own test file. |
 | `test_cluster_performance_metrics.py` | Cluster Performance formulas and worked examples. |
 | `test_cluster_risk_metrics.py` | Cluster Risk formulas and worked examples. |
 | `test_cluster_consumption_metrics.py` | Cluster Consumption formulas and a worked example. |
@@ -55,7 +55,7 @@ The CI workflow (`.github/workflows/ci.yml`) runs on every pull request and on e
 | `test_esxi_performance_metrics.py` | ESXi Performance formulas and worked examples. |
 | `test_periodic_cluster_check.py` | Periodic Cluster Check: the schedule, the worst percent, the Close for Business rule, and which clusters are due. |
 | `test_cluster_close_changes.py` | Cluster Delta Close and Open Counts: the direction of each change, blank values not counted, and the window. |
-| `test_port_group_and_tools_counts.py` | Port groups per Datacenter (distributed and standard), the vSphere World sum, the 15-minute limit that only the port group count uses, and the VMware Tools counts, including powered-off VMs. |
+| `test_port_group_and_tools_counts.py` | Port groups per Datacenter (distributed and standard), the vSphere World sum, the 15-minute limit that only the port group count uses, the VMware Tools counts, including powered-off VMs, and no value on vSphere World after a failed read. |
 | `test_cluster_summary_metrics.py` | vSphere World: worst and Worst 10 Percent cluster scores over the clusters of all vCenters. |
 | `test_collection_health.py` | Collection health: only warnings and errors are counted, the first warning is kept and shortened, the log handler is removed after the cycle, the values go on the vCenter object only, and the keys match the alert definition. |
 | `test_guest_collectors.py` | The Windows guest collectors, with a fake Guest API: the 5-minute timeout that stops a hung script, the back-off, the guest budget, a failed download, a service name with a comma, event levels, the event cap, and a failed temporary file. |
@@ -63,6 +63,7 @@ The CI workflow (`.github/workflows/ci.yml`) runs on every pull request and on e
 | `test_shared_connection.py` | Five threads reading one shared vCenter content object: each call gets its own objects, and each view is released. It uses a fake, not a live vCenter. |
 | `test_operational_availability.py` | Host and cluster Operational Availability: the bugs of the former super metric, N+0 to N+2, missing data, and the vSphere World summary. |
 | `test_network_speed_degradation.py` | Network Speed Degradation: NIC by NIC, NICs that are down or have no configured speed, and the counts. |
+| `test_vm_property_fixes.py` | VM Tools Sync Time and Upgrade Policy read from their own property paths, and virtual disks published for a VM with no network adapter. |
 | `test_vm_shares.py` | Share per vCPU and per MB: normal values, the former super metric's values, and no division by zero. |
 | `test_ops_inventory.py` | Reading placement, power state, sizes, cores and threads from VCF Operations, and the Suite API endpoints used. |
 | `test_guest_args.py` | Values from the configuration files that go into guest commands are checked, and unsafe ones are left out. |

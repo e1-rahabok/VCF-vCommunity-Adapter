@@ -24,7 +24,7 @@ Code: [`cluster_summary_metrics.py`](../../../Management%20Pack/app/metrics/worl
 - **A cluster without a score is left out.** For example, a cluster with no powered-on VMs has no Cluster Performance score.
 - **The Close for Business counts wait for every cluster.** They are published only after every cluster has been calculated for the latest Periodic Cluster Check window, so they can come a few cycles after the window ends, like the check itself.
 - **Only the latest window is counted.** If collection stops for longer than a window, the windows in between are not counted.
-- **The port group and Tools counts can read 0 after a failed read.** See [Port groups and VMware Tools](#port-groups-and-vmware-tools).
+- **The port group and Tools counts leave a gap after a failed read.** See [Port groups and VMware Tools](#port-groups-and-vmware-tools).
 
 ## The 6 metrics
 
@@ -75,7 +75,7 @@ Three counts on the vSphere World object, across all vCenters.
 - **Failed read on a vCenter.** Nothing is published for that vCenter in that cycle, so the vCenter object keeps its last value. The 15-minute limit below does not apply to the vCenter object itself.
 - **On vSphere World.** The sum of the stored vCenter values. A vCenter's port groups can only be read from that vCenter, so the total is built from what each Adapter Instance published.
 - **15 minutes on vSphere World.** The total uses each vCenter's stored value for up to 15 minutes, because a port group count comes from settings and changes rarely. A vCenter whose value is older, or that has never published one, is left out. See [the two limits](README.md#two-limits-10-minutes-and-15-minutes-for-settings-based-metrics).
-- **0 on vSphere World.** When no vCenter has a value from the last 15 minutes, or the stats read fails, the total is published as 0.
+- **No value on vSphere World.** When no vCenter has a value from the last 15 minutes, or the stats read fails, the total is not published for that cycle, so the chart shows a gap.
 - **NSX.** Only vCenter is checked, not NSX Manager. An NSX segment that vCenter shows as a distributed port group counts once, as that port group. A segment that vCenter does not show, such as one not realized on a distributed switch, is not counted.
 - A vCenter without an Adapter Instance of this pack has no value and is left out.
 
@@ -89,7 +89,7 @@ Three counts on the vSphere World object, across all vCenters.
 - **Without Tools** means the Tools status is *Not Installed*. It counts whatever the power state, because the Tools are not installed.
 - **Tools down** needs three things: the VM is powered on, its Tools are installed, and its Tools are not running. A powered-off VM never counts, because a property keeps its last value, so a powered-off VM still shows the Tools status it had when it was last on.
 - A VM with no stored Tools value, such as a template, is left out of both counts.
-- If the properties read fails, both counts are published as 0 for that cycle. The adapter log has a warning.
+- If the properties read fails, neither count is published for that cycle, so the chart shows a gap. The adapter log has a warning.
 
 ## Example
 
