@@ -2,7 +2,7 @@
 
 [`install.ps1`](install.ps1) sends these requests to install a pak without a browser: see [Install Script](install.md).
 
-Recorded on 2026-10-18 while installing `vCommunity_0.4.1.pak` on `https://vcf-m02-ops01.acepod.com` through **Administration → Integrations → Repository → Add**, with both **Install the PAK file even if it is already installed** and **Ignore the PAK file signature checking** ticked. The install finished with `Applied and Cleaned (Completed)`, and the Repository tab then listed VCF vCommunity Adapter 0.4.1.
+Recorded on 2026-10-18 while installing `vCommunity_0.4.1.pak` through **Administration** > **Integrations** > **Repository** > **Add**, with both **Install the PAK file even if it is already installed** and **Ignore the PAK file signature checking** ticked. The install finished with `Applied and Cleaned (Completed)`, and the Repository tab then listed VCF vCommunity Adapter 0.4.1.
 
 ## How this was captured
 
@@ -14,9 +14,9 @@ Recorded on 2026-10-18 while installing `vCommunity_0.4.1.pak` on `https://vcf-m
 
 ## Repeating this capture
 
-These notes apply when Claude drives the install in the built-in browser of the Claude desktop app.
+These notes apply when an AI assistant, such as Claude in the Claude desktop app's built-in browser, drives the install.
 
-1. **A person has to pick the PAK.** BROWSE opens the operating system's file dialog. The built-in browser cannot attach files or control that dialog, so after Claude opens **Add**, someone has to click BROWSE and choose the `.pak` file. Claude can do the rest.
+1. **A person has to pick the PAK.** BROWSE opens the operating system's file dialog. The built-in browser cannot attach files or control that dialog, so after the assistant opens **Add**, a person clicks BROWSE and chooses the `.pak` file. The assistant can do the rest.
 2. **Add the logging hooks after the Add dialog opens and before clicking UPLOAD.** The network log shows URLs, status codes and response bodies, but not request bodies or form fields, which is why the hooks are needed. Hook both the top window and the `ops_iframe` window, because the wizard's requests come from the frame. Hooks live in page memory: any reload or navigation removes them, so add them again before the next step you want recorded.
 3. **Expect an "unsigned pack" confirmation after NEXT** when signature checking is ignored and the PAK is unsigned. Answer YES to reach the EULA page.
 4. **Remove the token before saving.** The hooks capture the real `secureToken` value in every POST body. Replace it with `<secureToken>` before writing anything to the repo.
@@ -29,8 +29,8 @@ These notes apply when Claude drives the install in the built-in browser of the 
 | 2 | Click UPLOAD | POST | `admin/services/solution/upload?uploadId=…&ignoreSignatureChecking=true` (multipart form) | 1 |
 | 3 | Upload progress | GET | `admin/services/solution/upload?…&progress=true` | 34, about every 1.05 s |
 | 4 | Upload done | POST | `solution.action` (`mainAction=getSolutionVersion`) | 1 |
-| 5 | NEXT → *unsigned pack?* YES → EULA page | POST | `solution.action` (`mainAction=getLicenseAgreement`) | 1 |
-| 6 | Accept EULA → NEXT | POST | `solution.action` (`mainAction=install`) | 1 |
+| 5 | NEXT, then YES to the unsigned pack question, then the EULA page | POST | `solution.action` (`mainAction=getLicenseAgreement`) | 1 |
+| 6 | Accept the EULA, then NEXT | POST | `solution.action` (`mainAction=install`) | 1 |
 | 7 | Install progress | POST | `solution.action` (`mainAction=getInstallStatus`) | 16, about every 6.7 s |
 
 ```mermaid
@@ -56,7 +56,7 @@ Ticking the EULA box and the "unsigned pack" confirmation dialog made no request
 
 ## 1. Prepare upload
 
-- **URL:** `https://vcf-m02-ops01.acepod.com/vcf-operations/plug/ops/utility.action`
+- **URL:** `https://ops.example.com/vcf-operations/plug/ops/utility.action`
 - **Method:** POST (XHR)
 - **Query parameters:** none
 - **Headers set by the page:** `Content-Type`, `X-Requested-With`
@@ -76,7 +76,7 @@ Ticking the EULA box and the "unsigned pack" confirmation dialog made no request
 
 ## 2. Upload the PAK
 
-- **URL:** `https://vcf-m02-ops01.acepod.com/vcf-operations/plug/ops/admin/services/solution/upload`
+- **URL:** `https://ops.example.com/vcf-operations/plug/ops/admin/services/solution/upload`
 - **Method:** POST, from a classic `form.submit()` into a hidden iframe (target `ext-element-84`), not XHR
 - **Content type:** `multipart/form-data`
 - **Query parameters:**
@@ -93,7 +93,7 @@ Ticking the EULA box and the "unsigned pack" confirmation dialog made no request
   | `secureToken` | `<secureToken>` | |
   | `forceUpload` | `true` | From the "Install the PAK file even if it is already installed" box |
   | `forceContent` | `false` | |
-  | `undefined` | `on` | The two checkboxes have no `name`, so the browser sends them as `undefined=on`. Harmless noise; the real flags are `forceUpload` and `ignoreSignatureChecking`. |
+  | `undefined` | `on` | The two checkboxes have no `name`, so the browser sends them as `undefined=on`. They carry no setting: the flags are `forceUpload` and `ignoreSignatureChecking`. |
   | `undefined` | `on` | (second checkbox) |
   | `solution` | file `vCommunity_0.4.1.pak`, 443328 bytes, no content type set by the browser | The PAK itself |
   | `currentComponentInfo` | `TODO` | |
@@ -121,7 +121,7 @@ Ticking the EULA box and the "unsigned pack" confirmation dialog made no request
 
 ## 3. Upload progress (polled)
 
-- **URL:** `https://vcf-m02-ops01.acepod.com/vcf-operations/plug/ops/admin/services/solution/upload`
+- **URL:** `https://ops.example.com/vcf-operations/plug/ops/admin/services/solution/upload`
 - **Method:** GET (XHR)
 - **Headers set by the page:** `X-Requested-With`
 - **Query parameters:**
@@ -143,7 +143,7 @@ Ticking the EULA box and the "unsigned pack" confirmation dialog made no request
 
 ## 4. Get installed version
 
-- **URL:** `https://vcf-m02-ops01.acepod.com/vcf-operations/plug/ops/solution.action`
+- **URL:** `https://ops.example.com/vcf-operations/plug/ops/solution.action`
 - **Method:** POST (XHR)
 - **Headers set by the page:** `Content-Type`, `X-Requested-With`
 - **Body (urlencoded):**
@@ -163,7 +163,7 @@ Ticking the EULA box and the "unsigned pack" confirmation dialog made no request
 
 ## 5. Get EULA
 
-- **URL:** `https://vcf-m02-ops01.acepod.com/vcf-operations/plug/ops/solution.action`
+- **URL:** `https://ops.example.com/vcf-operations/plug/ops/solution.action`
 - **Method:** POST (XHR)
 - **Headers set by the page:** `Content-Type`, `X-Requested-With`
 - **Body (urlencoded):**
@@ -184,7 +184,7 @@ Ticking the EULA box and the "unsigned pack" confirmation dialog made no request
 
 ## 6. Start install
 
-- **URL:** `https://vcf-m02-ops01.acepod.com/vcf-operations/plug/ops/solution.action`
+- **URL:** `https://ops.example.com/vcf-operations/plug/ops/solution.action`
 - **Method:** POST (XHR)
 - **Headers set by the page:** `Content-Type`, `X-Requested-With`
 - **Body (urlencoded):**
@@ -205,7 +205,7 @@ Ticking the EULA box and the "unsigned pack" confirmation dialog made no request
 
 ## 7. Install status (polled)
 
-- **URL:** `https://vcf-m02-ops01.acepod.com/vcf-operations/plug/ops/solution.action`
+- **URL:** `https://ops.example.com/vcf-operations/plug/ops/solution.action`
 - **Method:** POST (XHR)
 - **Headers set by the page:** `Content-Type`, `X-Requested-With`
 - **Body (urlencoded):**
@@ -219,11 +219,11 @@ Ticking the EULA box and the "unsigned pack" confirmation dialog made no request
 - **Response:** 200. 16 polls over about 100 s. The states seen, in order:
 
   ```json
-  {"statuses":[{"nodeAddress":"vcf-m02-ops01.acepod.com","state":"Staged","status":"Candidate"}],"completed":false}
-  {"statuses":[{"nodeAddress":"vcf-m02-ops01.acepod.com","state":"Preapply Validated","status":"Candidate"}],"completed":false}
-  {"statuses":[{"nodeAddress":"vcf-m02-ops01.acepod.com","state":"Applied Adapter Pre Script","status":"Candidate"}],"completed":false}
-  {"statuses":[{"nodeAddress":"vcf-m02-ops01.acepod.com","state":"Applied Adapter","status":"Candidate"}],"completed":false}
-  {"statuses":[{"nodeAddress":"vcf-m02-ops01.acepod.com","state":"Applied and Cleaned","status":"Completed"}],"completed":true}
+  {"statuses":[{"nodeAddress":"ops.example.com","state":"Staged","status":"Candidate"}],"completed":false}
+  {"statuses":[{"nodeAddress":"ops.example.com","state":"Preapply Validated","status":"Candidate"}],"completed":false}
+  {"statuses":[{"nodeAddress":"ops.example.com","state":"Applied Adapter Pre Script","status":"Candidate"}],"completed":false}
+  {"statuses":[{"nodeAddress":"ops.example.com","state":"Applied Adapter","status":"Candidate"}],"completed":false}
+  {"statuses":[{"nodeAddress":"ops.example.com","state":"Applied and Cleaned","status":"Completed"}],"completed":true}
   ```
 
-  Polling stops on `"completed":true`, and the wizard then shows FINISH. There is one entry in `statuses` per cluster node; this instance has one node.
+  Polling stops on `"completed":true`, and the wizard then shows FINISH. There is one entry in `statuses` per cluster node. The recorded instance had one node.

@@ -9,19 +9,19 @@ It is the second of two test layers. Run both after any change under `Management
 | Unit tests | `python -m pytest tests`, from `Management Pack` | The code in this repo, with fakes. No live system. |
 | Live validation | `pwsh tools/validate/validate.ps1` | The build installed on the instance. |
 
-A code change is only covered by live validation once a pak built from it is installed on the instance.
+Live validation covers a code change only after a pak built from that code is installed on the instance.
 
 ## Safety
 
-The script is read-only. It calls the Suite API with `GET` only, plus the login token request. It changes nothing on the instance.
+The script is read-only. It calls the Suite API with `GET` only, plus the login token request, and changes nothing on the instance.
 
-The one exception is `-Release`: it starts a content export job (a `POST`), to compare the pack's views and dashboards with the repo. The export changes no content, but only one content export or import can run at a time on the instance.
+The one exception is `-Release`, which starts a content export job (a `POST`) to compare the pack's views and dashboards with the repo. The export changes no content, but only one content export or import can run at a time on the instance.
 
 ## Requirements
 
 - PowerShell 7 (`pwsh`).
 - A VCF Operations account that can read adapters, solutions and resources.
-- The URL and login, either as parameters or in `.secrets/vcf-ops.xml`. That file is gitignored: never commit it. Create it once, on the machine that runs the tests. It is encrypted for the Windows user who creates it:
+- The URL and login, as parameters or in `.secrets/vcf-ops.xml`. That file is gitignored: never commit it. Create it once, on the machine that runs the tests. It is encrypted for the Windows user who creates it:
 
   ```powershell
   New-Item -ItemType Directory -Force .secrets | Out-Null
@@ -36,10 +36,10 @@ The one exception is `-Release`: it starts a content export job (a `POST`), to c
 pwsh tools/validate/validate.ps1
 
 # Release sign-off: the installed version must match
-pwsh tools/validate/validate.ps1 -ExpectedVersion 0.5.1
+pwsh tools/validate/validate.ps1 -ExpectedVersion <version>
 
 # Release sign-off, with the content checks (starts a content export job)
-pwsh tools/validate/validate.ps1 -ExpectedVersion 0.5.1 -Release
+pwsh tools/validate/validate.ps1 -ExpectedVersion <version> -Release
 
 # Every object instead of a sample of 5 per type
 pwsh tools/validate/validate.ps1 -SampleSize 0
@@ -51,10 +51,10 @@ pwsh tools/validate/validate.ps1 -SampleSize 0
 | `-SampleSize` | `5` | Objects checked per object type. `0` checks all. |
 | `-MaxAgeMinutes` | `20` | How old the last collection, the newest metric and each cluster KPI may be. |
 | `-MaxGapMinutes` | `15` | A gap between two samples longer than this is reported by the continuity check. |
-| `-Release` | off | Also run the content checks, 19 to 21. Starts a content export job. |
+| `-Release` | off | Also runs the content checks, 21 to 24. Starts a content export job. |
 | `-Url`, `-Credential`, `-SecretFile` | `.secrets/vcf-ops.xml` | Where to connect. |
 
-Exit code `0` means no check failed. `1` means at least one FAIL. WARN lines do not fail the run, but report them.
+Exit code `0` means no check failed, and `1` that at least one did. WARN lines do not fail the run, but report them.
 
 ## Test cases
 
@@ -89,16 +89,26 @@ Result for each type:
 - **WARN**: some sampled objects lack what is expected, or the instance has no objects of that type.
 - **FAIL**: no sampled object has what is expected, or the expected metrics are stale.
 
+### Business Application performance
+
+On every Container object of each kind, from the Business Applications set up in VCF Operations.
+
+| # | Object type | PASS when | Otherwise |
+| :--- | :--- | :--- | :--- |
+| 14 | Tier | At least one Tier has `vCommunity\|Business Application\|Tier Performance` | WARN. A Tier whose VMs are all powered off has no value, so an empty result is not a failure. Also WARN when the instance has no Tier objects. |
+| 15 | BusinessService | At least one has `vCommunity\|Business Application\|Business Application Performance` | WARN, as above |
+| 16 | Enterprise | At least one has `vCommunity\|Business Application\|Business Applications Performance` | WARN, as above |
+
 ### Cluster KPIs and the Periodic Cluster Check
 
-On the sampled clusters. These check what the pack calculates, not only that something arrives.
+On the sampled clusters. These checks look at the values the pack calculates, as well as their arrival.
 
 | # | Check | PASS when | Otherwise |
 | :--- | :--- | :--- | :--- |
-| 14 | Cluster KPIs | Every sampled cluster has a Cluster Performance, Risk and Consumption Score within `-MaxAgeMinutes` | WARN when some clusters lack one, FAIL when no cluster has it |
-| 15 | Collection continuity | The Cluster Risk Score of the first cluster has no gap over `-MaxGapMinutes` in the last 24 hours | WARN, with the number of gaps and the largest |
-| 16 | Periodic Cluster Check | Every sampled cluster has a check metric newer than the latest window end, read from the account's Cluster Check Period and Time, 15 minutes after it | WARN when the window has no KPI data (nothing to calculate, usually a collection gap), FAIL when it has data but was not calculated |
-| 17 | Close for Business rule | The published Close for Business matches the rule applied to the published Worst values, on every cluster with all four from one calculation | WARN when no cluster has a complete result yet, FAIL on a mismatch |
+| 17 | Cluster KPIs | Every sampled cluster has a Cluster Performance, Risk and Consumption Score within `-MaxAgeMinutes` | WARN when some clusters lack one, FAIL when no cluster has it |
+| 18 | Collection continuity | The Cluster Risk Score of the first cluster has no gap over `-MaxGapMinutes` in the last 24 hours | WARN, with the number of gaps and the largest |
+| 19 | Periodic Cluster Check | Every sampled cluster has a check metric newer than the latest window end, read from the account's Cluster Check Period and Time, 15 minutes after it | WARN when the window has no KPI data (nothing to calculate, usually a collection gap), FAIL when it has data but was not calculated |
+| 20 | Close for Business rule | The published Close for Business matches the rule applied to the published Worst values, on every cluster with all four from one calculation | WARN when no cluster has a complete result yet, FAIL on a mismatch |
 
 ### Content (with `-Release`)
 
@@ -106,10 +116,10 @@ The content on the instance, exported, against `Management Pack/content`.
 
 | # | Check | PASS when | Otherwise |
 | :--- | :--- | :--- | :--- |
-| 18 | Content export | The export job finishes | FAIL |
-| 19 | Content: views | Every shipped view is on the instance once, and matches one of its shipped copies. Whitespace and the internal control IDs, which VCF Operations renumbers on import, are ignored. | FAIL when a view is missing or an ID is on the instance twice, WARN when a view was changed after the install |
-| 20 | Content: views shipped twice | No view ID is shipped in two files with different content | WARN: which copy the instance gets depends on the import order |
-| 21 | Content: dashboards | Every shipped dashboard is on the instance exactly once, by ID | FAIL |
+| 21 | Content export | The export job finishes | FAIL |
+| 22 | Content: views | Every shipped view is on the instance once, and matches one of its shipped copies. Whitespace and the internal control IDs, which VCF Operations renumbers on import, are ignored. | FAIL when a view is missing or an ID is on the instance twice, WARN when a view was changed after the install |
+| 23 | Content: views shipped twice | No view ID is shipped in two files with different content | WARN: which copy the instance gets depends on the import order |
+| 24 | Content: dashboards | Every shipped dashboard is on the instance exactly once, by ID | FAIL |
 
 ## Release sign-off
 
@@ -119,7 +129,7 @@ Before publishing a release:
 2. The release pak is installed on the test instance, and at least one collection has run since.
 3. `pwsh tools/validate/validate.ps1 -ExpectedVersion <version> -Release` exits `0`.
 4. Any WARN lines are explained in the release notes or fixed.
-5. The pak that passed step 3 is attached to the GitHub release. The pak is what gets installed, so a release without it is not a release:
+5. The pak that passed step 3 is attached to the GitHub release. The pak is what administrators install, so every release must have it:
 
    ```
    gh release upload v<version> "Management Pack/build/vCommunity_<version>.pak" --repo e1-rahabok/VCF-vCommunity-Adapter
@@ -131,8 +141,9 @@ If an Adapter Instance is `FAILED` right after the install, restart its collecti
 
 These need a manual check, or are not tested yet:
 
-- Whether values are correct, for example a setting's value matching vCenter. The script checks that data exists and is fresh, not what it says.
-- Whether dashboards, views and reports render, and super metrics in `content/`. With `-Release`, the views and dashboards are checked to be present and unchanged.
+- Whether values are correct, for example whether a setting's value matches vCenter. The script checks that data exists and is fresh. It does not check what the data says.
+- Whether dashboards, views and reports render, and the super metrics in `content/`. With `-Release`, the script checks that the views and dashboards are present and unchanged.
 - Upgrade from the previous version, and uninstall.
-- Optional features that are off on the test instance, such as Windows Services and Event Logs through GuestAPI.
+- Optional features that are off on the test instance, such as Windows Services and Event Logs through the Guest API.
+- The Content Library, Library Item and VM Template objects.
 - Scale and collection duration.

@@ -1,14 +1,14 @@
 # Screenshot Script
 
-`screenshot.ps1` takes the documentation's screenshots of the VCF Operations UI, from the instance in `.secrets/vcf-ops.xml`, and saves them into `docs/`. Each screenshot is defined once in `screenshots.json`: the page, the clicks to get to what is shown, and the part of the window to keep. Running the script again updates them all, so the screenshots follow the UI and the pack's settings without being taken by hand.
+`screenshot.ps1` takes the documentation's screenshots of the VCF Operations UI on the instance in `.secrets/vcf-ops.xml`, and saves them into `docs/`. Each screenshot is defined once in `screenshots.json`: the page, the clicks that lead to what is shown, and the part of the window to keep. Running the script again updates them all, so the screenshots keep up with the UI and the pack's settings.
 
 ## Safety
 
-The script only looks. It opens pages and expands sections, and never clicks **Save**, **Delete** or anything else that changes the instance. A screenshot's steps must keep to that: see [Adding a screenshot](#adding-a-screenshot).
+The script only reads. It opens pages and expands sections, and never clicks **Save**, **Delete** or anything else that changes the instance. Every screenshot's steps must follow that rule: see [Adding a screenshot](#adding-a-screenshot).
 
 It logs in with the account in `.secrets/vcf-ops.xml`, the same way as [`install.ps1`](../install/install.md): an HTTP login to the UI, whose session is handed to the browser. Nothing is typed into the login page. The login is passed to Python in the process environment only, and is cleared when the script ends.
 
-TLS certificates are not checked, as in the other tools. It is meant for a test instance on a trusted network.
+It does not check the instance's TLS certificate, like the other contributor tools. Use it only with a test instance on a trusted network.
 
 ## Requirements
 
@@ -90,7 +90,7 @@ A step is one of:
 | `{"goto": "<path>"}` | Opens another page. |
 | `{"hide": "<selector>"}` | Hides every matching element in this browser only, such as the license banner (`div.alerts-wrapper`). Nothing is sent to the instance, unlike closing the banner with its **×**. Waits up to 10 s for the element; put it after the steps that load the page. |
 
-`frame` on a step or a capture looks in a frame of the page instead of the page itself. The older pages, such as Integrations → Accounts, the Adapter Instance settings and Management Pack Details, are in the frame `ops_iframe`.
+`frame` on a step or a capture looks in a frame of the page instead of the page itself. The older pages, such as **Integrations** > **Accounts**, the Adapter Instance settings and Management Pack Details, are in the frame `ops_iframe`.
 
 Two things to know about the older pages, which are built with ExtJS:
 
@@ -143,13 +143,13 @@ Match 1: frame 'ops_iframe', visible True, at x,y,w,h [427, 406, 80, 19]
 
 ## Design decisions
 
-**Playwright in the background, not a browser Claude controls.** Claude in Chrome, or the Claude desktop app's browser, can take a screenshot too, one click at a time, with a person logging in. A script needs no person, gives the same crop every time, and runs again for every update.
+**Playwright runs the browser in the background.** An assistant that drives a browser, such as Claude in Chrome, can also take a screenshot, but one click at a time and with a person logging in. The script needs no person, gives the same crop every time, and can be rerun after every change.
 
-**The HTTP login, not the login page.** It is the login `install.ps1` already uses, so nothing types a password into a page, and a change to the login page does not break the screenshots.
+**It logs in over HTTP.** This is the login `install.ps1` already uses. Nothing types a password into a page, and a change to the login page does not break the screenshots.
 
-**The installed Chrome.** Playwright can download its own browser, about 150 MB. The installed Chrome is enough, and draws the UI the way a person sees it.
+**It uses the installed Chrome.** Playwright can download its own browser, about 150 MB, but the installed Chrome is enough and draws the UI the way a person sees it.
 
-**A region between two elements, not fixed pixels.** The section's first and last elements set the region, so it follows when a setting is added or the page moves.
+**A capture is the region between two elements.** The section's first and last elements set the region, so the capture still fits when a setting is added or the page layout moves.
 
 ## Troubleshooting
 
@@ -157,7 +157,7 @@ Match 1: frame 'ops_iframe', visible True, at x,y,w,h [427, 406, 80, 19]
 | :--- | :--- | :--- |
 | `Playwright is not installed` | Python has no Playwright | `python -m pip install --user playwright` |
 | `A positional parameter cannot be found that accepts argument` | Names given as `-Name a, b` (with spaces) under `pwsh -File` | Write `-Name a,b`, without spaces. |
-| `login attempt 1 failed …, retrying` | The lab was slow or reset the connection | Nothing, if a later attempt succeeds. |
+| `login attempt 1 failed …, retrying` | The instance was slow or reset the connection | Nothing, if a later attempt succeeds. |
 | `UI login failed` | Wrong login in the secret file | Check `.secrets/vcf-ops.xml`. |
 | `Timeout 60000ms exceeded` on a step | The element is not on the page: the UI changed, the item does not exist, or it is in a frame the step does not name | Run with `-SaveSteps` and look at the failed step's screenshot. |
 | `frame 'ops_iframe' did not appear` | The page did not load the older UI | Check the `page` path. |

@@ -36,7 +36,7 @@ The built pak has no file list, checksum or signature that the SDK checks: its o
 ## Caveats
 
 - Binding copies the dashboard into a Summary template. A copy made before the dashboard's settings are resolved keeps the unresolved state. See [Dashboards Show Default Sections or Empty Widgets After an Install](../troubleshooting-guide/dashboards-after-install.md).
-- Binding again creates a new copy. The factory's binding notes say the earlier copy may be left behind. This was not checked here.
+- Binding again creates a new copy. The notes in `ui_client.py` say the same call deletes the previous copy, while the factory's binding notes say it may be left behind. Neither has been checked on an instance.
 - The binding was tested only on VCF Operations 9.1.1.
 
 ## Uninstalling and reinstalling

@@ -102,7 +102,7 @@ This puts back the built-in Summary page for the object type. The dashboard itse
 
 ## Updating a dashboard
 
-Binding copies the dashboard into a Summary template. Later edits to the dashboard don't change the Summary tab. To publish an edit, run the script again with the same name and UUID. Each run creates a new copy, and the earlier copy may be left behind on the server.
+Binding copies the dashboard into a Summary template. Later edits to the dashboard don't change the Summary tab. To publish an edit, run the script again with the same name and UUID. Each run makes a new copy. According to the notes in `ui_client.py`, the same call deletes the object type's previous copy. This has not been checked on an instance.
 
 If you bind a dashboard right after an install or import, the copy can keep an unresolved state and show `Section` headings. See [Dashboards After an Install](../troubleshooting-guide/dashboards-after-install.md).
 
