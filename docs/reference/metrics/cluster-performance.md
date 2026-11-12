@@ -1,10 +1,10 @@
 # Cluster Performance KPI
 
-**Cluster Performance** is a single 0-100 % score for a vSphere cluster. 100 is perfect. It measures actual contention, not potential. It combines 9 sub-metrics, and the worse a sub-metric is, the more it pulls the score down.
+**Cluster Performance** is a 0 to 100 % score for a vSphere cluster. 100 is best. It measures the contention the VMs have now, from 9 sub-metrics. The worse a sub-metric is, the more weight it gets, so one bad sub-metric pulls the score down even when the others are fine.
 
-Use it to watch many clusters at once. When the score drops, open the 9 sub-metrics on that cluster to see which one caused it.
+Use it to watch many clusters at once. When a score drops, open the 9 sub-metrics on that cluster to see which one caused it.
 
-All 10 metrics are published on the cluster object under `vCommunity|Cluster Performance`. The KPI itself is `vCommunity|Cluster Performance|Cluster Performance Score`.
+The KPI and its 9 sub-metrics are published on the cluster object under `vCommunity|Cluster Performance`. The KPI is `vCommunity|Cluster Performance|Cluster Performance Score`.
 
 Code: [`Management Pack/app/metrics/cluster/cluster_performance_metrics.py`](../../../Management%20Pack/app/metrics/cluster/cluster_performance_metrics.py)
 
@@ -12,43 +12,43 @@ Source of the sub-metrics and limits: [`formula/cluster-performance.png`](formul
 
 ## Step 1: Collect the 9 sub-metrics
 
-The sub-metrics answer two questions about the powered-on VMs in the cluster:
+Eight sub-metrics look at the powered-on VMs in the cluster in two ways:
 
-- **How deep?** The worst VM. Shows a problem that hits one VM hard.
-- **How broad?** The 90th percentile across the VMs. Shows a problem that many VMs have.
+- The worst VM shows a problem that hits one VM hard.
+- The 90th percentile across the VMs shows a problem that many VMs have.
 
-Every sub-metric is "lower is better", and 0 is perfect.
+The ninth is the worst host's bad network packets. Every sub-metric is lower-is-better, and 0 is best.
 
 | Group | Sub-metric | How it is calculated |
 | :--- | :--- | :--- |
-| How deep? | Worst VM CPU Ready | Highest `cpu\|20_sec_peak_readyPct` of any VM |
-| How deep? | Worst VM CPU Co-Stop | Highest `cpu\|20_sec_peak_costopPct` of any VM |
-| How deep? | Worst VM Memory Latency | Highest `mem\|20_sec_peak_host_contentionPct` of any VM |
-| How deep? | Worst VM Disk Latency | Highest `virtualDisk\|20_sec_peak_totalLatency_average` of any VM |
-| How broad? | 90th Percentile VM CPU Ready | 90th percentile of `cpu\|20_sec_peak_readyPct` across the VMs |
-| How broad? | 90th Percentile VM CPU Co-Stop | 90th percentile of `cpu\|20_sec_peak_costopPct` across the VMs |
-| How broad? | 90th Percentile VM Memory Latency | 90th percentile of `mem\|20_sec_peak_host_contentionPct` across the VMs |
-| How broad? | 90th Percentile VM Disk Latency | 90th percentile of `virtualDisk\|20_sec_peak_totalLatency_average` across the VMs |
-| ESXi | Highest ESXi Bad Network Packets | Per host: `(errorsRx + errorsTx + droppedRx + droppedTx) / (packetsRx + packetsTx) × 100`, in the last collection cycle (5 minutes). The sub-metric is the highest host. |
+| Worst VM | Worst VM CPU Ready | Highest `cpu\|20_sec_peak_readyPct` of any VM |
+| Worst VM | Worst VM CPU Co-Stop | Highest `cpu\|20_sec_peak_costopPct` of any VM |
+| Worst VM | Worst VM Memory Latency | Highest `mem\|20_sec_peak_host_contentionPct` of any VM |
+| Worst VM | Worst VM Disk Latency | Highest `virtualDisk\|20_sec_peak_totalLatency_average` of any VM |
+| 90th percentile | 90th Percentile VM CPU Ready | 90th percentile of `cpu\|20_sec_peak_readyPct` across the VMs |
+| 90th percentile | 90th Percentile VM CPU Co-Stop | 90th percentile of `cpu\|20_sec_peak_costopPct` across the VMs |
+| 90th percentile | 90th Percentile VM Memory Latency | 90th percentile of `mem\|20_sec_peak_host_contentionPct` across the VMs |
+| 90th percentile | 90th Percentile VM Disk Latency | 90th percentile of `virtualDisk\|20_sec_peak_totalLatency_average` across the VMs |
+| ESXi | Highest ESXi Bad Network Packets | Per host: `(errorsRx + errorsTx + droppedRx + droppedTx) / (packetsRx + packetsTx) × 100` in the last collection cycle (5 minutes). The sub-metric is the highest host. |
 
 Notes:
 
-- **Which VMs count.** The powered-on VMs on the cluster's ESXi hosts. A powered-off VM is left out, because its last stats are old. All of this is read from VCF Operations properties: a host belongs to the cluster named in its `summary|parentCluster`, a VM runs on the host named in its `summary|parentHost`, and it is powered on when `summary|runtime|powerState` is "Powered On". Placement is by name, so do not mix datacenters in one adapter instance.
-- **20-second peaks.** The VM stats are the 20-second peaks, not the 5-minute averages. This makes the KPI a leading indicator.
+- **Which VMs count.** The powered-on VMs on the cluster's hosts. Powered-off VMs are left out because their last stats are old. Placement is read from VCF Operations properties: a host belongs to the cluster named in its `summary|parentCluster`, a VM runs on the host named in its `summary|parentHost`, and it is powered on when `summary|runtime|powerState` is "Powered On". Placement is by name, and names are unique only inside one datacenter, so two clusters with the same name in different datacenters of one vCenter can be mixed up.
+- **20-second peaks.** The VM stats are 20-second peaks rather than 5-minute averages, so short contention shows.
 - **90th percentile.** The value that 90 % of the VMs are at or below. The VMs are sorted, and the one at position 90 % of the count, rounded up, is taken. With 20 VMs that is the 18th lowest. With fewer than 10 VMs it is the highest, the same as the worst VM.
-- **Bad network packets** use the last collection cycle (5 minutes), the same as the former "Bad Network Packets" super metric, which this metric replaces. They are never averaged or added up over a longer time, because that would hide a spike. Two of its counters, Total Packets Received and Transmitted, are deactivated by default in VCF Operations. Activate them first: see [Required Policy Settings](../../configuration-guide/policy.md).
+- **Bad network packets** use the last collection cycle, as the "Bad Network Packets" super metric did. They are never averaged over a longer time, because that would hide a spike. Two of the counters, Total Packets Received and Transmitted, are deactivated by default in VCF Operations. Activate them first: see [Policy](../../configuration-guide/policy.md).
 
 ## Step 2: Score each sub-metric
 
-Each sub-metric is scored from its limits in the table under [Limits per sub-metric](#limits-per-sub-metric), by the rule shared by every KPI: the score falls in a straight line between the limits, from 100 to 0. The rule, with its tiers, is in [How the pack scores a KPI](../../concepts/kpi-scoring-models.md#five-limits-per-sub-metric).
+Each sub-metric is scored from its limits in [Thresholds](#thresholds), with the rule every KPI shares: the score falls in a straight line between the limits, from 100 to 0. The rule and its tiers are in [How the pack scores a KPI](../../concepts/kpi-scoring-models.md#five-limits-per-sub-metric).
 
 ## Step 3: Combine
 
-The nine scores are combined as a weighted average, where each sub-metric's weight depends on its score. The formula, the weights and the reason for them are in [Combining the sub-metrics](../../concepts/kpi-scoring-models.md#combining-the-sub-metrics).
+The nine scores are combined as a weighted average. A sub-metric's weight grows as its score falls. The formula and the reasons for it are in [Combining the sub-metrics](../../concepts/kpi-scoring-models.md#combining-the-sub-metrics).
 
-- **Known limitation.** Because the weight grows as the score falls, a sub-metric that gets worse can raise the KPI. This happens when the sub-metric moves into a heavier tier while it is still better than the sub-metrics already pulling the KPI down. See [A worse sub-metric can lower Cluster Risk](cluster-risk.md#known-limitation-a-worse-sub-metric-can-lower-cluster-risk): it is the same scoring, mirrored.s
+Because the weight grows smoothly as the score falls, a sub-metric that gets worse can raise the KPI. This happens while that sub-metric is still better than the sub-metrics that already pull the KPI down. [A worse sub-metric can lower Cluster Risk](cluster-risk.md#known-limitation-a-worse-sub-metric-can-lower-cluster-risk) explains it; Cluster Performance has the same effect in the other direction.
 
-## Thresholds 
+## Thresholds
 
 | Sub-metric | Unit | Green ends at | Yellow ends at | Orange ends at | Score hits 0 at |
 | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -64,45 +64,44 @@ The nine scores are combined as a weighted average, where each sub-metric's weig
 
 The worst-VM rows have higher limits than the 90th-percentile rows, because a single VM peaks far above most of the others.
 
-
-**Excluded.** The green range (exactly 0) of bad network packets is marked "Excluded" in the source table. Bad packets are rare. While they are 0, the sub-metric is left out of the KPI, so it does not add a free 100 that would hide the others. Any bad packet is yellow (green is exactly 0), and then it counts.
+**Excluded.** The source table marks the green range of bad network packets, exactly 0, as "Excluded". Bad packets are rare. While the value is 0, the sub-metric is left out of the KPI, so it does not add a score of 100 that would dilute the others. Any bad packet is yellow, and then it counts.
 
 ## Worked examples
 
-- **All 9 sub-metrics are 0.** Bad network packets are skipped. The other 8 score 100 with weight 1. KPI = **100**.
-- **Same, except 90th Percentile VM CPU Ready = 5** (red tier):
-  - It is a quarter of the way through red (from 4 to 8), so it scores `25 − (¼ × 25) = 18.75`, with weight `2^(81.25 / 25)` ≈ 9.51.
-  - Bad network packets are 0, so they are skipped. The other 7 score 100 with weight 1.
+- **All 9 sub-metrics are 0.** Bad network packets are left out. The other 8 score 100 with weight 1. KPI = **100**.
+- **The same, except 90th Percentile VM CPU Ready = 5** (red tier):
+  - 5 is a quarter of the way through red (4 to 8), so it scores `25 − (¼ × 25) = 18.75`, with weight `2^(81.25 / 25)` ≈ 9.51.
+  - Bad network packets are 0 and left out. The other 7 score 100 with weight 1.
   - KPI = `(7 × 100 + 18.75 × 9.51) / (7 + 9.51)` ≈ **53.19**.
-  - A plain average would give about 89.8. The weighting makes the one bad sub-metric show.
-- **Same as the first example, except a tiny % of bad packets (0.005 %).** It is yellow, scores about 74.4 with weight 2.03, and now counts. KPI ≈ **94.80**.
-- **One VM has 200 ms disk latency, the others 0.** Worst VM Disk Latency is 200 (orange to red). The 90th percentile stays 0, because one VM is not a broad problem.
+  - A plain average would give about 89.8.
+- **The same as the first, except a small share of bad packets (0.005 %).** It is yellow, scores about 74.4 with weight 2.03, and now counts. KPI ≈ **94.80**.
+- **One VM of ten has 200 ms disk latency, the others 0.** Worst VM Disk Latency is 200, in red. The 90th percentile is the 9th lowest of the 10 VMs, so it stays 0. With fewer than 10 VMs, the 90th percentile is the worst VM, so it would also be 200.
 
-The same examples are checked by the tests in [`Management Pack/tests/test_cluster_performance_metrics.py`](../../../Management%20Pack/tests/test_cluster_performance_metrics.py).
+The tests in [`Management Pack/tests/test_cluster_performance_metrics.py`](../../../Management%20Pack/tests/test_cluster_performance_metrics.py) check the same examples.
 
 ## Missing data
 
-A sub-metric with no data is not published for that collection cycle, and it is left out of the KPI. It is never counted as 0, because 0 means "perfect" and would make the cluster look healthier than it is.
+A sub-metric with no data is not published for that collection cycle, and it is left out of the KPI. It is never counted as 0, because 0 means best and would make the cluster look healthier than it is.
 
-A stat whose latest value is more than 10 minutes old counts as no data. A last known value is never used. See [No stale values](../../reference/metrics/README.md#no-stale-values).
+A stat whose latest value is more than 10 minutes old counts as no data. See [No stale values](README.md#no-stale-values).
 
-- The adapter log lists the sub-metrics that were left out, per cluster.
-- If no sub-metric has data, the KPI itself is not published.
+- The adapter log lists, per cluster, the sub-metrics that were left out.
+- If no sub-metric has data, the KPI is not published.
 
 Common reasons for no data: the cluster has no powered-on VMs, the vCenter adapter has not yet collected the source stat, or the stats request to VCF Operations failed.
 
 ## Related KPIs
 
-- [ESXi Performance](esxi-performance.md) uses the same 9 sub-metrics, for the VMs on one host.
+- [ESXi Performance](esxi-performance.md) uses the same 9 sub-metrics for the VMs on one host.
 - [Cluster Risk](cluster-risk.md) is the leading indicator: how close the cluster is to contention. Memory ballooning and swapping are scored there.
 
 ## Changing the KPI
 
-The code follows the KPI: one section per row, in the order of the source table, with the row's limits, the stats it reads and its formula. The 8 VM contention rows are the same in Cluster Performance and ESXi Performance, so they are defined once, in [`Management Pack/app/metrics/vm/contention_by_vms.py`](../../../Management%20Pack/app/metrics/vm/contention_by_vms.py): a limit changed there changes in both KPIs.
+The code follows the source table: one section per row, in the same order, with the row's limits, the stats it reads and its formula. The 8 VM rows are shared with ESXi Performance and defined once, in [`Management Pack/app/metrics/vm/contention_by_vms.py`](../../../Management%20Pack/app/metrics/vm/contention_by_vms.py). A limit changed there changes in both KPIs.
 
-The tiers and the weight formula are in `TIERS` and `weight_for_score()`, in [`Management Pack/app/metrics/kpi_score.py`](../../../Management%20Pack/app/metrics/kpi_score.py). That file holds the scoring for every KPI, so a change there changes all of them.
+The tiers and the weight formula are `TIERS` and `weight_for_score()` in [`Management Pack/app/metrics/kpi_score.py`](../../../Management%20Pack/app/metrics/kpi_score.py). That file scores every KPI, so a change there changes all of them.
 
 - To change a limit, edit the row.
-- To add a VM stat, add one section to `contention_by_vms.py` with the stat and its two rows (worst VM and 90th percentile), and add it to `VM_CONTENTION`. Both KPIs then have the two new rows.
+- To add a VM stat, add a section to `contention_by_vms.py` with the stat and its two rows (worst VM and 90th percentile), and add it to `VM_CONTENTION`. Both KPIs then get the two new rows.
 
-The adapter definition reads the same table, so there is nothing else to update.
+The adapter definition reads the same table, so nothing else needs to change.

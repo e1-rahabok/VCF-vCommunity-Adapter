@@ -1,8 +1,8 @@
 # Guest OS Performance KPI
 
-**Guest OS Performance** is a single 0-100 % score for the operating system inside a VM, Windows or Linux. 100 is perfect. It answers: is the guest OS getting the CPU, disk and memory it needs? It combines 4 sub-metrics.
+**Guest OS Performance** is a 0 to 100 % score for the operating system inside a VM, Windows or Linux. 100 is best. It shows whether the guest OS gets the CPU, disk and memory it needs, from 4 sub-metrics.
 
-[VM Performance](vm-performance.md) scores the virtual motherboard. This KPI scores what runs on it.
+[VM Performance](vm-performance.md) scores the virtual hardware. This KPI scores the operating system that runs on it. The two are averaged into the [VM Guest OS KPI](vm-performance.md#vm-guest-os-kpi).
 
 It is published on every powered-on VM with VMware Tools as `vCommunity|Guest OS Performance|Guest OS Performance Score`.
 
@@ -12,7 +12,7 @@ Source of the sub-metrics and limits: [`formula/guest-os-performance.png`](formu
 
 ## The 4 sub-metrics
 
-All four come from VMware Tools. They are stats the VM already has, or a simple conversion of one, so only the KPI is published.
+All four come from VMware Tools. They are stats the VM already has, or a unit conversion of one, so only the KPI is published.
 
 | Group | Sub-metric | Source | Unit | Score is 100 at | Green ends at | Yellow ends at | Orange ends at | Score hits 0 at |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -21,12 +21,12 @@ All four come from VMware Tools. They are stats the VM already has, or a simple 
 | Guest OS utilization | Guest Free Memory | `guest\|mem.free_latest / 1024` (KB to MB) | MB | 1024 | 512 | 256 | 128 | 0 |
 | Guest OS utilization | Guest Page-Out Rate | `guest\|page.outRate_latest` | pages/s | 0 | 1000 | 2000 | 4000 | 8000 |
 
-- Guest Free Memory is "higher is better", so its limits go down. 1 GB or more free scores 100.
+- Guest Free Memory is higher-is-better, so its limits go down. 1 GB or more free scores 100.
 - The CPU run queue stat is already per vCPU, so it is used as it is.
 
 ## How the score is calculated
 
-The same way as every KPI, see [How the pack scores a KPI](../../concepts/kpi-scoring-models.md#how-the-pack-scores-a-kpi).
+Like every KPI, see [How the pack scores a KPI](../../concepts/kpi-scoring-models.md#how-the-pack-scores-a-kpi).
 
 ## Worked examples
 
@@ -34,12 +34,12 @@ The same way as every KPI, see [How the pack scores a KPI](../../concepts/kpi-sc
 - **CPU run queue of 3 per vCPU.** Halfway through yellow (2 to 4): 62.5 with weight 2.83. KPI = `(3 × 100 + 62.5 × 2.83) / (3 + 2.83)` = **81.8**.
 - **192 MB free memory.** Halfway through orange (256 down to 128): 37.5 with weight 5.66. KPI = `(3 × 100 + 37.5 × 5.66) / (3 + 5.66)` ≈ **59.16**.
 
-The same examples are checked by the tests in [`Management Pack/tests/test_guest_os_performance_metrics.py`](../../../Management%20Pack/tests/test_guest_os_performance_metrics.py).
+The tests in [`Management Pack/tests/test_guest_os_performance_metrics.py`](../../../Management%20Pack/tests/test_guest_os_performance_metrics.py) check the same examples.
 
 ## Missing data
 
 - A VM without VMware Tools has none of the 4 stats, so it gets no Guest OS Performance KPI.
-- A sub-metric with no data is left out of the KPI. It is never counted as perfect.
+- A sub-metric with no data is left out of the KPI. It is never counted as best.
 - A powered-off VM gets no KPI.
 
-A stat whose latest value is more than 10 minutes old counts as no data. A last known value is never used. See [No stale values](../../reference/metrics/README.md#no-stale-values).
+A stat whose latest value is more than 10 minutes old counts as no data. See [No stale values](README.md#no-stale-values).

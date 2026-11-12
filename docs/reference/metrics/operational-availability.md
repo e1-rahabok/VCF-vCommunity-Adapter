@@ -1,57 +1,60 @@
 # Operational Availability
 
-**Operational Availability** shows whether ESXi hosts and clusters are available to run workloads. It is published on the host, the cluster, the vCenter and the vSphere World object, in %.
+**Operational Availability** shows whether ESXi hosts and clusters are available to run workloads, in %. It is published on the host, the cluster, the vCenter and the vSphere World object.
 
-It replaces the "ESXi Host Operational Availability" and "Cluster Operational Availability" super metrics, and fixes three problems in their formulas. See [Changes from the super metrics](#changes-from-the-super-metrics).
+It replaces the "ESXi Host Operational Availability" and "Cluster Operational Availability" super metrics and fixes problems in their formulas. See [Changes from the super metrics](#changes-from-the-super-metrics).
 
 Code: one file per object type: [host](../../../Management%20Pack/app/metrics/host/host_availability.py), [cluster](../../../Management%20Pack/app/metrics/cluster/cluster_availability.py), and [vCenter](../../../Management%20Pack/app/metrics/vcenter/vcenter_availability.py), which reads both and publishes the worst cluster. The vSphere World summary is in [availability_summary_metrics.py](../../../Management%20Pack/app/metrics/world/availability_summary_metrics.py).
 
 ## Known limitations
 
-> **Read this before using the metrics.**
+> **Read this before you use the metrics.**
 
-- **No stale values.** A stat whose latest value is more than 10 minutes old is treated as no data, so the metric is left blank rather than showing a value that no longer reflects reality. Properties keep their last known value. See [How It Works](../../reference/metrics/README.md#no-stale-values).
-- **No HA host failover level counts as N+0.** This applies when vSphere HA is off, when admission control uses a percentage of resources or a dedicated failover host, or when the value was not collected. The cluster value is then lower than the real availability, never higher. A collection failure can therefore cause a false alarm, but never false assurance.
+- **A host that is not connected gets no new host value.** The host collector skips every host that vCenter does not report as connected, so a disconnected or not-responding host does not get a new ESXi Host Operational Availability. Its object keeps showing the last value it had, usually 100. The cluster value does count such a host correctly, because it is calculated from the host data in VCF Operations, not from the published host values.
+- **The vSphere World host average leaves out hosts that are not connected.** It averages the stored host values from the last 10 minutes. A host that has not been connected for longer than that has no recent value, so it drops out of the average, and the average looks better than the estate is. Use the cluster values to find unavailable hosts.
+- **Stats older than 10 minutes count as no data.** Properties keep their last known value. See [No stale values](README.md#no-stale-values).
+- **The quarantine condition needs `runtime|quarantineState`.** If VCF Operations has no such property for a host, the condition is not met, and the host is at most 75 %.
+- **No HA host failover level counts as N+0.** This applies when vSphere HA is off, when admission control uses a percentage of resources or a dedicated failover host, or when the value was not collected. The cluster value is then lower than the real availability, never higher. A collection failure can cause a false alarm, but not false assurance.
 - **A cluster where HA tolerates the failure of every host has no value.** For example, a 2-host cluster with a failover level of 2: N − k is 0.
-- **Worst Cluster leaves out a cluster with no value.** There is no number to compare. Such a cluster is not shown as the worst, even if it is unavailable.
-- **The vSphere World values can be up to one collection cycle old (5 minutes).** They are built from the values already stored in VCF Operations, like the other [vSphere World metrics](vsphere-world-metrics.md#known-limitations). Every account publishes the same values.
-- **vSphere World leaves out hosts and clusters without a stored value.** For example, those of a vCenter that has no account of this pack.
-- **When VCF Operations returns no data for any host, nothing is published for that cycle.** The request has failed. Publishing every host and cluster at 0 % would be a false alarm across the estate.
+- **Worst Cluster leaves out a cluster with no value.** With no number to compare, such a cluster is not shown as the worst, even if it is unavailable.
+- **The vSphere World values can be one collection cycle old (5 minutes).** They are built from the values already stored in VCF Operations, like the other [vSphere World metrics](vsphere-world-metrics.md#known-limitations). Every Adapter Instance publishes the same values.
+- **vSphere World leaves out hosts and clusters without a stored value**, such as those of a vCenter that has no Adapter Instance of this pack.
+- **When VCF Operations returns no data for any host, nothing is published for that cycle.** The request has failed, and publishing every host and cluster at 0 % would be a false alarm across the estate.
 
 ## The metrics
 
 | Object | Metric | Calculation |
 | :--- | :--- | :--- |
-| ESXi host | `vCommunity\|Availability\|ESXi Host Operational Availability` | 25 points for each condition met: powered on, connected, not in maintenance, not in quarantine. So 0, 25, 50, 75 or 100 %. |
+| ESXi host | `vCommunity\|Availability\|ESXi Host Operational Availability` | 25 points for each condition met: powered on, connected, not in maintenance, not in quarantine. So 0, 25, 50, 75 or 100 %. Published only on hosts that vCenter reports as connected. |
 | Cluster | `vCommunity\|Availability\|Cluster Operational Availability` | `min(100, (sum of the host values − the k lowest host values) ÷ (N − k))` |
-| vCenter | `vCommunity\|Availability\|Worst Cluster Operational Availability` | The lowest Cluster Operational Availability of the clusters of this vCenter. Calculated in the same cycle, so it is never old. |
-| vSphere World | `vCommunity\|Availability\|Worst Cluster Operational Availability` | The lowest Cluster Operational Availability of all clusters, of all vCenters. |
-| vSphere World | `vCommunity\|Availability\|ESXi Hosts Operational Availability` | The average ESXi Host Operational Availability of all hosts, of all vCenters. |
+| vCenter | `vCommunity\|Availability\|Worst Cluster Operational Availability` | The lowest Cluster Operational Availability of the clusters of this vCenter. Calculated in the same cycle, so it is current. |
+| vSphere World | `vCommunity\|Availability\|Worst Cluster Operational Availability` | The lowest Cluster Operational Availability of all clusters, across all vCenters. |
+| vSphere World | `vCommunity\|Availability\|ESXi Hosts Operational Availability` | The average ESXi Host Operational Availability of the hosts with a stored value from the last 10 minutes, across all vCenters. |
 
-**Host conditions.** Each is compared with the exact value:
+**Host conditions.** Each is compared with an exact value:
 
 | Condition | VCF Operations source | Met when |
 | :--- | :--- | :--- |
 | Powered on | `sys\|poweredOn` (stat) | 1 |
 | Connected | `runtime\|connectionState` (property) | `connected` |
 | Not in maintenance | `runtime\|maintenanceState` (property) | `notInMaintenance` |
-| Not in quarantine | `runtime\|quarantineState` (property) | `notInQuarantine` (new in VCF 9) |
+| Not in quarantine | `runtime\|quarantineState` (property) | `notInQuarantine` |
 
-Hardware redundancy is not part of it. Workloads can run fine on a host that has lost a redundant component. Operational availability and hardware availability complement each other.
+Hardware redundancy is not part of the score. Workloads can run normally on a host that has lost a redundant component, so operational availability and hardware availability are measured separately.
 
-**Cluster.** N is the number of hosts, `summary|total_number_hosts`. k is the number of host failures vSphere HA tolerates, `configuration|dasConfig|hostFailoverLevel` (N+k). The k spare hosts are assumed to be the k worst hosts, so any other degraded host counts against the cluster. The value is capped at 100 %, so a cluster with more spare capacity does not look better than one with less, and the values can be averaged over time and across clusters.
+**Cluster.** N is the number of hosts: the larger of `summary|total_number_hosts` and the number of hosts found in the cluster. k is the number of host failures vSphere HA tolerates, `configuration|dasConfig|hostFailoverLevel` (N+k). The k spare hosts are assumed to be the k worst hosts, so any other degraded host counts against the cluster. The value is capped at 100 %, so a cluster with more spare capacity does not look better than one with less, and the values can be averaged over time and across clusters.
 
-The host average is not rolled up to the cluster, because a cluster has to consider vSphere HA.
+The host average is not rolled up to the cluster, because the cluster value has to take vSphere HA into account.
 
 ## Design considerations
 
-The design is strict: a problem must never be hidden.
+The design does not hide a problem:
 
-- **A host with no data counts as 0 %.** It is not left out, because leaving it out would make its cluster look better than it is.
-- **A host that VCF Operations counts in the cluster but that has no data also counts as 0 %.** N is `summary|total_number_hosts`, so a missing host cannot shrink the cluster. Only when VCF Operations has no host count are the hosts found in the cluster used.
-- **No failover level counts as k = 0 (N+0).** This lowers the value, never raises it. See [Known limitations](#known-limitations).
-- **A failed request publishes nothing.** If no host has any data at all, the request to VCF Operations failed. The metrics are left out for that cycle, rather than showing every host at 0 %.
-- **Read once per cycle per vCenter.** The host, cluster and vCenter values come from one set of requests to VCF Operations, made before the collection starts.
+- **In the cluster value, a host with no data counts as 0 %.** Leaving it out would make its cluster look better than it is.
+- **A host that VCF Operations counts in the cluster but that has no data also counts as 0 %.** N is never smaller than `summary|total_number_hosts`, so a missing host cannot shrink the cluster.
+- **No failover level counts as k = 0 (N+0).** This can only lower the value. See [Known limitations](#known-limitations).
+- **A failed request publishes nothing.** If no host has any data, the request to VCF Operations failed, and the metrics are left out for that cycle rather than showing every host at 0 %.
+- **Read once per cycle per vCenter.** The host, cluster and vCenter values come from one set of requests to VCF Operations, made before the collectors run.
 - All inputs come from VCF Operations. Nothing is read from vCenter.
 
 ## Examples
@@ -67,7 +70,7 @@ The design is strict: a problem must never be hidden.
 | 10 hosts, three degraded | 7 × 100, 3 × 50 | N+2 | (850 − 100) ÷ 8 = 93.75 |
 | 4 counted, 3 found | 100, 100, 100, (missing = 0) | N+0 | 75 |
 
-The same examples are checked by the tests in [`Management Pack/tests/test_operational_availability.py`](../../../Management%20Pack/tests/test_operational_availability.py).
+The tests in [`Management Pack/tests/test_operational_availability.py`](../../../Management%20Pack/tests/test_operational_availability.py) check the same examples.
 
 ## Changes from the super metrics
 
@@ -76,6 +79,6 @@ The same examples are checked by the tests in [`Management Pack/tests/test_opera
 | `contains 'connected'` also matched "disconnected", so a disconnected host scored as connected. | Values are compared exactly. |
 | One host was always set aside: a healthy N+0 cluster of 4 hosts showed 75 %, and a healthy single host 0 %. | k hosts are set aside, where k is the HA failover level. N+0 sets none aside. |
 | Only one host was set aside, whatever the failover level (N+2 or more). | k hosts are set aside for N+k. |
-| No value when the cluster had no HA failover level. | Counted as N+0, and documented. |
+| No value when the cluster had no HA failover level. | Counted as N+0. |
 
 The super metric "Worst Cluster Operational Availability" on Custom Datacenter is no longer provided.

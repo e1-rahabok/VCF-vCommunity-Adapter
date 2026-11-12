@@ -1,8 +1,8 @@
 # Business Application Performance
 
-**Tier Performance**, **Business Application Performance** and **Business Applications Performance** score a business application at three levels: its tiers, the application itself, and the enterprise. Each is a 0-100 % value, and each is published only when it has data.
+**Tier Performance**, **Business Application Performance** and **Business Applications Performance** score a business application at three levels: its tiers, the application, and the enterprise. Each is a 0 to 100 % value, published only when it has data.
 
-They replace the "Business Application Tier Performance", "Business Application Performance" and "Business Applications Performance" super metrics. Unlike a super metric, they need no manual enablement in the policy.
+They replace the "Business Application Tier Performance", "Business Application Performance" and "Business Applications Performance" super metrics. Unlike the super metrics, they need nothing enabled in the policy.
 
 Code: [`Management Pack/app/metrics/container/business_app_performance.py`](../../../Management%20Pack/app/metrics/container/business_app_performance.py)
 
@@ -12,42 +12,39 @@ Published as metrics on the Container objects, in the group `vCommunity|Business
 
 | Metric | On object | Calculation |
 | :--- | :--- | :--- |
-| `vCommunity\|Business Application\|Tier Performance` | Tier | The average of the **VM Guest OS KPI** of the Tier's VMs. |
-| `vCommunity\|Business Application\|Business Application Performance` | Business Application (BusinessService) | The higher of two values: the **Performance** of its K8S Namespaces, and the **lowest Tier Performance** of its Tiers. |
+| `vCommunity\|Business Application\|Tier Performance` | Tier | The average [VM Guest OS KPI](vm-performance.md#vm-guest-os-kpi) of the Tier's VMs. |
+| `vCommunity\|Business Application\|Business Application Performance` | Business Application (BusinessService) | The highest of these values: the **Performance** of each of its K8S Namespaces, and the **lowest Tier Performance** of its Tiers. |
 | `vCommunity\|Business Application\|Business Applications Performance` | Enterprise | The average of the Business Applications of the Enterprise. |
 
-The structure is read from VCF Operations: a Business Application is the parent of its Tiers, and a Tier is the parent of its VMs. The K8S Namespaces are the objects within two levels of a Business Application, as in the super metric.
+The structure is read from VCF Operations: a Business Application is the parent of its Tiers, and a Tier is the parent of its VMs. The K8S Namespaces of a Business Application are those within two levels below it, as in the super metric.
+
+The pack reads the Container objects of every adapter instance, so each Adapter Instance of the pack publishes the same values.
 
 ## When there is no value
 
-A value is published only when there is data for it. There is no 0 for "no data".
+A value is published only when there is data for it. The pack never publishes 0 to mean "no data".
 
-- **Tier:** no VM of the Tier has a VM Guest OS KPI. This happens when every VM is powered off, or its stats are older than 10 minutes. The Tier publishes nothing.
-- **Business Application:** uses the namespaces and the Tiers that have a value. If there is neither, it publishes nothing. A Tier that publishes nothing is left out of the lowest Tier Performance, so one powered-off Tier does not pull the application to 0.
-- **Enterprise:** uses the Business Applications that have a value. If none has one, it publishes nothing.
-
-An Enterprise or Business Application value is not published when one of the relationships it needs cannot be read. Otherwise it would be built on part of the objects.
+- **Tier:** publishes nothing when none of its VMs has a VM Guest OS KPI, for example when every VM is powered off or its stats are older than 10 minutes.
+- **Business Application:** uses the namespaces and the Tiers that have a value, and publishes nothing if there are none. A Tier without a value is left out of the lowest Tier Performance, so one powered-off Tier does not pull the application to 0.
+- **Enterprise:** uses the Business Applications that have a value, and publishes nothing if none has one.
 
 ## Known limitations
 
-> **Verify on the instance before you rely on the values.**
-
-- **Not yet checked on a live system with real values.** The first live check published a constant (42) on the Tier objects. This is the first version that publishes the calculated values.
-- **One cycle behind.** The VM KPIs of the current cycle are stored at the end of it, so these values use the stats of the last cycle, as the vSphere World metrics do.
-- **Units.** All three are percent. The pack declares the object types and the metric with the percent unit, as it does for its VMware objects.
-- **A value that stops being published is not cleared.** VCF Operations keeps the last value of a metric the pack no longer publishes, and the SDK has no way to publish "no value". Confirmed on the test instance: the probe value 42 stayed on all four Tiers after the probe was removed. So a Tier whose VMs are all powered off keeps its last value, not blank, until a fix is found.
-- **Tier and namespace structure.** The Business Application uses the K8S Namespaces within two levels, and the Tiers as its direct children. If the topology of a business application differs, its value differs as well.
-- **Business Applications with only namespaces** (modern applications, with no Tiers) use the namespace value alone.
+- **A failed read stops the rest of the cycle.** The relationships are read one object at a time. If one read fails, the Business Application collection stops for that cycle: values already added are published, and the rest are not, including unrelated applications and enterprises. A failure while reading the Tiers' VMs means no Tier values at all. The adapter log has `Business Application performance failed`, and the next cycle tries again.
+- **One cycle behind.** The VM KPIs of the current cycle are stored at the end of it, so these values use the KPIs of the previous cycle, as the vSphere World metrics do.
+- **A value that stops being published is not cleared.** VCF Operations keeps the last value of a metric the pack no longer publishes, and the SDK cannot publish "no value". A Tier whose VMs are all powered off keeps its last value instead of going blank.
+- **Tier and namespace structure.** The Business Application uses the K8S Namespaces within two levels below it, and its direct child Tiers. A business application built differently gets a different value.
+- **Business Applications with only namespaces**, such as modern applications without Tiers, use the namespace values alone.
+- **Live checks.** The [live validation](../../../tools/validate/validate.md) checks that the three metrics are present on the test instance. Compare a few values with the VM Guest OS KPI of their VMs before you rely on them.
+- **Units.** All three are in percent, declared in the adapter definition on each of the three object types.
 
 ## Membership is kept
 
-The membership of a Business Application (its Tiers), of a Tier (its VMs) and of the Enterprise (its Business Applications) is set by hand in the Business Applications editor. The pack reads it, and never writes it.
+The membership of a Business Application (its Tiers), of a Tier (its VMs) and of an Enterprise (its Business Applications) is set by hand in the Business Applications editor. The pack reads it and never writes it.
 
-Before version 0.7.3, the pack sent its relationships of Content Library and VM Template objects with the platform's default mode. That mode removes every relationship the result does not contain, so each collection cycle removed the memberships of the Business Applications. The removal was silent: nothing in the logs, and the UI still showed the memberships, while the API did not.
+The pack sends its own relationships, for Content Library and Library Item objects, with the `PER_OBJECT` update mode. Only the child lists of the objects in its result are replaced, so the memberships that people set by hand are kept. With the platform's default mode, every relationship missing from the result is removed, which silently deleted these memberships in versions before 0.7.3. As a consequence, the pack does not write a link from a Content Library to its vCenter, or from a VM Template to its folder. See [Template and Content Library Design](../../development-guide/template-and-library-design.md#parent-and-child-relationships).
 
-From 0.7.3 the pack sends with the `PER_OBJECT` mode. Only the objects it returns have their child lists replaced, so memberships are kept. The cost is that the Content Library → vCenter link and the VM Template → folder link are no longer written. See [Template and Content Library Design](../../development-guide/template-and-library-design.md#parent-and-child-relationships).
-
-If a membership ever disappears, check first whether the pack version is 0.7.3 or later.
+If a membership disappears, check first that the pack is version 0.7.3 or later.
 
 ## Replaces
 
@@ -57,6 +54,4 @@ If a membership ever disappears, check first whether the pack version is 0.7.3 o
 | Business Application Performance | `vCommunity\|Business Application\|Business Application Performance` |
 | Business Applications Performance | `vCommunity\|Business Application\|Business Applications Performance` |
 
-The "Critical Business Applications" dashboard now uses these metrics.
-
-[⬆ Back to top](#business-application-performance)
+The Critical Business Applications dashboard uses these metrics.
