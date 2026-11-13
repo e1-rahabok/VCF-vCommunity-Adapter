@@ -78,7 +78,7 @@ For contributors: how the code is organized, what each part does, and how to cha
 10. [Template and Content Library Design](development-guide/template-and-library-design.md): how the Content Library, Library Item and VM Template objects are built. Shipped in 0.6.6. The library links were checked on the test instance in 0.7.3. The VM Template objects have no live check yet.
 11. [Pak Summary Binding](development-guide/pak-summary-binding.md): binding a dashboard to an object type's Summary tab from the pak, what `mp-build` allows, and what was tested.
 12. [Future Enhancements](development-guide/future-enhancements.md): metric ideas noted for later, not designed yet.
-13. Engineering reviews:
+13. [Engineering Review](development-guide/engineering-review/README.md): why the reviews are kept, what they cover, how a review is made, and how to check its evidence with the [Review Evidence Tool](../tools/review/review.md). The dated reviews:
     - [29 Oct 2026 Review](development-guide/engineering-review/2026-10-29-review.md): the review of version 0.6.12, with the scorecard and the findings.
     - [29 Oct 2026 Completed](development-guide/engineering-review/2026-10-29-completed.md): the decision and action for each finding.
     - [30 Oct 2026 Review](development-guide/engineering-review/2026-10-30-review.md): the re-score after the 0.7.0 fixes, with the verdict on each rejection and deferral, and new findings.
