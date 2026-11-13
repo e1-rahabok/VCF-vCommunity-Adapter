@@ -3,7 +3,7 @@
 Scripts that are not part of the management pack. None of them is in the `.pak` file or runs in VCF Operations. They run on your own machine and use the VCF Operations APIs.
 
 - **For VCF Operations administrators:** the importer, which creates Adapter Instances for many vCenters at once, and the Summary dashboard script, which binds a dashboard to an object type's Summary tab.
-- **For contributors to this repo:** scripts that build the pack, install it on a test instance, restart its collection, check that it works, take the documentation's screenshots, and check the documentation's links.
+- **For contributors to this repo:** scripts that build the pack, install it on a test instance, restart its collection, check that it works, take the documentation's screenshots, check the documentation's links, and check the evidence in the engineering review.
 
 ## The tools
 
@@ -17,6 +17,7 @@ Scripts that are not part of the management pack. None of them is in the `.pak` 
 | `validate/validate.ps1` | Contributors | Checks that the installed pack collects, and that its data lands on the vCenter objects | No. With `-Release`, it starts a content export job, which changes no content. | [Live Validation Test Plan](validate/validate.md) |
 | `screenshot/screenshot.ps1` | Contributors | Takes the documentation's screenshots of the VCF Operations UI, as defined in `screenshots.json`, and saves them into `docs/` | No: it only opens pages and expands sections | [Screenshot Script](screenshot/screenshot.md) |
 | `check-docs/check_links.py` | Contributors | Checks every relative link and image in the repo's Markdown files | No, it connects to nothing | [Below](#check-docs) |
+| `review/review.py` | Contributors | Checks an engineering review's evidence: that each cited file and line exists, that each finding has a decision with its evidence, and which test counts and Python versions the pages state. It can also record a snapshot of the code's facts | No, it reads the repo and runs `git` read commands only | [Review Evidence Tool](review/review.md) |
 | `equivalence/planned_cases.py`, `equivalence/compare.py` | Contributors | Runs about 3,400 planned cases through two copies of the KPI code, before and after a restructure, and lists every difference in what they publish | No, it connects to nothing | [KPI Equivalence Test](equivalence/equivalence.md) |
 
 ## From a code change to a tested build
@@ -56,6 +57,7 @@ Run `python tools/check-docs/check_links.py` before you commit a documentation c
 - `summary_dashboard/ui_client.py`: the VCF Operations UI session client that `set_summary_dashboard.py` uses. It is adapted from the vcf-content-factory project. See [Summary Dashboard Script](summary_dashboard/summary_dashboard.md#files).
 - `screenshot/screenshot.py` and `screenshot/screenshots.json`: the engine of `screenshot.ps1`, and the definition of each screenshot. See [Adding a screenshot](screenshot/screenshot.md#adding-a-screenshot).
 - `build/mp_build_headless.py`: used by `build.ps1`, not run directly. See [Build Script](build/build.md#why-a-wrapper).
+- `review/review.py`: the evidence checks for the [Engineering Review](../docs/development-guide/engineering-review/README.md). It is read-only and not run by CI. Run it with Python 3, from the repository root: `python tools/review/review.py check`.
 
 ## check-docs
 
