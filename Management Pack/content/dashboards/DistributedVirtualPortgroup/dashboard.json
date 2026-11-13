@@ -37,7 +37,7 @@
                   "description": "",
                   "isUpdatedView": true,
                   "title": "Virtual Machines",
-                  "viewDefinitionId": "f982ee15-5502-49e2-8efc-0a405b5bfa83",
+                  "viewDefinitionId": "f22f2ab7-f504-4718-9bb8-9d24d51e72ba",
                   "viewType": "LIST",
                   "chartViewItems": [],
                   "selectFirstRow": {
@@ -74,7 +74,7 @@
                   "description": "",
                   "isUpdatedView": true,
                   "title": "vNIC of selected VM",
-                  "viewDefinitionId": "f129ab04-a919-4b80-b0ad-39783db28adf",
+                  "viewDefinitionId": "1304ea60-5615-4a71-9454-68140418006f",
                   "viewType": "LIST",
                   "chartViewItems": [],
                   "selectFirstRow": {

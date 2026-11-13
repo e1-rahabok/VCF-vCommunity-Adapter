@@ -10,7 +10,7 @@ Code: [`Management Pack/content/`](../../Management%20Pack/content/)
 | :--- | :--- | :--- | :--- |
 | `files/solutionconfig/` | 6 XML | The configuration files that decide what is collected. See below. | **Yes**, every collection cycle |
 | `dashboards/` | 19 JSON | 12 dashboards at the top level, such as vSphere Cluster Performance 2.0 and vSphere Cluster Capacity 2.0. `To be used in reports/` holds one file with the input dashboards of the VCF Optimization Assessment reports. Six folders named after an object type (`VMFolder`, `HostFolder`, `DatastoreFolder`, `NetworkFolder`, `DistributedVirtualPortgroup`, `VmwareDistributedVirtualSwitch`) hold the Summary dashboards for those object types. | No, imported at install |
-| `reports/` | 42 XML | Reports and views, such as ESXi Host Details, VM Outdated Hardware Version, and the VCF Optimization Assessment (VOA) reports. | No, imported at install |
+| `reports/` | 42 XML | Reports and views, such as ESXi Host Details, VM Outdated Hardware Version, and the VCF Optimization Assessment (VOA) reports. A view must never use the id of a built-in view: see [View ids](#view-ids). | No, imported at install |
 | `supermetrics/` | 2 JSON | CPU Usable Capacity Utilization and Number of VM. Other super metrics have been replaced by metrics in the code, see [Super metrics replaced by built-in metrics](../reference/metrics-and-properties.md#super-metrics-replaced-by-built-in-metrics). | No, imported at install |
 | `alertdefs/` | 4 XML and a schema | Collection Warnings, ESXi Host License Expiring, ESXi Host NIC Disconnected and Windows Service Down. Collection Warnings defines its symptom inline. | No, imported at install |
 | `symptomdefs/` | 2 XML | The symptoms used by the NIC Disconnected and Windows Service Down alerts. | No, imported at install |
@@ -44,6 +44,12 @@ Five of the files are comma-separated lists inside one XML element. The event li
 An Adapter Instance can name any file that exists in VCF Operations, so each vCenter can collect its own standard. The usual way is to clone a default file and edit the clone. See [Customization](../configuration-guide/customization.md).
 
 Which settings to check is each company's decision. Keeping them in files lets one pack serve many standards, and gives each Adapter Instance its own list without a new release.
+
+## View ids
+
+VCF Operations identifies a view by its id. A view in the pack that has the id of a built-in view replaces the built-in view at install, and deletes it at uninstall. When you add a view, build it as a new view, or export a copy and give it a new id (any UUID version 4). Never keep the id of an exported built-in view. When a view is defined in more than one file, such as the `View - Set` files and `View - Collection01.xml`, every copy has the same id and the same content.
+
+A dashboard that should show an unchanged built-in view names the built-in view's id in `viewDefinitionId` and the pack ships no `ViewDef` for it. `tests/test_view_ids.py` fails if a `ViewDef` has one of the 120 built-in ids (the 117 that earlier versions shipped, and three that this repository added), or if copies of one view differ. The history is in [Upgrade From a Version That Shipped Built-in View Ids](../installation-guide/installation.md#upgrade-from-a-version-that-shipped-built-in-view-ids).
 
 ## How it is packaged
 

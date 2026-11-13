@@ -37,7 +37,7 @@
                   "description": "",
                   "isUpdatedView": true,
                   "title": "Virtual Disks",
-                  "viewDefinitionId": "56abf797-0534-4b73-bc27-693317a206ac",
+                  "viewDefinitionId": "7ccaaa23-fb7c-4d4d-9258-e2f018681d60",
                   "viewType": "LIST",
                   "chartViewItems": [],
                   "selectFirstRow": {
@@ -74,7 +74,7 @@
                   "description": "",
                   "isUpdatedView": true,
                   "title": "Virtual Machines",
-                  "viewDefinitionId": "9a77a4b5-0329-459c-9f42-7087f0d911a6",
+                  "viewDefinitionId": "f0a5f04e-17c3-4c6d-817c-eb65e296c9cd",
                   "viewType": "LIST",
                   "chartViewItems": [],
                   "selectFirstRow": {
@@ -111,7 +111,7 @@
                   "description": "",
                   "isUpdatedView": true,
                   "title": "Virtual Network",
-                  "viewDefinitionId": "f129ab04-a919-4b80-b0ad-39783db28adf",
+                  "viewDefinitionId": "1304ea60-5615-4a71-9454-68140418006f",
                   "viewType": "LIST",
                   "chartViewItems": [],
                   "selectFirstRow": {

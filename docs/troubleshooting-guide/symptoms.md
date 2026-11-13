@@ -7,7 +7,7 @@ Each section gives what you see, the cause, and what to do. If you have not run 
 - Values: [A KPI or metric is blank](#a-kpi-or-metric-is-blank) · [Bad Network Packets or Network Speed Degradation is blank](#bad-network-packets-or-network-speed-degradation-is-blank) · [The Periodic Cluster Check or the Cluster Delta counts are late or blank](#the-periodic-cluster-check-or-the-cluster-delta-counts-are-late-or-blank)
 - Configuration: [A configuration file change has no effect](#a-configuration-file-change-has-no-effect) · [No VM values after a change to the VM Options file](#no-vm-values-after-a-change-to-the-vm-options-file) · [Windows Service names are left out](#windows-service-names-are-left-out)
 - Windows guests: [Windows properties, services or events are missing](#windows-properties-services-or-events-are-missing)
-- Running: [Data stops after an upgrade](#data-stops-after-an-upgrade) · [Collection is slow](#collection-is-slow) · [The Cloud Proxy cannot start the adapter](#the-cloud-proxy-cannot-start-the-adapter)
+- Running: [Data stops after an upgrade](#data-stops-after-an-upgrade) · [Built-in views are missing or duplicated after an upgrade](#built-in-views-are-missing-or-duplicated-after-an-upgrade) · [Collection is slow](#collection-is-slow) · [The Cloud Proxy cannot start the adapter](#the-cloud-proxy-cannot-start-the-adapter)
 
 ---
 
@@ -171,6 +171,14 @@ The log tells you which one:
 **Cause:** Adapter Instances often stop collecting after an upgrade until their collection is restarted.
 
 **What to do:** restart the collection of the account: see [After an Upgrade: Restart Collection](../installation-guide/installation.md#after-an-upgrade-restart-collection).
+
+## Built-in views are missing or duplicated after an upgrade
+
+**What you see:** after you upgrade from version 0.8.1 or earlier (0.1.5 to 0.8.1), built-in views are gone on VCF Operations 9.0.2 or 9.1.1, and dashboards or reports that use them show "The view does not exist". That includes widgets in the pack's own dashboards that use one of the 19 views that are no longer shipped. On 8.18.7, views of the pack appear twice with the same title (the second one has " 1" added), and the built-in views are still replaced by the pack's old copies.
+
+**Cause:** those versions shipped views under the ids of built-in views: 41 in 0.1.5, 117 in 0.1.6 to 0.3.1, and 120 in 0.4.2 to 0.8.1 (three more). See [Upgrade From a Version That Shipped Built-in View Ids](../installation-guide/installation.md#upgrade-from-a-version-that-shipped-built-in-view-ids).
+
+**What to do:** on every version, import the views from a content export of a clean instance of the same version, one that never had the pack. Do not uninstall the pack to remove the duplicates on 8.18.7: that deletes the views under the built-in ids. Importing a full view export overwrites your edits to built-in views. After a later uninstall, check the built-in views again and import them again if they are gone.
 
 ## Collection is slow
 
